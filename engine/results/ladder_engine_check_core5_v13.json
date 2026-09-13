@@ -1,0 +1,59 @@
+{
+ "gauntlet": "core5",
+ "n": 20,
+ "seed0": 80000,
+ "rows": [
+  {
+   "a": "planner_vc4cps_kheb_b75",
+   "b": "planner_vc4cps_kheb",
+   "n": 20,
+   "seed0": 80000,
+   "python": {
+    "wins": 11,
+    "decided": 20,
+    "sec": 84.7
+   },
+   "rust": {
+    "wins": 11,
+    "decided": 20,
+    "sec": 26.9
+   },
+   "same": true
+  },
+  {
+   "a": "planner_vc4cps_kheb_b75",
+   "b": "planner_vc4cps",
+   "n": 20,
+   "seed0": 80000,
+   "python": {
+    "wins": 11,
+    "decided": 20,
+    "sec": 87.4
+   },
+   "rust": {
+    "wins": 11,
+    "decided": 20,
+    "sec": 25.8
+   },
+   "same": true
+  },
+  {
+   "a": "planner_vc4cps_kheb_b75",
+   "b": "planner_vb3cps",
+   "n": 20,
+   "seed0": 80000,
+   "python": {
+    "wins": 15,
+    "decided": 20,
+    "sec": 77.6
+   },
+   "rust": {
+    "wins": 15,
+    "decided": 20,
+    "sec": 26.0
+   },
+   "same": true
+  }
+ ],
+ "all_same": true
+}

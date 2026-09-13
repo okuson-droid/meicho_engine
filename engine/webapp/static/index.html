@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>鳴潮：対決 検証アプリ</title>
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+
+<div id="err" class="err" hidden></div>
+
+<!-- 開始画面 -->
+<section id="setup" class="panel">
+  <h1>鳴潮：対決 — 検証アプリ<span class="sub">段階1</span></h1>
+  <p class="note">
+    ルールはすべて実エンジン（meicho）が処理する。この画面はルールを持たない。<br>
+    対局中に見えるのは <code>observe()</code> が返す情報だけ（＝AIと同じ情報）。<br>
+    カードは画像で並ぶ。<b>マウスを乗せている間だけ拡大し、右にエンジンの実装が並ぶ。</b>
+    画像の文面と読み比べて、食い違いを見つけたら F キーで印を付ける。
+  </p>
+  <div class="row">
+    <label>デッキ <select id="deck"></select></label>
+    <label>相手 <select id="opp"></select></label>
+    <button id="start" class="primary">対局を始める</button>
+  </div>
+  <div id="tally" class="tally"></div>
+  <div id="imgstat" class="tally"></div>
+</section>
+
+<!-- 対局画面 -->
+<section id="game" hidden>
+
+  <div class="bar">
+    <span id="gmeta"></span>
+    <span id="imgwarn" class="warn" hidden></span>
+    <span class="spacer"></span>
+    <button id="charabtn" title="自分のキャラデッキ全体を開閉する（C）">キャラデッキ (C)</button>
+    <button id="textbtn" title="エンジンの実装文を常に出す／隠す（Z）">エンジン文 (Z)</button>
+    <button id="flag" title="直前のCPUの手に印を付ける（F）">★ 気になる (F)</button>
+    <button id="resign">投了</button>
+    <button id="finish" class="primary" hidden>記録して終了</button>
+  </div>
+
+  <!-- 相手 -->
+  <div class="side opp">
+    <div class="head">
+      <b>CPU</b><span id="opp-name" class="muted"></span>
+      <span class="stat">ライフ <b id="opp-life">-</b><i id="opp-life-d"></i></span>
+      <span class="stat">手札 <b id="opp-hand">-</b></span>
+      <span class="stat">協奏 <b id="opp-conc">-</b></span>
+      <!-- トラッシュは公開情報。中身をいつでも確認できる（rules_draft.md §11） -->
+      <button class="stat trashbtn" id="opp-trash-btn">トラッシュ <b id="opp-trash">-</b> 🔍</button>
+      <span class="stat">デッキ <b id="opp-deck">-</b></span>
+    </div>
+    <!-- 相手の手札。中身は見えない（observe に無い）ので裏面を枚数ぶん並べる -->
+    <div class="zone"><span class="zlabel">手札／山札</span>
+      <div id="opp-backs" class="cards backs"></div></div>
+    <div class="charas" id="opp-charas"></div>
+    <div class="zone"><span class="zlabel">アクションエリア</span><div id="opp-area" class="cards"></div></div>
+    <div class="zone"><span class="zlabel">協奏エリア</span><div id="opp-conc-cards" class="cards"></div></div>
+    <!-- スキャン等で確認した相手の手札。使われた分は自動で消える -->
+    <div class="zone known" id="opp-known-zone" hidden>
+      <span class="zlabel">判明した手札<br><span class="muted" id="opp-known-n"></span></span>
+      <div id="opp-known" class="cards"></div>
+    </div>
+  </div>
+
+  <!-- 中央 -->
+  <div class="mid">
+    <div id="effects" class="effects"></div>
+    <div id="log" class="log"></div>
+  </div>
+
+  <!-- 自分 -->
+  <div class="side me">
+    <div class="head">
+      <b>あなた</b>
+      <span class="stat">ライフ <b id="me-life">-</b><i id="me-life-d"></i></span>
+      <span class="stat">手札 <b id="me-hand">-</b></span>
+      <span class="stat">協奏 <b id="me-conc">-</b></span>
+      <button class="stat trashbtn" id="me-trash-btn">トラッシュ <b id="me-trash">-</b> 🔍</button>
+      <span class="stat">デッキ <b id="me-deck">-</b></span>
+    </div>
+    <div class="charas" id="me-charas"></div>
+    <div class="zone"><span class="zlabel">アクションエリア</span><div id="me-area" class="cards"></div></div>
+    <div class="zone"><span class="zlabel">協奏エリア</span><div id="me-conc-cards" class="cards"></div></div>
+    <div class="zone"><span class="zlabel">手札／山札</span>
+      <div id="me-hand-cards" class="cards hand"></div>
+      <div id="me-backs" class="cards backs"></div></div>
+  </div>
+
+  <!-- キャラデッキ（自分・常時参照できる。ルール上これは自分の公開情報） -->
+  <div id="charadeck" class="charadeck">
+    <div class="cdhead"><b>自分のキャラデッキ</b>
+      <span class="muted">重ねた下のカードのスキルも有効。★ は今レベルアップできる札</span></div>
+    <div id="charadeck-body" class="cdbody"></div>
+  </div>
+
+  <!-- 行動 -->
+  <div class="actions">
+    <div class="ahead">
+      <b id="phase">-</b>
+      <span id="used" class="muted"></span>
+      <span id="choice" class="choice"></span>
+      <span class="spacer"></span>
+      <button id="listbtn" title="合法手をそのまま一覧で出す（L）">手の一覧 (L)</button>
+      <span id="keyhint" class="muted"></span>
+    </div>
+
+    <!-- 1段目: 何をするかを選ぶ -->
+    <div id="kinds" class="kinds"></div>
+
+    <!-- 2段目: 対象をカード画像で選ぶ（案内だけをここに出す） -->
+    <div id="pickbar" class="pickbar" hidden>
+      <b id="pick-what"></b>
+      <span id="pick-hint" class="muted"></span>
+      <span class="spacer"></span>
+      <button id="pick-cancel">やめる (Esc)</button>
+    </div>
+
+    <!-- 合法手をそのまま並べた一覧（安全網・§5.6）。
+         画面の組み立てに漏れがあっても、ここから必ず打てる。 -->
+    <div id="legal" class="legal" hidden></div>
+
+    <!-- マリガン専用（1枚ずつ選ぶ・§4.2） -->
+    <div id="mull" class="mull" hidden>
+      <div class="mullhead">
+        戻すカードを選ぶ（<b>カードをクリック</b>／数字キーでも入切できる）。
+        選び終えたら <b>Enter</b> か下のボタン。
+      </div>
+      <div id="mull-cards" class="cards hand"></div>
+      <div class="mullfoot">
+        <button id="mull-none">1枚も戻さない</button>
+        <button id="mull-go" class="primary">この <span id="mull-n">0</span> 枚を戻す (Enter)</button>
+        <span id="mull-sel" class="muted"></span>
+      </div>
+    </div>
+  </div>
+
+  <div id="over" class="over" hidden></div>
+</section>
+
+<!-- 拡大（実卓でカードを手に取る代わり・UI_DESIGN.md §6）。
+     **左が画像（カードの文面）、右がエンジンの実装。**この並びが検証機能の本体。
+     出るのは**マウスがカードに乗っている間だけ**（D-063 v2）。 -->
+<div id="zoom" class="zoom" hidden>
+  <div class="zimgbox"><img id="zoom-img" alt=""></div>
+  <div class="ztxt">
+    <div id="zoom-title" class="ztitle"></div>
+    <div id="zoom-meta" class="zmeta"></div>
+    <div class="zhead">エンジンの実装（オペコードの言い換え）</div>
+    <div id="zoom-lines" class="zlines"></div>
+    <div class="zfoot">画像の文面と食い違っていたら F キーで印を付ける</div>
+  </div>
+</div>
+
+<!-- トラッシュの中身（公開情報・D-063 v3）。背景かEscで閉じる -->
+<div id="modal" class="modal" hidden>
+  <div class="modalbox">
+    <div class="modalhead">
+      <b id="modal-title"></b>
+      <span class="spacer"></span>
+      <button id="modal-close">閉じる (Esc)</button>
+    </div>
+    <div id="modal-body" class="cards modalcards"></div>
+  </div>
+</div>
+
+<script src="/app.js"></script>
+</body>
+</html>

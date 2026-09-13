@@ -1,0 +1,76 @@
+{
+ "gauntlet": "core5",
+ "n": 40,
+ "seed0": 80000,
+ "rows": [
+  {
+   "a": "planner_vc4cps_kheb",
+   "b": "planner_vc4cps",
+   "n": 40,
+   "seed0": 80000,
+   "python": {
+    "wins": 27,
+    "decided": 40,
+    "sec": 255.2
+   },
+   "rust": {
+    "wins": 27,
+    "decided": 40,
+    "sec": 98.1
+   },
+   "same": true
+  },
+  {
+   "a": "planner_vc4cps_kheb",
+   "b": "planner_vb3cps",
+   "n": 40,
+   "seed0": 80000,
+   "python": {
+    "wins": 25,
+    "decided": 40,
+    "sec": 258.1
+   },
+   "rust": {
+    "wins": 25,
+    "decided": 40,
+    "sec": 107.5
+   },
+   "same": true
+  },
+  {
+   "a": "planner_vc4cps_kheb",
+   "b": "planner_vb3cp",
+   "n": 40,
+   "seed0": 80000,
+   "python": {
+    "wins": 23,
+    "decided": 40,
+    "sec": 261.7
+   },
+   "rust": {
+    "wins": 23,
+    "decided": 40,
+    "sec": 293.5
+   },
+   "same": true
+  },
+  {
+   "a": "planner_vc4cps",
+   "b": "planner_vb3cps",
+   "n": 40,
+   "seed0": 80000,
+   "python": {
+    "wins": 25,
+    "decided": 40,
+    "sec": 250.4
+   },
+   "rust": {
+    "wins": 25,
+    "decided": 40,
+    "sec": 106.9
+   },
+   "same": true
+  }
+ ],
+ "all_same": true
+}

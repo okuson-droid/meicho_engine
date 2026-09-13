@@ -1,0 +1,332 @@
+{
+ "bin": "A2",
+ "decision": "D-082",
+ "date": "2026-09-12／交代 2026-09-13",
+ "note": "便 A 後半（A-2 束ねたソルバ）で作った・変えた・書き戻したファイルの一覧。engine/_shim/ は作業環境専用なので PC に戻していない（一覧にも入れない）。 D-082 追記 1（2026-09-13）で experiments/console.py・eval_vb.py・verify_report.py・tests/test_value_bootstrap.py を足した。 D-082 追記 2（2026-09-13・champion 交代）で experiments/champion.py・experiments/provenance.py・webapp/agents.py・CLAUDE.md・scripts/check_champion_fingerprint.py を足し、全件の sha256 を取り直した。",
+ "files": [
+  {
+   "path": "CLAUDE.md",
+   "bytes": 5707,
+   "sha256": "dbaa87bdb0aa5ed012d989915b149ac9588ebd23d93262f149ce6456a76bce63",
+   "mtime": "2026-09-13T09:22:39"
+  },
+  {
+   "path": "TASKS.md",
+   "bytes": 34281,
+   "sha256": "ed47aac068270e73f9673c3e5455885645f040e604f1946cbe9c06dada3fb252",
+   "mtime": "2026-09-13T09:22:10"
+  },
+  {
+   "path": "engine/HANDOFF_20260913_LIT_A2_CLOSE.md",
+   "bytes": 11924,
+   "sha256": "e8b0b4053768d0f847417bc9405e2d2725e5d9ec4af4da703d1068aec79c025f",
+   "mtime": "2026-09-13T09:34:45"
+  },
+  {
+   "path": "engine/LITERATURE_PLAN_20260906.md",
+   "bytes": 77946,
+   "sha256": "5c15fd1caae6c521a5bf655e82e5603032df3cb725edd03078797d14f9ef7cd2",
+   "mtime": "2026-09-13T06:04:51"
+  },
+  {
+   "path": "engine/LIT_NOTES.md",
+   "bytes": 307418,
+   "sha256": "8fbef669e377d3e20a824c460f2db03f49b41c843b807f40a1a4388745cfed93",
+   "mtime": "2026-09-13T09:22:30"
+  },
+  {
+   "path": "engine/decisions.md",
+   "bytes": 467481,
+   "sha256": "31e9ce644c07ba51cb22f562f4faefec249e91cb80228588c74e3cfcea23ab61",
+   "mtime": "2026-09-13T09:22:30"
+  },
+  {
+   "path": "engine/experiments/a2_positions.py",
+   "bytes": 6719,
+   "sha256": "80aad1162fedf190a8cac5398a41fc8ce45a23a4adb60bed2b52098ff92f1385",
+   "mtime": "2026-09-11T10:47:04"
+  },
+  {
+   "path": "engine/experiments/champion.py",
+   "bytes": 19776,
+   "sha256": "cd8a2f383bbb9bd586592605ad0a50c393b25e1a6e535bf67d82c5833d28e583",
+   "mtime": "2026-09-13T05:03:27"
+  },
+  {
+   "path": "engine/experiments/check_ladder_engines.py",
+   "bytes": 5580,
+   "sha256": "cd689388e81f08fb80db1d7c81b798d5c3ac917cd23f61c0ba7c89f0d7f76cd7",
+   "mtime": "2026-09-12T03:12:01"
+  },
+  {
+   "path": "engine/experiments/console.py",
+   "bytes": 2429,
+   "sha256": "da047c230d705ce6d4da94d36ecd52cd79ff3935abdbf25ddbc4e84d57809717",
+   "mtime": "2026-09-13T02:22:05"
+  },
+  {
+   "path": "engine/experiments/eval_vb.py",
+   "bytes": 27559,
+   "sha256": "412b2f3282513cc04812c38f344e30929da88479c71a802389183dd437e9d27d",
+   "mtime": "2026-09-13T02:23:30"
+  },
+  {
+   "path": "engine/experiments/gauntlets/core5.json",
+   "bytes": 8516,
+   "sha256": "d214308d6ec2acb4d78dba764bd2028ee61c414ad11e13e0791b46e2851b8d16",
+   "mtime": "2026-09-13T05:03:54"
+  },
+  {
+   "path": "engine/experiments/probe_d065.py",
+   "bytes": 25205,
+   "sha256": "90d449e038a436732fd2fcda9966e88adf6eaa9583535e64c973171994401758",
+   "mtime": "2026-09-11T20:12:18"
+  },
+  {
+   "path": "engine/experiments/provenance.py",
+   "bytes": 8130,
+   "sha256": "7a442a46aaf8d7c090bf2180cd7f13986fd5fcebca53f141f9f9e42e9c82dde8",
+   "mtime": "2026-09-13T05:03:54"
+  },
+  {
+   "path": "engine/experiments/seed_bands.json",
+   "bytes": 30731,
+   "sha256": "4797dc97fc42892cd5f1523f0b009a1bd4feb258a3093622adbf380f954cad87",
+   "mtime": "2026-09-11T19:39:40"
+  },
+  {
+   "path": "engine/experiments/verify_report.py",
+   "bytes": 53640,
+   "sha256": "95a48990069a3e6ac32469957084a0d5dd645c91b4b12abde8979885e4210e41",
+   "mtime": "2026-09-13T06:30:59"
+  },
+  {
+   "path": "engine/meicho/bundle.py",
+   "bytes": 8594,
+   "sha256": "0e59e5ed52380abffa39b60a76522da18b3b9cd04d6ccf53d8a86747d85f0e7f",
+   "mtime": "2026-09-11T19:47:26"
+  },
+  {
+   "path": "engine/meicho/greedy.py",
+   "bytes": 71189,
+   "sha256": "e56ba1ebc8111b4bb4ca565d95c7ab020cc8b7a1f05a296540502de0385d57a7",
+   "mtime": "2026-09-11T19:48:32"
+  },
+  {
+   "path": "engine/meicho/planner.py",
+   "bytes": 25375,
+   "sha256": "5d1fde2f25c7652f1bfe58a170b206cdaefde83800d68347257d9178b429eb9a",
+   "mtime": "2026-09-11T19:34:02"
+  },
+  {
+   "path": "engine/results/ladder.json",
+   "bytes": 181701,
+   "sha256": "4bbf451b6e3cead4391606e8549bc0702a50979977ac2538f4f6cddfa931107a",
+   "mtime": "2026-09-12T05:15:54"
+  },
+  {
+   "path": "engine/results/ladder.md",
+   "bytes": 9025,
+   "sha256": "dce62f5d352eb727342af67d471d807f4ce6214ebc8369ae3d1ba756bd4c6aaa",
+   "mtime": "2026-09-12T05:15:54"
+  },
+  {
+   "path": "engine/results/ladder_analysis_core5_v13.json",
+   "bytes": 6173,
+   "sha256": "9fe694f88eaf5ce653f177205c5acbe7e3c5ed259a03551ffa6c2ae4737e2f2d",
+   "mtime": "2026-09-12T05:16:18"
+  },
+  {
+   "path": "engine/results/ladder_analysis_core5_v13.md",
+   "bytes": 5137,
+   "sha256": "4547a234a5afe7f5f46e44fddd327fadd6210ad570fd45ff5d389e6f60b67a4e",
+   "mtime": "2026-09-12T05:16:18"
+  },
+  {
+   "path": "engine/results/ladder_engine_check_core5_v13.json",
+   "bytes": 866,
+   "sha256": "f9cd9a33db0f43525aa0af137c42c0b32b7b9f63e218fa0e1342a49188682e1d",
+   "mtime": "2026-09-12T03:26:59"
+  },
+  {
+   "path": "engine/results/lit/a2_anchor_b50.json",
+   "bytes": 24960,
+   "sha256": "b866b289bd9dbd5b5fa3e44b15d3717de05010487cd11e9c71329fff3ad8c9ac",
+   "mtime": "2026-09-11T23:32:49"
+  },
+  {
+   "path": "engine/results/lit/a2_anchor_b75.json",
+   "bytes": 24954,
+   "sha256": "8122fb2ef37c1383e249be837afd8bcc0e911b72ca07ad2e86d2ed389c5c7e97",
+   "mtime": "2026-09-11T22:45:15"
+  },
+  {
+   "path": "engine/results/lit/a2_anchor_b90.json",
+   "bytes": 24959,
+   "sha256": "b429c4ef52277b10969fc3974877736bf083681c8d69ee47d14e9f137d90da72",
+   "mtime": "2026-09-11T21:51:56"
+  },
+  {
+   "path": "engine/results/lit/a2_baseline_positions.json",
+   "bytes": 2526,
+   "sha256": "33859bcc59f5a88a44da54fe4d23b72672d102063b53e7518ed107473f1ed712",
+   "mtime": "2026-09-11T10:47:05"
+  },
+  {
+   "path": "engine/results/lit/a2_clash_mix_rate.json",
+   "bytes": 2571,
+   "sha256": "bc2e0dce3e3188c4dfdd69c932cb540fed40feb8440648e375dd10825b7157e9",
+   "mtime": "2026-09-11T20:58:25"
+  },
+  {
+   "path": "engine/results/lit/a2_clash_mix_rate.jsonl",
+   "bytes": 366365,
+   "sha256": "1e31417effeec6fdce4f69bbd4c93d826eb8e5ab18ef8ef5d869ed7ab4ead4ec",
+   "mtime": "2026-09-11T20:58:25"
+  },
+  {
+   "path": "engine/results/lit/a2_gate_b75.json",
+   "bytes": 10673,
+   "sha256": "ad1e4f073687736b08cb054f591b18a8e30479d4985909886f4c4d8039b12a92",
+   "mtime": "2026-09-12T02:45:51"
+  },
+  {
+   "path": "engine/results/lit/a2_gate_null.json",
+   "bytes": 10724,
+   "sha256": "f10d8140ac4ca26bf6a3aef13420643b7ab94970084af283125863b7167d336a",
+   "mtime": "2026-09-12T03:09:52"
+  },
+  {
+   "path": "engine/results/lit/a2_peek_b50.json",
+   "bytes": 1559,
+   "sha256": "cae0b66e21e20d54c7419251c416fd9672e1fcad4609cba324c68b93f1652c2f",
+   "mtime": "2026-09-12T02:19:24"
+  },
+  {
+   "path": "engine/results/lit/a2_peek_b50.jsonl",
+   "bytes": 41752,
+   "sha256": "04b36ad5a1734896795ce8cf3bc3be2c9b09c0b34fdb83098cc521fede85921f",
+   "mtime": "2026-09-12T02:19:24"
+  },
+  {
+   "path": "engine/results/lit/a2_peek_b75.json",
+   "bytes": 1559,
+   "sha256": "9ed00e7531c4ec4dfa02b29cea89a25a46158bcdcbe7b77dc8bce1cf3e33bbbf",
+   "mtime": "2026-09-12T01:26:11"
+  },
+  {
+   "path": "engine/results/lit/a2_peek_b75.jsonl",
+   "bytes": 41746,
+   "sha256": "88eec346f301d2f2422a46b1ef2bd5864e77d2142ebdfefb7d5766ed9d2a7c24",
+   "mtime": "2026-09-12T01:26:11"
+  },
+  {
+   "path": "engine/results/lit/a2_peek_b90.json",
+   "bytes": 1573,
+   "sha256": "f1201851031d8f350ba0be7e5deefe0e49b1d109461eaded3241bfa75072ec6f",
+   "mtime": "2026-09-12T00:26:45"
+  },
+  {
+   "path": "engine/results/lit/a2_peek_b90.jsonl",
+   "bytes": 41741,
+   "sha256": "8d4d31e24a83d04e6c9416172f0626a7c9732613e5e9469ae03e40f3897dc100",
+   "mtime": "2026-09-12T00:26:45"
+  },
+  {
+   "path": "engine/results/lit/a2_peek_baseline.json",
+   "bytes": 1565,
+   "sha256": "05d81cb7b315bd61f7fe883d132589fc26a8573410fee944794fa91063ea4728",
+   "mtime": "2026-09-11T20:56:57"
+  },
+  {
+   "path": "engine/results/lit/a2_peek_baseline.jsonl",
+   "bytes": 41736,
+   "sha256": "7e353c724a128eb4c2e39af0b2127211c9b8fdf74aa84ac2d3e106d03d09a9c4",
+   "mtime": "2026-09-11T20:56:51"
+  },
+  {
+   "path": "engine/results/lit/a2_positions.json",
+   "bytes": 10945,
+   "sha256": "d0b1836d0743d4d999741b4a0b856e82db0960743e593bd9a650958208fc79a9",
+   "mtime": "2026-09-11T20:58:38"
+  },
+  {
+   "path": "engine/results/vb/c4_b50_cost.json",
+   "bytes": 161,
+   "sha256": "82c4e0dad4c9d3551bcd0986f2f0554775dcbd152cdb92cbd5fa82a48718e96b",
+   "mtime": "2026-09-12T00:41:57"
+  },
+  {
+   "path": "engine/results/vb/c4_b75_audit.json",
+   "bytes": 1240,
+   "sha256": "8c88751635b77c710b5c64a2bc8138a03dac3d8bab9f5e40010ad5091ac9fa55",
+   "mtime": "2026-09-12T03:11:08"
+  },
+  {
+   "path": "engine/results/vb/c4_b75_cost.json",
+   "bytes": 160,
+   "sha256": "09933079017368304660eb4141ab2c24ad8bb34df94bd44a28fbaaebb429bc60",
+   "mtime": "2026-09-12T00:40:14"
+  },
+  {
+   "path": "engine/results/vb/c4_b90_cost.json",
+   "bytes": 161,
+   "sha256": "da173230e8d8a4e310a50244412c2593f3e44275806c678a7a40af9eede868eb",
+   "mtime": "2026-09-12T00:38:20"
+  },
+  {
+   "path": "engine/rust/src/agents.rs",
+   "bytes": 95184,
+   "sha256": "535c5ca20c887faf2f3484fd9c88da321d5e3e78af3f45b4ae726cac57145e1e",
+   "mtime": "2026-09-11T19:36:33"
+  },
+  {
+   "path": "engine/rust/src/bundle.rs",
+   "bytes": 5628,
+   "sha256": "1b63672930ccf44615c0a654f8b9af799138e04efdd62aa6d344d64160014a5c",
+   "mtime": "2026-09-11T19:52:28"
+  },
+  {
+   "path": "engine/rust/src/lib.rs",
+   "bytes": 67489,
+   "sha256": "f1040cce7ec475e632fda7a41637c4430f71b77f919756ec54e16f7fefa306ae",
+   "mtime": "2026-09-11T19:49:37"
+  },
+  {
+   "path": "engine/scripts/check_champion_fingerprint.py",
+   "bytes": 3854,
+   "sha256": "ddf9726ff5234d010ee2c2e1a4bf0d14f0d33cf09cb92d0351adc3ef68402d2d",
+   "mtime": "2026-09-13T06:33:51"
+  },
+  {
+   "path": "engine/tests/test_champion_vc4.py",
+   "bytes": 19645,
+   "sha256": "4e69f5d44fbea3c891beea31441af1c3428d90899de7b9873148173ede6d2669",
+   "mtime": "2026-09-13T05:23:59"
+  },
+  {
+   "path": "engine/tests/test_lit_a2.py",
+   "bytes": 26642,
+   "sha256": "b52d9ac9a3c7f2e46c533b9267f236a79ddbfcabd70e522d4e402a15f70c0390",
+   "mtime": "2026-09-13T05:48:37"
+  },
+  {
+   "path": "engine/tests/test_lit_c.py",
+   "bytes": 64456,
+   "sha256": "ee936c2d9907b972a8bd48ca3a51d50bb5d32daea88fd67bbcb9691cf31dbb65",
+   "mtime": "2026-09-13T08:09:06"
+  },
+  {
+   "path": "engine/tests/test_value_bootstrap.py",
+   "bytes": 45332,
+   "sha256": "478a42dbcfb6c6b8b48c76f9c8859d57ca22ee277a6f752aaae5303f4d2a6c31",
+   "mtime": "2026-09-13T02:22:40"
+  },
+  {
+   "path": "engine/webapp/agents.py",
+   "bytes": 17751,
+   "sha256": "0971ac1d4f5bff81b8a06356b835818b4cc399530b7aa146569646e99565380c",
+   "mtime": "2026-09-13T05:03:54"
+  }
+ ]
+}

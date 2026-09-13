@@ -1,0 +1,42 @@
+{
+ "gauntlet": "core5",
+ "n": 8,
+ "seed0": 80000,
+ "rows": [
+  {
+   "a": "planner_vc4cps",
+   "b": "planner_vb3cps",
+   "n": 8,
+   "seed0": 80000,
+   "python": {
+    "wins": 6,
+    "decided": 8,
+    "sec": 23.7
+   },
+   "rust": {
+    "wins": 6,
+    "decided": 8,
+    "sec": 9.3
+   },
+   "same": true
+  },
+  {
+   "a": "planner_vc4cps",
+   "b": "planner_vb3cp",
+   "n": 8,
+   "seed0": 80000,
+   "python": {
+    "wins": 4,
+    "decided": 8,
+    "sec": 32.2
+   },
+   "rust": {
+    "wins": 4,
+    "decided": 8,
+    "sec": 28.8
+   },
+   "same": true
+  }
+ ],
+ "all_same": true
+}

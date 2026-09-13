@@ -1,0 +1,301 @@
+/* 検証アプリの見た目（APP_DESIGN.md §4 / 表示は UI_DESIGN.md v1.1）。
+   装飾はしない。判断に必要な情報が探さなくても目に入ることだけを狙う。
+
+   カードは画像で並べ、実卓の見え方に寄せる。ただし
+   **「実卓に近い」は「操作を悪くする」ではない**（UI_DESIGN.md §5.3）。
+   手札を扇状に重ねたり、読めない大きさにしたりはしない。 */
+
+:root{
+  --bg:#f6f7f9; --panel:#fff; --line:#d6dae0; --ink:#1c2128; --muted:#6b7480;
+  --red:#c8322c; --green:#227a3d; --blue:#2258b8;
+  --hi:#fff6cc; --hi-line:#e0b400; --bad:#b3261e; --ok:#1a6b3c;
+  /* カードの基準幅。app.js が +/- で書き換える。高さは実カード 63:88 の比 */
+  --cwbase:88px;
+  --cw:var(--cwbase);
+  --ch:calc(var(--cw) / 0.716);
+}
+*{box-sizing:border-box}
+/* **`hidden` 属性は `display` を持つクラスに負ける。**
+   `.zone{display:flex}` のような指定があると「隠したつもりで出たまま」になる。
+   実際に拡大パネルと「判明した手札」の空欄がそうなっていた（D-063 v2/v3）。
+   ここで一括して打ち消す。 */
+[hidden]{display:none !important}
+body{
+  margin:0; padding:12px; background:var(--bg); color:var(--ink);
+  font:14px/1.6 "Segoe UI","Hiragino Kaku Gothic ProN","Noto Sans JP",sans-serif;
+}
+h1{font-size:20px;margin:0 0 6px} h1 .sub{font-size:12px;color:var(--muted);margin-left:8px}
+.note .credits{font-size:11px;color:var(--muted);margin-top:4px}  /* 配布モードの権利表記（D-074） */
+code{background:#eceff3;padding:1px 4px;border-radius:3px;font-size:12px}
+.muted{color:var(--muted)} .spacer{flex:1}
+button{
+  font:inherit;padding:6px 12px;border:1px solid var(--line);background:#fff;
+  border-radius:5px;cursor:pointer;
+}
+button:hover{background:#eef1f5}
+button.primary{background:#1f6feb;color:#fff;border-color:#1a5fcc}
+button.primary:hover{background:#1a5fcc}
+select{font:inherit;padding:5px}
+
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:16px;max-width:760px}
+.note{color:var(--muted);font-size:13px}
+.row{display:flex;gap:12px;align-items:center;margin-top:10px}
+.tally{margin-top:12px;font-size:13px;color:var(--muted)}
+.tally.bad{color:var(--bad);font-weight:700}
+.warn{color:var(--bad);font-weight:700;font-size:12px}
+
+.err{background:#fdecea;border:1px solid var(--bad);color:var(--bad);
+     padding:10px 12px;border-radius:6px;margin-bottom:10px;white-space:pre-wrap;font-size:13px}
+
+.bar{display:flex;gap:8px;align-items:center;margin-bottom:8px;flex-wrap:wrap}
+#gmeta{font-size:13px;color:var(--muted)}
+
+/* トラッシュは公開情報。押すと中身をモーダルで出す（D-063 v3） */
+.trashbtn{
+  font:inherit;font-size:13px;color:var(--muted);background:none;border:1px dashed var(--line);
+  border-radius:5px;padding:0 8px;cursor:pointer;
+}
+.trashbtn b{color:var(--ink);font-size:15px}
+.trashbtn:hover{background:#eef1f5;border-style:solid}
+
+/* 陣営 */
+.side{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:10px;margin-bottom:8px}
+.side.opp{border-top:3px solid #b06a6a}
+.side.me{border-top:3px solid #4a7fb5}
+.head{display:flex;gap:14px;align-items:baseline;flex-wrap:wrap;margin-bottom:8px}
+.head b{font-size:15px}
+.stat{font-size:13px;color:var(--muted)}
+.stat b{color:var(--ink);font-size:15px}
+.stat i{font-style:normal;margin-left:3px;font-weight:700}
+.stat i.up{color:var(--ok)} .stat i.down{color:var(--bad)}
+
+/* ------------------------------------------------------------ カードの面 */
+.cardimg{
+  width:var(--cw);height:var(--ch);flex:none;border-radius:5px;overflow:hidden;
+  background:#2b3037;border:1px solid var(--line);border-left:4px solid transparent;
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 1px 2px rgba(0,0,0,.22);
+}
+.cardimg img{width:100%;height:100%;object-fit:contain;display:block}
+/* 画像が無いカードは**消さずに**名前の枠にする（UI_DESIGN.md §P3） */
+.cardimg.noimg{background:#fff;border:1px dashed var(--bad)}
+/* 配布モード（D-074）: 画像が無いのは仕様なので、赤（異常の色）ではなく通常の枠にする */
+body.dist .cardimg.noimg{border:1px solid var(--line);background:#fbfbfd}
+.cardimg .altname{font-size:10px;line-height:1.35;color:var(--ink);padding:4px;text-align:center;
+                  word-break:break-all}
+.cardimg.empty{background:#f1f3f6;border:1px dashed var(--line);color:var(--muted);font-size:11px}
+
+/* 裏面。実物の裏面画像は無いので描く（裁定 Q1）。**IDを持たない** */
+.cardback{
+  width:var(--cw);height:var(--ch);flex:none;border-radius:5px;border:1px solid #16243c;
+  background:
+    radial-gradient(circle at 50% 42%, rgba(255,255,255,.16) 0 16%, transparent 17%),
+    repeating-linear-gradient(45deg,#25406b 0 7px,#1e3457 7px 14px);
+  display:flex;align-items:center;justify-content:center;
+  color:#cfdcf0;font-size:12px;font-weight:700;
+}
+.cardback.deck{box-shadow:2px 2px 0 #1a2b47, 4px 4px 0 #16243c;margin-left:10px}
+.backs{--cw:calc(var(--cwbase) * .78);gap:4px;flex:none}
+
+/* ------------------------------------------------------------ キャラ枠 */
+.charas{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:6px;align-items:flex-start}
+.chara{position:relative;border:1px solid var(--line);border-radius:6px;padding:5px;
+       background:#fbfcfd;font-size:13px;width:calc(var(--cw) + 12px)}
+.chara.lead{border-color:#8fa8c8;background:#f4f8fd}
+.chara .role{color:var(--muted);font-size:11px;display:block;margin-bottom:3px}
+body.showtext .chara{width:auto;min-width:230px;max-width:340px}
+/* 重ねたカードは下のものが上から覗く（実卓と同じ・UI_DESIGN.md §5.4） */
+.stack{display:flex;flex-direction:column}
+.stack .cardimg + .cardimg{margin-top:calc(var(--ch) * -0.84)}
+.chara .txt{display:none;margin-top:4px}
+body.showtext .chara .txt{display:block}
+.chara .nm{font-weight:700;font-size:12px}
+.chara .under{color:var(--muted);font-size:11px}
+.chara .sk{font-size:11px;line-height:1.45;color:#2b3138;margin-top:2px;
+           padding-left:8px;border-left:2px solid #cbd5e0}
+.chara .sk .src{color:var(--muted);margin-right:4px}
+
+/* ------------------------------------------------------------ 自分のキャラデッキ全体 */
+.charadeck{background:var(--panel);border:1px solid var(--line);border-radius:8px;
+           padding:8px 10px;margin-bottom:8px}
+.charadeck.closed .cdbody{display:none}
+.cdhead{display:flex;gap:10px;align-items:baseline;flex-wrap:wrap;font-size:13px;margin-bottom:6px}
+.cdhead .muted{font-size:11px}
+.cdbody{display:flex;gap:12px;flex-wrap:wrap;--cw:calc(var(--cwbase) * .8)}
+.cdgroup{border:1px solid var(--line);border-radius:6px;padding:6px 8px;background:#fbfcfd}
+.cdname{font-weight:700;font-size:13px;margin-bottom:4px}
+.cdline{display:flex;gap:6px;align-items:flex-start}
+.cdcard{position:relative;width:var(--cw)}
+.cdcard.onfield{opacity:.55}
+.cdcard.up .cardimg{border-color:var(--hi-line);box-shadow:0 0 0 2px var(--hi-line)}
+.cdcard .cap{display:flex;flex-direction:column;font-size:9px;line-height:1.35;
+             color:var(--muted);margin-top:2px}
+.cdcard .cap .lv{font-weight:700;color:var(--ink)}
+.cdcard.up .cap .where{color:#8a6b00;font-weight:700}
+.cdcard .txt{display:none;font-size:10px;line-height:1.4}
+body.showtext .cdcard .txt{display:block}
+/* Z のときは文が読める幅に広げる（画像の大きさは変えない） */
+body.showtext .cdcard{width:calc(var(--cw) * 2.1)}
+.cdcard .tags{color:var(--muted)}
+.cdcard .sk{padding-left:6px;border-left:2px solid #cbd5e0;margin-top:2px}
+
+/* ------------------------------------------------------------ 場 */
+.zone{display:flex;gap:8px;align-items:flex-start;margin-top:6px}
+/* スキャン等で確認した相手の手札。推測でなく確定情報なので目立たせる */
+.zone.known{background:#eef7ff;border:1px solid #9fc4e8;border-radius:6px;padding:5px 6px;margin-top:6px}
+.zone.known .zlabel{color:#1a4f8a;font-weight:700}
+.zone.known .cardimg{border-color:#3f7fc0}
+.zlabel{font-size:11px;color:var(--muted);min-width:88px;padding-top:4px;flex:none}
+.cards{display:flex;gap:6px;flex-wrap:wrap;flex:1;min-height:24px;align-items:flex-start}
+
+/* カード1枚（画像＋隠してあるエンジン文） */
+.card{position:relative;width:var(--cw);display:flex;flex-direction:column;gap:2px}
+.card .txt{display:none;font-size:10px;line-height:1.35}
+/* Z で全部出す。画像が無い札は**常に**出す（それしか情報が無いため） */
+body.showtext .card .txt, .card.noimg .txt{display:block}
+body.showtext .card, .card.noimg{width:calc(var(--cw) * 1.9)}
+.card .nm{font-weight:600}
+.card .id{color:var(--muted);font-size:10px;display:block}
+.card .num{color:#333}
+.card .sk{color:var(--muted);font-size:10px;display:block}
+.card.red .cardimg{border-left-color:var(--red)}
+.card.green .cardimg{border-left-color:var(--green)}
+.card.blue .cardimg{border-left-color:var(--blue)}
+.card.unv .cardimg{border-color:var(--hi-line)}
+/* 自分の手札は一番よく見るので大きく。増えたら詰める（§5.3） */
+.cards.hand{--cw:calc(var(--cwbase) * 1.2)}
+.cards.hand.tight{--cw:var(--cwbase)}
+
+/* ------------------------------------------------------------ 中央 */
+.mid{display:flex;gap:8px;margin-bottom:8px;align-items:stretch}
+.effects{background:#fffaf0;border:1px solid #e6d9b8;border-radius:8px;padding:8px 10px;
+         font-size:12px;min-width:200px;max-width:280px}
+.effects:empty{display:none}
+.effects b{display:block;font-size:11px;color:var(--muted);margin-bottom:2px}
+.log{
+  flex:1;background:#101418;color:#dfe6ee;border-radius:8px;padding:8px 10px;
+  font-size:12px;line-height:1.55;height:190px;overflow-y:auto;white-space:pre-wrap;
+  font-family:"Consolas","SF Mono",monospace;
+}
+.log .clash{color:#ffd479;font-weight:700}
+.log .peek{color:#8fd0ff;font-weight:700}
+.log .flag{color:#7fd4ff}
+.log .bad{color:#ff8a80}
+.log .turn{color:#9fe6a0;font-weight:700}
+
+/* ------------------------------------------------------------ 行動 */
+.actions{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:10px}
+.ahead{display:flex;gap:12px;align-items:baseline;flex-wrap:wrap;margin-bottom:8px;font-size:13px}
+.choice{background:var(--hi);border:1px solid var(--hi-line);border-radius:4px;padding:2px 8px}
+.choice:empty{display:none}
+.legal{display:flex;flex-direction:column;gap:4px;max-height:260px;overflow-y:auto}
+.act{
+  display:flex;gap:10px;align-items:center;text-align:left;width:100%;
+  padding:6px 10px;border:1px solid var(--line);border-radius:5px;background:#fff;cursor:pointer;
+}
+.act:hover{background:#eef1f5}
+.act.sel{background:var(--hi);border-color:var(--hi-line)}
+.act .k{
+  min-width:22px;height:22px;line-height:20px;text-align:center;border:1px solid var(--line);
+  border-radius:4px;font-size:11px;color:var(--muted);background:#f3f5f8;flex:none;
+}
+.act .t{flex:1}
+
+/* ------------------------------------------------------------ マリガン */
+.mullhead{font-size:13px;margin-bottom:8px}
+.mullfoot{display:flex;gap:10px;align-items:center;margin-top:10px;flex-wrap:wrap}
+.mullfoot .muted{font-size:12px}
+.card.pick{cursor:pointer}
+.card.pick .k{
+  position:absolute;top:-8px;left:-8px;width:20px;height:20px;line-height:18px;z-index:2;
+  text-align:center;border:1px solid var(--line);border-radius:50%;background:#f3f5f8;
+  font-size:11px;color:var(--muted);
+}
+.card.pick .mark{display:block;font-size:11px;color:var(--muted);font-weight:700;text-align:center}
+.card.pick.picked .cardimg{filter:grayscale(.75) brightness(.85);border-color:var(--hi-line)}
+.card.pick.picked .mark{color:#8a6b00}
+
+.over{
+  margin-top:10px;padding:12px;border-radius:8px;border:1px solid var(--line);
+  background:#fff;font-size:15px;white-space:pre-wrap;
+}
+.over.win{background:#e9f7ee;border-color:var(--ok)}
+.over.lose{background:#fdecea;border-color:var(--bad)}
+
+/* ------------------------------------------------------------ 拡大パネル
+   実卓でカードを手に取る代わり（UI_DESIGN.md §6）。
+   **左が画像（カードの文面）、右がエンジンの実装。**読み比べるための並びである。
+   マウスが乗っている間だけ出る（D-063 v2）。`pointer-events:none` なので
+   パネル自身がホバーを奪わない＝カードから離れれば必ず消える。 */
+/* **`display:flex` は `hidden` 属性に勝つ。** 明示的に打ち消さないと
+   「隠したつもりで出たまま」になる（D-063 v2 で実際にそうなっていた）。 */
+.zoom[hidden]{display:none}
+.zoom{
+  position:fixed;z-index:60;display:flex;gap:12px;pointer-events:none;
+  background:#fff;border:1px solid var(--line);border-radius:10px;padding:12px;
+  box-shadow:0 10px 30px rgba(0,0,0,.3);
+}
+.zimgbox{flex:none}
+.zimgbox img{width:300px;height:auto;display:block;border-radius:6px;background:#2b3037}
+.ztxt{width:300px;font-size:12px;line-height:1.55}
+.ztitle{font-weight:700;font-size:14px}
+.zmeta{color:var(--muted)}
+.zhead{font-size:10px;color:var(--muted);border-top:1px solid var(--line);
+       padding-top:6px;margin-top:8px}
+.zlines .zl{padding-left:8px;border-left:2px solid #cbd5e0;margin-top:5px}
+.zfoot{margin-top:10px;font-size:10px;color:var(--muted)}
+
+
+/* ------------------------------------------------------------ 行動の選び方
+   1段目で何をするかを選び、2段目で対象をカード画像で選ぶ（D-063 v3）。 */
+.kinds{display:flex;gap:8px;flex-wrap:wrap}
+.kind{
+  display:flex;gap:8px;align-items:center;padding:8px 12px;font-size:14px;
+  border:1px solid var(--line);border-radius:6px;background:#fff;cursor:pointer;
+}
+.kind:hover{background:#eef1f5}
+.kind.sel{background:var(--hi);border-color:var(--hi-line)}
+.kind .k{
+  min-width:22px;height:22px;line-height:20px;text-align:center;border:1px solid var(--line);
+  border-radius:4px;font-size:11px;color:var(--muted);background:#f3f5f8;flex:none;
+}
+.kind .n{color:var(--muted);font-size:11px}
+.kind.plain{background:#fbfcfd}
+
+.pickbar{
+  display:flex;gap:10px;align-items:center;flex-wrap:wrap;
+  background:var(--hi);border:1px solid var(--hi-line);border-radius:6px;padding:8px 12px;
+}
+.pickbar b{font-size:14px}
+
+/* 選べる対象。**押すとその合法手をそのまま送る。** */
+.target{cursor:pointer}
+.target .cardimg, .target .stack .cardimg:last-child{
+  outline:3px solid var(--hi-line);outline-offset:1px;
+}
+.target:hover .cardimg{filter:brightness(1.08)}
+.target.sel .cardimg, .target.sel .stack .cardimg:last-child{
+  outline-color:#1f6feb;outline-width:4px;
+}
+.target .pin{
+  position:absolute;top:-9px;left:-9px;z-index:3;
+  width:22px;height:22px;line-height:20px;text-align:center;border-radius:50%;
+  background:var(--hi-line);color:#3a2c00;font-size:12px;font-weight:700;
+  border:1px solid #8a6b00;
+}
+.chara.target, .cdcard.target{outline:none}
+
+/* ------------------------------------------------------------ モーダル
+   トラッシュの中身（公開情報）。 */
+.modal{
+  position:fixed;inset:0;z-index:55;display:flex;align-items:center;justify-content:center;
+  background:rgba(16,20,24,.55);padding:24px;
+}
+.modalbox{
+  background:var(--panel);border-radius:10px;padding:14px 16px;
+  max-width:min(1100px, 92vw);max-height:86vh;overflow-y:auto;
+  box-shadow:0 12px 40px rgba(0,0,0,.35);
+}
+.modalhead{display:flex;gap:12px;align-items:center;margin-bottom:10px}
+.modalhead b{font-size:15px}
+.modalcards{--cw:calc(var(--cwbase) * 1.1)}

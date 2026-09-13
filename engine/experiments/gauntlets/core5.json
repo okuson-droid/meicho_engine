@@ -1,0 +1,157 @@
+{
+ "name": "core5",
+ "version": 14,
+ "description": "C-4 完了条件用の最小プール。ランダム/H/貪欲/計画探索/IS-MCTS(160)/計画探索+π（D-058）/計画探索+π 反復1（D-059）/計画探索+地平延長+葉=V 反復1・反復3（D-064）/**地平延長のみ（v5 で追加。「地平の効果」と「V の効果」を分離するため）**。v6 で champion を planner_vb3 に交代（D-064・2026-09-02）。 v7 で champion を planner_vb3cp に交代（D-065 便 2・2026-09-04）。planner_vb3 は旧 champion として残す。**planner_vb3cp のラダーは未測定**（D-034 第 4 条件・マスター裁定で省略）。 v8 で champion を planner_vb3cps に交代（D-065 便 4・2026-09-06）——代打ち π を蒸留した小さい版に替えたもので、**強さは互角（0.496 ±0.028）・5.6 倍速い**。planner_vb3cp は旧 champion として残す。**planner_vb3cps のラダーも未測定だが、速くなったので現実的な時間で測れるようになった。** v9 で **`planner_vc4cps`（現 champion の葉だけを V_4'＝`drl_sd001_vc4.json` に差し替えた版）を候補として追加**（便 E-0・2026-09-08）。直接対決は 0.569 ±0.028（下端 0.541・n=1,200・帯 660000）。**`champion` 欄は据え置き**（交代はラダーの結果を見てから）。`agents` の先頭に置いてあるのは、組が名前の並び順で回るため——新しい 12 組が最初に終わり、早い段階で数字が読める。 **v10 は `champion` 欄のみを `planner_vc4cps` に変えたもの**（便 E-0・2026-09-08・D-073）。組は v9 と同一なのでラダーは測り直さない——**ラダーは v9 の記録（`results/ladder.md` / `results/ladder.json`）を参照すること**。v9 の結果: `planner_vc4cps` が Elo 1522 [1500, 1546] の単独 1 位（2 位 1474 [1452, 1499] と区間が重ならない）・非推移性なし。 **v11 で `planner_vc4cps_kheb`（現 champion ＋ `known_hand` ＋ `endgame_enum=64` ＋ `draw_buckets`＝便 C の階段の最終候補）を候補として追加**（便 C 段 C-4・2026-09-10・D-077 追記 4）。`champion` 欄は据え置き（交代はラダーの結果を見てから）。`agents` の先頭に置いてあるのは、組が名前の並び順で回るため。**この回は v9 の組をそのまま使い回す**（`--reuse-from` ＋ `--reuse-verify`・D-077 追記 5）——体の定義が 1 文字も変わっていない 78 組は回し直さず、候補が絡む 13 組と抜き取り検査だけを回す。**呼び名の注意: これまで「ラダー v10」と呼んできた回は、ガントレット定義としては v11 である**（v10 は champion 欄だけ変えた版で、ラダーは回していない）。 **v11 のラダーは 2026-09-11 に回した**（`--reuse-from` で v9 の 78 組のうち 70 組を使い回し、候補が絡む 13 組と抜き取り検査 8 組の計 21 組だけを回した・3 時間 11 分・抜き取りは 8 組とも記録と一致）。結果: `planner_vc4cps_kheb` が **Nash の台に単独で乗り nA = 0.0000**（前 champion `planner_vc4cps` は台から落ちて nA = −0.2141）・Elo 1542 [1521, 1565] の 1 位（2 位 1522 [1500, 1546] と区間は重なる）・非推移性 0 組。記録は `results/ladder.md` / `results/ladder.json`、解析は `results/ladder_analysis_core5_v11.md`。 **v12 で `champion` 欄を `planner_vc4cps_kheb` に変えた**（2026-09-11・D-081 追記 1）。マスターが D-034 改訂 1（門番 GSPRT・p₁=0.55）を撤回し、門番を元の「n≥300・95% 下端 > 0.5」に戻したうえでの交代である（D-081）。**組は v11 と同一なのでラダーは測り直さない**——ラダーの最新の記録は v11 である。 **v13 で `planner_vc4cps_kheb_b75`（現 champion ＋ `bundle_p=0.75`＝便 A 後半 A-2 の束ねた対抗ゲームのソルバ）を候補として追加**（便 A 後半・2026-09-12・D-082）。`champion` 欄は据え置き（交代はラダーの結果を見てから・v9 / v11 と同じ形）。門番は別帯 712000..713199 で 0.530 [0.502, 0.558]（n=1,200）＝**下端が 0.5 を 0.002 だけ上回った**。対照 null は 0.503 [0.475, 0.532] で 0.5 を含む。**この回も v11 の組を使い回す**（`--reuse-from` ＋ `--reuse-verify`）——体の定義が 1 文字も変わっていない組は回し直さない。 **v14 で `champion` 欄を `planner_vc4cps_kheb_b75` に変えた**（2026-09-13・D-082 追記 2・マスター裁定）。**組は v13 と同一なのでラダーは測り直さない**——ラダーの最新の記録は v13 である。門番は別帯 712000..713199 で 0.530 [0.502, 0.558]（n=1,200・**下端が 0.5 を 0.002 上回っただけ**）、対照 null 0.503 [0.475, 0.532]。v13 のラダーで候補は **Nash の台に単独で乗り nA = 0.0000**、前 champion は台から落ちた（nA = −0.0800）。**ラダー内の直接対決 n=300 は 0.520 [0.463, 0.577] で下端が 0.5 を割り、`ladder.py` の「champion 候補」欄は「なし」と出る**——別帯 n=1,200 の門番とは別物である。",
+ "deck": "SD001",
+ "mode": "mirror",
+ "seed_band": 80000,
+ "n_default": 300,
+ "agents": {
+  "planner_vc4cps_kheb_b75": {
+   "factory": "planner_vb",
+   "kwargs": {
+    "extra_turns": 1,
+    "value_net": "drl_sd001_vc4.json",
+    "opp_policy_net": "drl_sd001_s1.json",
+    "opp_policy_root_only": true,
+    "choice_phases": true,
+    "solo_samples": 4,
+    "policy_net": "pi_small64_e10.json",
+    "policy_scope": "proxy",
+    "known_hand": true,
+    "endgame_enum": 64,
+    "draw_buckets": 1,
+    "bundle_p": 0.75
+   }
+  },
+  "planner_vc4cps_kheb": {
+   "factory": "planner_vb",
+   "kwargs": {
+    "extra_turns": 1,
+    "value_net": "drl_sd001_vc4.json",
+    "opp_policy_net": "drl_sd001_s1.json",
+    "opp_policy_root_only": true,
+    "choice_phases": true,
+    "solo_samples": 4,
+    "policy_net": "pi_small64_e10.json",
+    "policy_scope": "proxy",
+    "known_hand": true,
+    "endgame_enum": 64,
+    "draw_buckets": 1
+   }
+  },
+  "planner_vc4cps": {
+   "factory": "planner_vb",
+   "kwargs": {
+    "extra_turns": 1,
+    "value_net": "drl_sd001_vc4.json",
+    "opp_policy_net": "drl_sd001_s1.json",
+    "opp_policy_root_only": true,
+    "choice_phases": true,
+    "solo_samples": 4,
+    "policy_net": "pi_small64_e10.json",
+    "policy_scope": "proxy"
+   },
+   "n_cap": 300
+  },
+  "random": {
+   "factory": "random",
+   "n_cap": 300
+  },
+  "H": {
+   "factory": "heuristic",
+   "n_cap": 300
+  },
+  "greedy": {
+   "factory": "greedy",
+   "n_cap": 300
+  },
+  "planner": {
+   "factory": "planner",
+   "n_cap": 300
+  },
+  "mcts160": {
+   "factory": "mcts",
+   "kwargs": {
+    "iterations": 160
+   },
+   "n_cap": 100
+  },
+  "planner_pi": {
+   "factory": "planner_pi",
+   "kwargs": {
+    "opp_policy_net": "drl_sd001_s1.json",
+    "opp_policy_root_only": true
+   },
+   "n_cap": 300
+  },
+  "planner_pi_r1": {
+   "factory": "planner_pi",
+   "kwargs": {
+    "opp_policy_net": "drl_sd001_s2r1.json",
+    "opp_policy_root_only": true
+   },
+   "n_cap": 300
+  },
+  "planner_vb1": {
+   "factory": "planner_vb",
+   "kwargs": {
+    "extra_turns": 1,
+    "value_net": "drl_sd001_vb1.json",
+    "opp_policy_net": "drl_sd001_s1.json",
+    "opp_policy_root_only": true
+   },
+   "n_cap": 300
+  },
+  "planner_lh": {
+   "factory": "planner",
+   "kwargs": {
+    "extra_turns": 1
+   },
+   "n_cap": 300
+  },
+  "planner_vb3": {
+   "factory": "planner_vb",
+   "kwargs": {
+    "extra_turns": 1,
+    "value_net": "drl_sd001_vb3.json",
+    "opp_policy_net": "drl_sd001_s1.json",
+    "opp_policy_root_only": true
+   },
+   "n_cap": 300
+  },
+  "planner_vb3cp": {
+   "factory": "planner_vb",
+   "kwargs": {
+    "extra_turns": 1,
+    "value_net": "drl_sd001_vb3.json",
+    "opp_policy_net": "drl_sd001_s1.json",
+    "opp_policy_root_only": true,
+    "choice_phases": true,
+    "solo_samples": 4,
+    "policy_net": "drl_sd001_vb3.json",
+    "policy_scope": "proxy"
+   },
+   "n_cap": 300
+  },
+  "planner_vb3cps": {
+   "factory": "planner_vb",
+   "kwargs": {
+    "extra_turns": 1,
+    "value_net": "drl_sd001_vb3.json",
+    "opp_policy_net": "drl_sd001_s1.json",
+    "opp_policy_root_only": true,
+    "choice_phases": true,
+    "solo_samples": 4,
+    "policy_net": "pi_small64_e10.json",
+    "policy_scope": "proxy"
+   },
+   "n_cap": 300
+  }
+ },
+ "anchor": {
+  "agent": "H",
+  "elo": 1000
+ },
+ "champion": "planner_vc4cps_kheb_b75"
+}

@@ -1,0 +1,89 @@
+{
+  "name": "c1_v1",
+  "version": 2,
+  "description": "C-1 学習データ生成の定義（planner 中心。champion が実際に到達する局面に密度を寄せる）。v2 = 本番規模。",
+  "deck": "SD001",
+  "mode": "mirror",
+  "sample": "turn_start",
+  "splits": {
+    "train": {
+      "seed_band": 90000,
+      "scale": 1.0
+    },
+    "valid": {
+      "seed_band": 100000,
+      "scale": 0.25
+    }
+  },
+  "agents": {
+    "planner": {
+      "factory": "planner"
+    },
+    "H": {
+      "factory": "heuristic"
+    },
+    "greedy": {
+      "factory": "greedy"
+    },
+    "X1": {
+      "factory": "heuristic",
+      "kwargs": {
+        "params": {
+          "concerto_target": 3,
+          "levelup_min_hand": 4
+        }
+      }
+    },
+    "X2": {
+      "factory": "heuristic",
+      "kwargs": {
+        "params": {
+          "own_color_weight": 3.0,
+          "scarce_penalty": 0.7,
+          "switch_min_gain": 1
+        }
+      }
+    },
+    "X3": {
+      "factory": "heuristic",
+      "kwargs": {
+        "params": {
+          "counter_weight": 6.0,
+          "own_color_weight": 1.5
+        }
+      }
+    }
+  },
+  "matchups": [
+    {
+      "a": "planner",
+      "b": "planner",
+      "games": 480
+    },
+    {
+      "a": "planner",
+      "b": "H",
+      "games": 240
+    },
+    {
+      "a": "planner",
+      "b": "greedy",
+      "games": 240
+    },
+    {
+      "a": "planner",
+      "b": "X1",
+      "games": 120
+    },
+    {
+      "a": "planner",
+      "b": "X2",
+      "games": 120
+    },
+    {
+      "a": "planner",
+      "b": "X3",
+      "games": 120
+    }
+  ]
+}

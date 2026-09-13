@@ -1,0 +1,234 @@
+{
+ "run_id": "2026-09-12T14:15:54+0900/core5",
+ "gauntlet": "core5",
+ "gauntlet_version": 13,
+ "date": "2026-09-12T14:15:54.302232+09:00",
+ "n_agents": 15,
+ "agents": [
+  "planner_vc4cps_kheb_b75",
+  "planner_vc4cps_kheb",
+  "planner_vc4cps",
+  "random",
+  "H",
+  "greedy",
+  "planner",
+  "mcts160",
+  "planner_pi",
+  "planner_pi_r1",
+  "planner_vb1",
+  "planner_lh",
+  "planner_vb3",
+  "planner_vb3cp",
+  "planner_vb3cps"
+ ],
+ "champion": "planner_vc4cps_kheb",
+ "record_champion": "planner_vc4cps_kheb",
+ "champion_source": "argument",
+ "nash": {
+  "weights": {
+   "planner_vc4cps_kheb_b75": 0.9999975180476591,
+   "planner_vc4cps_kheb": 2.342214302896226e-06,
+   "planner_vc4cps": 9.130807709563799e-08,
+   "random": 2.966609990450083e-10,
+   "H": 3.747899627579676e-10,
+   "greedy": 3.918786114883591e-10,
+   "planner": 6.200914258061971e-10,
+   "mcts160": 6.590742932683963e-10,
+   "planner_pi": 1.1841775309598561e-09,
+   "planner_pi_r1": 8.82989982649655e-10,
+   "planner_vb1": 1.8522589173230894e-09,
+   "planner_lh": 1.2166902722054364e-09,
+   "planner_vb3": 3.968449850384769e-09,
+   "planner_vb3cp": 2.170106833126574e-08,
+   "planner_vb3cps": 1.5281830605171063e-08
+  },
+  "support": [
+   "planner_vc4cps_kheb_b75"
+  ],
+  "support_size": 1,
+  "support_tol": 0.001,
+  "nA": {
+   "planner_vc4cps_kheb_b75": 2.4870997892738205e-07,
+   "planner_vc4cps_kheb": -0.08004246368716426,
+   "planner_vc4cps": -0.3502020306327696,
+   "random": -6.395261590851225,
+   "H": -3.0945336886873713,
+   "greedy": -2.7515348622563387,
+   "planner": -1.2463459250797833,
+   "mcts160": -2.0907396891255976,
+   "planner_pi": -1.4939248305817214,
+   "planner_pi_r1": -1.2851978906122135,
+   "planner_vb1": -0.8632218579031238,
+   "planner_lh": -1.386293466051543,
+   "planner_vb3": -0.8157495925810221,
+   "planner_vb3cp": -0.30910428061675166,
+   "planner_vb3cps": -0.447312045990664
+  },
+  "exploitability": 2.4870997892738205e-07,
+  "spread_across_restarts": 1.3530670524009025e-06,
+  "entropy": 3.521730205760062e-05,
+  "iters": 20000,
+  "restarts": 8,
+  "solver": "rm_plus_multistart",
+  "rm_weights": {
+   "planner_vc4cps_kheb_b75": 0.9999975180476591,
+   "planner_vc4cps_kheb": 2.342214302896226e-06,
+   "planner_vc4cps": 9.130807709563799e-08,
+   "random": 2.966609990450083e-10,
+   "H": 3.747899627579676e-10,
+   "greedy": 3.918786114883591e-10,
+   "planner": 6.200914258061971e-10,
+   "mcts160": 6.590742932683963e-10,
+   "planner_pi": 1.1841775309598561e-09,
+   "planner_pi_r1": 8.82989982649655e-10,
+   "planner_vb1": 1.8522589173230894e-09,
+   "planner_lh": 1.2166902722054364e-09,
+   "planner_vb3": 3.968449850384769e-09,
+   "planner_vb3cp": 2.170106833126574e-08,
+   "planner_vb3cps": 1.5281830605171063e-08
+  },
+  "rm_exploitability": 2.4870997892738205e-07,
+  "rm_entropy": 3.521730205760062e-05
+ },
+ "nash_refined_scipy": {
+  "weights": {
+   "planner_vc4cps_kheb_b75": 0.9999999875069628,
+   "planner_vc4cps_kheb": 1.2493036397420938e-08,
+   "planner_vc4cps": 0.0,
+   "random": 5.430002662416417e-16,
+   "H": 0.0,
+   "greedy": 0.0,
+   "planner": 0.0,
+   "mcts160": 0.0,
+   "planner_pi": 0.0,
+   "planner_pi_r1": 1.244461859654541e-16,
+   "planner_vb1": 6.116347356295362e-17,
+   "planner_lh": 0.0,
+   "planner_vb3": 3.8959013070848373e-17,
+   "planner_vb3cp": 5.405804620547988e-17,
+   "planner_vb3cps": 1.0763475565656752e-16
+  },
+  "entropy": 2.39842526617347e-07,
+  "exploitability": 9.9998024231475e-10,
+  "max_abs_diff_vs_rm": 2.469459303711119e-06,
+  "ok": false,
+  "message": "Positive directional derivative for linesearch"
+ },
+ "champion_in_support": false,
+ "champion_nA": -0.08004246368716426,
+ "champion_in_ladder": true,
+ "record_champion_in_support": false,
+ "record_champion_nA": -0.08004246368716426,
+ "effective_diversity": 2.4870947112168305e-07,
+ "effective_diversity_formula": "Σ_ij p*_i p*_j max(A_ij, 0)  (A_ij = logit p_ij)",
+ "cycles_by_tau": {
+  "0.55": {
+   "count": 0,
+   "cycles": []
+  },
+  "0.60": {
+   "count": 0,
+   "cycles": []
+  },
+  "0.70": {
+   "count": 0,
+   "cycles": []
+  }
+ },
+ "cycles_significant_rating_py": [],
+ "elo_vs_melo2": {
+  "splits": 20,
+  "lr": 0.05,
+  "iters": 4000,
+  "elo_valid_logloss": 0.48183067855696315,
+  "melo2_valid_logloss": 0.4815732584492166,
+  "diff_elo_minus_melo2": 0.00025742010774650325,
+  "diff_se": 4.4696079692038234e-05,
+  "diff_lo": 0.0001698157915501083,
+  "diff_hi": 0.0003450244239428982,
+  "coinflip_logloss": 0.6931471805599453
+ },
+ "elo": {
+  "planner_vc4cps_kheb_b75": {
+   "elo": 1554.8898417222215,
+   "lo": 1531.9995499866952,
+   "hi": 1578.1744980475223
+  },
+  "planner_vc4cps_kheb": {
+   "elo": 1541.5870532944712,
+   "lo": 1519.1892931532482,
+   "hi": 1564.2810869457494
+  },
+  "planner_vc4cps": {
+   "elo": 1518.744471323414,
+   "lo": 1497.2290319731837,
+   "hi": 1542.6484980510213
+  },
+  "random": {
+   "elo": 366.72170947437024,
+   "lo": 295.75826104324534,
+   "hi": 422.28985036450257
+  },
+  "H": {
+   "elo": 1000.0,
+   "lo": 1000.0,
+   "hi": 1000.0
+  },
+  "greedy": {
+   "elo": 1108.6062216991968,
+   "lo": 1085.476513213481,
+   "hi": 1130.7010620930905
+  },
+  "planner": {
+   "elo": 1320.1004200412342,
+   "lo": 1299.5668072199026,
+   "hi": 1340.6090914013503
+  },
+  "mcts160": {
+   "elo": 1214.3268316484198,
+   "lo": 1188.0194976601417,
+   "hi": 1240.6347765280439
+  },
+  "planner_pi": {
+   "elo": 1335.3869600526323,
+   "lo": 1314.4385563707524,
+   "hi": 1357.1946920879182
+  },
+  "planner_pi_r1": {
+   "elo": 1321.3461734916207,
+   "lo": 1299.0002185621393,
+   "hi": 1344.2165665596049
+  },
+  "planner_vb1": {
+   "elo": 1379.5328986514562,
+   "lo": 1357.6753539443193,
+   "hi": 1401.225072741243
+  },
+  "planner_lh": {
+   "elo": 1336.6195901459478,
+   "lo": 1315.5250326439327,
+   "hi": 1357.03625525326
+  },
+  "planner_vb3": {
+   "elo": 1408.8277757237056,
+   "lo": 1386.639957486182,
+   "hi": 1429.7545649003662
+  },
+  "planner_vb3cp": {
+   "elo": 1480.0190230382195,
+   "lo": 1457.4066062089462,
+   "hi": 1501.7728453772822
+  },
+  "planner_vb3cps": {
+   "elo": 1474.95825340346,
+   "lo": 1453.8921137871885,
+   "hi": 1497.859802015514
+  }
+ },
+ "analysed_at": "2026-09-12T14:16:18+09:00",
+ "seat_advantage": {
+  "sources": [],
+  "seat0_wins": 0,
+  "decided": 0
+ }
+}

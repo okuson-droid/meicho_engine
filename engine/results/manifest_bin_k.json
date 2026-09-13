@@ -1,0 +1,281 @@
+{
+ "bin": "K",
+ "note": "便 K（BP01 のカードデータ投入）で新規・変更したファイルの一覧。`Claude outputs/meicho_bin_k6.zip` の中身と同じ。パスは企画の根（`cards/` と `engine/` が並ぶ階層）からの相対。**PC にはまだ書き戻していない**（便 C の交代判定のあと）。`shared` が真のファイルは便 C と共有しているので、展開前に PC の版と突き合わせること。",
+ "as_of": "2026-09-13",
+ "files": [
+  {
+   "path": "cards/cards_structured.json",
+   "bytes": 85637,
+   "sha256": "311b5a498951b9f35208848e1dd4ed9bc44a949cbac0cc673094f799dfc350c4",
+   "mtime": "2026-09-12T14:40:27",
+   "shared": false
+  },
+  {
+   "path": "cards/cards_structured.csv",
+   "bytes": 44708,
+   "sha256": "645e5f64f1e73a0dc22d35f9d7c786015cad483a435d6b1dfc726cfd20608585",
+   "mtime": "2026-09-12T14:40:27",
+   "shared": false
+  },
+  {
+   "path": "cards/BP01_MECHANICS.md",
+   "bytes": 23226,
+   "sha256": "e5749c9a2455b1ef8f23e46aff977d72b5ea75200f484bfcadf84ec9f15ad099",
+   "mtime": "2026-09-10T15:30:00",
+   "shared": false
+  },
+  {
+   "path": "cards/BP01_UNLISTED.json",
+   "bytes": 624,
+   "sha256": "ccddb91036971c58cce6f62cba49caa86bdf2ced8a0be6aba6c2ba075e040dc5",
+   "mtime": "2026-09-12T14:39:53",
+   "shared": false
+  },
+  {
+   "path": "cards/BP01_NO_IMAGE.json",
+   "bytes": 1324,
+   "sha256": "64d988486b2888f487aa73b9c53d20c6c25fb9ca0a9dc65ffcff0ed8a2ed2114",
+   "mtime": "2026-09-10T16:19:50",
+   "shared": false
+  },
+  {
+   "path": "cards/OFFICIAL_FETCH_20260910.md",
+   "bytes": 6397,
+   "sha256": "9bf9a92a82e888f83c0272e9b6e975462aa303fb7a7b43f61fecabc282f4b222",
+   "mtime": "2026-09-12T14:47:36",
+   "shared": false
+  },
+  {
+   "path": "cards/OFFICIAL_FETCH_20260912.md",
+   "bytes": 4747,
+   "sha256": "6cce9e30dcccd7522438057a276813b0e39f1930457b0c2f45ff3a622396c45a",
+   "mtime": "2026-09-12T14:47:36",
+   "shared": false
+  },
+  {
+   "path": "cards/cards_official_20260912_add3.json",
+   "bytes": 2585,
+   "sha256": "20da11c76458dedb69ad52eefbb80a761e7f0e005baf408dd02f3eb3fb6ed83b",
+   "mtime": "2026-09-12T14:39:53",
+   "shared": false
+  },
+  {
+   "path": "engine/rules_draft.md",
+   "bytes": 36492,
+   "sha256": "e06f1d0275d7378bc30eb95b0337e6886c81e3e746fb7cb30d60b1065afdff12",
+   "mtime": "2026-09-13T02:01:14",
+   "shared": false
+  },
+  {
+   "path": "engine/rules_draft_v0.12_proposal.md",
+   "bytes": 12896,
+   "sha256": "2b200781c08a7d1653521cd0b890889d5835c93501a490b9da62b429eb3c431b",
+   "mtime": "2026-09-10T22:22:42",
+   "shared": false
+  },
+  {
+   "path": "engine/BP01_NOTES.md",
+   "bytes": 46760,
+   "sha256": "11b1b5faf0b3ae4bf494cd30ae9ecead1fbf59de90408e4aa7f33b39f226f71f",
+   "mtime": "2026-09-13T02:02:41",
+   "shared": false
+  },
+  {
+   "path": "engine/decisions.md",
+   "bytes": 442814,
+   "sha256": "604cfddb3cc5f28b5cf989de4b7d04740aac6aea4ca77a9972c207683e25cd12",
+   "mtime": "2026-09-13T02:02:12",
+   "shared": true
+  },
+  {
+   "path": "engine/meicho/cards.py",
+   "bytes": 70664,
+   "sha256": "65327799d8af97d13ab6e7f34455dee3d341309cfeb8f5c091fe4d796dd22747",
+   "mtime": "2026-09-13T02:02:13",
+   "shared": false
+  },
+  {
+   "path": "engine/meicho/encode.py",
+   "bytes": 10599,
+   "sha256": "876cefc268a7b4d730b09f94ff81671ad39d6cb6c1bd4a842a2b2b170fc73990",
+   "mtime": "2026-09-10T16:14:04",
+   "shared": false
+  },
+  {
+   "path": "engine/meicho/state.py",
+   "bytes": 17930,
+   "sha256": "d086d198a318d68571529c9ed9d5213b2422732f6771d3fd5be2d7add43f9169",
+   "mtime": "2026-09-10T16:32:44",
+   "shared": false
+  },
+  {
+   "path": "engine/meicho/engine.py",
+   "bytes": 94146,
+   "sha256": "44de11f7f6fbf799f1321e86ed45f0bed974dcfa28bdb48147fc19dbbccd6541",
+   "mtime": "2026-09-11T00:44:19",
+   "shared": false
+  },
+  {
+   "path": "engine/meicho/heuristic.py",
+   "bytes": 17701,
+   "sha256": "cc2852a5c5182e54b23af3a449398c6b2fc6600aab16676fec5e448c2ac05c1e",
+   "mtime": "2026-09-10T16:19:33",
+   "shared": false
+  },
+  {
+   "path": "engine/experiments/analyse_card_space.py",
+   "bytes": 8328,
+   "sha256": "360267a80f88ad01e072d8fd8e2bba6834fdaa530c487ed6757bfce06254904b",
+   "mtime": "2026-09-11T00:53:36",
+   "shared": false
+  },
+  {
+   "path": "engine/experiments/verify_report.py",
+   "bytes": 46490,
+   "sha256": "2128e5107a6a2c9fb5852c808b6864c57cb1d10430b2198b58ff5a1cd7fcb137",
+   "mtime": "2026-09-11T01:09:24",
+   "shared": false
+  },
+  {
+   "path": "engine/experiments/seed_bands.json",
+   "bytes": 29566,
+   "sha256": "9615c6a3f26f7398ab03d6b1afb5dc6d5eb23cd063a3d279761fdf28643a7815",
+   "mtime": "2026-09-11T01:07:28",
+   "shared": true
+  },
+  {
+   "path": "engine/scripts/migrate_nets_k.py",
+   "bytes": 12133,
+   "sha256": "386021087b38f83767b952b4fb8840f992e8a2eee540801b8dad8512218e8562",
+   "mtime": "2026-09-10T16:18:08",
+   "shared": false
+  },
+  {
+   "path": "engine/scripts/reconcile_cards.py",
+   "bytes": 7098,
+   "sha256": "db1ea40f1ed6370e642d00d17d2f0e65792e148b6dd617304c208e5f8decf481",
+   "mtime": "2026-09-10T16:13:49",
+   "shared": false
+  },
+  {
+   "path": "engine/scripts/smoke_bp01.py",
+   "bytes": 5755,
+   "sha256": "45bad12e5b5ad491cf52ccaf93f4a2a84e768e6775684dbabcfbe2d5697407f7",
+   "mtime": "2026-09-11T01:08:52",
+   "shared": false
+  },
+  {
+   "path": "engine/webapp/images.py",
+   "bytes": 7194,
+   "sha256": "529b2745cff8f5b3f0c0209c9275f3473d21d82c878d5f1afbc3e76621291805",
+   "mtime": "2026-09-10T16:21:12",
+   "shared": false
+  },
+  {
+   "path": "engine/webapp/view.py",
+   "bytes": 23773,
+   "sha256": "c240641c7f0312fcf5c29ebd8d43e007a20325d17dfdd34fea1ae92aa13a1cc8",
+   "mtime": "2026-09-11T00:53:36",
+   "shared": false
+  },
+  {
+   "path": "engine/decklists/K_smoke_ANKO.json",
+   "bytes": 995,
+   "sha256": "5eed948d59007666050dc8d72ef199a1e3f052485c73e214a6f949ca9e82c6b8",
+   "mtime": "2026-09-11T00:48:18",
+   "shared": false
+  },
+  {
+   "path": "engine/decklists/K_smoke_SANGE.json",
+   "bytes": 996,
+   "sha256": "6fc0eb453af2b1663502f9e182aec7d6fbcb7afbd5a778f3da47eeb9dd8e8416",
+   "mtime": "2026-09-11T00:48:18",
+   "shared": false
+  },
+  {
+   "path": "engine/decklists/K_smoke_TSUBAKI.json",
+   "bytes": 998,
+   "sha256": "87cce76ad125131b90f2a41844b5ffb3fe0ecb581d393f4f5d1bc7a793cdc718",
+   "mtime": "2026-09-11T00:48:18",
+   "shared": false
+  },
+  {
+   "path": "engine/rust/src/cards.rs",
+   "bytes": 24065,
+   "sha256": "8c9f43aedfe7ab584cc4202a2c8f32a299d601f845fabe7712ee3321c36b60f4",
+   "mtime": "2026-09-11T00:45:08",
+   "shared": false
+  },
+  {
+   "path": "engine/rust/src/state.rs",
+   "bytes": 17858,
+   "sha256": "b03c0db908c134c1f34c350ba5a67c63d022f2b06bae3d5e4185035e0b1d41a2",
+   "mtime": "2026-09-11T00:45:57",
+   "shared": false
+  },
+  {
+   "path": "engine/rust/src/engine.rs",
+   "bytes": 80542,
+   "sha256": "5de8814229d972d4e9e80126d44e69a6474c0589b4ede9e0c4a411f45b420c63",
+   "mtime": "2026-09-11T00:50:55",
+   "shared": false
+  },
+  {
+   "path": "engine/rust/src/encode.rs",
+   "bytes": 10341,
+   "sha256": "db19ae98a83680d9f6b57c6a560ce74eb1c92f3c02a8380dcb08705a1165e179",
+   "mtime": "2026-09-10T16:22:29",
+   "shared": false
+  },
+  {
+   "path": "engine/rust/src/lib.rs",
+   "bytes": 65501,
+   "sha256": "796e7b1c216a8429e188437998811b0194ae99d756a78989c6029c0ed6a407f4",
+   "mtime": "2026-09-10T16:50:15",
+   "shared": false
+  },
+  {
+   "path": "engine/tests/test_bp01.py",
+   "bytes": 24233,
+   "sha256": "bcc831b5efdf139416200cc05e0c716a6c5a285213a39f4cd56ac4d84a3a267f",
+   "mtime": "2026-09-12T14:43:36",
+   "shared": false
+  },
+  {
+   "path": "engine/tests/test_bp01_k2.py",
+   "bytes": 16493,
+   "sha256": "74df4aa61f46e331c3851095114b017f9bee0466c47417892d4f8a324686b4d2",
+   "mtime": "2026-09-10T22:20:45",
+   "shared": false
+  },
+  {
+   "path": "engine/tests/test_bp01_k3.py",
+   "bytes": 17000,
+   "sha256": "31c8b93dd733c31e30bb3873815f6205b78a256ef38f6c42519a8920ca532940",
+   "mtime": "2026-09-11T00:24:36",
+   "shared": false
+  },
+  {
+   "path": "engine/tests/test_bp01_k4.py",
+   "bytes": 18608,
+   "sha256": "3a9a295ba2587668af70f21d268ae5f4ac18ba420a8c6ab67babb4e764ce4544",
+   "mtime": "2026-09-11T01:02:56",
+   "shared": false
+  },
+  {
+   "path": "engine/tests/test_cards_folder.py",
+   "bytes": 5198,
+   "sha256": "4dfc3f227d93cad15b7f406ddb6c22fdafdef48b363535889e3163239b3dea5c",
+   "mtime": "2026-09-12T14:43:36",
+   "shared": false
+  },
+  {
+   "path": "engine/results/k/manifest_K.json",
+   "bytes": 2873,
+   "sha256": "7789f3eea122eaac2de5ae11d6dab317663743ea3593f4f6111b8c9ee021e61e",
+   "mtime": "2026-09-12T14:47:45",
+   "shared": false
+  }
+ ],
+ "count": 39
+}

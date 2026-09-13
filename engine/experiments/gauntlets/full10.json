@@ -1,0 +1,23 @@
+{
+  "name": "full10",
+  "version": 1,
+  "description": "core5 に摂動ヒューリスティック（X1/X2/X3/pi_det/pi_mix）を加えた拡張プール。",
+  "deck": "SD001",
+  "mode": "mirror",
+  "seed_band": 80000,
+  "n_default": 300,
+  "agents": {
+    "random":  {"factory": "random",    "n_cap": 300},
+    "H":       {"factory": "heuristic", "n_cap": 300},
+    "X1":      {"factory": "heuristic", "kwargs": {"params": {"concerto_target": 3, "levelup_min_hand": 4}}, "n_cap": 300},
+    "X2":      {"factory": "heuristic", "kwargs": {"params": {"own_color_weight": 3.0, "scarce_penalty": 0.7, "switch_min_gain": 1}}, "n_cap": 300},
+    "X3":      {"factory": "heuristic", "kwargs": {"params": {"counter_weight": 6.0, "own_color_weight": 1.5}}, "n_cap": 300},
+    "pi_det":  {"factory": "heuristic", "kwargs": {"params": {"own_color_weight": 1000.0}}, "n_cap": 300},
+    "pi_mix":  {"factory": "heuristic", "kwargs": {"params": {"own_color_weight": 1.5}}, "n_cap": 300},
+    "greedy":  {"factory": "greedy",    "n_cap": 300},
+    "planner": {"factory": "planner",   "n_cap": 300},
+    "mcts160": {"factory": "mcts", "kwargs": {"iterations": 160}, "n_cap": 100}
+  },
+  "anchor": {"agent": "H", "elo": 1000},
+  "champion": "planner"
+}
