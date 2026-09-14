@@ -20,10 +20,10 @@ import json
 import os
 from datetime import datetime, timezone, timedelta
 
-from meicho.engine import apply, decision_players, initial_state, outcome
+from meicho.engine import apply, decision_players, initial_state, legal_actions, outcome
 from meicho.state import DRAW
 
-APP_VERSION = "1"
+APP_VERSION = "2"
 RULES_VERSION = "v0.10"
 ENGINE_VERSION = "v0.1"
 JST = timezone(timedelta(hours=9))
@@ -84,13 +84,20 @@ class ReplayAgent:
     席ごとの順序さえ保たれていれば `act` の呼ばれる順に依存しない。
     """
 
-    def __init__(self, actions: list, seat: int):
+    def __init__(self, actions: list, seat: int, *, legacy_stage1a: bool = False):
         self.queue = [r["action"] for r in actions if r["seat"] == seat]
         self.pos = 0
         self.seat = seat
+        self.legacy_stage1a = legacy_stage1a
 
     def act(self, s, pi):
         assert pi == self.seat, f"席違い: {pi} != {self.seat}"
+        # 段階1Aより前の記録には、当時は自動だった選択行動が存在しない。
+        # その3種類だけは旧実装と同じ先頭候補を補い、記録の行動列は消費しない。
+        if (self.legacy_stage1a and s.phase.value == "choice" and s.pending_choices
+                and s.pending_choices[0]["kind"] in {
+                    "pay_cost_card", "zone_card", "levelup_by_effect"}):
+            return next(a for a in legal_actions(s, pi) if a["type"] != "stop")
         if self.pos >= len(self.queue):
             raise RecordMismatch(
                 f"席{self.seat} の記録が足りない（{len(self.queue)} 手で尽きた）")
@@ -110,7 +117,9 @@ def replay(rec: dict, config, keep_states: bool = False) -> dict:
     **返す局面には両者の手札も山札も入っている**ので、
     対局中の画面に渡してはならない（§5.7 の安全装置はサーバ側で行う）。
     """
-    agents = [ReplayAgent(rec["actions"], 0), ReplayAgent(rec["actions"], 1)]
+    legacy_stage1a = int(rec.get("app_version", "1")) < 2
+    agents = [ReplayAgent(rec["actions"], 0, legacy_stage1a=legacy_stage1a),
+              ReplayAgent(rec["actions"], 1, legacy_stage1a=legacy_stage1a)]
     s = initial_state(config, rec["seed"])
     states, steps = ([s] if keep_states else []), 0
     while outcome(s) is None and s.turn_no <= 200:

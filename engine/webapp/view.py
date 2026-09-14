@@ -406,7 +406,9 @@ def action_label(ob: dict, a: dict) -> str:
         return action_card(hand[i])["label"] if 0 <= i < len(hand) else "？"
 
     if t == "setup":
-        return f"リーダーを {a['leader']} にする"
+        backs = a.get("backs")
+        tail = f"、バックを {backs[0]}／{backs[1]} にする" if backs else ""
+        return f"リーダーを {a['leader']} にする{tail}"
     if t == "mulligan":
         idx = a["cards"]
         if not idx:
@@ -452,7 +454,16 @@ def action_label(ob: dict, a: dict) -> str:
     if t == "rush":
         return f"連撃: {card(a['hand'])} を使う"
     if t == "stop":
+        if (ob.get("pending_choice") or {}).get("kind") == "zone_card":
+            return "ここで選択を終える"
         return "連撃をやめる"
+    if t == "choose_card":
+        cid = a["card"]
+        if cid in ACTION_CARDS:
+            return f"選ぶ: {action_card(cid)['label']}"
+        if cid in CHARA_CARDS:
+            return f"選ぶ: {chara_card(cid)['label']}"
+        return f"選ぶ: {cid}"
     return str(a)
 
 
@@ -464,6 +475,9 @@ CHOICE_JA = {
     "discard": "捨てる手札を選ぶ",
     "discard_for_effect": "効果によって捨てる手札を選ぶ",
     "order": "同時に誘発したスキルの解決順を選ぶ",
+    "pay_cost_card": "協奏エリアから支払うカードを選ぶ",
+    "zone_card": "公開領域から移動するカードを選ぶ",
+    "levelup_by_effect": "効果で重ねるキャラカードを選ぶ",
 }
 
 

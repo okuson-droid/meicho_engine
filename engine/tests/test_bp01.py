@@ -50,19 +50,21 @@ from meicho.heuristic import HeuristicAgent                     # noqa: E402
 CARDS_DIR = os.path.normpath(os.path.join(_ROOT, "..", "cards"))
 UNLISTED_PATH = os.path.join(CARDS_DIR, "BP01_UNLISTED.json")
 
-# --- K-0 で凍結した値 -------------------------------------------------------
+# --- K-0 で凍結し、段階1Aで選択行動を明示した後の値 -----------------------
 # 局数は既定 500（1 プール 1 相手あたり約 2 秒）。`MEICHO_BP01_DIGEST_N=2000` を
 # 立てると引継ぎ書 §0.4 の「digest 4,000 局」（2 プール × 2,000 局）になる。
+# D-087 で支払い選択が行動列に現れるようになったため digest は更新した。
+# 既定AIの打ち方が従来どおりであることは fingerprint 3種で別に守る。
 DIGEST_N_DEFAULT = 500
 FROZEN_DIGESTS = {
-    ("heuristic", "SD001", 500): "0f82ad144da17046",
-    ("heuristic", "SD001", 2000): "506e3e64ce1c498a",
-    ("heuristic", "SD02", 500): "6533aa9f94a17d9c",
-    ("heuristic", "SD02", 2000): "f81c86aa847d0dbe",
-    ("random", "SD001", 500): "4e717f406dd5a14f",
-    ("random", "SD001", 2000): "3b581ed9855b98d6",
-    ("random", "SD02", 500): "9aab544e73bfb9d8",
-    ("random", "SD02", 2000): "927c3ee4fca5808e",
+    ("heuristic", "SD001", 500): "4616b6b94466c72f",
+    ("heuristic", "SD001", 2000): "ce2d068ed9fcc971",
+    ("heuristic", "SD02", 500): "e9ccf236005d104d",
+    ("heuristic", "SD02", 2000): "485262a8e44727d8",
+    ("random", "SD001", 500): "66cbdec0d59dcdf8",
+    ("random", "SD001", 2000): "5940939168189f69",
+    ("random", "SD02", 500): "9dada41b872f6efa",
+    ("random", "SD02", 2000): "7259b3dcd44e6f26",
 }
 
 # 登録簿 52 枚の添字（`encode.ACTION_IDS` / `CHARA_IDS` の順＝Rust の `CardDb` の順）。
@@ -131,13 +133,14 @@ def series_digest(deck: str, n: int, make_agent) -> str:
 @pytest.mark.parametrize("who,make", [("heuristic", HeuristicAgent), ("random", RandomAgent)])
 @pytest.mark.parametrize("deck", ["SD001", "SD02"])
 def test_registry_growth_keeps_sd_games_identical(deck, who, make):
-    """登録簿を増やしても SD001/SD02 の対局が 1 手も変わらないこと（T-K-1）。
+    """SD001/SD02 の段階1A後の全決定列を凍結する（T-K-1・D-087）。
 
     落ちたときの読み方:
     - **K-1 で落ちた** → 追記したカードが打ち方に漏れている。よくある原因は
       `legal_actions` が登録簿を全走査していて、デッキに無いカードまで拾っていること。
     - **K-2 以降で落ちた** → 新しい状態欄の既定値が効いてしまっている
       （例: `damage_taken_mod` の既定が 0 になっていない）。
+    - **段階1A以降で落ちた** → 選択の既定回答か、選択を挟む位置が変わった。
     - **凍結値の側を直したくなったら**、直す前に「なぜ手が変わってよいのか」を
       decisions.md に書く。値の書き換えは記録なしにやらない。
     """

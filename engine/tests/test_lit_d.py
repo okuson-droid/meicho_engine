@@ -432,7 +432,9 @@ def test_old_records_without_ai_clash_still_replay():
     old = dict(rec, actions=[{k: v for k, v in r.items() if k != "ai_clash"}
                              for r in rec["actions"]])
     assert wrec.verify(old, sess.config)["winner"] == rec["result"]["winner"]
-    assert wrec.APP_VERSION == "1"        # 欄の追加は後方互換なので版は上げない
+    # 段階1Aで行動列に新しい選択が増えたため、新規記録は v2。
+    # v1 の再生時だけ旧自動選択を補う。
+    assert wrec.APP_VERSION == "2"
 
 
 def test_last_clash_is_recorded_by_the_agent():

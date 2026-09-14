@@ -217,7 +217,14 @@ def legal_actions(s: GameState, pi: int) -> list:
     if s.phase == Phase.SETUP_CHARA and not p.slots[0].stack:
         lv0_names = sorted({CHARA_CARDS[c].name for c in p.chara_deck
                             if CHARA_CARDS[c].level == 0})
-        return [{"type": "setup", "leader": n} for n in lv0_names]
+        # 準備では3枠すべての配置を選ぶ。従来はリーダー以外を名前順で
+        # バック1・2へ自動配置していたが、後の切り替えはバック番号を区別する。
+        acts = []
+        for leader in lv0_names:
+            backs = [n for n in lv0_names if n != leader]
+            for order in (backs, list(reversed(backs))):
+                acts.append({"type": "setup", "leader": leader, "backs": order})
+        return acts
 
     if s.phase == Phase.MULLIGAN and not p.mulligan_done:
         # A-6 (§5-5): 戻す手札は任意の部分集合。初手5枚なら 2^5 = 32通り。
@@ -278,6 +285,8 @@ def legal_actions(s: GameState, pi: int) -> list:
             return [{"type": "discard", "hand": i} for i in range(len(p.hand))]
         if kind == "order":             # A-7: どのスキルから解決するか
             return [{"type": "resolve", "index": o["index"]} for o in ch["options"]]
+        if kind in ("pay_cost_card", "zone_card", "levelup_by_effect"):
+            return [dict(o) for o in ch["options"]]
         raise ValueError(kind)
 
     if s.phase == Phase.RUSH and pi == s.clash_winner:
@@ -512,7 +521,10 @@ def _apply_op(s: GameState, owner: int, op: str, prm: dict, ctx: dict) -> None:
             if cid is None and s.pending_effect is not None:
                 cid = s.pending_effect.get("card")
             if cid is not None and cid in p.action_area and len(p.concerto) >= prm["cost"]:
-                _pay_cost(s, owner, prm["cost"])
+                # 通常入口では `_step_effect` が支払い選択を先に済ませ、paid を立てる。
+                # `_run_effects` などの内部入口では従来どおり左端を既定回答にする。
+                if not prm.get("paid"):
+                    _pay_cost(s, owner, prm["cost"])
                 p.action_area.remove(cid)
                 p.hand.append(cid)
         # --- v0.12 / BP01（D-079 追記 5・便 K 段 K-3）＜音骸＞の【優勢】の妨害 5 種 ---
@@ -1030,6 +1042,65 @@ def _start_skill_effect(s: GameState, pi: int, sk: Skill,
                         "ops": [[op, dict(prm)] for op, prm in sk.effect]}
 
 
+def _distinct_zone_options(cards: list, *, match=None, zone: str,
+                           slot: int | None = None) -> list:
+    """公開領域のカード選択肢。同じIDの複数コピーは同じ結果なので1つに畳む。"""
+    out = []
+    seen = set()
+    for i, cid in enumerate(cards):
+        if cid in seen or (match is not None and not match(cid)):
+            continue
+        seen.add(cid)
+        a = {"type": "choose_card", "zone": zone, "index": i, "card": cid}
+        if slot is not None:
+            a["slot"] = slot
+        out.append(a)
+    return out
+
+
+def _queue_zone_choice(s: GameState, *, player: int, zone_owner: int,
+                       zone: str, destination: str, remaining: int,
+                       optional: bool = False, match_params: dict | None = None) -> None:
+    cards = getattr(s.players[zone_owner], zone)
+    prm = match_params or {}
+    match = ((lambda cid: _trash_matches(ACTION_CARDS[cid], prm))
+             if zone == "trash" and prm else None)
+    options = _distinct_zone_options(cards, match=match, zone=zone)
+    if not options or remaining <= 0:
+        s.pending_effect["ops"].pop(0)
+        return
+    if optional:
+        options.append({"type": "stop"})
+    s.pending_choices.append({
+        "player": player, "kind": "zone_card", "zone_owner": zone_owner,
+        "zone": zone, "destination": destination, "remaining": remaining,
+        "optional": optional, "match_params": prm, "options": options,
+    })
+
+
+def _levelup_effect_options(s: GameState, owner: int, prm: dict) -> list:
+    """効果レベルアップの合法候補。基本ルールどおり同レベルと次レベルを含む。"""
+    p = s.players[owner]
+    out = []
+    seen = set()
+    for si, slot in enumerate(p.slots):
+        if not slot.stack:
+            continue
+        top = CHARA_CARDS[slot.stack[-1]]
+        if top.name != prm["name"]:
+            continue
+        levels = ({prm["level"]} if "level" in prm
+                  else {top.level, top.level + 1})
+        for i, cid in enumerate(p.chara_deck):
+            c = CHARA_CARDS[cid]
+            if cid in seen or c.name != top.name or c.level not in levels:
+                continue
+            seen.add(cid)
+            out.append({"type": "choose_card", "zone": "chara_deck",
+                        "index": i, "card": cid, "slot": si})
+    return out
+
+
 def _step_effect(s: GameState) -> None:
     """解決中のスキルのオペコードを1個進める。選択が必要なら積んで中断する。"""
     pe = s.pending_effect
@@ -1083,6 +1154,63 @@ def _step_effect(s: GameState) -> None:
         # v0.12: 「手札1枚を捨ててもよい。**そうした場合**、〜」の連結に使う
         # （BP01-065 / BP01-067 音の形・重撃）。既存カードは誰も読まない。
         s.pending_ctx["discarded"] = True
+        return
+
+    # 条件付きの包みを通常の選択対応オペコードへ展開する。ここで展開せず
+    # `_apply_op` へ渡すと、内部用の左端フォールバックを通ってしまう。
+    if op == "levelup_by_effect_if_switched":
+        if prm["name"] in s.pending_ctx.get("switched", ()):
+            pe["ops"][0] = ["levelup_by_effect", {"name": prm["name"]}]
+        else:
+            pe["ops"].pop(0)
+        return
+
+    if op == "trash_to_hand_if_switched":
+        if prm["name"] in s.pending_ctx.get("switched", ()):
+            pe["ops"][0] = ["trash_to_hand",
+                             {k: v for k, v in prm.items() if k != "name"}]
+        else:
+            pe["ops"].pop(0)
+        return
+
+    if op == "pay_cost_return_self_to_hand" and not prm.get("paid"):
+        cid = pe.get("card")
+        cost = prm["cost"]
+        if cid is None or cid not in p.action_area or len(p.concerto) < cost:
+            pe["ops"].pop(0)
+            return
+        if _queue_pay_cost(s, owner, cost):
+            prm["paid"] = True
+            return
+        prm["paid"] = True
+
+    if op == "opp_concerto_to_trash":
+        _queue_zone_choice(s, player=owner, zone_owner=1 - owner,
+                           zone="concerto", destination="trash",
+                           remaining=prm["count"])
+        return
+
+    if op == "opp_trash_to_deck_bottom":
+        _queue_zone_choice(s, player=owner, zone_owner=1 - owner,
+                           zone="trash", destination="action_deck",
+                           remaining=prm["count"], optional=True)
+        return
+
+    if op in ("trash_to_hand", "trash_to_concerto"):
+        _queue_zone_choice(s, player=owner, zone_owner=owner, zone="trash",
+                           destination="hand" if op == "trash_to_hand" else "concerto",
+                           remaining=prm.get("count", 1), match_params=prm)
+        return
+
+    if op == "levelup_by_effect":
+        options = _levelup_effect_options(s, owner, prm)
+        if not options:
+            pe["ops"].pop(0)
+        else:
+            s.pending_choices.append({
+                "player": owner, "kind": "levelup_by_effect",
+                "options": options,
+            })
         return
 
     pe["ops"].pop(0)
@@ -1143,6 +1271,10 @@ def _dispatch_resume(s: GameState, r: dict) -> None:
         _after_rush_skills(s, r["pi"], r["cid"])
     elif kind == "action":
         s.phase = Phase.ACTION
+    elif kind == "after_clash_costs":
+        _after_clash_costs(s)
+    elif kind == "start_rush":
+        _start_rush(s, r["pi"], r["cid"])
     else:
         raise ValueError(f"unknown resume point: {kind}")
 
@@ -1268,10 +1400,27 @@ def _note_card_use(s: GameState, pi: int, cid: str) -> None:
 # ---------------------------------------------------------------------------
 
 def _pay_cost(s: GameState, pi: int, cost: int) -> None:
-    """§6.4 使用条件I。協奏エリア左端から自動選択（簡略化）。"""
+    """内部・既定回答用の同期支払い。通常対局は `_queue_pay_cost` を通る。"""
     p = s.players[pi]
     for _ in range(cost):
         p.trash.append(p.concerto.pop(0))
+
+
+def _queue_pay_cost(s: GameState, pi: int, cost: int) -> bool:
+    """協奏の支払い選択を積む。選択を積んだ場合だけ True。"""
+    if cost <= 0:
+        return False
+    p = s.players[pi]
+    assert len(p.concerto) >= cost
+    options = _distinct_zone_options(p.concerto, zone="concerto")
+    if len(options) <= 1:
+        _pay_cost(s, pi, cost)
+        return False
+    s.pending_choices.append({
+        "player": pi, "kind": "pay_cost_card", "remaining": cost,
+        "options": options,
+    })
+    return True
 
 
 def _is_deadlocked(s: GameState) -> bool:
@@ -1349,7 +1498,8 @@ def _after_turn_start(s: GameState) -> None:
 def _resolve_clash(s: GameState) -> None:
     """§6.4(1)-3〜(2): 公開・コスト支払い・対抗誘発・判定・ダメージ・連撃回数。"""
     tp, ntp = s.turn_player, 1 - s.turn_player
-    # 公開とコスト支払い
+    # まず双方を公開する。支払う協奏カードは公開情報を見て本人が選ぶ。
+    costs = []
     for pi in (tp, ntp):
         sub = s.pending_submission[pi]
         if sub == "PASS":
@@ -1359,11 +1509,23 @@ def _resolve_clash(s: GameState) -> None:
             p = s.players[pi]
             cid = p.hand.pop(sub)
             p.action_area.append(cid)  # §4-1 左から順
-            _pay_cost(s, pi, _effective_cost(s, pi, ACTION_CARDS[cid]))
+            costs.append((pi, _effective_cost(s, pi, ACTION_CARDS[cid])))
             s.clash_cards[pi] = cid
             # B-3 (D-031): 公開された提出の色を数える。両者に公開される情報
             # （§6.4(1)-3）なので、これを記録しても隠蔽情報は増えない。
             s.clash_counts[pi][CLASH_COLOR_INDEX[ACTION_CARDS[cid].color]] += 1
+    queued = False
+    for pi, cost in costs:
+        queued = _queue_pay_cost(s, pi, cost) or queued
+    if queued:
+        s.choice_resume = {"kind": "after_clash_costs"}
+        return
+    _after_clash_costs(s)
+
+
+def _after_clash_costs(s: GameState) -> None:
+    """双方のコスト支払い後に【対抗】の解決へ進む。"""
+    tp, ntp = s.turn_player, 1 - s.turn_player
     # 【対抗】誘発 → 解決が終わったら判定ステップへ (D-015 / D-022)
     _queue_fire(s, Timing.CLASH, [tp, ntp], {"kind": "judge"})
 
@@ -1472,8 +1634,16 @@ def _do_rush(s: GameState, pi: int, hand_idx: int) -> None:
     cid = p.hand.pop(hand_idx)
     card = ACTION_CARDS[cid]
     s.rush_allowance -= 1
-    _pay_cost(s, pi, _effective_cost(s, pi, card))
     p.action_area.append(cid)
+    if _queue_pay_cost(s, pi, _effective_cost(s, pi, card)):
+        s.choice_resume = {"kind": "start_rush", "pi": pi, "cid": cid}
+        return
+    _start_rush(s, pi, cid)
+
+
+def _start_rush(s: GameState, pi: int, cid: str) -> None:
+    """連撃の支払い後に、そのカードの【連撃】スキルを開始する。"""
+    card = ACTION_CARDS[cid]
     # 連撃で使用したカード自身の【連撃】スキル群。1枚のカード内で ctx を共有する
     # （switch_leader の結果を後続オペコード・後続スキルが参照するため）。
     s.pending_skills = [[pi, "action", cid, k]
@@ -1607,7 +1777,9 @@ def _apply_inner(s: GameState, actions: dict) -> None:
             lv0 = {CHARA_CARDS[c].name: c for c in p.chara_deck
                    if CHARA_CARDS[c].level == 0}
             leader = act["leader"]
-            backs = sorted(n for n in lv0 if n != leader)
+            # 旧形式は後方互換のため名前順を既定回答として受け付ける。
+            backs = act.get("backs", sorted(n for n in lv0 if n != leader))
+            assert sorted(backs) == sorted(n for n in lv0 if n != leader)
             order = [leader] + backs
             for si, name in enumerate(order):
                 cid = lv0[name]
@@ -1750,11 +1922,12 @@ def _apply_choice(s: GameState, actions: dict) -> None:
     if kind == "pay_or_damage":
         if act["type"] == "pay":
             assert len(s.players[pi].concerto) >= ch["cost"]
-            _pay_cost(s, pi, ch["cost"])
+            s.pending_choices.pop(0)
+            _queue_pay_cost(s, pi, ch["cost"])
         else:
             assert act["type"] == "decline"
             _damage(s, pi, ch["amount"])
-        s.pending_choices.pop(0)
+            s.pending_choices.pop(0)
 
     elif kind == "switch_back":                      # A-5
         assert act["type"] == "choose_back" and act["back"] in ch["options"]
@@ -1789,6 +1962,61 @@ def _apply_choice(s: GameState, actions: dict) -> None:
         assert any(o["index"] == idx for o in ch["options"])
         s.pending_choices.pop(0)
         _begin_skill(s, s.pending_skills.pop(idx))
+
+    elif kind == "pay_cost_card":
+        assert act["type"] == "choose_card" and act["zone"] == "concerto"
+        p = s.players[pi]
+        i = act["index"]
+        assert 0 <= i < len(p.concerto) and p.concerto[i] == act["card"]
+        p.trash.append(p.concerto.pop(i))
+        ch["remaining"] -= 1
+        options = _distinct_zone_options(p.concerto, zone="concerto")
+        if ch["remaining"] <= 0:
+            s.pending_choices.pop(0)
+        elif len(options) <= 1:
+            _pay_cost(s, pi, ch["remaining"])
+            s.pending_choices.pop(0)
+        else:
+            ch["options"] = options
+
+    elif kind == "zone_card":
+        if act["type"] == "stop":
+            assert ch["optional"]
+            s.pending_choices.pop(0)
+            s.pending_effect["ops"].pop(0)
+        else:
+            assert act["type"] == "choose_card" and act["zone"] == ch["zone"]
+            src = getattr(s.players[ch["zone_owner"]], ch["zone"])
+            i = act["index"]
+            assert 0 <= i < len(src) and src[i] == act["card"]
+            cid = src.pop(i)
+            getattr(s.players[ch["zone_owner"]], ch["destination"]).append(cid)
+            ch["remaining"] -= 1
+            prm = ch["match_params"]
+            match = ((lambda x: _trash_matches(ACTION_CARDS[x], prm))
+                     if ch["zone"] == "trash" and prm else None)
+            options = _distinct_zone_options(src, match=match, zone=ch["zone"])
+            if ch["optional"]:
+                options.append({"type": "stop"})
+            if ch["remaining"] <= 0 or not any(a["type"] == "choose_card" for a in options):
+                s.pending_choices.pop(0)
+                s.pending_effect["ops"].pop(0)
+            else:
+                ch["options"] = options
+
+    elif kind == "levelup_by_effect":
+        assert act["type"] == "choose_card" and act["zone"] == "chara_deck"
+        p = s.players[pi]
+        cid, si = act["card"], act["slot"]
+        assert cid in p.chara_deck
+        assert any(a == act for a in ch["options"])
+        p.chara_deck.remove(cid)
+        p.slots[si].stack.append(cid)
+        s.slot_entered_turn[pi][si] = s.turn_no
+        s.pending_choices.pop(0)
+        s.pending_effect["ops"].pop(0)
+        _queue_fire_nested(s, Timing.ENTER, [pi])
+        _queue_fire_nested(s, Timing.LEVELUP, [pi])
 
     else:
         raise ValueError(kind)

@@ -61,6 +61,8 @@ def _default_choice(ch: dict, acts: list) -> dict:
         return {"type": "resolve", "index": 0}
     if kind == "pay_or_damage":
         return {"type": "pay"}
+    if kind in ("pay_cost_card", "zone_card", "levelup_by_effect"):
+        return next(a for a in acts if a["type"] != "stop")
     raise AssertionError(kind)
 
 

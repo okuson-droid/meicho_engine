@@ -372,4 +372,16 @@ class HeuristicAgent:
         if kind == "order":
             return acts[0]
 
+        if kind == "pay_cost_card":
+            # 段階1Aでは旧実装（協奏の左端）を既定回答に保つ。
+            return acts[0]
+
+        if kind == "zone_card":
+            # 段階1Aでは旧実装（公開領域の左端、任意枚数は最大）を既定回答に保つ。
+            return next((a for a in acts if a["type"] == "choose_card"), acts[0])
+
+        if kind == "levelup_by_effect":
+            # u22 の従来方針: 次のレベルを優先し、同レベルは置けない場合の次善。
+            return max(acts, key=lambda a: CHARA_CARDS[a["card"]].level)
+
         return self.rng.choice(acts)
