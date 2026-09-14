@@ -11,7 +11,7 @@
 
 既存の記録入口 `drl_record.py` は `mirror_config` 固定であり、異なるデッキ同士を記録できない。さらにGitHubの対象コミットには `results/drl/`、`results/vb/`、`results/datasets/` の生記録・manifestが無い。そのため、既存記録の**形式上の利用範囲**は判定できるが、PCにある個々のファイルを完全教材として認定することはできない。
 
-この環境では接続済みGitHubの認証をシェルへ渡せず、リポジトリをローカルに展開できなかった。したがって、400局の速度下見、全検査、fingerprintの再実行は**未実施**である。帯も予約していない。実行したかのようには扱わない。
+当初は非公開GitHubの認証をシェルへ渡せずcloneできなかったが、マスターがリポジトリを公開へ変更した後、HEAD `66fe9ddbab6c94476386894300e03d14cdf4c7e1`をローカルに展開できた。Python fingerprint 3種と全検査を実行した。400局の速度下見は、Git管理外のモデルJSONとLinux用`meicho_rs`が無いため**未実施**である。帯も予約していない。
 
 この便ではコード、Rust、符号化、モデル、champion、`TASKS.md`、`seed_bands.json`を変更していない。強さの結論も出していない。
 
@@ -175,7 +175,7 @@
 
 ## 6. 成果物5 — 速度下見
 
-**未実施。** シェルから非公開GitHubをcloneする認証が無く、対象コミットの実行可能な一式をローカルへ展開できなかった。`meicho_rs`、モデルJSON、PC側の記録も無い。未実行なので帯715000..715999は登録せず、`next_free`も715000のままとする。
+**未実施。** 公開化後にソース一式はcloneできたが、`meicho_rs`、championが読むモデルJSON、PC側の記録がリポジトリに無い。現championの記録200局とRust評価200局を正しい構成で回せないため、帯715000..715999は登録せず、`next_free`も715000のままとする。
 
 ### 6.1 PCでの正確な手順
 
@@ -225,10 +225,10 @@ python experiments/drl_record.py --deck SD001 --seed0 715000 --n 200 --out resul
 
 ### 8.1 実施結果
 
-- 全検査: **未実施**。
-- 通過 / 失敗 / skip: **未計測**。0件と主張しない。
-- Python fingerprint 3種: **未実施**。正本の期待値は`773a71c15c5bc16e` / `677f28cc3b6995ee` / `6e39c2aa4b35d876`。
-- champion fingerprint: **未実施**。期待値は`e1662edb32b144a9`。
+- 全検査: `python3 -m pytest -q`を実行。**381通過 / 46失敗 / 114 skip**、実時間5分16秒。
+- 46失敗の主因: Git管理外の`cards/cards_structured.csv`、`BP01_UNLISTED.json`、`BP01_NO_IMAGE.json`、カード画像、`results/models/*.json`、Linux用`meicho_rs`が無いこと。`eval_vb`等がimport時に`meicho_rs`を要求するため、依存不足がskipではなく失敗として波及する検査もある。したがって46件を実装回帰とは判定しない一方、「全件成功」とも数えない。
+- Python fingerprint 3種: **すべて一致**。`773a71c15c5bc16e` / `677f28cc3b6995ee` / `6e39c2aa4b35d876`。この環境での速度は順に228.2 / 27.7 / 1.9局/秒。
+- champion fingerprint: **未実施**。`meicho_rs`とモデルJSONが無い。期待値は`e1662edb32b144a9`。
 - 速度下見digest再現: **未実施**。
 
 ### 8.2 PCでの再実行
