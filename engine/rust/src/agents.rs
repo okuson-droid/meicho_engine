@@ -232,10 +232,12 @@ impl Heuristic {
     fn setup(&mut self, db: &CardDb, s: &GameState, pi: usize, acts: &[Action]) -> Action {
         let p = &s.players[pi];
         let cnt = |a: &Action| -> i64 {
-            let Action::Setup { leader } = a else { unreachable!() };
+            let Action::Setup { leader, .. } = a else { unreachable!() };
             p.action_deck.iter().filter(|&&cid| db.action[cid as usize].dedicated_to.as_deref() == Some(leader.as_str())).count() as i64
         };
-        acts[argmax_by(acts, cnt)].clone()
+        let old: Vec<Action> = acts.iter().filter(|a| matches!(a, Action::Setup { backs, .. } if {
+            let mut b=backs.clone(); b.sort(); *backs==b })).cloned().collect();
+        old[argmax_by(&old, cnt)].clone()
     }
 
     fn mulligan(&mut self, db: &CardDb, s: &GameState, pi: usize, acts: &[Action]) -> Action {
@@ -428,6 +430,12 @@ impl Heuristic {
             }
             Choice::Discard { .. } | Choice::DiscardForEffect { .. } => self.discard(db, s, pi, acts),
             Choice::Order { .. } => acts[0].clone(),
+            Choice::PayCostCard { .. } | Choice::ZoneCard { .. } =>
+                acts.iter().find(|a| matches!(a, Action::ChooseCard { .. })).unwrap_or(&acts[0]).clone(),
+            Choice::LevelupByEffect { .. } => {
+                let i=argmax_by(acts, |a| match a { Action::ChooseCard { card, .. } => db.chara[*card as usize].level, _ => -1 });
+                acts[i].clone()
+            }
         }
     }
 }

@@ -14,10 +14,11 @@ use crate::state::{Choice, GameState, Phase};
 // D-079 追記 2（便 K 段 K-1）: BP01 の 68 番号＋未掲載 3 枠を登録して 3→4。
 // **次元そのものは `CardDb` の大きさから導いている**（`obs_dim` / `act_dim`）ので、
 // カードが増えてもこのファイルの構造は変わらない。上げるのは版の札だけである。
-pub const ENCODING_VERSION: i64 = 4;
-pub const N_SCALAR: usize = 62;
-pub const N_ACTION_TYPES: usize = 19;
-pub const ACT_CODE_LEN: usize = 11;
+pub const ENCODING_VERSION: i64 = 5;
+pub const LEGACY_N_SCALAR: usize = 62;
+pub const N_SCALAR: usize = 100;
+pub const N_ACTION_TYPES: usize = 20;
+pub const ACT_CODE_LEN: usize = 13;
 
 const CLIP: i64 = 127;
 
@@ -26,11 +27,13 @@ fn c(x: i64) -> i8 {
 }
 
 pub fn obs_dim(db: &CardDb) -> usize {
-    N_SCALAR + 12 * db.action.len() + 7 * db.chara.len()
+    let mut tags: Vec<&str> = db.action.iter().flat_map(|c| c.tags.iter().map(String::as_str)).collect();
+    tags.sort(); tags.dedup();
+    N_SCALAR + 14 * db.action.len() + 13 * db.chara.len() + 2 * tags.len()
 }
 
 pub fn act_dim(db: &CardDb) -> usize {
-    N_ACTION_TYPES + db.action.len() + db.chara.len() + 3 + 2 + 1 + db.action.len()
+    N_ACTION_TYPES + db.action.len() + 3 * db.chara.len() + 3 + 2 + 1 + db.action.len()
 }
 
 fn phase_index(p: Phase) -> usize {
@@ -55,6 +58,9 @@ fn choice_index(ch: &Choice) -> usize {
         Choice::Discard { .. } => 4,
         Choice::DiscardForEffect { .. } => 5,
         Choice::Order { .. } => 6,
+        Choice::PayCostCard { .. } => 7,
+        Choice::ZoneCard { .. } => 8,
+        Choice::LevelupByEffect { .. } => 9,
     }
 }
 
@@ -160,9 +166,10 @@ pub fn encode_state(db: &CardDb, s: &GameState, pi: u8) -> Vec<i8> {
         out.push(c(x));
     }
     let mut chk = [0i8; 7];
+    let mut chk5 = [0i8; 3];
     if let Some(ch) = s.pending_choices.first() {
         if ch.player() == pi {
-            chk[choice_index(ch)] = 1;
+            let i=choice_index(ch); if i < 7 { chk[i] = 1; } else { chk5[i-7] = 1; }
         }
     }
     out.extend_from_slice(&chk);
@@ -170,6 +177,29 @@ pub fn encode_state(db: &CardDb, s: &GameState, pi: u8) -> Vec<i8> {
     out.push(c(me.action_area.len() as i64));
     out.push(c(opp.action_area.len() as i64));
     out.push(c(known.len() as i64));
+    debug_assert_eq!(out.len(), LEGACY_N_SCALAR);
+    out.extend_from_slice(&chk5);
+    out.extend_from_slice(&rel(s.last_turn_clash_winner));
+    out.push(s.last_turn_clash_pass[pu] as i8); out.push(s.last_turn_clash_pass[1-pu] as i8);
+    out.push(c(s.damage_taken_mod[pu])); out.push(c(s.damage_taken_mod[1-pu]));
+    out.push(s.first_damage_taken_this_turn[pu] as i8); out.push(s.first_damage_taken_this_turn[1-pu] as i8);
+    out.push(c(s.speed_override[pu].unwrap_or(0))); out.push(c(s.speed_override[1-pu].unwrap_or(0)));
+    out.push(c(s.heals_this_turn[pu])); out.push(c(s.heals_this_turn[1-pu]));
+    out.push(s.damaged_this_turn[pu] as i8); out.push(s.damaged_this_turn[1-pu] as i8);
+    out.push(c(s.variation_rush_draw[pu])); out.push(c(s.variation_rush_draw[1-pu]));
+    for who in [pu,1-pu] { for &t in &s.slot_entered_turn[who] { out.push(c(if t==0 {0} else {s.turn_no-t+1})); } }
+    for who in [pu,1-pu] { out.push(c(s.deferred_clash_damage.iter().filter(|(p,_,_)| *p as usize==who).map(|x|x.1).sum())); }
+    let mut detail=[0i8;10];
+    if let Some(ch)=s.pending_choices.first() { if ch.player()==pi { match ch {
+        Choice::PayOrDamage{cost,amount,..}=>{detail[0]=c(*cost);detail[1]=c(*amount);detail[5]=2},
+        Choice::RevealCount{max,..}=>{detail[2]=c(*max);detail[5]=c(max+1)},
+        Choice::DiscardForEffect{remaining,..}=>detail[3]=c(*remaining),
+        Choice::PayCostCard{remaining,options,..}=>{detail[3]=c(*remaining);detail[5]=c(options.len() as i64)},
+        Choice::ZoneCard{zone_owner,zone,destination,remaining,optional,options,..}=>{detail[3]=c(*remaining);detail[4]=*optional as i8;detail[5]=c((options.len()+usize::from(*optional)) as i64);detail[6]=(*zone_owner!=pi) as i8;detail[7]=*zone as i8+1;detail[8]=*destination as i8+1},
+        Choice::LevelupByEffect{options,..}=>detail[5]=c(options.len() as i64),
+        _=>{}
+    }}}
+    out.extend_from_slice(&detail);
     debug_assert_eq!(out.len(), N_SCALAR);
 
     // --- 枚数ベクトル（8 × NA） ---
@@ -195,6 +225,14 @@ pub fn encode_state(db: &CardDb, s: &GameState, pi: u8) -> Vec<i8> {
     }
     // --- 自分のキャラデッキ（NC） ---
     push_counts(&mut out, &me.chara_deck, nc);
+    for stack in &me.slots { push_counts(&mut out, &stack[..stack.len().saturating_sub(1)], nc); }
+    for stack in &opp.slots {
+        if opp.charas_revealed { push_counts(&mut out, &stack[..stack.len().saturating_sub(1)], nc); }
+        else { push_counts(&mut out, &[], nc); }
+    }
+    let mut tags: Vec<&str> = db.action.iter().flat_map(|x| x.tags.iter().map(String::as_str)).collect(); tags.sort(); tags.dedup();
+    for who in [pu,1-pu] { for tag in &tags { out.push(c(s.tag_uses_this_turn[who].iter().find(|(t,_)|t==tag).map_or(0,|x|x.1))); } }
+    push_onehot(&mut out, s.last_used_card[pu], na); push_onehot(&mut out, s.last_used_card[1-pu], na);
     debug_assert_eq!(out.len(), obs_dim(db));
     out
 }
@@ -213,9 +251,11 @@ pub fn action_code(db: &CardDb, s: &GameState, pi: u8, a: &Action) -> [i64; ACT_
     let hand = &s.players[pi as usize].hand;
     let (mut card, mut chara, mut slot, mut back, mut count) = (-1i64, -1i64, -1i64, -1i64, -1i64);
     let mut mull = [-1i64; 5];
+    let mut setup_backs=[-1i64;2];
     let t: i64 = match a {
-        Action::Setup { leader } => {
+        Action::Setup { leader, backs } => {
             chara = lv0_chara_index(db, leader);
+            for (i,n) in backs.iter().take(2).enumerate(){setup_backs[i]=lv0_chara_index(db,n);}
             0
         }
         Action::Mulligan { cards } => {
@@ -270,8 +310,12 @@ pub fn action_code(db: &CardDb, s: &GameState, pi: u8, a: &Action) -> [i64; ACT_
             card = hand[*h] as i64;
             18
         }
+        Action::ChooseCard { zone, card: cd, slot: sl, .. } => {
+            if *zone==Zone::CharaDeck { chara=*cd as i64; } else { card=*cd as i64; }
+            slot=sl.map(|x|x as i64).unwrap_or(-1); 19
+        }
     };
-    [t, card, chara, slot, back, count, mull[0], mull[1], mull[2], mull[3], mull[4]]
+    [t, card, chara, slot, back, count, mull[0], mull[1], mull[2], mull[3], mull[4], setup_backs[0], setup_backs[1]]
 }
 
 /// `encode.expand_action(code)` と同じ float 列。
@@ -279,7 +323,7 @@ pub fn expand_action(db: &CardDb, code: &[i64; ACT_CODE_LEN]) -> Vec<f32> {
     let na = db.action.len();
     let nc = db.chara.len();
     let mut v = vec![0f32; act_dim(db)];
-    let [t, card, chara, slot, back, count, m0, m1, m2, m3, m4] = *code;
+    let [t, card, chara, slot, back, count, m0, m1, m2, m3, m4, b0, b1] = *code;
     v[t as usize] = 1.0;
     let mut o = N_ACTION_TYPES;
     if card >= 0 {
@@ -290,6 +334,7 @@ pub fn expand_action(db: &CardDb, code: &[i64; ACT_CODE_LEN]) -> Vec<f32> {
         v[o + chara as usize] = 1.0;
     }
     o += nc;
+    for b in [b0,b1] { if b>=0 {v[o+b as usize]=1.0;} o+=nc; }
     if (0..=2).contains(&slot) {
         v[o + slot as usize] = 1.0;
     }

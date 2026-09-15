@@ -14,7 +14,7 @@ use crate::state::*;
 /// 行動。`legal_actions` が返し、`apply` が受け取る。
 #[derive(Clone, Debug, PartialEq)]
 pub enum Action {
-    Setup { leader: String },
+    Setup { leader: String, backs: Vec<String> },
     Mulligan { cards: Vec<usize> },
     Charge { hand: usize },
     Switch { back: usize },
@@ -33,6 +33,7 @@ pub enum Action {
     Resolve { index: i64 },
     Stop,
     Rush { hand: usize },
+    ChooseCard { zone: Zone, index: usize, card: u16, slot: Option<usize> },
 }
 
 /// 手の記録のハッシュ（D-053）。決定者と選ばれた手を FNV-1a で畳み込む。
@@ -73,13 +74,15 @@ pub fn hash_action(h: u64, pi: u8, a: &Action) -> u64 {
         Action::Resolve { .. } => 17,
         Action::Stop => 18,
         Action::Rush { .. } => 19,
+        Action::ChooseCard { .. } => 20,
     };
     byte(&mut x, tag);
     match a {
-        Action::Setup { leader } => {
+        Action::Setup { leader, backs } => {
             for b in leader.as_bytes() {
                 byte(&mut x, *b);
             }
+            for name in backs { for b in name.as_bytes() { byte(&mut x, *b); } }
         }
         Action::Mulligan { cards } => {
             num(&mut x, cards.len() as i64);
@@ -98,6 +101,10 @@ pub fn hash_action(h: u64, pi: u8, a: &Action) -> u64 {
         Action::ChooseBack { back } => num(&mut x, *back),
         Action::ChooseCount { count } => num(&mut x, *count),
         Action::Resolve { index } => num(&mut x, *index),
+        Action::ChooseCard { zone, index, card, slot } => {
+            num(&mut x, *zone as i64); num(&mut x, *index as i64);
+            num(&mut x, *card as i64); num(&mut x, slot.map(|x| x as i64).unwrap_or(-1));
+        }
         _ => {}
     }
     x
@@ -242,6 +249,52 @@ pub fn usable_in_clash(db: &CardDb, s: &GameState, pi: usize, card: &ActionCard)
     true
 }
 
+fn zone_ref(p: &PlayerState, zone: Zone) -> &Vec<u16> {
+    match zone { Zone::Concerto => &p.concerto, Zone::Trash => &p.trash, Zone::CharaDeck => &p.chara_deck }
+}
+
+fn zone_mut(p: &mut PlayerState, zone: Zone) -> &mut Vec<u16> {
+    match zone { Zone::Concerto => &mut p.concerto, Zone::Trash => &mut p.trash, Zone::CharaDeck => &mut p.chara_deck }
+}
+
+fn distinct_zone_options(cards: &[u16], zone: Zone, prm: Option<&Params>, db: &CardDb) -> Vec<Action> {
+    let mut seen = Vec::new();
+    let mut out = Vec::new();
+    for (index, &card) in cards.iter().enumerate() {
+        if seen.contains(&card) { continue; }
+        if zone == Zone::Trash && prm.map_or(false, |p| !trash_matches(&db.action[card as usize], p)) { continue; }
+        seen.push(card);
+        out.push(Action::ChooseCard { zone, index, card, slot: None });
+    }
+    out
+}
+
+fn queue_pay_cost(s: &mut GameState, pi: usize, cost: i64) -> bool {
+    if cost <= 0 { return false; }
+    assert!(s.players[pi].concerto.len() as i64 >= cost);
+    let mut seen = s.players[pi].concerto.clone(); seen.sort_unstable(); seen.dedup();
+    if seen.len() <= 1 { pay_cost(s, pi, cost); return false; }
+    let mut seen=Vec::new(); let options=s.players[pi].concerto.iter().enumerate().filter_map(|(i,&c)|if seen.contains(&c){None}else{seen.push(c);Some((i,c))}).collect();
+    s.pending_choices.push(Choice::PayCostCard { player: pi as u8, remaining: cost, options });
+    true
+}
+
+fn levelup_effect_options(db: &CardDb, s: &GameState, owner: usize, prm: &Params) -> Vec<(usize, usize, u16)> {
+    let name = prm.name.as_deref().unwrap();
+    let mut out = Vec::new(); let mut seen = Vec::new();
+    for (slot, stack) in s.players[owner].slots.iter().enumerate() {
+        let Some(&top_id) = stack.last() else { continue };
+        let top = &db.chara[top_id as usize];
+        if top.name != name { continue; }
+        for (index, &cid) in s.players[owner].chara_deck.iter().enumerate() {
+            let c = &db.chara[cid as usize];
+            let level_ok = prm.level.map_or(c.level == top.level || c.level == top.level + 1, |l| c.level == l);
+            if !seen.contains(&cid) && c.name == top.name && level_ok { seen.push(cid); out.push((slot, index, cid)); }
+        }
+    }
+    out
+}
+
 pub fn legal_actions(db: &CardDb, s: &GameState, pi: u8) -> Vec<Action> {
     let pu = pi as usize;
     let p = &s.players[pu];
@@ -257,7 +310,14 @@ pub fn legal_actions(db: &CardDb, s: &GameState, pi: u8) -> Vec<Action> {
             .collect();
         names.sort();
         names.dedup();
-        return names.into_iter().map(|n| Action::Setup { leader: n.to_string() }).collect();
+        let owned: Vec<String> = names.into_iter().map(str::to_string).collect();
+        let mut out = Vec::new();
+        for leader in &owned {
+            let backs: Vec<String> = owned.iter().filter(|n| *n != leader).cloned().collect();
+            out.push(Action::Setup { leader: leader.clone(), backs: backs.clone() });
+            out.push(Action::Setup { leader: leader.clone(), backs: backs.into_iter().rev().collect() });
+        }
+        return out;
     }
 
     if s.phase == Phase::Mulligan && !p.mulligan_done {
@@ -334,6 +394,14 @@ pub fn legal_actions(db: &CardDb, s: &GameState, pi: u8) -> Vec<Action> {
                     Choice::Order { options, .. } => {
                         options.iter().map(|(i, _)| Action::Resolve { index: *i }).collect()
                     }
+                    Choice::PayCostCard { options, .. } => options.iter().map(|&(index,card)|Action::ChooseCard{zone:Zone::Concerto,index,card,slot:None}).collect(),
+                    Choice::ZoneCard { zone, optional, options, .. } => {
+                        let mut v:Vec<Action> = options.iter().map(|&(index,card)|Action::ChooseCard{zone:*zone,index,card,slot:None}).collect();
+                        if *optional { v.push(Action::Stop); }
+                        v
+                    }
+                    Choice::LevelupByEffect { options, .. } => options.iter().map(|&(slot, index, card)|
+                        Action::ChooseCard { zone: Zone::CharaDeck, index, card, slot: Some(slot) }).collect(),
                 };
             }
         }
@@ -628,7 +696,7 @@ fn apply_op(db: &CardDb, s: &mut GameState, owner: usize, op: Op, prm: &Params, 
             if let Some(cid) = want {
                 let p = &s.players[owner];
                 if p.action_area.contains(&cid) && p.concerto.len() as i64 >= cost {
-                    pay_cost(s, owner, cost);
+                    if prm.chosen != Some(1) { pay_cost(s, owner, cost); }
                     let pos = s.players[owner].action_area.iter().position(|&x| x == cid).unwrap();
                     s.players[owner].action_area.remove(pos);
                     s.players[owner].hand.push(cid);
@@ -1083,6 +1151,49 @@ fn step_effect(db: &CardDb, s: &mut GameState) -> Result<()> {
     let owner = s.pending_effect.as_ref().unwrap().owner as usize;
     let (op, prm0) = s.pending_effect.as_ref().unwrap().ops[0].clone();
 
+    if op == Op::LevelupByEffectIfSwitched {
+        if ctx_switched_contains(&s.pending_ctx, prm0.name.as_deref().unwrap()) {
+            s.pending_effect.as_mut().unwrap().ops[0].0 = Op::LevelupByEffect;
+        } else { s.pending_effect.as_mut().unwrap().ops.remove(0); }
+        return Ok(());
+    }
+    if op == Op::TrashToHandIfSwitched {
+        if ctx_switched_contains(&s.pending_ctx, prm0.name.as_deref().unwrap()) {
+            let pe = s.pending_effect.as_mut().unwrap(); pe.ops[0].0 = Op::TrashToHand; pe.ops[0].1.name = None;
+        } else { s.pending_effect.as_mut().unwrap().ops.remove(0); }
+        return Ok(());
+    }
+    if op == Op::PayCostReturnSelfToHand && prm0.chosen.is_none() {
+        let cost = prm0.cost.unwrap();
+        let valid = s.pending_effect.as_ref().unwrap().card.map_or(false, |(k,c)|
+            k == CardKind::Action && s.players[owner].action_area.contains(&c))
+            && s.players[owner].concerto.len() as i64 >= cost;
+        if !valid { s.pending_effect.as_mut().unwrap().ops.remove(0); return Ok(()); }
+        s.pending_effect.as_mut().unwrap().ops[0].1.chosen = Some(1);
+        if queue_pay_cost(s, owner, cost) { return Ok(()); }
+    }
+    if matches!(op, Op::OppConcertoToTrash | Op::OppTrashToDeckBottom | Op::TrashToHand | Op::TrashToConcerto) {
+        let (zone_owner, zone, destination, optional) = match op {
+            Op::OppConcertoToTrash => (1-owner, Zone::Concerto, Destination::Trash, false),
+            Op::OppTrashToDeckBottom => (1-owner, Zone::Trash, Destination::ActionDeck, true),
+            Op::TrashToHand => (owner, Zone::Trash, Destination::Hand, false),
+            _ => (owner, Zone::Trash, Destination::Concerto, false),
+        };
+        let remaining = prm0.count.unwrap_or(1);
+        let opts = distinct_zone_options(zone_ref(&s.players[zone_owner], zone), zone, Some(&prm0), db);
+        if remaining <= 0 || opts.is_empty() { s.pending_effect.as_mut().unwrap().ops.remove(0); }
+        else { let options=opts.into_iter().filter_map(|a|match a{Action::ChooseCard{index,card,..}=>Some((index,card)),_=>None}).collect();
+            s.pending_choices.push(Choice::ZoneCard { player: owner as u8, zone_owner: zone_owner as u8,
+            zone, destination, remaining, optional, match_params: prm0, options }); }
+        return Ok(());
+    }
+    if op == Op::LevelupByEffect {
+        let options = levelup_effect_options(db, s, owner, &prm0);
+        if options.is_empty() { s.pending_effect.as_mut().unwrap().ops.remove(0); }
+        else { s.pending_choices.push(Choice::LevelupByEffect { player: owner as u8, options }); }
+        return Ok(());
+    }
+
     if op == Op::SwitchLeader && prm0.back.is_none() {
         // A-5: どちらのバックをリーダーにするか
         let backs: Vec<i64> = (1..3usize).filter(|&b| !s.players[owner].slots[b].is_empty()).map(|b| b as i64).collect();
@@ -1200,6 +1311,8 @@ fn dispatch_resume(db: &CardDb, s: &mut GameState, r: Resume) -> Result<()> {
         Resume::TurnEnd => after_turn_end(db, s),
         Resume::RushDamage { pi, cid } => after_rush_skills(db, s, pi as usize, cid),
         Resume::Action => s.phase = Phase::Action,
+        Resume::AfterClashCosts => after_clash_costs(db, s),
+        Resume::StartRush { pi, cid } => start_rush(db, s, pi as usize, cid),
     }
     Ok(())
 }
@@ -1520,6 +1633,7 @@ fn after_turn_start(s: &mut GameState) {
 fn resolve_clash(db: &CardDb, s: &mut GameState) {
     let tp = s.turn_player as usize;
     let ntp = 1 - tp;
+    let mut costs = Vec::new();
     for pi in [tp, ntp] {
         match s.pending_submission[pi] {
             Submission::Pass => {
@@ -1530,13 +1644,22 @@ fn resolve_clash(db: &CardDb, s: &mut GameState) {
                 let cid = s.players[pi].hand.remove(idx);
                 s.players[pi].action_area.push(cid);
                 let cost = effective_cost(s, pi, &db.action[cid as usize]);
-                pay_cost(s, pi, cost);
+                costs.push((pi, cost));
                 s.clash_cards[pi] = Some(cid);
                 s.clash_counts[pi][db.action[cid as usize].color.clash_index()] += 1;
             }
             Submission::None => unreachable!("resolve_clash with missing submission"),
         }
     }
+    let mut queued = false;
+    for (pi, cost) in costs { queued = queue_pay_cost(s, pi, cost) || queued; }
+    if queued { s.choice_resume = Some(Resume::AfterClashCosts); return; }
+    after_clash_costs(db, s);
+}
+
+fn after_clash_costs(db: &CardDb, s: &mut GameState) {
+    let tp = s.turn_player as usize;
+    let ntp = 1 - tp;
     queue_fire(db, s, Timing::Clash, [tp, ntp], Resume::Judge);
 }
 
@@ -1606,8 +1729,16 @@ fn do_rush(db: &CardDb, s: &mut GameState, pi: usize, hand_idx: usize) {
     let card = &db.action[cid as usize];
     s.rush_allowance -= 1;
     let cost = effective_cost(s, pi, card);
-    pay_cost(s, pi, cost);
     s.players[pi].action_area.push(cid);
+    if queue_pay_cost(s, pi, cost) {
+        s.choice_resume = Some(Resume::StartRush { pi: pi as u8, cid });
+        return;
+    }
+    start_rush(db, s, pi, cid);
+}
+
+fn start_rush(db: &CardDb, s: &mut GameState, pi: usize, cid: u16) {
+    let card = &db.action[cid as usize];
     s.pending_skills = card
         .skills
         .iter()
@@ -1703,7 +1834,7 @@ fn apply_inner(db: &CardDb, s: &mut GameState, actions: &[&(u8, Action)]) -> Res
         Phase::SetupChara => {
             for (pi, act) in actions {
                 let pu = *pi as usize;
-                let Action::Setup { leader } = act else { return err("setup expected") };
+                let Action::Setup { leader, backs: chosen_backs } = act else { return err("setup expected") };
                 // lv0: name → cid（同名の Lv0 が複数あれば後勝ち。Python の dict 内包と同じ）
                 let mut lv0: Vec<(String, u16)> = Vec::new();
                 for &c in &s.players[pu].chara_deck {
@@ -1716,8 +1847,10 @@ fn apply_inner(db: &CardDb, s: &mut GameState, actions: &[&(u8, Action)]) -> Res
                         }
                     }
                 }
-                let mut backs: Vec<String> = lv0.iter().map(|(n, _)| n.clone()).filter(|n| n != leader).collect();
-                backs.sort();
+                let mut backs: Vec<String> = if chosen_backs.is_empty() {
+                    let mut b: Vec<String> = lv0.iter().map(|(n, _)| n.clone()).filter(|n| n != leader).collect();
+                    b.sort(); b
+                } else { chosen_backs.clone() };
                 let mut order = vec![leader.clone()];
                 order.extend(backs);
                 for (si, name) in order.iter().enumerate() {
@@ -1891,12 +2024,12 @@ fn apply_choice(db: &CardDb, s: &mut GameState, actions: &[&(u8, Action)]) -> Re
                     if (s.players[pu].concerto.len() as i64) < cost {
                         return err("cannot pay");
                     }
-                    pay_cost(s, pu, cost);
+                    s.pending_choices.remove(0);
+                    queue_pay_cost(s, pu, cost);
                 }
-                Action::Decline => damage_by(db, s, pu, amount, None, None),
+                Action::Decline => { damage_by(db, s, pu, amount, None, None); s.pending_choices.remove(0); },
                 other => return err(format!("unexpected: {other:?}")),
             }
-            s.pending_choices.remove(0);
         }
         Choice::SwitchBack { options, .. } => {
             let Action::ChooseBack { back } = act else { return err("choose_back expected") };
@@ -1952,6 +2085,51 @@ fn apply_choice(db: &CardDb, s: &mut GameState, actions: &[&(u8, Action)]) -> Re
             s.pending_choices.remove(0);
             let r = s.pending_skills.remove(*index as usize);
             begin_skill(db, s, r)?;
+        }
+        Choice::PayCostCard { remaining, .. } => {
+            let Action::ChooseCard { zone: Zone::Concerto, index, card, .. } = act else { return err("choose_card concerto expected") };
+            if s.players[pu].concerto.get(*index) != Some(card) { return err("card/index mismatch"); }
+            s.pending_choices.remove(0);
+            let cid = s.players[pu].concerto.remove(*index); s.players[pu].trash.push(cid);
+            let left = remaining - 1;
+            if left > 0 {
+                let mut seen=s.players[pu].concerto.clone(); seen.sort_unstable(); seen.dedup();
+                if seen.len() <= 1 { pay_cost(s, pu, left); }
+                else { let mut used=Vec::new(); let options=s.players[pu].concerto.iter().enumerate().filter_map(|(i,&c)|if used.contains(&c){None}else{used.push(c);Some((i,c))}).collect();
+                    s.pending_choices.insert(0, Choice::PayCostCard { player: pi, remaining: left, options }); }
+            }
+        }
+        Choice::ZoneCard { zone_owner, zone, destination, remaining, optional, match_params, .. } => {
+            if matches!(act, Action::Stop) {
+                if !optional { return err("stop not allowed"); }
+                s.pending_choices.remove(0); s.pending_effect.as_mut().unwrap().ops.remove(0);
+            } else {
+                let Action::ChooseCard { zone: az, index, card, .. } = act else { return err("choose_card expected") };
+                if *az != zone || zone_ref(&s.players[zone_owner as usize], zone).get(*index) != Some(card) { return err("card/index mismatch"); }
+                s.pending_choices.remove(0);
+                let cid = zone_mut(&mut s.players[zone_owner as usize], zone).remove(*index);
+                match destination { Destination::Trash => s.players[zone_owner as usize].trash.push(cid),
+                    Destination::ActionDeck => s.players[zone_owner as usize].action_deck.push(cid),
+                    Destination::Hand => s.players[zone_owner as usize].hand.push(cid),
+                    Destination::Concerto => s.players[zone_owner as usize].concerto.push(cid) }
+                let left = remaining - 1;
+                let opts = distinct_zone_options(zone_ref(&s.players[zone_owner as usize], zone), zone, Some(&match_params), db);
+                if left <= 0 || opts.is_empty() { s.pending_effect.as_mut().unwrap().ops.remove(0); }
+                else { let options=opts.into_iter().filter_map(|a|match a{Action::ChooseCard{index,card,..}=>Some((index,card)),_=>None}).collect();
+                    s.pending_choices.insert(0, Choice::ZoneCard { player: pi, zone_owner, zone, destination,
+                    remaining: left, optional, match_params, options }); }
+            }
+        }
+        Choice::LevelupByEffect { options, .. } => {
+            let Action::ChooseCard { zone: Zone::CharaDeck, index, card, slot: Some(slot) } = act else { return err("choose_card chara_deck expected") };
+            if !options.contains(&(*slot, *index, *card)) { return err("levelup option mismatch"); }
+            s.pending_choices.remove(0);
+            if s.players[pu].chara_deck.get(*index) != Some(card) { return err("chara index mismatch"); }
+            let cid=s.players[pu].chara_deck.remove(*index); s.players[pu].slots[*slot].push(cid);
+            s.slot_entered_turn[pu][*slot]=s.turn_no;
+            s.pending_effect.as_mut().unwrap().ops.remove(0);
+            queue_fire_nested(db, s, Timing::Enter, &[pu]);
+            queue_fire_nested(db, s, Timing::Levelup, &[pu]);
         }
     }
     Ok(())
@@ -2022,6 +2200,11 @@ pub fn observe(db: &CardDb, s: &GameState, pi: u8) -> serde_json::Value {
         None => Value::Null,
         Some(w) => json!(if w != pi { 1 } else { 0 }),
     };
+    let tag_map = |who: usize| Value::Object(
+        s.tag_uses_this_turn[who].iter()
+            .map(|(tag, count)| (tag.clone(), json!(count)))
+            .collect()
+    );
     let pending_choice = match s.pending_choices.first() {
         Some(c) if c.player() == pi => GameState::choice_json(db, c),
         _ => Value::Null,
@@ -2064,6 +2247,21 @@ pub fn observe(db: &CardDb, s: &GameState, pi: u8) -> serde_json::Value {
         "clash_winner": rel(s.clash_winner),
         "last_clash_winner": rel(s.last_clash_winner),
         "last_clash_cards": [aid_opt(s.last_clash_cards[pu]), aid_opt(s.last_clash_cards[1 - pu])],
+        "last_turn_clash_winner": rel(s.last_turn_clash_winner),
+        "last_turn_clash_pass": [s.last_turn_clash_pass[pu], s.last_turn_clash_pass[1 - pu]],
+        "damage_taken_mod": [s.damage_taken_mod[pu], s.damage_taken_mod[1 - pu]],
+        "first_damage_taken_this_turn": [s.first_damage_taken_this_turn[pu], s.first_damage_taken_this_turn[1 - pu]],
+        "speed_override": [s.speed_override[pu], s.speed_override[1 - pu]],
+        "heals_this_turn": [s.heals_this_turn[pu], s.heals_this_turn[1 - pu]],
+        "tag_uses_this_turn": [tag_map(pu), tag_map(1 - pu)],
+        "last_used_card": [aid_opt(s.last_used_card[pu]), aid_opt(s.last_used_card[1 - pu])],
+        "damaged_this_turn": [s.damaged_this_turn[pu], s.damaged_this_turn[1 - pu]],
+        "slot_entered_turn": [s.slot_entered_turn[pu], s.slot_entered_turn[1 - pu]],
+        "variation_rush_draw": [s.variation_rush_draw[pu], s.variation_rush_draw[1 - pu]],
+        "deferred_clash_damage": [
+            s.deferred_clash_damage.iter().filter(|(p, _, _)| *p as usize == pu).map(|x| x.1).sum::<i64>(),
+            s.deferred_clash_damage.iter().filter(|(p, _, _)| *p as usize == 1 - pu).map(|x| x.1).sum::<i64>(),
+        ],
         "clash_counts": {"me": s.clash_counts[pu], "opp": s.clash_counts[1 - pu]},
         "pending_choice": pending_choice,
     })

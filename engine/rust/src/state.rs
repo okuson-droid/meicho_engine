@@ -56,6 +56,12 @@ pub enum CardKind {
     Action,
 }
 
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
+pub enum Zone { Concerto, Trash, CharaDeck }
+
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
+pub enum Destination { Trash, ActionDeck, Hand, Concerto }
+
 /// `[player, "chara"|"action", card_id, skill_index]`
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
 pub struct SkillRef {
@@ -75,6 +81,10 @@ pub enum Choice {
     /// レベルアップの手札コスト（reason = "levelup"）
     Discard { player: u8 },
     Order { player: u8, options: Vec<(i64, SkillRef)> },
+    PayCostCard { player: u8, remaining: i64, options: Vec<(usize,u16)> },
+    ZoneCard { player: u8, zone_owner: u8, zone: Zone, destination: Destination,
+               remaining: i64, optional: bool, match_params: Params, options: Vec<(usize,u16)> },
+    LevelupByEffect { player: u8, options: Vec<(usize, usize, u16)> },
 }
 
 impl Choice {
@@ -87,6 +97,9 @@ impl Choice {
             | Choice::DiscardForEffect { player, .. }
             | Choice::Discard { player }
             | Choice::Order { player, .. } => *player,
+            Choice::PayCostCard { player, .. }
+            | Choice::ZoneCard { player, .. }
+            | Choice::LevelupByEffect { player, .. } => *player,
         }
     }
 }
@@ -122,6 +135,8 @@ pub enum Resume {
     TurnEnd,
     RushDamage { pi: u8, cid: u16 },
     Action,
+    AfterClashCosts,
+    StartRush { pi: u8, cid: u16 },
 }
 
 #[derive(Clone, Debug)]
@@ -306,6 +321,18 @@ impl GameState {
                     "index": i, "card": db.chara_or_action_id(r.kind, r.card), "skill_index": r.idx
                 })).collect::<Vec<_>>()
             }),
+            Choice::PayCostCard { player, remaining, options } =>
+                json!({"player":player,"kind":"pay_cost_card","remaining":remaining,"options":options.iter().map(|(index,card)|json!({"type":"choose_card","zone":"concerto","index":index,"card":db.action[*card as usize].card_id})).collect::<Vec<_>>() }),
+            Choice::ZoneCard { player, zone_owner, zone, destination, remaining, optional, match_params, options } => json!({
+                "player":player,"kind":"zone_card","zone_owner":zone_owner,
+                "zone":match zone { Zone::Concerto=>"concerto",Zone::Trash=>"trash",Zone::CharaDeck=>"chara_deck" },
+                "destination":match destination { Destination::Trash=>"trash",Destination::ActionDeck=>"action_deck",Destination::Hand=>"hand",Destination::Concerto=>"concerto" },
+                "remaining":remaining,"optional":optional,"match_params":match_params.to_json(),
+                "options":options.iter().map(|(index,card)|json!({"type":"choose_card","zone":match zone { Zone::Concerto=>"concerto",Zone::Trash=>"trash",Zone::CharaDeck=>"chara_deck" },"index":index,"card":db.action[*card as usize].card_id})).chain(optional.then_some(json!({"type":"stop"}))).collect::<Vec<_>>() }),
+            Choice::LevelupByEffect { player, options } => json!({
+                "player":player,"kind":"levelup_by_effect","options":options.iter().map(|(slot,index,card)|
+                    json!({"type":"choose_card","zone":"chara_deck","index":index,
+                           "card":db.chara[*card as usize].card_id,"slot":slot})).collect::<Vec<_>>() }),
         }
     }
 

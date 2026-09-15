@@ -145,9 +145,10 @@ fn to_py(py: Python<'_>, v: &serde_json::Value) -> PyObject {
 fn action_to_py(py: Python<'_>, d: &CardDb, a: &Action) -> PyResult<PyObject> {
     let out = PyDict::new_bound(py);
     match a {
-        Action::Setup { leader } => {
+        Action::Setup { leader, backs } => {
             out.set_item("type", "setup")?;
             out.set_item("leader", leader)?;
+            out.set_item("backs", backs)?;
         }
         Action::Mulligan { cards } => {
             out.set_item("type", "mulligan")?;
@@ -198,6 +199,14 @@ fn action_to_py(py: Python<'_>, d: &CardDb, a: &Action) -> PyResult<PyObject> {
             out.set_item("type", "rush")?;
             out.set_item("hand", *hand)?;
         }
+        Action::ChooseCard { zone, index, card, slot } => {
+            out.set_item("type", "choose_card")?;
+            out.set_item("zone", match zone { Zone::Concerto => "concerto", Zone::Trash => "trash", Zone::CharaDeck => "chara_deck" })?;
+            out.set_item("index", *index)?;
+            let cid = match zone { Zone::CharaDeck => &d.chara[*card as usize].card_id, _ => &d.action[*card as usize].card_id };
+            out.set_item("card", cid)?;
+            if let Some(sl) = slot { out.set_item("slot", *sl)?; }
+        }
     }
     Ok(out.into_py(py))
 }
@@ -218,7 +227,10 @@ fn action_from_py(d: &CardDb, a: &Bound<'_, PyDict>) -> PyResult<Action> {
             .extract()
     };
     Ok(match t.as_str() {
-        "setup" => Action::Setup { leader: a.get_item("leader")?.unwrap().extract()? },
+        "setup" => Action::Setup {
+            leader: a.get_item("leader")?.unwrap().extract()?,
+            backs: a.get_item("backs")?.map(|x| x.extract()).transpose()?.unwrap_or_default(),
+        },
         "mulligan" => {
             let cards: Vec<usize> = match a.get_item("cards")? {
                 Some(c) if !c.is_none() => c.extract()?,
@@ -243,6 +255,15 @@ fn action_from_py(d: &CardDb, a: &Bound<'_, PyDict>) -> PyResult<Action> {
         "skip" => Action::Skip,
         "choose_count" => Action::ChooseCount { count: get_i64("count")? },
         "discard" => Action::Discard { hand: get_usize("hand")? },
+        "choose_card" => {
+            let zone_s: String = a.get_item("zone")?.unwrap().extract()?;
+            let zone = match zone_s.as_str() { "concerto" => Zone::Concerto, "trash" => Zone::Trash,
+                "chara_deck" => Zone::CharaDeck, _ => return Err(PyValueError::new_err("unknown zone")) };
+            let cid: String = a.get_item("card")?.unwrap().extract()?;
+            let card = if zone == Zone::CharaDeck { d.chara_id(&cid) } else { d.action_id(&cid) }.map_err(PyValueError::new_err)?;
+            Action::ChooseCard { zone, index: get_usize("index").unwrap_or(0), card,
+                slot: a.get_item("slot")?.map(|x| x.extract()).transpose()? }
+        }
         "resolve" => Action::Resolve { index: get_i64("index")? },
         "stop" => Action::Stop,
         "rush" => Action::Rush { hand: get_usize("hand")? },
