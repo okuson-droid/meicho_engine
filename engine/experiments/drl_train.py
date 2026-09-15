@@ -388,7 +388,8 @@ def expand_codes(codes: torch.Tensor) -> torch.Tensor:
     t, card, chara, slot, back, count = [codes[..., i] for i in range(6)]
     oh = lambda x, n: F.one_hot((x + 1).clamp(0, n), n + 1)[..., 1:].float()   # -1 → 全ゼロ
     mull = sum(oh(codes[..., 6 + k], NA) for k in range(5))                    # 捨て札の枚数ベクトル
-    parts = [oh(t, len(ACTION_TYPES)), oh(card, NA), oh(chara, NC), oh(slot, 3),
+    parts = [oh(t, len(ACTION_TYPES)), oh(card, NA), oh(chara, NC),
+             oh(codes[..., 11], NC), oh(codes[..., 12], NC), oh(slot, 3),
              oh(back - 1, 2), (count.float() / 8.0).clamp(min=0.0).unsqueeze(-1), mull]
     v = torch.cat(parts, dim=-1)
     assert v.shape[-1] == ACT_DIM, (v.shape, ACT_DIM)

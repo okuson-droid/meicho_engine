@@ -49,7 +49,7 @@ from .features import _levels, _live_reds_from_obs
 # したがって版3のネットは「新カードの列を 0 として末尾に挿す」だけで版4になり、
 # 出力は数学的に不変である（`scripts/migrate_nets_k.py`。原本は `*.enc3.bak.json` に残す）。
 # 版3で保存したネット・データセットを版4と混ぜてはいけない。
-ENCODING_VERSION = 4
+ENCODING_VERSION = 5
 
 ACTION_IDS = list(ACTION_CARDS)
 CHARA_IDS = list(CHARA_CARDS)
@@ -61,23 +61,29 @@ NC = len(CHARA_IDS)
 PHASES = ("setup_chara", "mulligan", "action", "clash_submit", "choice", "rush",
           "turn_end_discard", "game_over")
 CHOICE_KINDS = ("pay_or_damage", "switch_back", "use_optional", "reveal_count",
-                "discard", "discard_for_effect", "order")
+                "discard", "discard_for_effect", "order", "pay_cost_card",
+                "zone_card", "levelup_by_effect")
 # rust/src/engine.rs::Action の並び
 ACTION_TYPES = ("setup", "mulligan", "charge", "switch", "levelup", "to_clash", "end_turn",
                 "submit", "pass", "pay", "decline", "choose_back", "use", "skip",
-                "choose_count", "discard", "resolve", "stop", "rush")
+                "choose_count", "discard", "resolve", "stop", "rush", "choose_card")
 T_INDEX = {t: i for i, t in enumerate(ACTION_TYPES)}
 
-N_SCALAR = 62
-OBS_DIM = N_SCALAR + 12 * NA + 7 * NC
+LEGACY_N_SCALAR = 62
+# v5 はv4の62スカラーを先頭に保ち、その直後へ公開状態の固定長要約を足す。
+# タグとカード・キャラのベクトルはさらに後ろへ置く。
+ACTION_TAGS = tuple(sorted({tag for c in ACTION_CARDS.values() for tag in c.tags}))
+N_PUBLIC_SCALAR = 35
+N_SCALAR = LEGACY_N_SCALAR + 3 + N_PUBLIC_SCALAR
+OBS_DIM = N_SCALAR + (12 + 2) * NA + (7 + 6) * NC + 2 * len(ACTION_TAGS)
 # 行動の符号（11 個の小さな整数）:
 #   [種類, アクションカード, キャラカード, 枠, バック, 数, マリガンで捨てる札 ×5（カード添字・無ければ -1）]
 # マリガンは手札の任意部分集合なので、捨てる札の**カードの多重集合**を持たないと区別できない
 # （枚数だけでは 32 通りの部分集合のうち同じ枚数のものが同じ入力になる）。
-ACT_CODE_LEN = 11
+ACT_CODE_LEN = 13
 # 展開後の行動特徴の次元:
 #   種類 one-hot + カード one-hot + キャラ one-hot + 枠(3) + バック(2) + 数(1) + 捨てる札の枚数ベクトル(NA)
-ACT_DIM = len(ACTION_TYPES) + NA + NC + 3 + 2 + 1 + NA
+ACT_DIM = len(ACTION_TYPES) + NA + 3 * NC + 3 + 2 + 1 + NA
 
 _CLIP = 127
 
@@ -121,10 +127,13 @@ def encode_obs(ob: dict) -> list:
     ck[0 if ob["clash_winner"] is None else 1 + ob["clash_winner"]] = 1
     lk = [0, 0, 0]
     lk[0 if ob["last_clash_winner"] is None else 1 + ob["last_clash_winner"]] = 1
-    choice = [0] * len(CHOICE_KINDS)
+    # v4の7種は元の位置に置き、新設3種は公開状態ブロックの先頭へ追記する。
+    choice = [0] * 7
+    choice_v5 = [0] * 3
     pc = ob.get("pending_choice")
     if pc is not None:
-        choice[CHOICE_KINDS.index(pc["kind"])] = 1
+        ci = CHOICE_KINDS.index(pc["kind"])
+        (choice if ci < 7 else choice_v5)[ci if ci < 7 else ci - 7] = 1
     cc_me, cc_op = ob["clash_counts"]["me"], ob["clash_counts"]["opp"]
     scal = [
         _c(me["life"]), _c(opp["life"]),
@@ -150,6 +159,38 @@ def encode_obs(ob: dict) -> list:
     scal += choice
     scal += [len(me["chara_deck"]), _c(len(me["action_area"])), _c(len(opp["action_area"])),
              len(opp["hand_known"])]
+    assert len(scal) == LEGACY_N_SCALAR, len(scal)
+
+    def rel_turn(x):
+        return 0 if x in (None, 0) else _c(ob["turn_no"] - x + 1)
+
+    lw = ob["last_turn_clash_winner"]
+    public = choice_v5 + [
+        1 if lw is None else 0, 1 if lw == 0 else 0, 1 if lw == 1 else 0,
+        *map(int, ob["last_turn_clash_pass"]),
+        *map(_c, ob["damage_taken_mod"]),
+        *map(int, ob["first_damage_taken_this_turn"]),
+        *[_c(x or 0) for x in ob["speed_override"]],
+        *map(_c, ob["heals_this_turn"]),
+        *map(int, ob["damaged_this_turn"]),
+        *map(_c, ob["variation_rush_draw"]),
+        *[rel_turn(x) for row in ob["slot_entered_turn"] for x in row],
+        *map(_c, ob["deferred_clash_damage"]),
+    ]
+    # 現在の選択に必要な公開条件だけを固定長で要約する。
+    zones = ("concerto", "trash", "chara_deck")
+    dests = ("trash", "action_deck", "hand", "concerto")
+    public += [
+        _c((pc or {}).get("cost", 0)), _c((pc or {}).get("amount", 0)),
+        _c((pc or {}).get("max", 0)), _c((pc or {}).get("remaining", 0)),
+        int((pc or {}).get("optional", False)), _c(len((pc or {}).get("options", ()))),
+        int((pc or {}).get("zone_owner", ob["_pi"]) != ob["_pi"]),
+        0 if (pc or {}).get("zone") not in zones else zones.index(pc["zone"]) + 1,
+        0 if (pc or {}).get("destination") not in dests else dests.index(pc["destination"]) + 1,
+        _c((pc or {}).get("count", 0)),
+    ]
+    assert len(public) == 3 + N_PUBLIC_SCALAR, len(public)
+    scal += public
     assert len(scal) == N_SCALAR, len(scal)
 
     out = scal
@@ -170,6 +211,13 @@ def encode_obs(ob: dict) -> list:
     for sl in opp["slots"]:
         out += _slot_onehot(sl)
     out += _counts(me["chara_deck"], C_INDEX, NC)
+    for who in (me, opp):
+        for sl in who["slots"]:
+            out += _counts(sl[:-1], C_INDEX, NC)
+    for uses in ob["tag_uses_this_turn"]:
+        out += [_c(uses.get(tag, 0)) for tag in ACTION_TAGS]
+    out += _onehot(ob["last_used_card"][0], A_INDEX, NA)
+    out += _onehot(ob["last_used_card"][1], A_INDEX, NA)
     assert len(out) == OBS_DIM, (len(out), OBS_DIM)
     return out
 
@@ -195,6 +243,7 @@ def action_code(ob: dict, a: dict) -> list:
     t = T_INDEX[a["type"]]
     card = chara = slot = back = count = -1
     mull = [-1] * 5
+    setup_backs = [-1, -1]
     typ = a["type"]
     if typ in ("charge", "submit", "rush", "discard"):
         card = A_INDEX[ob["me"]["hand"][a["hand"]]]
@@ -213,15 +262,25 @@ def action_code(ob: dict, a: dict) -> list:
             mull[k] = A_INDEX[ob["me"]["hand"][hi]]
     elif typ == "resolve":
         count = a["index"]
+    elif typ == "choose_card":
+        cid = a["card"]
+        if cid in A_INDEX:
+            card = A_INDEX[cid]
+        else:
+            chara = C_INDEX[cid]
+        slot = a.get("slot", -1)
     elif typ == "setup":
         chara = _lv0_chara_index(a["leader"])
-    return [t, card, chara, slot, back, count] + mull
+        for i, name in enumerate(a.get("backs", ())[:2]):
+            setup_backs[i] = _lv0_chara_index(name)
+    return [t, card, chara, slot, back, count] + mull + setup_backs
 
 
 def expand_action(code) -> list:
     """符号 → 長さ ACT_DIM の float 列（学習側と Rust 側で同じ展開）。"""
     t, card, chara, slot, back, count = code[:6]
     mull = code[6:11]
+    setup_backs = code[11:13]
     v = [0.0] * ACT_DIM
     v[t] = 1.0
     o = len(ACTION_TYPES)
@@ -231,6 +290,10 @@ def expand_action(code) -> list:
     if chara >= 0:
         v[o + chara] = 1.0
     o += NC
+    for b in setup_backs:
+        if b >= 0:
+            v[o + b] += 1.0
+        o += NC
     if 0 <= slot <= 2:
         v[o + slot] = 1.0
     o += 3

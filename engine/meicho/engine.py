@@ -2123,6 +2123,33 @@ def observe(s: GameState, pi: int) -> dict:
                               else int(s.last_clash_winner != pi)),
         "last_clash_cards": [s.last_clash_cards[pi],
                              s.last_clash_cards[1 - pi]],
+        # 段階1B（D-089）: BP01 の公開状態。いずれも表向きのカード効果と
+        # 公開された進行だけから決まり、相手の非公開手札・山札順は含まない。
+        "last_turn_clash_winner": (
+            None if s.last_turn_clash_winner is None
+            else int(s.last_turn_clash_winner != pi)),
+        "last_turn_clash_pass": [s.last_turn_clash_pass[pi],
+                                  s.last_turn_clash_pass[1 - pi]],
+        "damage_taken_mod": [s.damage_taken_mod[pi],
+                              s.damage_taken_mod[1 - pi]],
+        "first_damage_taken_this_turn": [s.first_damage_taken_this_turn[pi],
+                                           s.first_damage_taken_this_turn[1 - pi]],
+        "speed_override": [s.speed_override[pi], s.speed_override[1 - pi]],
+        "heals_this_turn": [s.heals_this_turn[pi], s.heals_this_turn[1 - pi]],
+        "tag_uses_this_turn": [dict(s.tag_uses_this_turn[pi]),
+                                dict(s.tag_uses_this_turn[1 - pi])],
+        "last_used_card": [s.last_used_card[pi], s.last_used_card[1 - pi]],
+        "damaged_this_turn": [s.damaged_this_turn[pi],
+                               s.damaged_this_turn[1 - pi]],
+        "slot_entered_turn": [list(s.slot_entered_turn[pi]),
+                               list(s.slot_entered_turn[1 - pi])],
+        "variation_rush_draw": [s.variation_rush_draw[pi],
+                                 s.variation_rush_draw[1 - pi]],
+        # source は内部参照なので渡さず、既に確定した席別ダメージ量だけを要約する。
+        "deferred_clash_damage": [
+            sum(d[1] for d in s.deferred_clash_damage if d[0] == who)
+            for who in (pi, 1 - pi)
+        ],
         # C-2 の解消 (B-3 / D-031): 対抗で公開された色の経験分布。
         # [赤, 緑, 青, パス] の累積回数。両者の提出は公開される (§6.4(1)-3) ので
         # 相手の分も見てよい。相手の方策を推定する最初の履歴特徴である。
