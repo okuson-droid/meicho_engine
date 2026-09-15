@@ -1,8 +1,9 @@
-name: Stage 1B Rust verification
 
 on:
   push:
     branches: [stage1b-encoding-v5]
+  pull_request:
+    branches: [main]
   workflow_dispatch:
 
 permissions:
@@ -29,3 +30,4 @@ jobs:
           tests/test_drl.py
           tests/test_rust_engine.py
           tests/test_rust_agents.py
+
