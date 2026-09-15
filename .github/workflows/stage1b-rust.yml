@@ -1,3 +1,4 @@
+name: Stage 1B Rust verification
 
 on:
   push:
@@ -30,4 +31,3 @@ jobs:
           tests/test_drl.py
           tests/test_rust_engine.py
           tests/test_rust_agents.py
-
