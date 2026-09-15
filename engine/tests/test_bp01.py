@@ -176,9 +176,10 @@ def test_encoding_dims_follow_the_registry():
     固定するのは**式**であり、これが成り立っているかぎり移行スクリプトの
     「0 の列を挿す位置」は機械的に決まる。
     """
-    from meicho.encode import ACT_DIM, ACTION_TYPES, NA, NC, N_SCALAR, OBS_DIM
-    assert OBS_DIM == N_SCALAR + 12 * NA + 7 * NC
-    assert ACT_DIM == len(ACTION_TYPES) + NA + NC + 3 + 2 + 1 + NA
+    from meicho.encode import (ACT_DIM, ACTION_TAGS, ACTION_TYPES, NA, NC,
+                               N_SCALAR, OBS_DIM)
+    assert OBS_DIM == N_SCALAR + 14 * NA + 13 * NC + 2 * len(ACTION_TAGS)
+    assert ACT_DIM == len(ACTION_TYPES) + NA + 3 * NC + 3 + 2 + 1 + NA
 
 
 # --- T-K-3 ------------------------------------------------------------------
@@ -331,12 +332,12 @@ def test_new_encoding_columns_are_never_used_in_sd_games():
     """
     sys.path.insert(0, os.path.join(_ROOT, "scripts"))
     import migrate_nets_k as M
+    import migrate_nets_stage1b as B
     from meicho import encode as E
     from meicho.engine import legal_actions, observe
 
-    assert E.OBS_DIM == M.NEW_OBS and E.ACT_DIM == M.NEW_ACT, (
-        "移行スクリプトの想定次元が encode.py と合っていない: "
-        f"encode=({E.OBS_DIM}, {E.ACT_DIM}) migrate=({M.NEW_OBS}, {M.NEW_ACT})")
+    # migrate_nets_k はv3→v4の履歴道具。現行v5の直前の次元を終点として保つ。
+    assert (M.NEW_OBS, M.NEW_ACT) == (1313, 226)
 
     obs_new_only = sorted(set(range(M.NEW_OBS)) - set(M.OBS_MAP))
     act_new_only = sorted(set(range(M.NEW_ACT)) - set(M.ACT_MAP))
@@ -354,12 +355,18 @@ def test_new_encoding_columns_are_never_used_in_sd_games():
                 acts = {}
                 for pi in need:
                     ob = observe(s, pi)
-                    v = E.encode(ob, pi)
+                    current = E.encode(ob, pi)
+                    v = [0] * B.OLD_OBS
+                    for old, new in enumerate(B.OBS_MAP):
+                        v[old] = current[new]
                     n_obs += 1
                     hit = [c for c in obs_new_only if v[c] != 0]
                     assert not hit, f"{deck} seed={seed}: 観測の新枠 {hit[:5]} が非零になった"
                     for a in legal_actions(s, pi):
-                        av = E.expand_action(E.action_code(ob, a))
+                        current_a = E.expand_action(E.action_code(ob, a))
+                        av = [0.0] * B.OLD_ACT
+                        for old, new in enumerate(B.ACT_MAP):
+                            av[old] = current_a[new]
                         n_act += 1
                         hit = [c for c in act_new_only if av[c] != 0.0]
                         assert not hit, f"{deck} seed={seed}: 行動の新枠 {hit[:5]} が非零になった"

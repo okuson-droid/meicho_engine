@@ -129,7 +129,8 @@ impl Challenger {
                 if s.phase != Phase::SetupChara {
                     return None;
                 }
-                acts.iter().find(|a| matches!(a, Action::Setup { leader } if leader == name)).cloned()
+                acts.iter().find(|a| matches!(a, Action::Setup { leader, backs } if leader == name && {
+                    let mut b=backs.clone(); b.sort(); *backs==b })).cloned()
             }
             Intervention::PreferInClash { card } => {
                 if s.phase != Phase::ClashSubmit {
