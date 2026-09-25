@@ -71,9 +71,32 @@ KHEB_KWARGS = {"extra_turns": 1,
                "policy_scope": "proxy",
                **KHEB}
 B75_KWARGS = {**KHEB_KWARGS, "bundle_p": 0.75}
-KHEB_FINGERPRINT = "e82b796960e04c4a"      # 便 C の champion（`bundle_p` が入る前）
-B75_FINGERPRINT = "e1662edb32b144a9"       # 便 A 後半の champion（いま）
-PREV_FINGERPRINT = "9b5ad48d2de6a7e0"      # `planner_vc4cps`（二つ前）
+# D-098（2026-09-17・マスター裁定）: 貼り替えた。**動いた理由が 2 つ重なっている。**
+#   (a) 段階1A（D-088・2026-09-14）が決定列に新しい選択行動を足した。D-091 はこの 3 体を
+#       「D-088 以前の値・未再測」の札つきで**残していた**ので、今日より前から古かった。
+#   (b) A-2（公式 701.1.2 のリフレッシュの時点・D-095／rules v0.14）。
+#   **(a) と (b) の寄与は分けて測っていない。**今日 PC で測った 1 つの値に両方が入っている。
+#   旧値 kheb = e82b796960e04c4a / b75 = e1662edb32b144a9 / prev = 9b5ad48d2de6a7e0
+#   b75 は D-091 で 9d4ff39d024e4394 に貼り替えた先があるのに、**ここだけ D-088 以前の
+#   e1662edb32b144a9 が残っていた**（貼り替えの取りこぼし）。今日 6ca46b15dd151228 に揃えた。
+# D-101（2026-09-18・マスター裁定）: **b75 だけ B-9（D-099）で動いた**。
+#   6ca46b15dd151228 → 099a7f9382843ff2。B-9 だけを外すと元の値が出ることを確かめてある
+#   （＝原因は B-9 単独。Rust の写し間違いではない）。
+#   **kheb と prev は動いていない**——どちらもこの帯で B-9 の公開を踏まない、あるいは
+#   `known_hand` を通して評価に効かないためである。
+#   **これで D-098 の貼り替えは 4 つとも正しかったことが確かめられた**（b75 は B-9 を外した状態で一致）。
+# D-104（2026-09-19・マスター裁定）: **A-6（回復にライフの上限は無い・公式 101.6・rules v0.18）で動いた。**
+#   D-011（2026-08-21 のマスター裁定「上限 20 でクリップ」）を覆したため、`SD01-023`「奏鳴」(+5) が
+#   **序盤から本当に +5 回復する**ようになり、SD001 の対局が変わった。SD02 と BP01 の仮デッキは
+#   回復カードを持たないので**1 手も動いていない**。
+#   実測（A-6 の前後・ミラー 200 局）: SD001/random 手順 4・勝敗 1／SD001/heuristic 手順 8・勝敗 1／
+#   **planner/SD001 手順 80・勝敗 37**／champion の指紋の帯 471500..471509 は手順 4/10・勝敗 4/10。
+#   **これは AI の打ち方の変化ではなく、ゲームのルールが公式に合ったことによる変化である。**
+#   旧値（v0.17）: kheb f3d1b52aed0abdad / b75 099a7f9382843ff2 / prev 2d884df547ac6990
+#   H・G・P の指紋も同じ理由で動いた（旧 H 0e36f6aafd63a52e / G e197a6cc20748642 / P 6e39c2aa4b35d876）。
+KHEB_FINGERPRINT = "b4d3b2a1986b71b9"      # 便 C の champion（`bundle_p` が入る前）
+B75_FINGERPRINT = "f4b80b25c35cfa77"       # 便 A 後半の champion（いま）
+PREV_FINGERPRINT = "ff72e98e303d87ae"      # `planner_vc4cps`（二つ前）
 
 
 def _rs():
@@ -160,9 +183,15 @@ def test_a2_defaults_unchanged():
     from meicho.drl_data import BASELINE_DIGESTS_230000
     from meicho.drlnet import resolve_model
 
-    assert bench_agents.fingerprint("H", 50) == "773a71c15c5bc16e"
-    assert bench_agents.fingerprint("G", 20) == "677f28cc3b6995ee"
-    assert bench_agents.fingerprint("P", 10) == "6e39c2aa4b35d876"
+    # **2026-09-17 に H と G を貼り替えた（D-095・マスター裁定）。P は不変である。**
+    # 公式 701 のルールチェックを実装したので（A-1・A-2／rules v0.14）、リフレッシュの時点が
+    # 早まり山札の並びが変わった。**エージェントの打ち方は 1 行も変えていない。**
+    # 旧値: H `773a71c15c5bc16e` / G `677f28cc3b6995ee`（どちらも v0.13 以前）。
+    # P が不変なのは、planner の対局がこの帯でリフレッシュを踏まないからである
+    # （`BASELINE_DIGESTS_230000` も同じ理由で不変だった）。
+    assert bench_agents.fingerprint("H", 50) == "6427a7b28f7a10fe"
+    assert bench_agents.fingerprint("G", 20) == "59e116cbb2fd094d"
+    assert bench_agents.fingerprint("P", 10) == "453bc27c27c11997"
 
     def fp(kw):
         kwr = {k: (resolve_model(v)

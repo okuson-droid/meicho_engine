@@ -22,10 +22,11 @@ from datetime import datetime, timezone, timedelta
 
 from meicho.engine import apply, decision_players, initial_state, legal_actions, outcome
 from meicho.state import DRAW
+from meicho.version import ENGINE_VERSION, RULES_VERSION  # noqa: F401  版は 1 か所（D-117・TE-3）
 
+# 記録の形の版。**3 以上は新アプリ（`engine/app/`）が使う**（`app/core/persist.py` の RECORD_VERSION・R-DATA-6）ので、
+# ここでは上げない。D-117 で足した `think_ms` は任意のキーで、再生は読まない。
 APP_VERSION = "2"
-RULES_VERSION = "v0.10"
-ENGINE_VERSION = "v0.1"
 JST = timezone(timedelta(hours=9))
 
 
@@ -110,6 +111,18 @@ class ReplayAgent:
         return self.pos >= len(self.queue)
 
 
+def is_legacy_stage1a(rec: dict) -> bool:
+    """段階1A（D-088）より前の記録か。
+
+    その記録には当時は自動だった `pay_cost_card` / `zone_card` / `levelup_by_effect` の
+    選択行動が入っていないので、`ReplayAgent` に補わせる必要がある。
+
+    **再生する側は必ずここを通すこと。**判定を写して書くと、写した側だけが
+    取り残される（実際に `verify_lethal_human.walk_clashes` がそうなっていた・D-098）。
+    """
+    return int(rec.get("app_version", "1")) < 2
+
+
 def replay(rec: dict, config, keep_states: bool = False) -> dict:
     """記録を再生する。
 
@@ -117,7 +130,7 @@ def replay(rec: dict, config, keep_states: bool = False) -> dict:
     **返す局面には両者の手札も山札も入っている**ので、
     対局中の画面に渡してはならない（§5.7 の安全装置はサーバ側で行う）。
     """
-    legacy_stage1a = int(rec.get("app_version", "1")) < 2
+    legacy_stage1a = is_legacy_stage1a(rec)
     agents = [ReplayAgent(rec["actions"], 0, legacy_stage1a=legacy_stage1a),
               ReplayAgent(rec["actions"], 1, legacy_stage1a=legacy_stage1a)]
     s = initial_state(config, rec["seed"])

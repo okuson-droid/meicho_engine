@@ -25,9 +25,10 @@ from typing import Optional
 
 from .cards import (ACTION_CARDS, AREA_TIMINGS, CHARA_CARDS, ONKAI_TAG, ActionCard,
                     CharaCard, Color, Skill, Timing)
+from . import trace as _trace
 from .state import (
     CLASH_COLOR_INDEX, CLASH_PASS, DRAW, DRAW_PER_TURN, FIRST_TURN_DRAW,
-    HAND_LIMIT, MAX_LIFE, OPENING_HAND, RUSH_UNLIMITED,
+    HAND_LIMIT, OPENING_HAND, RUSH_UNLIMITED,
     CharaSlot, GameState, Phase, PlayerState,
 )
 
@@ -49,8 +50,11 @@ class GameConfig:
             assert 3 <= len(cd) <= 15, f"P{pi}: キャラデッキは3〜15枚"
             assert len(cd) == len(set(cd)), f"P{pi}: 同カード番号は1枚まで"
             for n in names:
-                assert any(c.name == n and c.level == 0 for c in charas), \
-                    f"P{pi}: {n} の Lv.0 が必要"
+                # A-5 (§3.1・公式 101.1.1.1): Lv.0 は**ちょうど 1 枚**（D-092 の R-5・D-100）。
+                # v0.15 までは「1 枚以上」しか見ていなかった。同名の Lv.0 が 2 種類あると、
+                # 準備の配置（`apply` の `lv0` 辞書）が黙って片方を選んでしまう。
+                lv0 = sum(1 for c in charas if c.name == n and c.level == 0)
+                assert lv0 == 1, f"P{pi}: {n} の Lv.0 はちょうど1枚 (いま {lv0} 枚)"
             # §3.2
             assert len(ad) == 40, f"P{pi}: アクションデッキは40枚ちょうど"
             for cid in set(ad):
@@ -308,16 +312,70 @@ def legal_actions(s: GameState, pi: int) -> list:
 # 効果解決
 # ---------------------------------------------------------------------------
 
-def _draw(s: GameState, pi: int, count: int) -> None:
-    p = s.players[pi]
-    for _ in range(count):
-        if not p.action_deck:
-            if not p.trash:
-                return  # 引けない（裁定未確認だが実害なし）
+def _rule_check(s: GameState) -> None:
+    """公式 701 ルールチェック。**勝敗条件 → デッキリフレッシュ**の順に行う。
+
+    公式 701.1 はこの 2 つをこの並びで実行すると定める。**順番が効く**——
+    「デッキだけ空・トラッシュに在り」は敗北にならずリフレッシュされ、**両方空**で初めて敗北する。
+
+    - 701.1.1.1: ライフが 0 になったプレイヤーは敗北する。
+      **アクションデッキエリアおよびトラッシュにカードが 1 枚もない**プレイヤーも敗北する。
+      双方が同時に満たしたら引き分け（102.2）。
+    - 701.1.2.1: アクションデッキエリアにカードがないプレイヤーは、トラッシュのすべてを
+      裏向きでデッキに戻し、その後シャッフルする。701.1.2.2 は処理の途中で空になった場合も
+      中断してリフレッシュし、処理を再開すると定める。
+
+    **呼ぶ場所は 2 つ**（公式の指定どおり）。
+    - 700.1.1: 処理待ちチェックの先頭（実装では `_pump` の各周回の先頭）。
+    - 903.1「カードを引くとは、…手札に加え、**その後、ルールチェックを実行する**ことを指します」。
+
+    v0.12 までは (a) デッキ切れ敗北が無く（`_draw` が黙って戻る・D-025）、
+    (b) リフレッシュがドローの中でしか起きなかった（FAQ 33・46 が要求する解決後のリフレッシュが無い）。
+    **この直しは SD001/SD02 の対局も変える**——リフレッシュの時点が早まるので、
+    シャッフルの乱数を引く位置が動き、以後の山札の並びが変わる（D-095）。
+    """
+    if s.outcome is not None:
+        return
+    # 701.1.1 勝敗条件（リフレッシュより先）
+    lost = [pi for pi in (0, 1)
+            if s.players[pi].life <= 0
+            or (not s.players[pi].action_deck and not s.players[pi].trash)]
+    if lost:
+        for pi in lost:
+            if s.players[pi].life < 0:
+                s.players[pi].life = 0
+        s.outcome = DRAW if len(lost) == 2 else 1 - lost[0]
+        s.phase = Phase.GAME_OVER
+        return
+    # 701.1.2 デッキリフレッシュ（ターンプレイヤーから・103.5 の順序）
+    for pi in (s.turn_player, 1 - s.turn_player):
+        p = s.players[pi]
+        if not p.action_deck and p.trash:
             p.action_deck = list(p.trash)
             p.trash = []
-            s.next_rng().shuffle(p.action_deck)  # §6.2 デッキ再構成
+            s.next_rng().shuffle(p.action_deck)
+            if _trace.ACTIVE:
+                _trace.emit(s, "refresh", player=pi)
+
+
+def _draw(s: GameState, pi: int, count: int) -> None:
+    """カードを引く（公式 903）。
+
+    903.2「『カード X 枚を引く。』とは、プレイヤーがカードを引く行動を X 回繰り返すことを指します」。
+    903.1 は 1 枚ごとに「手札に加え、その後ルールチェック」と定めるので、**1 枚ずつ回す**。
+    引く前にもルールチェックを通す＝701.1.2.2 の「途中で空になったら中断してリフレッシュして再開」。
+    """
+    p = s.players[pi]
+    for _ in range(count):
+        _rule_check(s)
+        if s.outcome is not None:
+            return
         p.hand.append(p.action_deck.pop(0))
+        if _trace.ACTIVE:
+            _trace.emit(s, "draw", player=pi)
+        _rule_check(s)
+        if s.outcome is not None:
+            return
 
 
 def _damage(s: GameState, pi: int, amount: int, *,
@@ -329,6 +387,7 @@ def _damage(s: GameState, pi: int, amount: int, *,
     - `damage_taken_mod[pi]`: 「自分が受けるダメージ +N / −N」(u13)。対抗・連撃・効果の
       すべてに乗り、0 未満にはならない。既定 0。
     - `first_damage_taken_this_turn[pi]`: 「各ターン、自分が最初に受けるダメージ」(u7) の記録。
+      **軽減で 0 以下になったときは立てない**（公式 901.2.1・B-7・D-100）。
     - `dealer` と `source`: 【相手にダメージを与えた時】(u18) を誘発させる。
       **`source` はそのダメージを与えた**カード**（`("action"|"chara", card_id)`）**で、
       誘発するのはそのカード自身のスキルだけである（u18 のマスター裁定 2026-09-10）。
@@ -337,13 +396,23 @@ def _damage(s: GameState, pi: int, amount: int, *,
     if amount <= 0:
         return
     amount += s.damage_taken_mod[pi] + _static_damage_taken_mod(s, pi)
-    if not s.first_damage_taken_this_turn[pi]:
+    is_first = not s.first_damage_taken_this_turn[pi]
+    if is_first:
         amount += _first_damage_taken_mod(s, pi)
-        s.first_damage_taken_this_turn[pi] = True
     if amount <= 0:
+        # B-7 (公式 901.2.1・D-092 の R-11・D-100): 「0 ダメージを受ける」場合、
+        # そのプレイヤーは**ダメージを受けていないとして扱う**。したがって
+        # 「各ターン、自分が最初に受けるダメージ」の旗も**消費しない**——
+        # 次に来る本物のダメージがその軽減を受ける。
+        # v0.15 までは旗を立ててから 0 以下を見て戻っていた（立てたまま戻っていた）。
         return
+    if is_first:
+        s.first_damage_taken_this_turn[pi] = True
     p = s.players[pi]
     p.life -= amount
+    if _trace.ACTIVE:
+        _trace.emit(s, "damage", player=pi, amount=amount, dealer=dealer,
+                    source=list(source) if source is not None else None)
     s.damaged_this_turn[pi] = True
     if p.life <= 0 and s.outcome is None:
         p.life = 0
@@ -355,16 +424,24 @@ def _damage(s: GameState, pi: int, amount: int, *,
 
 
 def _heal(s: GameState, pi: int, amount: int) -> None:
-    """pi のライフを回復する (D-011: 上限 MAX_LIFE)。
+    """pi のライフを回復する。**上限は無い**（A-6・公式 101.6・D-104）。
+
+    v0.17 までは `min(MAX_LIFE, ...)` で 20 を上限にしていた。根拠は
+    **D-011（2026-08-21 のマスター裁定）**だが、D-011 自身が「**上限規定としての条文はなかった**」と
+    認めているとおり、**公式総合ルールが出る前の我々の補い**だった。公式 101.6 は
+    「自分のライフを **20 に設定します**」＝**開始ライフ**を定めるだけで、回復の上限を定めていない。
+    2026-09-15 にマスターが「回復上限なし」を確認済み（D-092 の A-6・R-6）。**D-011 は覆る。**
 
     実際に 1 以上回復したときだけ `heals_this_turn` を進め、
-    【自分のライフが回復した時】(BP01-006) を誘発させる。
-    0 回復（上限に張り付いている等）では誘発しない。
+    【自分のライフが回復した時】(BP01-006) を誘発させる。0 以下の回復では誘発しない。
+    **上限が無くなったので、満タンからの回復も「実際の回復」になり、誘発するようになった。**
     """
     p = s.players[pi]
     before = p.life
-    p.life = min(MAX_LIFE, p.life + amount)
+    p.life = p.life + amount if amount > 0 else p.life
     if p.life > before:
+        if _trace.ACTIVE:
+            _trace.emit(s, "heal", player=pi, amount=p.life - before)
         s.heals_this_turn[pi] += 1
         _queue_fire_nested(s, Timing.ON_HEAL, [pi])
 
@@ -387,8 +464,14 @@ def _apply_op(s: GameState, owner: int, op: str, prm: dict, ctx: dict) -> None:
     """オペコード1個を適用する。選択の要否は呼び出し側 (_step_effect) が判断する。"""
     if True:
         p = s.players[owner]
-        if op == "draw" or op == "reveal_top_to_hand":
+        if op == "draw":
             _draw(s, owner, prm["count"])
+        elif op == "reveal_top_to_hand":
+            n_before = len(p.hand)
+            _draw(s, owner, prm["count"])
+            _note_public_to_hand(s, owner, p.hand[n_before:])
+            if _trace.ACTIVE:
+                _emit_reveal_drawn(s, owner, n_before)
         elif op == "top_to_concerto":
             for _ in range(prm["count"]):
                 if p.action_deck:
@@ -431,7 +514,8 @@ def _apply_op(s: GameState, owner: int, op: str, prm: dict, ctx: dict) -> None:
                         if nm is not None and nm not in names:
                             names.append(nm)
                     # v0.12: 【切り替え】は**実際に行われたときだけ**誘発する (§7)。
-                    _queue_fire_nested(s, Timing.SWITCHED, [owner])
+                    # v0.19 (TE-13・D-134): 誘発するのは入れ替わった 2 枠だけ（公式 913.9.1）。
+                    _queue_switch_triggers(s, owner, b)
         elif op == "self_damage_buff_if_switched":
             if prm["name"] in ctx.get("switched", ()):
                 ctx["bonus_damage"] = ctx.get("bonus_damage", 0) + prm["amount"]
@@ -458,6 +542,7 @@ def _apply_op(s: GameState, owner: int, op: str, prm: dict, ctx: dict) -> None:
             if cid_self is not None and cid_self in p.action_area:
                 p.action_area.remove(cid_self)
                 p.hand.append(cid_self)
+                _note_public_to_hand(s, owner, [cid_self])
         elif op == "opponent_pay_or_damage":
             # D-015: 相手に「コストNを支払う / 支払わずダメージMを受ける」を選ばせる。
             # 支払い不能（協奏エリアが足りない）なら選択させず即ダメージ（マスター確認済み）。
@@ -475,6 +560,7 @@ def _apply_op(s: GameState, owner: int, op: str, prm: dict, ctx: dict) -> None:
             for _ in range(prm["count"]):
                 if p.hand:
                     p.trash.append(p.hand.pop(0))
+                    _know_hand_out(s, owner, p.trash[-1])
                     ctx["discarded"] = True
         elif op == "draw_if_switched":
             if prm["name"] in ctx.get("switched", ()):
@@ -527,6 +613,7 @@ def _apply_op(s: GameState, owner: int, op: str, prm: dict, ctx: dict) -> None:
                     _pay_cost(s, owner, prm["cost"])
                 p.action_area.remove(cid)
                 p.hand.append(cid)
+                _note_public_to_hand(s, owner, [cid])
         # --- v0.12 / BP01（D-079 追記 5・便 K 段 K-3）＜音骸＞の【優勢】の妨害 5 種 ---
         #
         # **選ぶ側は効果のオーナー**（u8）だが、K-3 では選択肢化せず**自動選択**にしてある
@@ -545,6 +632,7 @@ def _apply_op(s: GameState, owner: int, op: str, prm: dict, ctx: dict) -> None:
                     break
                 idx = s.next_rng().randrange(len(opp.hand))
                 opp.trash.append(opp.hand.pop(idx))
+                _know_hand_out(s, 1 - owner, opp.trash[-1])     # トラッシュは公開領域
         elif op == "opp_concerto_to_trash":
             opp = s.players[1 - owner]
             for _ in range(prm["count"]):
@@ -558,6 +646,11 @@ def _apply_op(s: GameState, owner: int, op: str, prm: dict, ctx: dict) -> None:
                     break
                 idx = s.next_rng().randrange(len(opp.hand))
                 opp.action_deck.append(opp.hand.pop(idx))
+            # D-121（段階1C-a・D-118 R-2・TE-10）: どの札がデッキの下へ行ったかは公開されない（公式 103.4）。
+            # 使った側が相手の手札について知っていたこと（スキャン・B-9・公開して手札に加えた札）を
+            # **全部捨てる**。本当の手札との積で忘れると、消えた札＝デッキの下へ行った札と読めてしまう。
+            s.peeked_opp_hand[owner] = None
+            _know_forget(s, owner)
         elif op == "mill_opponent_deck_top":
             opp = s.players[1 - owner]
             for _ in range(prm["count"]):
@@ -591,6 +684,7 @@ def _apply_op(s: GameState, owner: int, op: str, prm: dict, ctx: dict) -> None:
                 if idx is None:
                     break
                 p.hand.append(p.trash.pop(idx))
+                _note_public_to_hand(s, owner, p.hand[-1:])
         elif op == "trash_to_concerto":
             n = prm.get("count", 1)
             for _ in range(n):
@@ -600,15 +694,19 @@ def _apply_op(s: GameState, owner: int, op: str, prm: dict, ctx: dict) -> None:
                     break
                 p.concerto.append(p.trash.pop(idx))
         elif op == "return_to_chara_deck":
-            # 「このカードをキャラデッキに戻す」(u4)。下のカードが最上段に戻る＝レベルが下がる。
-            # 戻したカードは再びレベルアップに使える（キャラデッキに帰るので）。
+            # 「このカードをキャラデッキに戻す」(u4 改訂・D-094)。
+            # **v0.13 でこのカードは最上段とは限らない**——【レベルアップ】は
+            # 603.1.2.2.2 のとおり**下になったカード**が誘発するので、
+            # `BP01-001`/`BP01-002` ツバキ Lv2 は「上に重ねられて下になったときに自分を戻す」＝
+            # 再びレベルアップに使えるようになる、という札である。
+            # よって重なりの**途中からも抜く**。最上段を抜いたときだけレベルが下がる。
             # **どの枠に居るかは分からない**ので、そのカードを持つ枠を探す。
             cid = ctx.get("self_card") or (
                 s.pending_effect.get("card") if s.pending_effect is not None else None)
             if cid is not None:
                 for slot in p.slots:
-                    if slot.stack and slot.stack[-1] == cid:
-                        slot.stack.pop()
+                    if cid in slot.stack:
+                        slot.stack.remove(cid)
                         p.chara_deck.append(cid)
                         break
         elif op == "levelup_by_effect":
@@ -634,8 +732,7 @@ def _apply_op(s: GameState, owner: int, op: str, prm: dict, ctx: dict) -> None:
                 p.chara_deck.remove(nxt)
                 slot.stack.append(nxt)
                 s.slot_entered_turn[owner][si] = s.turn_no
-                _queue_fire_nested(s, Timing.ENTER, [owner])
-                _queue_fire_nested(s, Timing.LEVELUP, [owner])
+                _queue_levelup_triggers(s, owner, si)
                 break
         elif op == "levelup_by_effect_if_switched":
             # 「◯◯が切り替えされた場合、自分の「◯◯」をレベルアップする」(u3)
@@ -676,7 +773,8 @@ def _apply_op(s: GameState, owner: int, op: str, prm: dict, ctx: dict) -> None:
                         for nm in moved:
                             if nm is not None and nm not in names:
                                 names.append(nm)
-                        _queue_fire_nested(s, Timing.SWITCHED, [owner])
+                        # v0.19 (TE-13・D-134): 入れ替わった 2 枠だけ（公式 913.9.1）。
+                        _queue_switch_triggers(s, owner, b)
                         break
         elif op == "search_deck":
             # 「自分のデッキから「◯◯」1枚を手札に加える。その後、デッキをシャッフルする。」
@@ -684,15 +782,25 @@ def _apply_op(s: GameState, owner: int, op: str, prm: dict, ctx: dict) -> None:
             idx = next((i for i, cid in enumerate(p.action_deck)
                         if ACTION_CARDS[cid].name == prm["card_name"]), None)
             if idx is not None:
+                if _trace.ACTIVE:
+                    # 公式 103.3: 非公開領域から条件指定で選んだカードは相手に公開する（D-114）。
+                    _trace.emit(s, "reveal", owner=owner, cards=[p.action_deck[idx]],
+                                audience="all", zone="action_deck")
                 p.hand.append(p.action_deck.pop(idx))
+                _note_public_to_hand(s, owner, p.hand[-1:])
             s.next_rng().shuffle(p.action_deck)
         elif op == "reveal_n_take_matching":
             # 「デッキの上から N 枚を公開してもよい。その中から全ての【◯◯】のカードを
             #   手札に加え、残りをトラッシュに置く。」
+            if _trace.ACTIVE:
+                _trace.emit(s, "reveal", owner=owner,
+                            cards=list(p.action_deck[:min(prm["count"], len(p.action_deck))]),
+                            audience="all", zone="action_deck")
             revealed = [p.action_deck.pop(0) for _ in range(min(prm["count"], len(p.action_deck)))]
             for cid in revealed:
                 if _trash_matches(ACTION_CARDS[cid], prm):
                     p.hand.append(cid)
+                    _note_public_to_hand(s, owner, [cid])
                 else:
                     p.trash.append(cid)
         elif op == "speed_override":
@@ -703,11 +811,25 @@ def _apply_op(s: GameState, owner: int, op: str, prm: dict, ctx: dict) -> None:
             # observe() では現在の相手の手札との積集合を返すため、
             # 既に使用・破棄されたカードは自動的に落ちる（D-010の暫定no-opを解消）。
             s.peeked_opp_hand[owner] = list(s.players[1 - owner].hand)
+            s.known_opp_hand[owner] = list(s.players[1 - owner].hand)     # D-121
+            if _trace.ACTIVE:
+                _trace.emit(s, "reveal", owner=1 - owner,
+                            cards=list(s.players[1 - owner].hand),
+                            audience=owner, zone="hand")
         else:
             raise ValueError(f"unknown effect op: {op}")
 
 
-def _skill_condition_met(s: GameState, owner: int, sk: Skill, ctx: dict) -> bool:
+def _skill_condition_met(s: GameState, owner: int, sk: Skill, ctx: dict,
+                        card: Optional[str] = None) -> bool:
+    """誘発条件・使用条件を判定する。
+
+    `card` は**そのスキルが載っているカード**の番号である（D-096 で足した）。
+    v0.14 までは「このカード」を `pending_effect["card"]`（＝解決中のカード）から引いていたが、
+    公式 800.5.3 に合わせて**判定を誘発した時点へ移した**ので、解決中でないときにも
+    「このカード」が要る。積む側は参照（`[player, kind, card, idx]`）から渡す。
+    省略時は従来どおり `pending_effect` から引く（使用条件など解決中の呼び出し）。
+    """
     if sk.condition is None:
         return True
     c = sk.condition
@@ -770,7 +892,8 @@ def _skill_condition_met(s: GameState, owner: int, sk: Skill, ctx: dict) -> bool
     if "entered_turn_is_not_current" in c:
         # 「このカードがこのターン以外に登場した場合」(BP01-011)。
         # 「このカード」の枠は、そのスキルが載っているカードが最上段に居る枠である。
-        cid = s.pending_effect.get("card") if s.pending_effect is not None else None
+        cid = card if card is not None else (
+            s.pending_effect.get("card") if s.pending_effect is not None else None)
         si = None
         if cid is not None:
             si = next((i for i, sl in enumerate(s.players[owner].slots)
@@ -907,11 +1030,12 @@ def _queue_fire(s: GameState, timing: Timing, players_order: list,
     挙動がずれる。現行カードプールにはそのようなカードが存在しないため
     先送りしているが、**カードデータを追加する際はここを確認すること**
     （カード入力は別セッションが行うため、コード内に防御を置いている）。
-    必要になったら、`_start_next_skill` の直前で条件を再評価する形に変える。
+    必要になったら、`_start_next_pending` の直前で条件を再評価する形に変える。
     """
     refs = []
     for pi in players_order:
         refs += _active_skill_refs(s, pi, timing)
+    refs = _keep_triggering(s, refs)
     s.pending_skills = refs
     s.pending_effect = None
     s.pending_ctx = {}
@@ -937,6 +1061,7 @@ def _queue_fire_nested(s: GameState, timing: Timing, players_order: list) -> Non
     refs = []
     for pi in players_order:
         refs += _active_skill_refs(s, pi, timing)
+    refs = _keep_triggering(s, refs)
     if refs:
         s.pending_triggers += refs
 
@@ -962,55 +1087,123 @@ def _queue_fire_on_card(s: GameState, timing: Timing, pi: int, kind: str, cid: s
                 if not leader_only or in_leader]
     else:
         refs = [[pi, "action", cid, k] for k in _action_timing_index(cid, timing)]
+    refs = _keep_triggering(s, refs)
     if refs:
         s.pending_triggers += refs
 
 
-def _start_next_trigger(s: GameState) -> None:
-    """割り込みの待ち行列から 1 つ解決を始める。
+def _queue_switch_triggers(s: GameState, pi: int, b: int) -> None:
+    """リーダーの切り替えの直後に【切り替え】を積む（公式 603.1.2.1.1／906.2／913.9.1・rules v0.19 §7）。
 
-    `pending_skills` と違い**順番の選択を挟まない**。同時に複数が誘発するカードが
-    現れたらここに A-7（どれから解くかを本人が選ぶ）を足すこと。現行の BP01 では
-    1 つの場面で同じ席のスキルが 2 つ以上誘発するカードは無い。
+    **呼ぶのは入れ替えを終えた後**で、`b` は入れ替えたバックの枠（1 か 2）である。
+    誘発するのは**切り替えられたキャラ**＝入れ替わった 2 枠（リーダー枠 0 と枠 `b`）だけ。
+    公式 913.9.1「このスキルを持つキャラカードが切り替えられた時に誘発します」、
+    906.2「切り替えによって位置が変更されたキャラは、『切り替えられたキャラ』と呼びます」。
+
+    v0.18 までは `_queue_fire_nested(s, Timing.SWITCHED, [owner])` で**その席の全キャラ枠**を
+    拾っており、入れ替えに関わっていないもう 1 体のバックの【切り替え】まで誘発していた
+    （TE-13・D-134）。
+
+    - 重なりの下のカードも拾う。枠ごと位置が変わるので「切り替えられたキャラ」に含まれ、
+      キャラカードは重ねて置かれたすべてのカードのスキルを持つ（§6.3-3）。【登場】の
+      「一番上だけ」（603.1.2.2.1・908）に当たる限定は【切り替え】の条文に無い。
+    - 【リーダー】前置は入れ替え**後**の位置で見る（`_active_skill_refs` と同じ）。
+    - 対抗カード・アクションエリアは見ない（913.9.1 は「キャラカード」）。
+    - 列挙の順は枠 0 → 枠 `b`、枠の中は下から上。v0.18 の全枠走査から枠 `3 - b` を
+      抜いた並びと同じなので、入れ替わった側だけに該当があった局は 1 手も変わらない。
     """
-    ref = s.pending_triggers.pop(0)
-    if not _skill_condition_met(s, ref[0], _deref_skill(ref), {}):
-        return
-    sk = _deref_skill(ref)
-    if sk.optional:
-        s.pending_choices.append({
-            "player": ref[0], "kind": "use_optional",
-            "card": ref[2], "skill_index": ref[3], "ref": list(ref),
-        })
-        return
-    _start_skill_effect(s, ref[0], sk, ref[2], ref[1])
+    refs = []
+    for si in (0, b):
+        for cid in s.players[pi].slots[si].stack:
+            for k, leader_only in _chara_timing_index(cid, Timing.SWITCHED):
+                if leader_only and si != 0:
+                    continue
+                refs.append([pi, "chara", cid, k])
+    refs = _keep_triggering(s, refs)
+    if refs:
+        s.pending_triggers += refs
 
 
-def _start_next_skill(s: GameState) -> None:
-    """待ち行列の先頭のスキルを1つ開始する。
+def _keep_triggering(s: GameState, refs: list) -> list:
+    """**誘発した時点で**条件を満たす参照だけを残す（公式 800.5.3・FAQ 47/48・D-096）。
 
-    A-7 (§6.4(1)-4): 同一プレイヤーのスキルが2つ以上同時に誘発している場合、
-    どれから解決するかはそのプレイヤーが選ぶ。
+    v0.14 までは条件を**解決の直前**にしか見ていなかった。ずれる方向が 2 つあった。
+
+    - 誘発時に成立 → 解決時に不成立 で落としていた（公式 800.4 違反。処理待ちに入った
+      スキルは発生源から独立し、発生源が領域を離れても通常どおり解決される）。
+    - 誘発時に不成立 → 解決時に成立 で解決していた（FAQ 47/48 違反）。
+
+    **`_active_skill_refs` の側では絞らない。**あちらは常在型スキルの走査にも使っていて
+    （`BP01-055`・`BP01-062` は条件つきの常在型を持つ）、常在型の条件は**読むたびに**
+    評価されなければならないからである。絞るのは「積む」ときだけでよい。
     """
-    pi = s.pending_skills[0][0]
+    return [r for r in refs
+            if _skill_condition_met(s, r[0], _deref_skill(r), {}, card=r[2])]
+
+
+def _queue_levelup_triggers(s: GameState, pi: int, si: int) -> None:
+    """レベルアップの直後に誘発するものを積む（公式 603.1.2.2.1/.2・rules v0.13 §7）。
+
+    - **【登場】は一番上に置かれたカード 1 枚だけ**（603.1.2.2.1）。
+      「登場」は 908.1 で「キャラエリアの任意の位置の**一番上に**移動させる行動」と定義され、
+      908.2 が「下に移動した場合は登場にならない」と念を押す。
+    - **【レベルアップ】はその下に重ねて置かれたカードだけ**（603.1.2.2.2）。
+      「複数のカードに複数の【レベルアップ】スキルがある場合は、この時点ですべて誘発します」。
+
+    v0.12 までは両方を `_queue_fire_nested` で**キャラエリア全体**（全スロット・全重ねカード）から
+    列挙していた（B-2・B-3・D-092）。そのため別の枠のキャラや埋もれたカードまで誘発し、
+    登場とレベルアップの 2 アイコンを 1 段落に持つカード（カードデータ上は 1 スキル）は 1 回のレベルアップで
+    2 回解決していた（B-1）。**1 枚のカードが「一番上」と「その下」に同時になることはない**ので、
+    範囲をこう直すと B-1 も同時に解ける（800.5.3.1 の重複抑制は要らない・R-9）。
+
+    **下のカードが複数あるときの順番は暫定の固定順**（置いたカードのすぐ下から下へ）である。
+    公式 700.1.2 はターンプレイヤーが 1 つずつ選ぶと定めるので、**A-3 の便で順序選択に置き換える**。
+
+    準備 (§5-4) では呼ばない＝Lv.0 を置くことは登場ではない（u1・公式 908.3 が同じことを言う）。
+    """
+    stack = s.players[pi].slots[si].stack
+    if not stack:
+        return
+    _queue_fire_on_card(s, Timing.ENTER, pi, "chara", stack[-1])
+    for cid in reversed(stack[:-1]):
+        _queue_fire_on_card(s, Timing.LEVELUP, pi, "chara", cid)
+
+
+def _start_next_pending(s: GameState, queue: str) -> None:
+    """待ち行列から 1 つ選んで解決を始める（公式 700.1.2/.3・§6.4(1)-4・A-7／A-3）。
+
+    公式 700.1.2 は「ターンプレイヤーは、自分の処理待ち状態のスキルを **1 つ選び**、
+    そのスキルの効果を解決します」と定め、700.1.3 が非ターンプレイヤーにも同じことを定める。
+    **選ぶことは待ち行列の種類によらない。**
+
+    `queue` は `"pending_skills"`（外側）か `"pending_triggers"`（効果の解決中に誘発した割り込み）。
+    v0.15 までは前者だけが順序選択を持ち、後者は `pop(0)` の固定順だった（D-092 の A-3）。
+    ツバキは【レベルアップ】を持つカードを 3 枚持つので、§6.3-3 の同レベル重ね置き（u21）で
+    **下になった 2 枚が同時に誘発する**——603.1.2.2.2 が名指しで想定する場面である。
+
+    **判定を 2 か所に写すと、写した側だけが取り残される**（D-098 §5）。だから 1 つの関数に畳んだ。
+
+    選択を出すのは**先頭のプレイヤーの連続した区間**だけである（700.1.2 → 700.1.3 の順）。
+    """
+    q = getattr(s, queue)
+    if not q:
+        return
+    pi = q[0][0]
     n = 0
-    while n < len(s.pending_skills) and s.pending_skills[n][0] == pi:
+    while n < len(q) and q[n][0] == pi:
         n += 1
-    group, rest = s.pending_skills[:n], s.pending_skills[n:]
-    # 条件を満たさないスキルは誘発しない。解決の途中で条件が変わりうるため、
-    # スキルを開始するたびに評価し直す。
-    group = [r for r in group if _skill_condition_met(s, pi, _deref_skill(r), {})]
-    s.pending_skills = group + rest
-    if not group:
-        return
-    if len(group) >= 2:
+    # D-096: 条件は**積むときに**見た（`_keep_triggering`）。ここで見直さない——
+    # 公式 800.4 は「処理待ち状態に入った誘発型スキルは発生源から独立して扱われる」と定める。
+    if n >= 2:
+        # 符号化を動かさないため、既存の `order`（A-7）をそのまま使い回す。
+        # どちらの待ち行列から取るかは `queue` で持つ（`_apply_choice` が見る）。
         s.pending_choices.append({
-            "player": pi, "kind": "order",
-            "options": [{"index": i, "card": r[2], "skill_index": r[3]}
-                        for i, r in enumerate(group)],
+            "player": pi, "kind": "order", "queue": queue,
+            "options": [{"index": i, "card": q[i][2], "skill_index": q[i][3]}
+                        for i in range(n)],
         })
         return
-    _begin_skill(s, s.pending_skills.pop(0))
+    _begin_skill(s, q.pop(0))
 
 
 def _begin_skill(s: GameState, ref: list) -> None:
@@ -1023,12 +1216,13 @@ def _begin_skill(s: GameState, ref: list) -> None:
             "card": ref[2], "skill_index": ref[3], "ref": list(ref),
         })
         return
-    _start_skill_effect(s, ref[0], sk, ref[2], ref[1])
+    _start_skill_effect(s, ref[0], sk, ref[2], ref[1], skill_index=ref[3])
 
 
 def _start_skill_effect(s: GameState, pi: int, sk: Skill,
                         card: Optional[str] = None,
-                        card_kind: Optional[str] = None) -> None:
+                        card_kind: Optional[str] = None,
+                        skill_index: Optional[int] = None) -> None:
     """スキル 1 個のオペコード列を積む。
 
     v0.12: `card` はそのスキルが載っているカードの番号である。「**このカード**を手札に加える」
@@ -1036,6 +1230,10 @@ def _start_skill_effect(s: GameState, pi: int, sk: Skill,
     ためにここで持たせている——書いてしまうと「機構の仕様」にカード名が漏れ、
     初見カードに効く表現ではなくなる（D-050 条件 1・`tests/test_card_space.py`）。
     """
+    if _trace.ACTIVE:
+        _trace.emit(s, "step", what="skill", player=pi, card=card, card_kind=card_kind,
+                    skill_index=skill_index,
+                    timing=getattr(sk.timing, "value", str(sk.timing)))
     if not s.pending_shared_ctx:
         s.pending_ctx = {}
     s.pending_effect = {"owner": pi, "card": card, "card_kind": card_kind,
@@ -1131,7 +1329,11 @@ def _step_effect(s: GameState) -> None:
             })
             return
         pe["ops"].pop(0)
+        n_before = len(p.hand)
         _draw(s, owner, prm["chosen"])
+        _note_public_to_hand(s, owner, p.hand[n_before:])
+        if _trace.ACTIVE:
+            _emit_reveal_drawn(s, owner, n_before)
         return
 
     if op == "discard_self":
@@ -1150,6 +1352,7 @@ def _step_effect(s: GameState) -> None:
             })
             return
         p.trash.append(p.hand.pop(idx))
+        _know_hand_out(s, owner, p.trash[-1])
         prm["count"] -= 1
         # v0.12: 「手札1枚を捨ててもよい。**そうした場合**、〜」の連結に使う
         # （BP01-065 / BP01-067 音の形・重撃）。既存カードは誰も読まない。
@@ -1217,10 +1420,53 @@ def _step_effect(s: GameState) -> None:
     _apply_op(s, owner, op, prm, s.pending_ctx)
 
 
+def _reveal_stuck_turn_player_hand(s: GameState) -> None:
+    """対抗で置けないターンプレイヤーは手札をすべて公開する（公式 604.1.1.2 後段・B-9）。
+
+    > ターンプレイヤーの手札に使用条件を満たすアクションカードが存在せず、アクションエリアに
+    > カードを置くことができない場合、ターンプレイヤーは**自身の手札をすべて公開し**、
+    > 使用条件を満たすアクションカードが手札に存在しないことを非ターンプレイヤーに確認させます。
+
+    **公開の時点は 604.1.1.3（非ターンプレイヤーが置く）より前である。**条文の番号がその順序を定める。
+    ターンプレイヤーが置けるかどうかは**手札から決まる**（そこに選択は無い）ので、
+    提出を集める前に公開しても**対抗ステップの同時手番の構造は壊れない**。
+    そこで `_pump` が「誰かの行動を待つ」状態に落ち着いた時点で公開する。
+
+    公開は `peeked_opp_hand`（スキャン用に既にある仕組み）に流し込む。`observe` は覗いた時点の
+    スナップショットと現在の手札の積を返す（D-023）ので、公開後に手札が動けば、知られたままなのは
+    残っているカードだけになる。**手札全部の公開は、それ以前に覗いた知識の上位集合である**
+    （それ以前の知識も現在の手札との積で読まれるため）ので、上書きで情報が減ることはない。
+
+    **この局面は罰ではない。**603.1.3 によりターンプレイヤーは対抗フェイズごと飛ばせるので、
+    出せないと分かっていて対抗に入るのは本人の選択である（BP01 の
+    【自分の対抗フェイズ開始時】【各対抗フェイズ終了時】のために入る価値がある場合がある）。
+    """
+    if s.phase != Phase.CLASH_SUBMIT:
+        return
+    tp = s.turn_player
+    if s.pending_submission[tp] is not None:
+        return
+    p = s.players[tp]
+    if any(_usable_in_clash(s, tp, ACTION_CARDS[cid]) for cid in p.hand):
+        return
+    s.peeked_opp_hand[1 - tp] = list(p.hand)
+    s.known_opp_hand[1 - tp] = list(p.hand)                               # D-121
+    if _trace.ACTIVE:
+        # 公式 904.1: 公開は両方のプレイヤーへの開示である（D-114）。
+        _trace.emit(s, "reveal", owner=tp, cards=list(p.hand), audience="all", zone="hand")
+
+
 def _pump(s: GameState) -> None:
-    """保留中の解決を、選択待ちにぶつかるか全部片付くまで進める。"""
+    """保留中の解決を、選択待ちにぶつかるか全部片付くまで進める。
+
+    公式 700.1.1「処理待ちチェックは…ルールチェックを実行します」に合わせ、
+    **各周回の先頭でルールチェックを通す**（D-095）。
+    """
     while True:
+        _rule_check(s)
         if s.outcome is not None:
+            if _trace.ACTIVE:
+                _trace.emit(s, "game_over", outcome=s.outcome, reason=_game_over_reason(s))
             s.pending_skills = []
             s.pending_triggers = []
             s.pending_effect = None
@@ -1233,6 +1479,8 @@ def _pump(s: GameState) -> None:
             if s.phase != Phase.CHOICE:
                 s.phase_before_choice = s.phase
                 s.phase = Phase.CHOICE
+            if _trace.ACTIVE:
+                _emit_wait(s)
             return
         if s.phase == Phase.CHOICE:
             s.phase = s.phase_before_choice or Phase.ACTION
@@ -1240,21 +1488,83 @@ def _pump(s: GameState) -> None:
             if not s.pending_effect["ops"]:
                 s.pending_effect = None
             else:
+                if _trace.ACTIVE:
+                    pe = s.pending_effect
+                    _trace.emit(s, "step", what="op", owner=pe["owner"], op=pe["ops"][0][0],
+                                card=pe.get("card"), card_kind=pe.get("card_kind"))
                 _step_effect(s)
             continue
         # 割り込み（効果の途中で誘発したもの）を、外側の待ち行列より先に片付ける。
         if s.pending_triggers:
-            _start_next_trigger(s)
+            _start_next_pending(s, "pending_triggers")
             continue
         if s.pending_skills:
-            _start_next_skill(s)
+            _start_next_pending(s, "pending_skills")
             continue
         if s.choice_resume is not None:
             resume, s.choice_resume = s.choice_resume, None
             s.pending_shared_ctx = False
+            if _trace.ACTIVE:
+                _trace.emit(s, "step", what="resume", resume=resume["kind"])
             _dispatch_resume(s, resume)
             continue
+        # B-9 (604.1.1.2 後段): 誰かの行動を待つ状態に落ち着いた。対抗で置けない
+        # ターンプレイヤーはこの時点で手札を公開する（非ターンプレイヤーが置く前）。
+        _reveal_stuck_turn_player_hand(s)
+        if _trace.ACTIVE:
+            _emit_wait(s)
         return
+
+
+# --- トレース点の補助（M1・D-114）。`_trace.ACTIVE` が 0 のときは呼ばれない ----------------
+def _note_public_to_hand(s: GameState, owner: int, cards: list) -> None:
+    """公開されてから owner の手札に入ったカードを、相手（1 - owner）の知識に足す（D-121・段階1C-a）。
+
+    トレース点と違い**常に**記録する（状態の欄であって、観測の材料だから）。乱数は使わない。
+    """
+    if cards:
+        s.known_opp_hand[1 - owner].extend(cards)
+
+
+def _know_hand_out(s: GameState, owner: int, cid: str) -> None:
+    """owner の手札から**見える形で** cid が出た（D-121）。相手の知識からその札を 1 枚減らす。
+
+    知らなかった札が出たなら何もしない。同じ番号を 2 枚持っていて片方だけ知られていた場合も 1 枚減らす
+    ——どちらの 1 枚が出たかは相手に分からないので、「確かに残っている」枚数は 1 枚減る。
+    """
+    k = s.known_opp_hand[1 - owner]
+    if cid in k:
+        k.remove(cid)
+
+
+def _know_forget(s: GameState, observer: int) -> None:
+    """observer が相手の手札について知っていたことを全部捨てる（見えない出方・D-121）。"""
+    s.known_opp_hand[observer] = []
+
+
+def _emit_reveal_drawn(s: GameState, owner: int, n_before: int) -> None:
+    """「デッキの上から公開して手札に加える」で手札に入ったカードを公開として知らせる。
+
+    引いた後に出す（引く途中でリフレッシュが挟まると、引く前には山札の上が決まっていないため）。
+    `zone` は公開された時点の領域（山札）である。"""
+    cards = list(s.players[owner].hand[n_before:])
+    if cards:
+        _trace.emit(s, "reveal", owner=owner, cards=cards, audience="all", zone="action_deck")
+
+
+def _emit_wait(s: GameState) -> None:
+    info = {"phase": s.phase.value, "players": decision_players(s)}
+    if s.pending_choices:
+        info["choice_kind"] = s.pending_choices[0]["kind"]
+    _trace.emit(s, "wait", **info)
+
+
+def _game_over_reason(s: GameState) -> str:
+    if any(p.life <= 0 for p in s.players):
+        return "life"
+    if any(not p.action_deck and not p.trash for p in s.players):
+        return "deck_out"
+    return "deadlock"
 
 
 def _dispatch_resume(s: GameState, r: dict) -> None:
@@ -1488,6 +1798,9 @@ def _after_turn_start(s: GameState) -> None:
     n = FIRST_TURN_DRAW if (s.turn_no == 1) else DRAW_PER_TURN
     _draw(s, s.turn_player, n)
     # §9-5 / D-021: 進行不能状態は引き分けとする（マスター裁定 2026-08-21）。
+    # **v0.14 以後はほぼ到達しない**——双方のデッキとトラッシュが空なら 701.1.1.1 が先に
+    # 引き分けにするので（102.2）、ここに来るのは「デッキかトラッシュに在るのに盤面が動かない」
+    # 残余のケースだけである。R-1 の裁定どおり条文と実装を残す（D-095）。
     if _is_deadlocked(s):
         s.outcome = DRAW
         s.phase = Phase.GAME_OVER
@@ -1508,6 +1821,7 @@ def _resolve_clash(s: GameState) -> None:
         else:
             p = s.players[pi]
             cid = p.hand.pop(sub)
+            _know_hand_out(s, pi, cid)          # D-121: 対抗の提出は公開される
             p.action_area.append(cid)  # §4-1 左から順
             costs.append((pi, _effective_cost(s, pi, ACTION_CARDS[cid])))
             s.clash_cards[pi] = cid
@@ -1632,6 +1946,7 @@ def _do_rush(s: GameState, pi: int, hand_idx: int) -> None:
     """§6.4(3) 連撃1回分。【連撃】スキルを積み、解決後に _after_rush_skills へ。"""
     p = s.players[pi]
     cid = p.hand.pop(hand_idx)
+    _know_hand_out(s, pi, cid)
     card = ACTION_CARDS[cid]
     s.rush_allowance -= 1
     p.action_area.append(cid)
@@ -1646,9 +1961,13 @@ def _start_rush(s: GameState, pi: int, cid: str) -> None:
     card = ACTION_CARDS[cid]
     # 連撃で使用したカード自身の【連撃】スキル群。1枚のカード内で ctx を共有する
     # （switch_leader の結果を後続オペコード・後続スキルが参照するため）。
-    s.pending_skills = [[pi, "action", cid, k]
-                        for k, sk in enumerate(card.skills)
-                        if sk.timing == Timing.RUSH]
+    # D-096: ここは `_queue_fire` を通らずに直接組むので、**誘発時点の条件は自分で見る**。
+    # 見落として `_start_next_pending` の再評価だけを外すと、`SD02-011`「邪を潰す歳月の重さ」の
+    # 「自分のアクションエリアに 3 枚以上ある場合」が**一度も評価されなくなる**
+    # （`tests/test_engine.py::test_action_area_count_condition_not_met_no_bonus` が捕まえた）。
+    s.pending_skills = _keep_triggering(s, [[pi, "action", cid, k]
+                                            for k, sk in enumerate(card.skills)
+                                            if sk.timing == Timing.RUSH])
     s.pending_effect = None
     s.pending_ctx = {}
     s.pending_shared_ctx = True
@@ -1761,6 +2080,11 @@ def apply_owned(state: GameState, actions: dict) -> GameState:
     """
     need = decision_players(state)
     assert set(actions.keys()) == set(need), f"actions for {need} required"
+    if _trace.ACTIVE:
+        # 行動は**当てる前に**知らせる（M1・D-114）。同時手番（準備・マリガン・対抗の提出）は席の昇順。
+        # 次のトレース点までの状態の差分が、その行動の結果になる。
+        for pi, act in sorted(actions.items()):
+            _trace.emit(state, "action", player=pi, action=dict(act), phase=state.phase.value)
     _apply_inner(state, actions)
     _pump(state)
     return state
@@ -1774,8 +2098,15 @@ def _apply_inner(s: GameState, actions: dict) -> None:
         for pi, act in sorted(actions.items()):
             assert act["type"] == "setup"
             p = s.players[pi]
-            lv0 = {CHARA_CARDS[c].name: c for c in p.chara_deck
-                   if CHARA_CARDS[c].level == 0}
+            # A-5 (公式 101.1.1.1): 名前から Lv.0 を引く。辞書内包だと同名が 2 枚あるとき
+            # **あとの 1 枚が黙って勝つ**ので、ここでも一意であることを確かめる
+            # （`GameConfig.validate` が既に弾くが、依存している側にも置く・D-100）。
+            lv0: dict = {}
+            for c in p.chara_deck:
+                if CHARA_CARDS[c].level == 0:
+                    nm = CHARA_CARDS[c].name
+                    assert nm not in lv0, f"P{pi}: {nm} の Lv.0 が2枚ある ({lv0[nm]} と {c})"
+                    lv0[nm] = c
             leader = act["leader"]
             # 旧形式は後方互換のため名前順を既定回答として受け付ける。
             backs = act.get("backs", sorted(n for n in lv0 if n != leader))
@@ -1804,6 +2135,8 @@ def _apply_inner(s: GameState, actions: dict) -> None:
             back = [p.hand[i] for i in idxs]
             p.hand = [c for i, c in enumerate(p.hand) if i not in set(idxs)]
             p.action_deck.extend(back)       # デッキ底へ (§5-5)
+            if back:
+                _know_forget(s, 1 - pi)      # D-121: 戻した札は相手に公開されない
             for _ in range(len(back)):
                 if p.action_deck:
                     p.hand.append(p.action_deck.pop(0))
@@ -1822,6 +2155,7 @@ def _apply_inner(s: GameState, actions: dict) -> None:
         if t == "charge":                    # §6.3-1
             assert not s.used_charge
             p.concerto.append(p.hand.pop(act["hand"]))
+            _know_hand_out(s, s.turn_player, p.concerto[-1])
             s.used_charge = True
         elif t == "switch":                  # §6.3-2
             assert not s.used_switch and not s.leader_switch_forbidden[s.turn_player]
@@ -1831,7 +2165,8 @@ def _apply_inner(s: GameState, actions: dict) -> None:
                 s.slot_entered_turn[s.turn_player][b], s.slot_entered_turn[s.turn_player][0])
             s.used_switch = True
             # v0.12: 行動としての切り替えでも【切り替え】は誘発する (§7)。
-            _queue_fire_nested(s, Timing.SWITCHED, [s.turn_player])
+            # v0.19 (TE-13・D-134): 入れ替わった 2 枠だけ（公式 603.1.2.1.1）。
+            _queue_switch_triggers(s, s.turn_player, b)
         elif t == "levelup":                 # §6.3-3
             assert not s.used_levelup
             slot = p.slots[act["slot"]]
@@ -1844,10 +2179,9 @@ def _apply_inner(s: GameState, actions: dict) -> None:
             slot.stack.append(cid)
             s.slot_entered_turn[s.turn_player][act["slot"]] = s.turn_no
             s.used_levelup = True
-            # v0.12: 【登場】と【レベルアップ】。**準備 (§5-4) では誘発しない** (u1)。
-            # ここは行動としてのレベルアップなので、両方が誘発する場面である。
-            _queue_fire_nested(s, Timing.ENTER, [s.turn_player])
-            _queue_fire_nested(s, Timing.LEVELUP, [s.turn_player])
+            # v0.13 (D-094): 【登場】は置いたカード、【レベルアップ】はその下のカード
+            # (603.1.2.2.1/.2)。**準備 (§5-4) では誘発しない** (u1・公式 908.3)。
+            _queue_levelup_triggers(s, s.turn_player, act["slot"])
             # A-3: 手札コストとして捨てるカードはプレイヤーが選ぶ (§6.3-3)。
             if c.level > 0:
                 for _ in range(c.level):
@@ -1905,6 +2239,7 @@ def _apply_inner(s: GameState, actions: dict) -> None:
         assert act["type"] == "discard"
         p = s.players[s.turn_player]
         p.trash.append(p.hand.pop(act["hand"]))
+        _know_hand_out(s, s.turn_player, p.trash[-1])
         if len(p.hand) <= HAND_LIMIT:
             _next_turn(s)
         return
@@ -1938,7 +2273,8 @@ def _apply_choice(s: GameState, actions: dict) -> None:
         assert act["type"] in ("use", "skip")
         s.pending_choices.pop(0)
         if act["type"] == "use":
-            _start_skill_effect(s, pi, _deref_skill(ch["ref"]), ch["ref"][2], ch["ref"][1])
+            _start_skill_effect(s, pi, _deref_skill(ch["ref"]), ch["ref"][2], ch["ref"][1],
+                                skill_index=ch["ref"][3])
 
     elif kind == "reveal_count":                     # A-2
         assert act["type"] == "choose_count" and 0 <= act["count"] <= ch["max"]
@@ -1955,13 +2291,17 @@ def _apply_choice(s: GameState, actions: dict) -> None:
         s.pending_choices.pop(0)
         p = s.players[pi]
         p.trash.append(p.hand.pop(act["hand"]))
+        _know_hand_out(s, pi, p.trash[-1])
 
-    elif kind == "order":                            # A-7
+    elif kind == "order":                            # A-7 / A-3
         assert act["type"] == "resolve"
         idx = act["index"]
         assert any(o["index"] == idx for o in ch["options"])
         s.pending_choices.pop(0)
-        _begin_skill(s, s.pending_skills.pop(idx))
+        # `queue` は `_start_next_pending` が入れる（A-3 で足した）。
+        # 既定を `pending_skills` にしてあるのは、この鍵を持たない古い保存状態を
+        # 読み込んだときに A-7 の従来どおりの意味になるようにするためである。
+        _begin_skill(s, getattr(s, ch.get("queue", "pending_skills")).pop(idx))
 
     elif kind == "pay_cost_card":
         assert act["type"] == "choose_card" and act["zone"] == "concerto"
@@ -1991,6 +2331,8 @@ def _apply_choice(s: GameState, actions: dict) -> None:
             assert 0 <= i < len(src) and src[i] == act["card"]
             cid = src.pop(i)
             getattr(s.players[ch["zone_owner"]], ch["destination"]).append(cid)
+            if ch["destination"] == "hand":                 # 公開領域から手札へ（D-121）
+                _note_public_to_hand(s, ch["zone_owner"], [cid])
             ch["remaining"] -= 1
             prm = ch["match_params"]
             match = ((lambda x: _trash_matches(ACTION_CARDS[x], prm))
@@ -2015,8 +2357,7 @@ def _apply_choice(s: GameState, actions: dict) -> None:
         s.slot_entered_turn[pi][si] = s.turn_no
         s.pending_choices.pop(0)
         s.pending_effect["ops"].pop(0)
-        _queue_fire_nested(s, Timing.ENTER, [pi])
-        _queue_fire_nested(s, Timing.LEVELUP, [pi])
+        _queue_levelup_triggers(s, pi, si)
 
     else:
         raise ValueError(kind)
@@ -2035,10 +2376,11 @@ def outcome(s: GameState) -> Optional[int]:
 # 観測（情報集合） §10
 # ---------------------------------------------------------------------------
 
-def _known_opponent_hand(s: GameState, pi: int) -> list:
-    """pi が「相手の手札を確認する」効果で見たカードのうち、今も相手の手札にあるもの。
+def _known_opponent_hand_scan(s: GameState, pi: int) -> list:
+    """pi が「相手の手札を確認する」効果（スキャン・B-9 の公開）で見たカードのうち、今も相手の手札にあるもの。
 
     覗いた時点のスナップショットと現在の相手の手札の多重集合の積を返す（D-023）。
+    **D-121 以後は `observe` の `opp.hand_known_scan`**（現 champion の決定化と符号化 v5 が読む・打ち方を変えないため）。
     """
     seen = s.peeked_opp_hand[pi]
     if not seen:
@@ -2048,6 +2390,18 @@ def _known_opponent_hand(s: GameState, pi: int) -> list:
     for cid, n in Counter(seen).items():
         out += [cid] * min(n, have.get(cid, 0))
     return sorted(out)
+
+
+def _known_opponent_hand(s: GameState, pi: int) -> list:
+    """pi が相手の手札について**知っている**カード（D-121・段階1C-a・マスター裁定「最終的には統一する」）。
+
+    `GameState.known_opp_hand` を返す（更新の規則は `state.py` の註）。スキャン・B-9 で見たもの、公開されてから
+    相手の手札に入ったもの、の両方を含み、見える形で出た札は減り、見えない形で出たら全部忘れる。
+    これが pi の情報集合としての「相手の手札の確かな既知部分」であり、`observe` の `opp.hand_known` はこれを返す。
+    """
+    # 更新の規則で常に「本当の手札の部分集合」に保たれている。積は壊れたときの安全柵である。
+    have = Counter(s.players[1 - pi].hand)
+    return sorted((Counter(s.known_opp_hand[pi]) & have).elements())
 
 
 def observe(s: GameState, pi: int) -> dict:
@@ -2081,6 +2435,9 @@ def observe(s: GameState, pi: int) -> dict:
             # （チャージ・レベルアップのコスト・対抗・連撃・捨て札）はすべて公開情報なので、
             # 積集合を取っても見ていない情報が漏れることはない。
             "hand_known": _known_opponent_hand(s, pi),
+            # D-121: スキャン・B-9 のぶんだけ（旧 `hand_known`）。現 champion の `known_hand` と符号化 v5 が読む。
+            # **いまの champion を退役させたら消す**（「最終的には統一する」の残り）。
+            "hand_known_scan": _known_opponent_hand_scan(s, pi),
             "concerto": list(opp.concerto),
             "trash": list(opp.trash),
             "action_area": list(opp.action_area),

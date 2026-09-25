@@ -266,8 +266,9 @@ def test_random_ops_are_reproducible_from_the_seed():
 
 # --- Python / Rust の毎手一致（BP01 のデッキで）--------------------------------
 
-@pytest.mark.parametrize("seed", [0, 1, 2, 3, 4, 5, 6, 7])
-def test_rust_matches_python_on_a_bp01_deck(seed):
+@pytest.mark.parametrize("deck", ["K_smoke_ANKO", "K_smoke_TSUBAKI", "K_smoke_SANGE"])
+@pytest.mark.parametrize("seed", list(range(40)))
+def test_rust_matches_python_on_a_bp01_deck(seed, deck):
     """BP01 の仮デッキで、Python と Rust が**毎手・全欄一致**すること。
 
     `test_rust_engine.py` の毎手一致は SD001/SD02 の対局を回すので、BP01 のカードを
@@ -292,7 +293,7 @@ def test_rust_matches_python_on_a_bp01_deck(seed):
     n = rs.load_cards(cards_json())
     assert n == len(_C) + len(_A)
 
-    with open(os.path.join(_ROOT, "decklists", "K_smoke_ANKO.json"), encoding="utf-8") as f:
+    with open(os.path.join(_ROOT, "decklists", deck + ".json"), encoding="utf-8") as f:
         d = _json.load(f)
     config = GameConfig(chara_decks=[d["chara_deck"]] * 2,
                         action_decks=[d["action_deck"]] * 2)
@@ -307,12 +308,12 @@ def test_rust_matches_python_on_a_bp01_deck(seed):
     steps = 0
     while outcome(py) is None and py.turn_no <= 200:
         assert norm(_json.loads(py.to_json())) == _json.loads(rss.to_json()), \
-            f"state mismatch seed={seed} step={steps}"
+            f"state mismatch deck={deck} seed={seed} step={steps}"
         need = decision_players(py)
-        assert list(need) == list(rs.decision_players(rss)), f"decision_players step={steps}"
+        assert list(need) == list(rs.decision_players(rss)), f"decision_players deck={deck} seed={seed} step={steps}"
         for pi in (0, 1):
             assert norm(legal_actions(py, pi)) == rs.legal_actions(rss, pi), \
-                f"legal_actions P{pi} step={steps}"
+                f"legal_actions P{pi} deck={deck} seed={seed} step={steps}"
         acts = {pi: agents[pi].act(py, pi) for pi in need}
         py = apply(py, acts)
         rss = rs.apply(rss, {pi: norm(a) for pi, a in acts.items()})
@@ -320,6 +321,120 @@ def test_rust_matches_python_on_a_bp01_deck(seed):
     assert norm(_json.loads(py.to_json())) == _json.loads(rss.to_json()), "最終局面が違う"
     assert outcome(py) == rs.outcome(rss)
     assert steps > 20, f"対局が短すぎて何も踏んでいない（steps={steps}）"
+
+
+def test_zone_choice_on_an_opponent_zone_carries_no_match_params():
+    """B-8: 相手の領域を動かす zone_card の `match_params` が Python と Rust で一致すること。
+
+    Python (`_queue_zone_choice` の呼び分け・`engine.py`) は **相手の領域**を動かす 2 つの op
+    (`opp_concerto_to_trash` / `opp_trash_to_deck_bottom`) に `match_params` を渡さない。
+    絞り込みを持つのは**自分のトラッシュから拾う** 2 つ (`trash_to_hand` / `trash_to_concerto`) だけである。
+
+    Rust は 4 つを 1 本の分岐で扱っていて、つねに op の params を `match_params` に入れていた。
+    `count` は絞り込みの鍵ではないので選択肢は変わらないが、**状態の JSON が食い違う**ので
+    毎手一致が落ちる（2026-09-17・D-093 で発見。シード 5 の 22 手目）。
+
+    ここは症状を名指しする検査である。上の毎手一致だけでも落ちるが、
+    落ちたときに「どの欄が、なぜ」を読み取れるようにこちらを置く。
+    **将来 `opp_trash_to_deck_bottom` に `tag` 等の絞り込みが付いたカードが来ると本物の挙動差になる**
+    ので、そのときはこの検査を「Python と同じ絞り込みを渡す」側へ書き換えること。
+    """
+    rs = pytest.importorskip("meicho_rs")
+    import json as _json
+
+    from meicho.cards_export import cards_json
+    from meicho.engine import (GameConfig, apply, decision_players, initial_state,
+                               legal_actions, outcome)
+    from meicho.agents import RandomAgent
+
+    rs.load_cards(cards_json())
+    with open(os.path.join(_ROOT, "decklists", "K_smoke_ANKO.json"), encoding="utf-8") as f:
+        d = _json.load(f)
+    config = GameConfig(chara_decks=[d["chara_deck"]] * 2,
+                        action_decks=[d["action_deck"]] * 2)
+
+    def norm(x):
+        return _json.loads(_json.dumps(x, ensure_ascii=False))
+
+    # シード 5 は `BP01-043`「哀切の凶鳥」の `opp_trash_to_deck_bottom {count: 2}` を踏む。
+    seed = 5
+    py = initial_state(config, seed)
+    rss = rs.initial_state(config.chara_decks, config.action_decks, seed)
+    agents = [RandomAgent(seed * 2), RandomAgent(seed * 2 + 1)]
+    seen = 0
+    while outcome(py) is None and py.turn_no <= 200:
+        a = norm(_json.loads(py.to_json()))
+        b = _json.loads(rss.to_json())
+        for pc_py, pc_rs in zip(a.get("pending_choices") or [], b.get("pending_choices") or []):
+            if pc_py.get("kind") != "zone_card":
+                continue
+            seen += 1
+            mp_py, mp_rs = pc_py["match_params"], pc_rs["match_params"]
+            assert mp_py == mp_rs, (
+                "zone_card の match_params が食い違う（B-8）: "
+                f"Python={mp_py} / Rust={mp_rs} / destination={pc_py['destination']}")
+        need = decision_players(py)
+        acts = {pi: agents[pi].act(py, pi) for pi in need}
+        py = apply(py, acts)
+        rss = rs.apply(rss, {pi: norm(a2) for pi, a2 in acts.items()})
+    assert seen > 0, "zone_card の選択を 1 度も踏んでいない＝この検査は何も守っていない"
+
+
+def test_pay_cost_return_self_to_hand_records_paid_like_python():
+    """B-8 の 2 件目: 「支払いはもう済んだ」印の欄名が Python と Rust で一致すること。
+
+    `BP01-069` 羽乱舞・回避の `pay_cost_return_self_to_hand` (u11) は、支払いの選択を
+    先に済ませたことを **Python が `prm["paid"] = True`** で覚える（`engine.py`）。
+    Rust は既存の `chosen` を流用して `chosen: 1` と書いていたので、`pending_effect` の
+    params が食い違って毎手一致が落ちていた（2026-09-17・`K_smoke_TSUBAKI` のシード 37・39 ほか）。
+    `chosen` はドロー枚数などにも使う欄なので流用は解けない。Rust に `paid` を足して直した。
+
+    **1 件目（`match_params`）とは別の欄・別の原因である。**`K_smoke_ANKO` だけを回していた
+    ころは踏まなかった——だから上の毎手一致は仮デッキ 3 種すべてを回すようにした。
+    """
+    rs = pytest.importorskip("meicho_rs")
+    import json as _json
+
+    from meicho.cards_export import cards_json
+    from meicho.engine import (GameConfig, apply, decision_players, initial_state,
+                               outcome)
+    from meicho.agents import RandomAgent
+
+    rs.load_cards(cards_json())
+    with open(os.path.join(_ROOT, "decklists", "K_smoke_TSUBAKI.json"), encoding="utf-8") as f:
+        d = _json.load(f)
+    config = GameConfig(chara_decks=[d["chara_deck"]] * 2,
+                        action_decks=[d["action_deck"]] * 2)
+
+    def norm(x):
+        return _json.loads(_json.dumps(x, ensure_ascii=False))
+
+    # 踏むシードは実装の変更で動く（D-094 で誘発範囲を直したときに 37・39 が外れた）。
+    # **固定のシードに頼らず、踏むまで探す。**踏まなければ最後の assert で落ちる。
+    seen = 0
+    for seed in range(40):
+        if seen:
+            break
+        py = initial_state(config, seed)
+        rss = rs.initial_state(config.chara_decks, config.action_decks, seed)
+        agents = [RandomAgent(seed * 2), RandomAgent(seed * 2 + 1)]
+        while outcome(py) is None and py.turn_no <= 200:
+            a = norm(_json.loads(py.to_json()))
+            b = _json.loads(rss.to_json())
+            pe_py, pe_rs = a.get("pending_effect"), b.get("pending_effect")
+            if pe_py and pe_rs and pe_py.get("ops") and pe_rs.get("ops"):
+                op_py, prm_py = pe_py["ops"][0]
+                op_rs, prm_rs = pe_rs["ops"][0]
+                if op_py == "pay_cost_return_self_to_hand":
+                    seen += 1
+                    assert prm_py == prm_rs, (
+                        "pay_cost_return_self_to_hand の params が食い違う（B-8 の 2 件目）: "
+                        f"Python={prm_py} / Rust={prm_rs}")
+            need = decision_players(py)
+            acts = {pi: agents[pi].act(py, pi) for pi in need}
+            py = apply(py, acts)
+            rss = rs.apply(rss, {pi: norm(a2) for pi, a2 in acts.items()})
+    assert seen > 0, "pay_cost_return_self_to_hand を 1 度も踏んでいない＝この検査は何も守っていない"
 
 
 def test_the_smoke_deck_actually_exercises_the_new_machinery():

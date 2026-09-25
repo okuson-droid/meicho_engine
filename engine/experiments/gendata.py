@@ -54,6 +54,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."))
 
 from arena import load_deck, mirror_config                       # noqa: E402
+from meicho.version import ENGINE_VERSION, RULES_VERSION         # noqa: E402  D-117
 from registry import make                                        # noqa: E402
 from meicho.engine import (apply, decision_players, initial_state,  # noqa: E402
                            observe, outcome)
@@ -233,7 +234,7 @@ def generate(name: str, split: str, workers: int, dry: bool = False) -> dict:
         "dataset": name, "split": split, "def_hash": h,
         "definition": d, "seed_band": band,
         "assignment": jobs_by_matchup,
-        "rules_version": "v0.10", "engine_version": "v0.1",
+        "rules_version": RULES_VERSION, "engine_version": ENGINE_VERSION,   # D-117
         "games": n_games, "aborted": n_abort, "draws": n_draw,
         "rows": n_rows, "rows_per_matchup": per_matchup,
         "win_rate_a": {k: {"wins": w, "n": n, "p": (w / n if n else None)}

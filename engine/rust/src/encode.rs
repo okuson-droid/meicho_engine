@@ -8,13 +8,15 @@
 use crate::agents::live_reds;
 use crate::cards::CardDb;
 use crate::engine::Action;
-use crate::state::{Choice, GameState, Phase};
+use crate::state::{Choice, GameState, Phase, Zone};
 
 // D-062: AC-001 削除でカード種数が変わった（2→3）。
 // D-079 追記 2（便 K 段 K-1）: BP01 の 68 番号＋未掲載 3 枠を登録して 3→4。
 // **次元そのものは `CardDb` の大きさから導いている**（`obs_dim` / `act_dim`）ので、
 // カードが増えてもこのファイルの構造は変わらない。上げるのは版の札だけである。
-pub const ENCODING_VERSION: i64 = 5;
+// D-124（段階1C-c）: 5→6。v5 の列は動かさず、末尾に信念の要約（N_BELIEF）と統一した hand_known（NA）を足した。
+pub const ENCODING_VERSION: i64 = 6;
+pub const N_BELIEF: usize = 20;
 pub const LEGACY_N_SCALAR: usize = 62;
 pub const N_SCALAR: usize = 100;
 pub const N_ACTION_TYPES: usize = 20;
@@ -29,7 +31,7 @@ fn c(x: i64) -> i8 {
 pub fn obs_dim(db: &CardDb) -> usize {
     let mut tags: Vec<&str> = db.action.iter().flat_map(|c| c.tags.iter().map(String::as_str)).collect();
     tags.sort(); tags.dedup();
-    N_SCALAR + 14 * db.action.len() + 13 * db.chara.len() + 2 * tags.len()
+    N_SCALAR + 14 * db.action.len() + 13 * db.chara.len() + 2 * tags.len() + N_BELIEF + db.action.len()
 }
 
 pub fn act_dim(db: &CardDb) -> usize {
@@ -92,8 +94,76 @@ fn push_slot(out: &mut Vec<i8>, stack: &[u16], visible: bool, n: usize) {
     }
 }
 
-/// `encode.encode(observe(s, pi), pi)` と同じ列。
+/// `encode.encode(observe(s, pi), pi)` と同じ列（相手のデッキ表の想定なし＝信念の要約の多くが 0）。
 pub fn encode_state(db: &CardDb, s: &GameState, pi: u8) -> Vec<i8> {
+    encode_state_with(db, s, pi, None)
+}
+
+/// 相手の手札について**確かに知っている札**（統一版・D-122）。`engine::known_opponent_hand_unified` の ID 版。
+/// 並びは `known_opp_hand` のまま（枚数ベクトルと W にしか使わないので並びは効かない）。
+fn known_unified_ids(s: &GameState, pu: usize) -> Vec<u16> {
+    let mut have: Vec<u16> = s.players[1 - pu].hand.clone();
+    let mut out: Vec<u16> = Vec::new();
+    for &cid in &s.known_opp_hand[pu] {
+        if let Some(p) = have.iter().position(|&c| c == cid) {
+            have.remove(p);
+            out.push(cid);
+        }
+    }
+    out
+}
+
+/// 信念の要約（PT-3・D-124）。`meicho/encode.py::_belief` の写し。並びと意味はそちらの docstring。
+fn push_belief(db: &CardDb, s: &GameState, pu: usize, opp_deck: Option<&[u16]>, known: &[u16], out: &mut Vec<i8>) {
+    let opp = &s.players[1 - pu];
+    let n_hand = opp.hand.len();
+    let mut v = [0i8; N_BELIEF];
+    v[1] = c(known.len() as i64);
+    v[2] = c(n_hand.saturating_sub(known.len()) as i64);
+    if let Some(deck) = opp_deck {
+        v[0] = 1;
+        let mut pool: Vec<u16> = deck.to_vec();
+        for cid in opp.concerto.iter().chain(&opp.trash).chain(&opp.action_area) {
+            if let Some(pos) = pool.iter().position(|x| x == cid) {
+                pool.remove(pos);
+            }
+        }
+        match crate::worlds::world_count_w(db, &pool, n_hand, known) {
+            None => {
+                v[3] = -1;
+                v[4] = 1;
+            }
+            Some(w) => {
+                // floor(2·log2 W) を整数だけで: W² のビット長 − 1（Python の `_pow2_floor_x2`）
+                v[3] = if w >= 1 { c((128 - ((w as u128) * (w as u128)).leading_zeros()) as i64 - 1) } else { -1 };
+                v[5] = if w == 1 { 1 } else { 0 };
+                let left = crate::worlds::remove_multiset(&pool, known);
+                let k = n_hand - known.len();
+                let color = |cid: u16| -> usize {
+                    match db.action[cid as usize].color { crate::cards::Color::Red => 0, crate::cards::Color::Green => 1, crate::cards::Color::Blue => 2 }
+                };
+                let band = |cid: u16| -> usize { crate::buckets::cost_band(db.action[cid as usize].cost) };
+                let mut bounds = |key: &dyn Fn(u16) -> usize, n: usize, at: usize| {
+                    let mut kn = vec![0usize; n];
+                    let mut lf = vec![0usize; n];
+                    for &x in known { kn[key(x)] += 1; }
+                    for &x in &left { lf[key(x)] += 1; }
+                    for g in 0..n {
+                        let other = left.len() - lf[g];
+                        v[at + 2 * g] = c((kn[g] + k.saturating_sub(other)) as i64);
+                        v[at + 2 * g + 1] = c((kn[g] + k.min(lf[g])) as i64);
+                    }
+                };
+                bounds(&color, 3, 6);
+                bounds(&band, 4, 12);
+            }
+        }
+    }
+    out.extend_from_slice(&v);
+}
+
+/// v6: `encode.encode(observe(s, pi), pi, opp_decklist)` と同じ列。`opp_deck` は相手のデッキ表の想定（D-124）。
+pub fn encode_state_with(db: &CardDb, s: &GameState, pi: u8, opp_deck: Option<&[u16]>) -> Vec<i8> {
     let pu = pi as usize;
     let me = &s.players[pu];
     let opp = &s.players[1 - pu];
@@ -191,8 +261,10 @@ pub fn encode_state(db: &CardDb, s: &GameState, pi: u8) -> Vec<i8> {
     for who in [pu,1-pu] { out.push(c(s.deferred_clash_damage.iter().filter(|(p,_,_)| *p as usize==who).map(|x|x.1).sum())); }
     let mut detail=[0i8;10];
     if let Some(ch)=s.pending_choices.first() { if ch.player()==pi { match ch {
-        Choice::PayOrDamage{cost,amount,..}=>{detail[0]=c(*cost);detail[1]=c(*amount);detail[5]=2},
-        Choice::RevealCount{max,..}=>{detail[2]=c(*max);detail[5]=c(max+1)},
+        Choice::PayOrDamage{cost,amount,..}=>{detail[0]=c(*cost);detail[1]=c(*amount)},
+        Choice::RevealCount{max,..}=>detail[2]=c(*max),
+        Choice::SwitchBack{options,..}=>detail[5]=c(options.len() as i64),
+        Choice::Order{options,..}=>detail[5]=c(options.len() as i64),
         Choice::DiscardForEffect{remaining,..}=>detail[3]=c(*remaining),
         Choice::PayCostCard{remaining,options,..}=>{detail[3]=c(*remaining);detail[5]=c(options.len() as i64)},
         Choice::ZoneCard{zone_owner,zone,destination,remaining,optional,options,..}=>{detail[3]=c(*remaining);detail[4]=*optional as i8;detail[5]=c((options.len()+usize::from(*optional)) as i64);detail[6]=(*zone_owner!=pi) as i8;detail[7]=*zone as i8+1;detail[8]=*destination as i8+1},
@@ -233,6 +305,10 @@ pub fn encode_state(db: &CardDb, s: &GameState, pi: u8) -> Vec<i8> {
     let mut tags: Vec<&str> = db.action.iter().flat_map(|x| x.tags.iter().map(String::as_str)).collect(); tags.sort(); tags.dedup();
     for who in [pu,1-pu] { for tag in &tags { out.push(c(s.tag_uses_this_turn[who].iter().find(|(t,_)|t==tag).map_or(0,|x|x.1))); } }
     push_onehot(&mut out, s.last_used_card[pu], na); push_onehot(&mut out, s.last_used_card[1-pu], na);
+    // --- v6（D-124）: 信念の要約と、統一した hand_known の枚数ベクトル ---
+    let known_u = known_unified_ids(s, pu);
+    push_belief(db, s, pu, opp_deck, &known_u, &mut out);
+    push_counts(&mut out, &known_u, na);
     debug_assert_eq!(out.len(), obs_dim(db));
     out
 }

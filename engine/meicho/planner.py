@@ -421,7 +421,8 @@ class PlannerAgent(GreedyAgent):
         import numpy as np
         from .encode import encode
         net = load_net(self.value_net)
-        return float(net.value_of(np.asarray(encode(observe(s, pi), pi), np.float32)))
+        # v6（D-124）: 信念の要約は自分の想定デッキ表（`opp_decklist`）で作る（Rust の `net_value` と同じ）
+        return float(net.value_of(np.asarray(encode(observe(s, pi), pi, self.opp_decklist), np.float32)))
 
     @staticmethod
     def _sig(u):

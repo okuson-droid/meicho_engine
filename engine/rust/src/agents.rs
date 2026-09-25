@@ -814,14 +814,15 @@ impl Greedy {
     }
 
     /// ネットの価値（勝つ確率）。決着済みなら 1 / 0 / 0.5（学習の教師と同じ）。
-    pub fn net_value(db: &CardDb, net: &Net, s: &GameState, pi: usize) -> f64 {
+    /// `opp_deck` は相手のデッキ表の想定（v6 の信念の要約・D-124）。Python の `_eval` と同じく自分の `opp_decklist`。
+    pub fn net_value(db: &CardDb, net: &Net, s: &GameState, pi: usize, opp_deck: Option<&[u16]>) -> f64 {
         if let Some(o) = s.outcome {
             if o == DRAW {
                 return 0.5;
             }
             return if o as usize == pi { 1.0 } else { 0.0 };
         }
-        let x: Vec<f32> = encode::encode_state(db, s, pi as u8).iter().map(|&v| v as f32).collect();
+        let x: Vec<f32> = encode::encode_state_with(db, s, pi as u8, opp_deck).iter().map(|&v| v as f32).collect();
         net.value(&x) as f64
     }
 
@@ -1157,7 +1158,7 @@ impl Greedy {
 
     pub fn eval(&self, db: &CardDb, s: &GameState, pi: usize) -> f64 {
         match &self.value_net {
-            Some(n) => Self::net_value(db, n, s, pi),
+            Some(n) => Self::net_value(db, n, s, pi, self.opp_decklist.as_deref()),
             None => evaluate(db, s, pi, &self.w),
         }
     }

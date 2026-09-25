@@ -1,0 +1,973 @@
+FFFF                                                                     [100%]
+================================== FAILURES ===================================
+___________________ test_a2_bundles_over_enumerated_worlds ____________________
+
+    def test_a2_bundles_over_enumerated_worlds():
+        """`endgame_enum` が発火した決定でも束ねが働き、**列挙した世界が行列の k になる**。
+    
+        引継ぎ書 §0.3 (iii) の裁定（終盤も働かせる）をここで固定する。
+    
+        局面は**回帰 4 局面の 9/3 g002**（青で受けた負け）を使う。W = 48 ≤ 64 なので
+        段 C-3 の列挙が確実に発火する、**実際に起きた**終盤の対抗である
+        （champion のミラーを頭から回すと、この深さまで行かない局が多い）。
+        """
+        from coverage import regression_positions
+>       pos = [p for p in regression_positions() if p[0] == "planner_vb3:g002:last"]
+                          ^^^^^^^^^^^^^^^^^^^^^^
+
+tests\test_lit_a2.py:476: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+path = 'C:\\Users\\奥村優斗\\OneDrive\\ドキュメント\\eclipse_workフォルダ\\meicho_engine_v0.1\\engine\\experiments\\..\\results\\human_games\\2026-09.jsonl'
+
+    def regression_positions(path: str = None) -> list:
+        """回帰局面を記録から再生して返す。
+    
+        返すのは [(tag, 局面, AI の席, エージェントのシード, 相手が実際に出した手, 説明)]。
+        再生は `verify_lethal_human.walk_clashes` を**そのまま呼ぶ**（写して書き換えない。
+        D-075 の教訓）。`walk_clashes` は対抗の局面と**そのとき実際に出された手**を組で返す。
+        """
+        from verify_lethal_human import walk_clashes
+        path = path or REGRESSION_GAMES
+        if not os.path.exists(path):
+            return []
+        recs = [json.loads(line) for line in open(path, encoding="utf-8") if line.strip()]
+        d = load_deck("SD001")
+        cfg = mirror_config(d)
+        out = []
+        for opp_name, gid, pick, why in REGRESSION_PICKS:
+            hit = [r for r in recs
+                   if r["opponent"]["name"] == opp_name and r["game_id"] == gid]
+            if not hit:
+                continue
+            rec = hit[-1]
+>           clashes = walk_clashes(rec, cfg)
+                      ^^^^^^^^^^^^^^^^^^^^^^
+
+experiments\coverage.py:386: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+rec = {'app_version': '1', 'rules_version': 'v0.10', 'engine_version': 'v0.1', 'played_at': '2026-09-03T20:24:03+09:00', ...}
+cfg = GameConfig(chara_decks=[['BP01-018', 'SD01-002', 'SD01-001', 'BP01-024', 'SD01-004', 'SD01-003', 'BP01-027', 'SD01-006...D01-008', 'SD01-020', 'SD01-020', 'SD01-020', 'SD01-021', 'SD01-021', 'SD01-021', 'SD01-015', 'SD01-015', 'SD01-015']])
+
+    def walk_clashes(rec: dict, cfg) -> list:
+        """再生しながら、**対抗の局面とそのとき実際に出された手**を組で集める。
+    
+        `webapp.record.replay` は局面しか返さないので、詰み表を「相手が実際に出した手の列」で
+        読むために、同じ再生をここでもう一度なぞる（記録どおりに動かすだけなので結果は同じ）。
+        """
+        from meicho.engine import initial_state, outcome
+        from webapp.record import ReplayAgent
+        agents = [ReplayAgent(rec["actions"], 0), ReplayAgent(rec["actions"], 1)]
+        s = initial_state(cfg, rec["seed"])
+        out, steps = [], 0
+        while outcome(s) is None and s.turn_no <= 200:
+            need = decision_players(s)
+            if not need or all(agents[pi].exhausted for pi in need):
+                break
+            acts = {pi: agents[pi].act(s, pi) for pi in need}
+            if s.phase == Phase.CLASH_SUBMIT and set(need) == {0, 1}:
+                out.append((s, dict(acts)))
+>           s = apply(s, acts)
+                ^^^^^^^^^^^^^^
+
+experiments\verify_lethal_human.py:89: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+state = GameState(seed=130002, rng_calls=4, phase=<Phase.CHOICE: 'choice'>, turn_no=3, turn_player=0, players=[PlayerState(lif...d_turn=[[0, 0, 3], [2, 0, 0]], variation_rush_draw=[0, 0], deferred_clash_damage=[], pending_triggers=[], outcome=None)
+actions = {0: {'type': 'stop'}}
+
+    def apply(state: GameState, actions: dict) -> GameState:
+        """actions: {player_index: action_dict}。decision_players の全員分が必要。
+    
+        行動を適用したあと `_pump` を呼び、保留中の効果解決を
+        「次の選択待ち」または「全部片付く」まで進めてから**新しい** state を返す（D-022）。
+        公開APIはこちら。入力の state は変更しない（作業規約2）。
+        """
+>       return apply_owned(state.clone(), actions)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+meicho\engine.py:1865: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+state = GameState(seed=130002, rng_calls=4, phase=<Phase.CHOICE: 'choice'>, turn_no=3, turn_player=0, players=[PlayerState(lif...d_turn=[[0, 0, 3], [2, 0, 0]], variation_rush_draw=[0, 0], deferred_clash_damage=[], pending_triggers=[], outcome=None)
+actions = {0: {'type': 'stop'}}
+
+    def apply_owned(state: GameState, actions: dict) -> GameState:
+        """`apply` と同じだが**複製せず、渡された state を直接書き換える**（B-2）。
+    
+        **呼び出し側が state を専有している場合にのみ使うこと。**
+        他所から参照されている state に使うと、非破壊更新の規約が壊れる。
+    
+        用途はロールアウトの連鎖である。`_settle` や `_value_after_turn` は
+        `apply(...)` の戻り値（＝生成したばかりで誰も参照していない state）を
+        受け取って、それを何十手も進める。その各手で clone するのは無駄で、
+        プロファイルでは clone が計画探索の実行時間の約1/4を占めていた。
+    
+        非破壊APIの見た目は `apply` 側で維持されるので、外部の利用者から
+        見た挙動は変わらない（`bench_agents.py` の fingerprint で担保）。
+        """
+        need = decision_players(state)
+        assert set(actions.keys()) == set(need), f"actions for {need} required"
+>       _apply_inner(state, actions)
+
+meicho\engine.py:1884: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+s = GameState(seed=130002, rng_calls=4, phase=<Phase.CHOICE: 'choice'>, turn_no=3, turn_player=0, players=[PlayerState(lif...d_turn=[[0, 0, 3], [2, 0, 0]], variation_rush_draw=[0, 0], deferred_clash_damage=[], pending_triggers=[], outcome=None)
+actions = {0: {'type': 'stop'}}
+
+    def _apply_inner(s: GameState, actions: dict) -> None:
+        # D-050: 同時手番の行動は**席の昇順**で処理する。辞書の挿入順に依存させない
+        # （旧実装は `actions.items()` の順でシャッフルの乱数を消費していた。D-040 で発覚）。
+        # 既存の呼び出し側は全て昇順で組んでいたので fingerprint は不変。Rust 版と同じ規約。
+        if s.phase == Phase.SETUP_CHARA:
+            for pi, act in sorted(actions.items()):
+                assert act["type"] == "setup"
+                p = s.players[pi]
+                lv0 = {CHARA_CARDS[c].name: c for c in p.chara_deck
+                       if CHARA_CARDS[c].level == 0}
+                leader = act["leader"]
+                # 旧形式は後方互換のため名前順を既定回答として受け付ける。
+                backs = act.get("backs", sorted(n for n in lv0 if n != leader))
+                assert sorted(backs) == sorted(n for n in lv0 if n != leader)
+                order = [leader] + backs
+                for si, name in enumerate(order):
+                    cid = lv0[name]
+                    p.slots[si] = CharaSlot(stack=[cid])
+                    p.chara_deck.remove(cid)
+            if not decision_players(s):
+                for pi in (0, 1):
+                    _draw(s, pi, OPENING_HAND)   # §5-5
+                s.phase = Phase.MULLIGAN
+            return
+    
+        if s.phase == Phase.MULLIGAN:
+            for pi, act in sorted(actions.items()):
+                assert act["type"] == "mulligan"
+                p = s.players[pi]
+                # A-6: 戻す手札は任意の部分集合 (§5-5)。"cards" は手札のインデックス列。
+                # 旧形式 {"count": n}（左端からn枚）も後方互換のため受け付ける。
+                idxs = act.get("cards")
+                if idxs is None:
+                    idxs = list(range(act["count"]))
+                idxs = sorted(set(idxs))
+                back = [p.hand[i] for i in idxs]
+                p.hand = [c for i, c in enumerate(p.hand) if i not in set(idxs)]
+                p.action_deck.extend(back)       # デッキ底へ (§5-5)
+                for _ in range(len(back)):
+                    if p.action_deck:
+                        p.hand.append(p.action_deck.pop(0))
+                s.next_rng().shuffle(p.action_deck)
+                p.mulligan_done = True
+            if not decision_players(s):
+                for pi in (0, 1):
+                    s.players[pi].charas_revealed = True  # §5-6 同時公開
+                _begin_turn(s)                   # 先攻の1ターン目
+            return
+    
+        if s.phase == Phase.ACTION:
+            act = actions[s.turn_player]
+            p = s.players[s.turn_player]
+            t = act["type"]
+            if t == "charge":                    # §6.3-1
+                assert not s.used_charge
+                p.concerto.append(p.hand.pop(act["hand"]))
+                s.used_charge = True
+            elif t == "switch":                  # §6.3-2
+                assert not s.used_switch and not s.leader_switch_forbidden[s.turn_player]
+                b = act["back"]
+                p.slots[0], p.slots[b] = p.slots[b], p.slots[0]
+                s.slot_entered_turn[s.turn_player][0], s.slot_entered_turn[s.turn_player][b] = (
+                    s.slot_entered_turn[s.turn_player][b], s.slot_entered_turn[s.turn_player][0])
+                s.used_switch = True
+                # v0.12: 行動としての切り替えでも【切り替え】は誘発する (§7)。
+                _queue_fire_nested(s, Timing.SWITCHED, [s.turn_player])
+            elif t == "levelup":                 # §6.3-3
+                assert not s.used_levelup
+                slot = p.slots[act["slot"]]
+                cid = act["card"]
+                c = CHARA_CARDS[cid]
+                top = CHARA_CARDS[slot.stack[-1]]
+                assert c.name == top.name and c.level in (top.level, top.level + 1)
+                assert len(p.hand) >= c.level
+                p.chara_deck.remove(cid)
+                slot.stack.append(cid)
+                s.slot_entered_turn[s.turn_player][act["slot"]] = s.turn_no
+                s.used_levelup = True
+                # v0.13 (D-094): 【登場】は置いたカード、【レベルアップ】はその下のカード
+                # (603.1.2.2.1/.2)。**準備 (§5-4) では誘発しない** (u1・公式 908.3)。
+                _queue_levelup_triggers(s, s.turn_player, act["slot"])
+                # A-3: 手札コストとして捨てるカードはプレイヤーが選ぶ (§6.3-3)。
+                if c.level > 0:
+                    for _ in range(c.level):
+                        s.pending_choices.append({
+                            "player": s.turn_player, "kind": "discard",
+                            "reason": "levelup",
+                        })
+                    s.choice_resume = {"kind": "action"}
+            elif t == "to_clash":                # §6.3 → §6.4
+                s.phase = Phase.CLASH_SUBMIT
+                s.pending_submission = [None, None]
+                # v0.12: 【自分の対抗フェイズ開始時】。ターンプレイヤーの側だけが誘発する
+                # （カード側にも is_turn_player を書くが、ここでも席を絞る）。
+                _queue_fire_nested(s, Timing.CLASH_PHASE_START, [s.turn_player])
+            elif t == "end_turn":
+                _end_turn_begin(s)
+            else:
+                raise ValueError(t)
+            return
+    
+        if s.phase == Phase.CLASH_SUBMIT:
+            for pi, act in sorted(actions.items()):
+                if act["type"] == "pass":
+                    usable = [i for i, cid in enumerate(s.players[pi].hand)
+                              if _usable_in_clash(s, pi, ACTION_CARDS[cid])]
+                    assert pi != s.turn_player or not usable, \
+                        "ターンプレイヤーは可能なら提出必須"
+                    s.pending_submission[pi] = "PASS"
+                else:
+                    assert act["type"] == "submit"
+                    cid = s.players[pi].hand[act["hand"]]
+                    assert _usable_in_clash(s, pi, ACTION_CARDS[cid])
+                    s.pending_submission[pi] = act["hand"]
+            if all(v is not None for v in s.pending_submission):
+                _resolve_clash(s)
+            return
+    
+        if s.phase == Phase.CHOICE:
+>           _apply_choice(s, actions)
+
+meicho\engine.py:2008: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+s = GameState(seed=130002, rng_calls=4, phase=<Phase.CHOICE: 'choice'>, turn_no=3, turn_player=0, players=[PlayerState(lif...d_turn=[[0, 0, 3], [2, 0, 0]], variation_rush_draw=[0, 0], deferred_clash_damage=[], pending_triggers=[], outcome=None)
+actions = {0: {'type': 'stop'}}
+
+    def _apply_choice(s: GameState, actions: dict) -> None:
+        """Phase.CHOICE: 待ち行列の先頭の選択を1件解決する（D-015 / D-022）。"""
+        ch = s.pending_choices[0]
+        pi = ch["player"]
+        act = actions[pi]
+        kind = ch["kind"]
+    
+        if kind == "pay_or_damage":
+            if act["type"] == "pay":
+                assert len(s.players[pi].concerto) >= ch["cost"]
+                s.pending_choices.pop(0)
+                _queue_pay_cost(s, pi, ch["cost"])
+            else:
+                assert act["type"] == "decline"
+                _damage(s, pi, ch["amount"])
+                s.pending_choices.pop(0)
+    
+        elif kind == "switch_back":                      # A-5
+            assert act["type"] == "choose_back" and act["back"] in ch["options"]
+            s.pending_choices.pop(0)
+            s.pending_effect["ops"][0][1]["back"] = act["back"]
+    
+        elif kind == "use_optional":                     # A-1
+            assert act["type"] in ("use", "skip")
+            s.pending_choices.pop(0)
+            if act["type"] == "use":
+                _start_skill_effect(s, pi, _deref_skill(ch["ref"]), ch["ref"][2], ch["ref"][1])
+    
+        elif kind == "reveal_count":                     # A-2
+            assert act["type"] == "choose_count" and 0 <= act["count"] <= ch["max"]
+            s.pending_choices.pop(0)
+            s.pending_effect["ops"][0][1]["chosen"] = act["count"]
+    
+        elif kind == "discard_for_effect":               # A-4
+            assert act["type"] == "discard" and 0 <= act["hand"] < len(s.players[pi].hand)
+            s.pending_choices.pop(0)
+            s.pending_effect["ops"][0][1]["hand_idx"] = act["hand"]
+    
+        elif kind == "discard":                          # A-3（レベルアップの手札コスト）
+            assert act["type"] == "discard" and 0 <= act["hand"] < len(s.players[pi].hand)
+            s.pending_choices.pop(0)
+            p = s.players[pi]
+            p.trash.append(p.hand.pop(act["hand"]))
+    
+        elif kind == "order":                            # A-7
+            assert act["type"] == "resolve"
+            idx = act["index"]
+            assert any(o["index"] == idx for o in ch["options"])
+            s.pending_choices.pop(0)
+            _begin_skill(s, s.pending_skills.pop(idx))
+    
+        elif kind == "pay_cost_card":
+>           assert act["type"] == "choose_card" and act["zone"] == "concerto"
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           AssertionError
+
+meicho\engine.py:2086: AssertionError
+_____________________ test_regression_positions_match_t14 _____________________
+
+    @pytest.mark.skipif(not os.path.exists(HUMAN_GAMES), reason="対人の記録が無い環境")
+    def test_regression_positions_match_t14():
+        """被覆率ハーネスが拾う回帰局面が、T-14 の 2 局面と**同じ局面**であること。
+    
+        `tests/test_d065.py::_human_clash_positions` は「負けを決めた対抗」を返す。
+        こちらは `walk_clashes`（相手が実際に出した手も返す）から拾うので経路が違う。
+        **経路が違うものが同じ答えを出すことを固定する**（写し間違いの検出）。
+        """
+        from tests.test_d065 import _human_clash_positions
+        want = {gid: (s, ai) for gid, s, ai, _ in _human_clash_positions()}
+        got = {tag.split(":")[1]: (s, ai)
+>              for tag, s, ai, _, _, _, _ in cov.regression_positions()
+                                             ^^^^^^^^^^^^^^^^^^^^^^^^^^
+               if tag.startswith("planner_vb3:") and tag.endswith(":last")}
+
+tests\test_lit_c.py:165: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+path = 'C:\\Users\\奥村優斗\\OneDrive\\ドキュメント\\eclipse_workフォルダ\\meicho_engine_v0.1\\engine\\experiments\\..\\results\\human_games\\2026-09.jsonl'
+
+    def regression_positions(path: str = None) -> list:
+        """回帰局面を記録から再生して返す。
+    
+        返すのは [(tag, 局面, AI の席, エージェントのシード, 相手が実際に出した手, 説明)]。
+        再生は `verify_lethal_human.walk_clashes` を**そのまま呼ぶ**（写して書き換えない。
+        D-075 の教訓）。`walk_clashes` は対抗の局面と**そのとき実際に出された手**を組で返す。
+        """
+        from verify_lethal_human import walk_clashes
+        path = path or REGRESSION_GAMES
+        if not os.path.exists(path):
+            return []
+        recs = [json.loads(line) for line in open(path, encoding="utf-8") if line.strip()]
+        d = load_deck("SD001")
+        cfg = mirror_config(d)
+        out = []
+        for opp_name, gid, pick, why in REGRESSION_PICKS:
+            hit = [r for r in recs
+                   if r["opponent"]["name"] == opp_name and r["game_id"] == gid]
+            if not hit:
+                continue
+            rec = hit[-1]
+>           clashes = walk_clashes(rec, cfg)
+                      ^^^^^^^^^^^^^^^^^^^^^^
+
+experiments\coverage.py:386: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+rec = {'app_version': '1', 'rules_version': 'v0.10', 'engine_version': 'v0.1', 'played_at': '2026-09-03T20:24:03+09:00', ...}
+cfg = GameConfig(chara_decks=[['BP01-018', 'SD01-002', 'SD01-001', 'BP01-024', 'SD01-004', 'SD01-003', 'BP01-027', 'SD01-006...D01-008', 'SD01-020', 'SD01-020', 'SD01-020', 'SD01-021', 'SD01-021', 'SD01-021', 'SD01-015', 'SD01-015', 'SD01-015']])
+
+    def walk_clashes(rec: dict, cfg) -> list:
+        """再生しながら、**対抗の局面とそのとき実際に出された手**を組で集める。
+    
+        `webapp.record.replay` は局面しか返さないので、詰み表を「相手が実際に出した手の列」で
+        読むために、同じ再生をここでもう一度なぞる（記録どおりに動かすだけなので結果は同じ）。
+        """
+        from meicho.engine import initial_state, outcome
+        from webapp.record import ReplayAgent
+        agents = [ReplayAgent(rec["actions"], 0), ReplayAgent(rec["actions"], 1)]
+        s = initial_state(cfg, rec["seed"])
+        out, steps = [], 0
+        while outcome(s) is None and s.turn_no <= 200:
+            need = decision_players(s)
+            if not need or all(agents[pi].exhausted for pi in need):
+                break
+            acts = {pi: agents[pi].act(s, pi) for pi in need}
+            if s.phase == Phase.CLASH_SUBMIT and set(need) == {0, 1}:
+                out.append((s, dict(acts)))
+>           s = apply(s, acts)
+                ^^^^^^^^^^^^^^
+
+experiments\verify_lethal_human.py:89: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+state = GameState(seed=130002, rng_calls=4, phase=<Phase.CHOICE: 'choice'>, turn_no=3, turn_player=0, players=[PlayerState(lif...d_turn=[[0, 0, 3], [2, 0, 0]], variation_rush_draw=[0, 0], deferred_clash_damage=[], pending_triggers=[], outcome=None)
+actions = {0: {'type': 'stop'}}
+
+    def apply(state: GameState, actions: dict) -> GameState:
+        """actions: {player_index: action_dict}。decision_players の全員分が必要。
+    
+        行動を適用したあと `_pump` を呼び、保留中の効果解決を
+        「次の選択待ち」または「全部片付く」まで進めてから**新しい** state を返す（D-022）。
+        公開APIはこちら。入力の state は変更しない（作業規約2）。
+        """
+>       return apply_owned(state.clone(), actions)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+meicho\engine.py:1865: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+state = GameState(seed=130002, rng_calls=4, phase=<Phase.CHOICE: 'choice'>, turn_no=3, turn_player=0, players=[PlayerState(lif...d_turn=[[0, 0, 3], [2, 0, 0]], variation_rush_draw=[0, 0], deferred_clash_damage=[], pending_triggers=[], outcome=None)
+actions = {0: {'type': 'stop'}}
+
+    def apply_owned(state: GameState, actions: dict) -> GameState:
+        """`apply` と同じだが**複製せず、渡された state を直接書き換える**（B-2）。
+    
+        **呼び出し側が state を専有している場合にのみ使うこと。**
+        他所から参照されている state に使うと、非破壊更新の規約が壊れる。
+    
+        用途はロールアウトの連鎖である。`_settle` や `_value_after_turn` は
+        `apply(...)` の戻り値（＝生成したばかりで誰も参照していない state）を
+        受け取って、それを何十手も進める。その各手で clone するのは無駄で、
+        プロファイルでは clone が計画探索の実行時間の約1/4を占めていた。
+    
+        非破壊APIの見た目は `apply` 側で維持されるので、外部の利用者から
+        見た挙動は変わらない（`bench_agents.py` の fingerprint で担保）。
+        """
+        need = decision_players(state)
+        assert set(actions.keys()) == set(need), f"actions for {need} required"
+>       _apply_inner(state, actions)
+
+meicho\engine.py:1884: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+s = GameState(seed=130002, rng_calls=4, phase=<Phase.CHOICE: 'choice'>, turn_no=3, turn_player=0, players=[PlayerState(lif...d_turn=[[0, 0, 3], [2, 0, 0]], variation_rush_draw=[0, 0], deferred_clash_damage=[], pending_triggers=[], outcome=None)
+actions = {0: {'type': 'stop'}}
+
+    def _apply_inner(s: GameState, actions: dict) -> None:
+        # D-050: 同時手番の行動は**席の昇順**で処理する。辞書の挿入順に依存させない
+        # （旧実装は `actions.items()` の順でシャッフルの乱数を消費していた。D-040 で発覚）。
+        # 既存の呼び出し側は全て昇順で組んでいたので fingerprint は不変。Rust 版と同じ規約。
+        if s.phase == Phase.SETUP_CHARA:
+            for pi, act in sorted(actions.items()):
+                assert act["type"] == "setup"
+                p = s.players[pi]
+                lv0 = {CHARA_CARDS[c].name: c for c in p.chara_deck
+                       if CHARA_CARDS[c].level == 0}
+                leader = act["leader"]
+                # 旧形式は後方互換のため名前順を既定回答として受け付ける。
+                backs = act.get("backs", sorted(n for n in lv0 if n != leader))
+                assert sorted(backs) == sorted(n for n in lv0 if n != leader)
+                order = [leader] + backs
+                for si, name in enumerate(order):
+                    cid = lv0[name]
+                    p.slots[si] = CharaSlot(stack=[cid])
+                    p.chara_deck.remove(cid)
+            if not decision_players(s):
+                for pi in (0, 1):
+                    _draw(s, pi, OPENING_HAND)   # §5-5
+                s.phase = Phase.MULLIGAN
+            return
+    
+        if s.phase == Phase.MULLIGAN:
+            for pi, act in sorted(actions.items()):
+                assert act["type"] == "mulligan"
+                p = s.players[pi]
+                # A-6: 戻す手札は任意の部分集合 (§5-5)。"cards" は手札のインデックス列。
+                # 旧形式 {"count": n}（左端からn枚）も後方互換のため受け付ける。
+                idxs = act.get("cards")
+                if idxs is None:
+                    idxs = list(range(act["count"]))
+                idxs = sorted(set(idxs))
+                back = [p.hand[i] for i in idxs]
+                p.hand = [c for i, c in enumerate(p.hand) if i not in set(idxs)]
+                p.action_deck.extend(back)       # デッキ底へ (§5-5)
+                for _ in range(len(back)):
+                    if p.action_deck:
+                        p.hand.append(p.action_deck.pop(0))
+                s.next_rng().shuffle(p.action_deck)
+                p.mulligan_done = True
+            if not decision_players(s):
+                for pi in (0, 1):
+                    s.players[pi].charas_revealed = True  # §5-6 同時公開
+                _begin_turn(s)                   # 先攻の1ターン目
+            return
+    
+        if s.phase == Phase.ACTION:
+            act = actions[s.turn_player]
+            p = s.players[s.turn_player]
+            t = act["type"]
+            if t == "charge":                    # §6.3-1
+                assert not s.used_charge
+                p.concerto.append(p.hand.pop(act["hand"]))
+                s.used_charge = True
+            elif t == "switch":                  # §6.3-2
+                assert not s.used_switch and not s.leader_switch_forbidden[s.turn_player]
+                b = act["back"]
+                p.slots[0], p.slots[b] = p.slots[b], p.slots[0]
+                s.slot_entered_turn[s.turn_player][0], s.slot_entered_turn[s.turn_player][b] = (
+                    s.slot_entered_turn[s.turn_player][b], s.slot_entered_turn[s.turn_player][0])
+                s.used_switch = True
+                # v0.12: 行動としての切り替えでも【切り替え】は誘発する (§7)。
+                _queue_fire_nested(s, Timing.SWITCHED, [s.turn_player])
+            elif t == "levelup":                 # §6.3-3
+                assert not s.used_levelup
+                slot = p.slots[act["slot"]]
+                cid = act["card"]
+                c = CHARA_CARDS[cid]
+                top = CHARA_CARDS[slot.stack[-1]]
+                assert c.name == top.name and c.level in (top.level, top.level + 1)
+                assert len(p.hand) >= c.level
+                p.chara_deck.remove(cid)
+                slot.stack.append(cid)
+                s.slot_entered_turn[s.turn_player][act["slot"]] = s.turn_no
+                s.used_levelup = True
+                # v0.13 (D-094): 【登場】は置いたカード、【レベルアップ】はその下のカード
+                # (603.1.2.2.1/.2)。**準備 (§5-4) では誘発しない** (u1・公式 908.3)。
+                _queue_levelup_triggers(s, s.turn_player, act["slot"])
+                # A-3: 手札コストとして捨てるカードはプレイヤーが選ぶ (§6.3-3)。
+                if c.level > 0:
+                    for _ in range(c.level):
+                        s.pending_choices.append({
+                            "player": s.turn_player, "kind": "discard",
+                            "reason": "levelup",
+                        })
+                    s.choice_resume = {"kind": "action"}
+            elif t == "to_clash":                # §6.3 → §6.4
+                s.phase = Phase.CLASH_SUBMIT
+                s.pending_submission = [None, None]
+                # v0.12: 【自分の対抗フェイズ開始時】。ターンプレイヤーの側だけが誘発する
+                # （カード側にも is_turn_player を書くが、ここでも席を絞る）。
+                _queue_fire_nested(s, Timing.CLASH_PHASE_START, [s.turn_player])
+            elif t == "end_turn":
+                _end_turn_begin(s)
+            else:
+                raise ValueError(t)
+            return
+    
+        if s.phase == Phase.CLASH_SUBMIT:
+            for pi, act in sorted(actions.items()):
+                if act["type"] == "pass":
+                    usable = [i for i, cid in enumerate(s.players[pi].hand)
+                              if _usable_in_clash(s, pi, ACTION_CARDS[cid])]
+                    assert pi != s.turn_player or not usable, \
+                        "ターンプレイヤーは可能なら提出必須"
+                    s.pending_submission[pi] = "PASS"
+                else:
+                    assert act["type"] == "submit"
+                    cid = s.players[pi].hand[act["hand"]]
+                    assert _usable_in_clash(s, pi, ACTION_CARDS[cid])
+                    s.pending_submission[pi] = act["hand"]
+            if all(v is not None for v in s.pending_submission):
+                _resolve_clash(s)
+            return
+    
+        if s.phase == Phase.CHOICE:
+>           _apply_choice(s, actions)
+
+meicho\engine.py:2008: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+s = GameState(seed=130002, rng_calls=4, phase=<Phase.CHOICE: 'choice'>, turn_no=3, turn_player=0, players=[PlayerState(lif...d_turn=[[0, 0, 3], [2, 0, 0]], variation_rush_draw=[0, 0], deferred_clash_damage=[], pending_triggers=[], outcome=None)
+actions = {0: {'type': 'stop'}}
+
+    def _apply_choice(s: GameState, actions: dict) -> None:
+        """Phase.CHOICE: 待ち行列の先頭の選択を1件解決する（D-015 / D-022）。"""
+        ch = s.pending_choices[0]
+        pi = ch["player"]
+        act = actions[pi]
+        kind = ch["kind"]
+    
+        if kind == "pay_or_damage":
+            if act["type"] == "pay":
+                assert len(s.players[pi].concerto) >= ch["cost"]
+                s.pending_choices.pop(0)
+                _queue_pay_cost(s, pi, ch["cost"])
+            else:
+                assert act["type"] == "decline"
+                _damage(s, pi, ch["amount"])
+                s.pending_choices.pop(0)
+    
+        elif kind == "switch_back":                      # A-5
+            assert act["type"] == "choose_back" and act["back"] in ch["options"]
+            s.pending_choices.pop(0)
+            s.pending_effect["ops"][0][1]["back"] = act["back"]
+    
+        elif kind == "use_optional":                     # A-1
+            assert act["type"] in ("use", "skip")
+            s.pending_choices.pop(0)
+            if act["type"] == "use":
+                _start_skill_effect(s, pi, _deref_skill(ch["ref"]), ch["ref"][2], ch["ref"][1])
+    
+        elif kind == "reveal_count":                     # A-2
+            assert act["type"] == "choose_count" and 0 <= act["count"] <= ch["max"]
+            s.pending_choices.pop(0)
+            s.pending_effect["ops"][0][1]["chosen"] = act["count"]
+    
+        elif kind == "discard_for_effect":               # A-4
+            assert act["type"] == "discard" and 0 <= act["hand"] < len(s.players[pi].hand)
+            s.pending_choices.pop(0)
+            s.pending_effect["ops"][0][1]["hand_idx"] = act["hand"]
+    
+        elif kind == "discard":                          # A-3（レベルアップの手札コスト）
+            assert act["type"] == "discard" and 0 <= act["hand"] < len(s.players[pi].hand)
+            s.pending_choices.pop(0)
+            p = s.players[pi]
+            p.trash.append(p.hand.pop(act["hand"]))
+    
+        elif kind == "order":                            # A-7
+            assert act["type"] == "resolve"
+            idx = act["index"]
+            assert any(o["index"] == idx for o in ch["options"])
+            s.pending_choices.pop(0)
+            _begin_skill(s, s.pending_skills.pop(idx))
+    
+        elif kind == "pay_cost_card":
+>           assert act["type"] == "choose_card" and act["zone"] == "concerto"
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           AssertionError
+
+meicho\engine.py:2086: AssertionError
+____________ test_regression_diagnostic_runs_and_is_deterministic _____________
+
+    @pytest.mark.skipif(not os.path.exists(HUMAN_GAMES), reason="対人の記録が無い環境")
+    def test_regression_diagnostic_runs_and_is_deterministic():
+        """回帰局面の診断が動き、同じ引数なら同じ答えを返す（決定的）。"""
+        from peek_counter import resolved_kwargs
+        kw = resolved_kwargs("SD001")
+>       a = cov.run_regression(kw, {}, ks=(6,))
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\test_lit_c.py:182: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+kw = {'extra_turns': 1, 'value_net': 'C:\\Users\\奥村優斗\\OneDrive\\ドキュメント\\eclipse_workフォルダ\\meicho_engine_v0.1\\engine\\resu...\\eclipse_workフォルダ\\meicho_engine_v0.1\\engine\\results\\models\\drl_sd001_s1.json', 'opp_policy_root_only': True, ...}
+knobs = {}, ks = (6,), path = None, reps = 20
+
+    def run_regression(kw: dict, knobs: dict, ks=(6, 24), path: str = None,
+                       reps: int = 20) -> dict:
+        """回帰局面で「真の相手手札を決定化が捉えているか」を出す。
+    
+        **1 回引いて当たったかは運で決まる**（K=24・W=48 の局面でも当たらない引きはある）ので、
+        独立な種で `reps` 回やり直し、**当たった回の割合**を出す。
+        `hit_hand` は 1 回目の結果（従来どおりの 0/1）で、読みには割合の方を使う。
+        """
+        d = load_deck("SD001")
+        pool = d["action_deck"]
+        skw = _shadow_kwargs(kw, knobs)
+        rows = []
+>       for tag, s, ai, seed, hu_act, why, prior in regression_positions(path):
+                                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+experiments\coverage.py:435: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+path = 'C:\\Users\\奥村優斗\\OneDrive\\ドキュメント\\eclipse_workフォルダ\\meicho_engine_v0.1\\engine\\experiments\\..\\results\\human_games\\2026-09.jsonl'
+
+    def regression_positions(path: str = None) -> list:
+        """回帰局面を記録から再生して返す。
+    
+        返すのは [(tag, 局面, AI の席, エージェントのシード, 相手が実際に出した手, 説明)]。
+        再生は `verify_lethal_human.walk_clashes` を**そのまま呼ぶ**（写して書き換えない。
+        D-075 の教訓）。`walk_clashes` は対抗の局面と**そのとき実際に出された手**を組で返す。
+        """
+        from verify_lethal_human import walk_clashes
+        path = path or REGRESSION_GAMES
+        if not os.path.exists(path):
+            return []
+        recs = [json.loads(line) for line in open(path, encoding="utf-8") if line.strip()]
+        d = load_deck("SD001")
+        cfg = mirror_config(d)
+        out = []
+        for opp_name, gid, pick, why in REGRESSION_PICKS:
+            hit = [r for r in recs
+                   if r["opponent"]["name"] == opp_name and r["game_id"] == gid]
+            if not hit:
+                continue
+            rec = hit[-1]
+>           clashes = walk_clashes(rec, cfg)
+                      ^^^^^^^^^^^^^^^^^^^^^^
+
+experiments\coverage.py:386: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+rec = {'app_version': '1', 'rules_version': 'v0.10', 'engine_version': 'v0.1', 'played_at': '2026-09-03T20:24:03+09:00', ...}
+cfg = GameConfig(chara_decks=[['BP01-018', 'SD01-002', 'SD01-001', 'BP01-024', 'SD01-004', 'SD01-003', 'BP01-027', 'SD01-006...D01-008', 'SD01-020', 'SD01-020', 'SD01-020', 'SD01-021', 'SD01-021', 'SD01-021', 'SD01-015', 'SD01-015', 'SD01-015']])
+
+    def walk_clashes(rec: dict, cfg) -> list:
+        """再生しながら、**対抗の局面とそのとき実際に出された手**を組で集める。
+    
+        `webapp.record.replay` は局面しか返さないので、詰み表を「相手が実際に出した手の列」で
+        読むために、同じ再生をここでもう一度なぞる（記録どおりに動かすだけなので結果は同じ）。
+        """
+        from meicho.engine import initial_state, outcome
+        from webapp.record import ReplayAgent
+        agents = [ReplayAgent(rec["actions"], 0), ReplayAgent(rec["actions"], 1)]
+        s = initial_state(cfg, rec["seed"])
+        out, steps = [], 0
+        while outcome(s) is None and s.turn_no <= 200:
+            need = decision_players(s)
+            if not need or all(agents[pi].exhausted for pi in need):
+                break
+            acts = {pi: agents[pi].act(s, pi) for pi in need}
+            if s.phase == Phase.CLASH_SUBMIT and set(need) == {0, 1}:
+                out.append((s, dict(acts)))
+>           s = apply(s, acts)
+                ^^^^^^^^^^^^^^
+
+experiments\verify_lethal_human.py:89: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+state = GameState(seed=130002, rng_calls=4, phase=<Phase.CHOICE: 'choice'>, turn_no=3, turn_player=0, players=[PlayerState(lif...d_turn=[[0, 0, 3], [2, 0, 0]], variation_rush_draw=[0, 0], deferred_clash_damage=[], pending_triggers=[], outcome=None)
+actions = {0: {'type': 'stop'}}
+
+    def apply(state: GameState, actions: dict) -> GameState:
+        """actions: {player_index: action_dict}。decision_players の全員分が必要。
+    
+        行動を適用したあと `_pump` を呼び、保留中の効果解決を
+        「次の選択待ち」または「全部片付く」まで進めてから**新しい** state を返す（D-022）。
+        公開APIはこちら。入力の state は変更しない（作業規約2）。
+        """
+>       return apply_owned(state.clone(), actions)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+meicho\engine.py:1865: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+state = GameState(seed=130002, rng_calls=4, phase=<Phase.CHOICE: 'choice'>, turn_no=3, turn_player=0, players=[PlayerState(lif...d_turn=[[0, 0, 3], [2, 0, 0]], variation_rush_draw=[0, 0], deferred_clash_damage=[], pending_triggers=[], outcome=None)
+actions = {0: {'type': 'stop'}}
+
+    def apply_owned(state: GameState, actions: dict) -> GameState:
+        """`apply` と同じだが**複製せず、渡された state を直接書き換える**（B-2）。
+    
+        **呼び出し側が state を専有している場合にのみ使うこと。**
+        他所から参照されている state に使うと、非破壊更新の規約が壊れる。
+    
+        用途はロールアウトの連鎖である。`_settle` や `_value_after_turn` は
+        `apply(...)` の戻り値（＝生成したばかりで誰も参照していない state）を
+        受け取って、それを何十手も進める。その各手で clone するのは無駄で、
+        プロファイルでは clone が計画探索の実行時間の約1/4を占めていた。
+    
+        非破壊APIの見た目は `apply` 側で維持されるので、外部の利用者から
+        見た挙動は変わらない（`bench_agents.py` の fingerprint で担保）。
+        """
+        need = decision_players(state)
+        assert set(actions.keys()) == set(need), f"actions for {need} required"
+>       _apply_inner(state, actions)
+
+meicho\engine.py:1884: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+s = GameState(seed=130002, rng_calls=4, phase=<Phase.CHOICE: 'choice'>, turn_no=3, turn_player=0, players=[PlayerState(lif...d_turn=[[0, 0, 3], [2, 0, 0]], variation_rush_draw=[0, 0], deferred_clash_damage=[], pending_triggers=[], outcome=None)
+actions = {0: {'type': 'stop'}}
+
+    def _apply_inner(s: GameState, actions: dict) -> None:
+        # D-050: 同時手番の行動は**席の昇順**で処理する。辞書の挿入順に依存させない
+        # （旧実装は `actions.items()` の順でシャッフルの乱数を消費していた。D-040 で発覚）。
+        # 既存の呼び出し側は全て昇順で組んでいたので fingerprint は不変。Rust 版と同じ規約。
+        if s.phase == Phase.SETUP_CHARA:
+            for pi, act in sorted(actions.items()):
+                assert act["type"] == "setup"
+                p = s.players[pi]
+                lv0 = {CHARA_CARDS[c].name: c for c in p.chara_deck
+                       if CHARA_CARDS[c].level == 0}
+                leader = act["leader"]
+                # 旧形式は後方互換のため名前順を既定回答として受け付ける。
+                backs = act.get("backs", sorted(n for n in lv0 if n != leader))
+                assert sorted(backs) == sorted(n for n in lv0 if n != leader)
+                order = [leader] + backs
+                for si, name in enumerate(order):
+                    cid = lv0[name]
+                    p.slots[si] = CharaSlot(stack=[cid])
+                    p.chara_deck.remove(cid)
+            if not decision_players(s):
+                for pi in (0, 1):
+                    _draw(s, pi, OPENING_HAND)   # §5-5
+                s.phase = Phase.MULLIGAN
+            return
+    
+        if s.phase == Phase.MULLIGAN:
+            for pi, act in sorted(actions.items()):
+                assert act["type"] == "mulligan"
+                p = s.players[pi]
+                # A-6: 戻す手札は任意の部分集合 (§5-5)。"cards" は手札のインデックス列。
+                # 旧形式 {"count": n}（左端からn枚）も後方互換のため受け付ける。
+                idxs = act.get("cards")
+                if idxs is None:
+                    idxs = list(range(act["count"]))
+                idxs = sorted(set(idxs))
+                back = [p.hand[i] for i in idxs]
+                p.hand = [c for i, c in enumerate(p.hand) if i not in set(idxs)]
+                p.action_deck.extend(back)       # デッキ底へ (§5-5)
+                for _ in range(len(back)):
+                    if p.action_deck:
+                        p.hand.append(p.action_deck.pop(0))
+                s.next_rng().shuffle(p.action_deck)
+                p.mulligan_done = True
+            if not decision_players(s):
+                for pi in (0, 1):
+                    s.players[pi].charas_revealed = True  # §5-6 同時公開
+                _begin_turn(s)                   # 先攻の1ターン目
+            return
+    
+        if s.phase == Phase.ACTION:
+            act = actions[s.turn_player]
+            p = s.players[s.turn_player]
+            t = act["type"]
+            if t == "charge":                    # §6.3-1
+                assert not s.used_charge
+                p.concerto.append(p.hand.pop(act["hand"]))
+                s.used_charge = True
+            elif t == "switch":                  # §6.3-2
+                assert not s.used_switch and not s.leader_switch_forbidden[s.turn_player]
+                b = act["back"]
+                p.slots[0], p.slots[b] = p.slots[b], p.slots[0]
+                s.slot_entered_turn[s.turn_player][0], s.slot_entered_turn[s.turn_player][b] = (
+                    s.slot_entered_turn[s.turn_player][b], s.slot_entered_turn[s.turn_player][0])
+                s.used_switch = True
+                # v0.12: 行動としての切り替えでも【切り替え】は誘発する (§7)。
+                _queue_fire_nested(s, Timing.SWITCHED, [s.turn_player])
+            elif t == "levelup":                 # §6.3-3
+                assert not s.used_levelup
+                slot = p.slots[act["slot"]]
+                cid = act["card"]
+                c = CHARA_CARDS[cid]
+                top = CHARA_CARDS[slot.stack[-1]]
+                assert c.name == top.name and c.level in (top.level, top.level + 1)
+                assert len(p.hand) >= c.level
+                p.chara_deck.remove(cid)
+                slot.stack.append(cid)
+                s.slot_entered_turn[s.turn_player][act["slot"]] = s.turn_no
+                s.used_levelup = True
+                # v0.13 (D-094): 【登場】は置いたカード、【レベルアップ】はその下のカード
+                # (603.1.2.2.1/.2)。**準備 (§5-4) では誘発しない** (u1・公式 908.3)。
+                _queue_levelup_triggers(s, s.turn_player, act["slot"])
+                # A-3: 手札コストとして捨てるカードはプレイヤーが選ぶ (§6.3-3)。
+                if c.level > 0:
+                    for _ in range(c.level):
+                        s.pending_choices.append({
+                            "player": s.turn_player, "kind": "discard",
+                            "reason": "levelup",
+                        })
+                    s.choice_resume = {"kind": "action"}
+            elif t == "to_clash":                # §6.3 → §6.4
+                s.phase = Phase.CLASH_SUBMIT
+                s.pending_submission = [None, None]
+                # v0.12: 【自分の対抗フェイズ開始時】。ターンプレイヤーの側だけが誘発する
+                # （カード側にも is_turn_player を書くが、ここでも席を絞る）。
+                _queue_fire_nested(s, Timing.CLASH_PHASE_START, [s.turn_player])
+            elif t == "end_turn":
+                _end_turn_begin(s)
+            else:
+                raise ValueError(t)
+            return
+    
+        if s.phase == Phase.CLASH_SUBMIT:
+            for pi, act in sorted(actions.items()):
+                if act["type"] == "pass":
+                    usable = [i for i, cid in enumerate(s.players[pi].hand)
+                              if _usable_in_clash(s, pi, ACTION_CARDS[cid])]
+                    assert pi != s.turn_player or not usable, \
+                        "ターンプレイヤーは可能なら提出必須"
+                    s.pending_submission[pi] = "PASS"
+                else:
+                    assert act["type"] == "submit"
+                    cid = s.players[pi].hand[act["hand"]]
+                    assert _usable_in_clash(s, pi, ACTION_CARDS[cid])
+                    s.pending_submission[pi] = act["hand"]
+            if all(v is not None for v in s.pending_submission):
+                _resolve_clash(s)
+            return
+    
+        if s.phase == Phase.CHOICE:
+>           _apply_choice(s, actions)
+
+meicho\engine.py:2008: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+s = GameState(seed=130002, rng_calls=4, phase=<Phase.CHOICE: 'choice'>, turn_no=3, turn_player=0, players=[PlayerState(lif...d_turn=[[0, 0, 3], [2, 0, 0]], variation_rush_draw=[0, 0], deferred_clash_damage=[], pending_triggers=[], outcome=None)
+actions = {0: {'type': 'stop'}}
+
+    def _apply_choice(s: GameState, actions: dict) -> None:
+        """Phase.CHOICE: 待ち行列の先頭の選択を1件解決する（D-015 / D-022）。"""
+        ch = s.pending_choices[0]
+        pi = ch["player"]
+        act = actions[pi]
+        kind = ch["kind"]
+    
+        if kind == "pay_or_damage":
+            if act["type"] == "pay":
+                assert len(s.players[pi].concerto) >= ch["cost"]
+                s.pending_choices.pop(0)
+                _queue_pay_cost(s, pi, ch["cost"])
+            else:
+                assert act["type"] == "decline"
+                _damage(s, pi, ch["amount"])
+                s.pending_choices.pop(0)
+    
+        elif kind == "switch_back":                      # A-5
+            assert act["type"] == "choose_back" and act["back"] in ch["options"]
+            s.pending_choices.pop(0)
+            s.pending_effect["ops"][0][1]["back"] = act["back"]
+    
+        elif kind == "use_optional":                     # A-1
+            assert act["type"] in ("use", "skip")
+            s.pending_choices.pop(0)
+            if act["type"] == "use":
+                _start_skill_effect(s, pi, _deref_skill(ch["ref"]), ch["ref"][2], ch["ref"][1])
+    
+        elif kind == "reveal_count":                     # A-2
+            assert act["type"] == "choose_count" and 0 <= act["count"] <= ch["max"]
+            s.pending_choices.pop(0)
+            s.pending_effect["ops"][0][1]["chosen"] = act["count"]
+    
+        elif kind == "discard_for_effect":               # A-4
+            assert act["type"] == "discard" and 0 <= act["hand"] < len(s.players[pi].hand)
+            s.pending_choices.pop(0)
+            s.pending_effect["ops"][0][1]["hand_idx"] = act["hand"]
+    
+        elif kind == "discard":                          # A-3（レベルアップの手札コスト）
+            assert act["type"] == "discard" and 0 <= act["hand"] < len(s.players[pi].hand)
+            s.pending_choices.pop(0)
+            p = s.players[pi]
+            p.trash.append(p.hand.pop(act["hand"]))
+    
+        elif kind == "order":                            # A-7
+            assert act["type"] == "resolve"
+            idx = act["index"]
+            assert any(o["index"] == idx for o in ch["options"])
+            s.pending_choices.pop(0)
+            _begin_skill(s, s.pending_skills.pop(idx))
+    
+        elif kind == "pay_cost_card":
+>           assert act["type"] == "choose_card" and act["zone"] == "concerto"
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           AssertionError
+
+meicho\engine.py:2086: AssertionError
+____________________ test_worlds_module_matches_diag_pimc _____________________
+
+    def test_worlds_module_matches_diag_pimc():
+        """`meicho/worlds.py` に移した W の数え方が便 M の記録と 1 行も違わない。
+    
+        記録（`results/lit/m5m1_pimc.jsonl`）の**先頭 200 行**は帯の頭の 2 局である。
+        同じ 2 局を回し直し、W・W_nokwn・H_w（と H_w_nokwn）を突き合わせる。
+        """
+        path = os.path.join(_HERE, "..", "results", "lit", "m5m1_pimc.jsonl")
+        if not os.path.exists(path):
+            pytest.skip("便 M の記録が無い環境")
+        import diag_pimc
+        want = []
+        with open(path, encoding="utf-8") as f:
+            for line in f:
+                if line.strip():
+                    want.append(json.loads(line))
+                if len(want) >= 200:
+                    break
+        seeds = sorted({r["seed"] for r in want[:200]})[:2]
+        # **記録を作った探索器で回し直す。** 便 M の記録は当時の champion（`planner_vc4cps`）の
+        # 打ち方でできている。champion につまみが増えると**別の手を選び、別の局面を通り、
+        # W も phase も変わる**（便 C の交代のときは 10 行目の W が 4636 と 4516 で食い違い、
+        # 便 A 後半の交代のときは 70 行目の phase が CLASH_SUBMIT と ACTION で食い違った）。
+        # **これは「W の数え方が変わった」のではなく「回している対局が変わった」**である。
+        # `_pre_bin_c_kwargs()` が当時の探索器に戻し、戻せなければそこで止める。
+        kw = _pre_bin_c_kwargs()
+        got = []
+        for sd in seeds:
+            rows, _ = diag_pimc._one(("SD001", kw, sd, 200))
+            got.extend(rows)
+        keys = ("seed", "seat", "turn", "phase", "W", "W_nokwn", "H_w", "H_w_nokwn",
+                "n_hand", "pool_size", "known_n")
+        n = min(200, len(got))
+        assert n >= 100, "回し直した行が少なすぎる"
+        for i in range(n):
+            for k in keys:
+>               assert got[i][k] == pytest.approx(want[i][k]) if isinstance(
+                    want[i][k], float) else got[i][k] == want[i][k], \
+                    f"{i} 行目の {k} が違う: {got[i][k]} != {want[i][k]}"
+E               AssertionError: 59 行目の phase が違う: ACTION != CLASH_SUBMIT
+E               assert False
+
+tests\test_lit_c.py:1061: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_lit_a2.py::test_a2_bundles_over_enumerated_worlds - Asserti...
+FAILED tests/test_lit_c.py::test_regression_positions_match_t14 - AssertionError
+FAILED tests/test_lit_c.py::test_regression_diagnostic_runs_and_is_deterministic
+FAILED tests/test_lit_c.py::test_worlds_module_matches_diag_pimc - AssertionE...
+4 failed in 71.70s (0:01:11)

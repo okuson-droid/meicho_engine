@@ -537,7 +537,9 @@ class GreedyAgent:
         """
         if not self.known_hand:
             return []
-        return list(observe(s, pi)["opp"]["hand_known"])
+        # D-121: 現 champion の打ち方を変えないため、スキャン・B-9 のぶんだけ（旧 `hand_known`）を読む。
+        # 統一した `hand_known`（公開して手札に入った札を含む）は汎用 AI から使う（D-118 裁定）。
+        return list(observe(s, pi)["opp"]["hand_known_scan"])
 
     @staticmethod
     def _minus_multiset(pool: list, take: list) -> list:

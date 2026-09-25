@@ -20,7 +20,7 @@
       "engine": "rust" | "python",
       "rust_features": [...],                 # Rust 側が持っている機能の一覧
       "band":   [seed0, seed_last],
-      "rules_version": "v0.11",
+      "rules_version": <meicho.version.RULES_VERSION>,   # 直書きしない（D-117）
       "written_at": "2026-09-07T12:34:56+09:00",
       "extra":  {...},
     }
@@ -47,8 +47,9 @@ sys.path.insert(0, os.path.join(_HERE, ".."))
 sys.path.insert(0, _HERE)
 
 JST = timezone(timedelta(hours=9))
-RULES_VERSION = "v0.11"
-ENGINE_VERSION = "v0.1"
+# D-117: 版は `meicho/version.py` の 1 か所で持つ。ここに直書きされていた "v0.11" は
+# rules が v0.18 まで上がるあいだ取り残され、便 D 以後の由来はすべて "v0.11" と書かれていた。
+from meicho.version import ENGINE_VERSION, RULES_VERSION  # noqa: E402,F401
 MODEL_KEYS = ("value_net", "opp_policy_net", "policy_net")
 ENGINES = ("rust", "python")
 # 測定を回した機械の名前として認める値（D-072 判断 6・D-076 判断 5）。

@@ -78,6 +78,23 @@ def test_return_to_chara_deck_drops_the_level_and_makes_the_card_reusable():
     assert "BP01-003" in s.players[0].chara_deck, "キャラデッキに戻っていない"
 
 
+def test_return_to_chara_deck_also_works_from_under_the_top():
+    """u4 改訂（D-094・rules v0.13）: 戻すカードは**最上段とは限らない**。
+
+    公式 603.1.2.2.2 のとおり【レベルアップ】は**下になったカード**が誘発するので、
+    `BP01-001`/`BP01-002` ツバキ Lv2 の「このカードをキャラデッキに戻す」は
+    「上に重ねられて下になったときに自分を戻す」＝**再びレベルアップに使えるようにする**札である。
+    したがって重なりの途中からも抜けなければならない。**最上段は動かないのでレベルは下がらない。**
+    """
+    s = _state()
+    s.players[0].slots[0] = CharaSlot(stack=["BP01-005", "BP01-003", "BP01-001", "BP01-002"])
+    s.pending_effect = {"owner": 0, "card": "BP01-001", "card_kind": "chara", "ops": []}
+    E._apply_op(s, 0, "return_to_chara_deck", {}, {})
+    assert s.players[0].slots[0].stack == ["BP01-005", "BP01-003", "BP01-002"], \
+        "重なりの途中から抜けていない"
+    assert "BP01-001" in s.players[0].chara_deck, "キャラデッキに戻っていない"
+
+
 def test_levelup_by_effect_pays_nothing_and_keeps_the_once_per_turn():
     """効果によるレベルアップはコストを払わず、1 ターン 1 回も消費しない (u3)。"""
     s = _state(used_levelup=True)                 # 既に行動で使っていても効果なら上がる
@@ -344,15 +361,30 @@ def test_smoke_decks_finish_without_abort_or_exception(deck):
 
 # --- K-5 仕上げ -------------------------------------------------------------
 
-def test_every_bp01_card_renders_as_japanese_without_an_image():
+def test_every_bp01_card_renders_as_japanese_without_an_image(monkeypatch):
     """画像が無い BP01 のカードでも、**名前と効果文**で表示できること（引継ぎ書 §0.2・§3.5）。
 
-    マスター裁定 2026-09-10 により BP01 の画像は取得しない。したがってアプリは
-    画像に頼らず描く必要がある。ここで守るのは 3 つ:
+    ここで守るのは 3 つ:
     **(1) 画像が無くても落ちない (2) 生のオペコード名が画面に出ない
     (3) `unverified` の札が読み手に見える**。
+
+    **2026-09-19（D-103）に書き替えた。**元は末尾が `assert shown > 0`
+    （＝画像の無いカードが 1 枚も無いと落ちる）で、「マスター裁定 2026-09-10 により
+    BP01 の画像は取得しない」を前提にしていた。**その裁定は 2026-09-13 の手動スクショへの
+    切り替え（D-084）で実質変わり**、実装カード 123 番号すべてに画像がある。
+    その結果この検査は**画像の揃った PC でだけ落ちる**——環境に依存する検査になっていた
+    （D-098 §2(d)・マスター確認 2026-09-19）。
+
+    直しの考え方: **守りたいのは「画像が無いときにテキストへ落ちられること」**であって、
+    「画像が実際に欠けていること」ではない。だから**画像の欠落をこの場で作って**確かめる。
+    これで PC でも作業環境でも同じ意味になる。
+    （画像がすべて揃っているかどうかは `test_bp01.py::test_no_image_allowlist_is_consistent`
+    が別に見ている。判定を 2 か所に写さない・D-098 §5。）
     """
-    from webapp import view
+    from webapp import images, view
+
+    # **画像が 1 枚も無い状態をその場で作る。**これが「テキストに落ちる」経路である。
+    monkeypatch.setattr(images, "url_for", lambda cid: None)
 
     shown = 0
     for cid in sorted(c for c in ACTION_CARDS if c.startswith("BP01")):
@@ -360,15 +392,15 @@ def test_every_bp01_card_renders_as_japanese_without_an_image():
         assert d["label"] and d["name"], cid
         for line in d["skills"]:
             assert "{" not in line and "op=" not in line, f"{cid} に生のオペコードが出ている: {line}"
-        if d["img"] is None:
-            shown += 1
+        assert d["img"] is None, f"{cid}: 画像を落としたのに img が残っている"
+        shown += 1
         if ACTION_CARDS[cid].unverified_fields:
             assert d["unverified"] is True, f"{cid} の未確認の札が立っていない"
     for cid in sorted(c for c in CHARA_CARDS if c.startswith("BP01")):
         d = view.chara_card(cid)
         for line in d.get("skills", []):
             assert "{" not in line and "op=" not in line, f"{cid} に生のオペコードが出ている: {line}"
-    assert shown > 0, "画像が無いカードが 1 枚も無い（この検査が何も守っていない）"
+    assert shown > 0, "BP01 のアクションカードが 1 枚も無い（この検査が何も守っていない）"
 
 
 def test_unverified_flag_is_visible_on_every_skill_we_interpreted():

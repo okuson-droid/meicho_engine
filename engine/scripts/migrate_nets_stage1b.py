@@ -10,7 +10,9 @@ from __future__ import annotations
 import argparse, glob, json, os, shutil
 import numpy as np
 
-from meicho.encode import ACT_DIM as NEW_ACT, OBS_DIM as NEW_OBS
+# D-124: 現行は v6。この道具の終点は v5 なので v5 の次元（v6 の先頭部分と同じ）を使う。
+# v5 にしたネットは続けて `scripts/migrate_nets_v6.py` で v6 にする。
+from meicho.encode import ACT_DIM as NEW_ACT, OBS_DIM_V5 as NEW_OBS
 from meicho.encode import ACTION_TAGS, NA, NC
 
 OLD_OBS, OLD_ACT = 1313, 226

@@ -528,14 +528,22 @@ def test_heal_self_below_cap():
     assert s2.players[0].life == 15
 
 
-def test_heal_self_clipped_at_max_life():
-    """D-011: 回復はライフ上限20を超えない（マスター裁定 2026-08-21）。"""
-    from meicho.state import MAX_LIFE
+def test_heal_self_is_not_clipped_at_the_starting_life():
+    """**A-6（D-104・rules v0.18）: 回復に上限は無い。**18 + 5 = 23。
+
+    **D-011（2026-08-21 のマスター裁定「上限 20 でクリップ」）を覆す。**D-011 自身が
+    「上限規定としての条文はなかった」と認めており、公式総合ルール 101.6 は
+    「ライフを 20 に**設定します**」＝開始ライフを定めるだけで、回復の上限は定めていない。
+    2026-09-15 にマスターが「回復上限なし」を確認済み（D-092 の A-6・R-6）。
+    開始ライフは `STARTING_LIFE`（旧名 `MAX_LIFE` は D-107 で消した）。
+    """
+    from meicho.state import STARTING_LIFE
     s = start_sd001()
     s = s.clone()
     s.players[0].life = 18
     s2 = _sd001_clash(s, tp_card="SD01-023", tp_stack=["BP01-018"])
-    assert s2.players[0].life == MAX_LIFE == 20
+    assert STARTING_LIFE == 20
+    assert s2.players[0].life == 23
 
 
 # --- D-012 追撃の加算 ----------------------------------------------------------
@@ -861,7 +869,13 @@ def test_deadlock_is_a_draw():
 
 
 def test_not_deadlocked_while_one_player_has_cards():
-    """片方にカードが残っていれば進行可能なので引き分けにしない。"""
+    """片方にカードが残っていれば**引き分けにはしない**。
+
+    **2026-09-17 に期待値を書き換えた（D-092 A-1・D-095・rules v0.14）。**
+    公式 701.1.1.1 は「アクションデッキエリアおよびトラッシュにカードが 1 枚もない」プレイヤーを
+    **直ちに敗北**とする。ここは P0 だけが空なので、引き分けではなく **P1 の勝ち**である。
+    旧版は「進行可能なので対局が続く」(`phase == ACTION`) を期待していた。
+    """
     from meicho.engine import _begin_turn, _pump
     s = start_sd001()
     s = s.clone()
@@ -872,8 +886,9 @@ def test_not_deadlocked_while_one_player_has_cards():
     s.turn_player = 0
     _begin_turn(s)
     _pump(s)
-    assert s.phase == Phase.ACTION
-    assert outcome(s) is None
+    # 引き分けではない（片方だけが条件を満たしたので 102.2 には当たらない）
+    assert s.phase == Phase.GAME_OVER
+    assert outcome(s) == 1, "デッキとトラッシュが空なのは P0 なので P1 の勝ち"
 
 
 def test_runner_reports_draw_not_as_a_win():
@@ -1127,6 +1142,8 @@ def test_peek_opponent_hand_is_visible_in_observe():
     s.players[0].hand = ["SD01-020"]
     s.players[0].concerto = ["SD01-017"] * 5
     s.phase = Phase.CLASH_SUBMIT
+    # D-121: 手札を手で置き換えたので、登場の公開で得た知識（known_opp_hand）も空に揃える
+    s.known_opp_hand = [[], []]
     s.pending_submission = [None, None]
     before = observe(s, 0)["opp"]["hand_known"]
     assert before == []
@@ -1134,8 +1151,12 @@ def test_peek_opponent_hand_is_visible_in_observe():
     assert s2.last_clash_winner == 0
     known = observe(s2, 0)["opp"]["hand_known"]
     assert sorted(known) == sorted(["SD01-011", "SD01-022", "SD01-012"])
-    # 相手からはこちらの手札は見えないまま
-    assert observe(s2, 1)["opp"]["hand_known"] == []
+    # 相手からはこちらの手札は見えないまま——ただし D-121 以後、リーダー（BP01-018）の【対抗】で
+    # 山札から**公開して**手札に加えた 2 枚だけは相手も知っている。スキャンの見えないドローは知らない。
+    assert observe(s2, 1)["opp"]["hand_known_scan"] == []
+    seen = observe(s2, 1)["opp"]["hand_known"]
+    assert seen == sorted(["SD01-009", "SD01-022"])
+    assert "SD01-021" not in seen          # スキャンの「1 枚引く」は見えない
     assert "hand" not in observe(s2, 1)["opp"]
 
 
@@ -1145,7 +1166,9 @@ def test_peeked_knowledge_drops_cards_that_left_the_hand():
     s = s.clone()
     s.peeked_opp_hand[0] = ["SD01-011", "SD01-022", "SD01-022"]
     s.players[1].hand = ["SD01-022", "SD01-012"]
-    known = observe(s, 0)["opp"]["hand_known"]
+    # D-121: 積で忘れる旧来の規則は `hand_known_scan`（現 champion が読む欄）に残した。
+    # 統一した `hand_known` は `known_opp_hand` を読むので、`peeked_opp_hand` を手で書いても変わらない。
+    known = observe(s, 0)["opp"]["hand_known_scan"]
     assert known == ["SD01-022"]      # T11は場に出た。T03は1枚だけ残っている
 
 
@@ -1217,8 +1240,17 @@ def test_switch_bonus_both_directions_for_draw_and_concerto_variants():
     assert len(out2.players[0].concerto) == 5 + 1               # 協奏エリアへ1枚
 
 
-def test_deck_out_does_not_lose_the_game():
-    """D-025: デッキ切れによる敗北はない。片方だけ枯渇しても続行する（§9-5）。"""
+def test_deck_out_loses_the_game():
+    """公式 701.1.1.1: アクションデッキエリア**および**トラッシュが空なら直ちに敗北。
+
+    **2026-09-17 に D-025 の裁定を覆して書き換えた（D-092 A-1・D-095・rules v0.14）。**
+    旧版は `test_deck_out_does_not_lose_the_game` という名前で、「引けないまま続行し、
+    決着もしないし引き分けにもならない」ことを要求していた。公式条文が出て誤りと分かった。
+
+    なお**デッキだけ空でトラッシュに在る場合は敗北しない**（701.1 は勝敗チェックを
+    リフレッシュより先に行うが、敗北条件は「デッキ**および**トラッシュ」である）。
+    その場合分けは `tests/test_official_a12.py` が守る。
+    """
     from meicho.engine import _begin_turn, _pump
     s = start_sd001()
     s = s.clone()
@@ -1228,11 +1260,11 @@ def test_deck_out_does_not_lose_the_game():
     s.turn_player = 0
     _begin_turn(s)
     _pump(s)
-    # 引けないまま続行する。決着もしないし引き分けにもならない。
-    assert s.phase == Phase.ACTION
-    assert outcome(s) is None
+    # デッキもトラッシュも空にしたので P0 の敗北＝P1 の勝ち。
+    assert s.phase == Phase.GAME_OVER
+    assert outcome(s) == 1
     assert s.players[0].hand == []
-    assert s.players[0].life == 20
+    assert s.players[0].life == 20, "ライフではなくデッキ切れで決着している"
 
 
 # ===========================================================================

@@ -1,0 +1,61 @@
+name: Windows wheel
+
+# DEVFLOW_PLAN_20260925.md §5.2
+# Windows 用の meicho_rs の wheel（cp311・win_amd64）を GitHub が作り、Actions の成果物として置く（90 日）。
+# 使い方: Actions → Windows wheel → 該当の実行 → Artifacts の meicho_rs-win_amd64 を落として展開し、
+#   pip install --force-reinstall --no-deps meicho_rs-0.1.0-cp311-cp311-win_amd64.whl
+#   python scripts\check_champion_fingerprint.py   ← どこで作った wheel でも指紋の確認は必ずする
+# 毎手一致（Python↔Rust）の検査は資材が要るので、ここでは回さない（PC の --pc の組・D-125）。
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "engine/rust/**"
+      - "engine/meicho/cards.py"
+      - ".github/workflows/wheel-windows.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: windows-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Build the wheel with maturin
+        uses: PyO3/maturin-action@v1
+        with:
+          working-directory: engine/rust
+          command: build
+          args: --release --out dist --interpreter python3.11
+
+      - name: Install it and print the feature flags
+        shell: cmd
+        run: |
+          for %%f in (engine\rust\dist\*.whl) do pip install --force-reinstall --no-deps "%%f"
+          python -c "import meicho_rs; print(sorted(meicho_rs.features())); print(meicho_rs.encoding_info())"
+
+      - name: Record sha256 of the wheel
+        shell: pwsh
+        run: |
+          Get-ChildItem engine/rust/dist/*.whl | ForEach-Object {
+            $h = (Get-FileHash $_.FullName -Algorithm SHA256).Hash.ToLower()
+            "$($_.Name)  $h" | Tee-Object -FilePath engine/rust/dist/SHA256SUMS.txt -Append
+          }
+          Get-Content engine/rust/dist/SHA256SUMS.txt | Out-File -Append $env:GITHUB_STEP_SUMMARY
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: meicho_rs-win_amd64
+          path: |
+            engine/rust/dist/*.whl
+            engine/rust/dist/SHA256SUMS.txt
+          retention-days: 90

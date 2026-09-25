@@ -398,9 +398,23 @@ def expand_codes(codes: torch.Tensor) -> torch.Tensor:
 
 # ---------------------------------------------------------------------- モデル
 class TwoHead(nn.Module):
-    def __init__(self, hidden: int = 256, depth: int = 2, phead: int = 128, scale=None):
+    def __init__(self, hidden: int = 256, depth: int = 2, phead: int = 128, scale=None,
+                 proj=None, proj_scale=None):
         super().__init__()
-        layers, d = [], OBS_DIM
+        # D-132: カードの効果表現の射影（`card_profile_proj.py`）。渡したときだけ第 1 層の入力に
+        # `(x @ proj) / proj_scale` を足す。書き出しで第 1 層へ畳み込むので、Rust が読む形は変わらない。
+        # 渡さなければ従来どおり（第 1 層の入力は OBS_DIM）。
+        n_extra = 0
+        if proj is None:
+            self.proj = None
+        else:
+            self.register_buffer("proj", torch.as_tensor(proj, dtype=torch.float32))
+            n_extra = self.proj.shape[1]
+            self.register_buffer("proj_scale", torch.ones(n_extra) if proj_scale is None
+                                 else torch.as_tensor(proj_scale, dtype=torch.float32))
+            # 射影は疎（0/1 で非ゼロは約 1 万個）なので、掛け算は疎行列で行う（密だと 1 バッチ 7 GFLOP）
+            self._proj_t = self.proj.t().contiguous().to_sparse_csr()
+        layers, d = [], OBS_DIM + n_extra
         for _ in range(depth):
             layers += [nn.Linear(d, hidden), nn.ReLU()]
             d = hidden
@@ -412,7 +426,10 @@ class TwoHead(nn.Module):
         self.register_buffer("scale", torch.ones(OBS_DIM) if scale is None else torch.as_tensor(scale, dtype=torch.float32))
 
     def forward(self, obs, codes, n_acts):
-        h = self.trunk(obs / self.scale)
+        x = obs / self.scale
+        if self.proj is not None:
+            x = torch.cat([x, self.apply_proj(x) / self.proj_scale], -1)
+        h = self.trunk(x)
         v = self.value(h).squeeze(-1)
         a = expand_codes(codes)                                  # [B,K,A]
         hk = h.unsqueeze(1).expand(-1, a.shape[1], -1)
@@ -421,6 +438,10 @@ class TwoHead(nn.Module):
         s = s.masked_fill(~mask, -1e9)
         return v, s
 
+    def apply_proj(self, x):
+        """x @ proj を疎行列で計算する（値は密の掛け算と同じ・足し算の順だけが違う）。"""
+        return (self._proj_t @ x.t()).t()
+
     def export(self) -> Net:
         """Rust が読む形。スケールは第 1 層の重みに畳み込む。"""
         lin = [m for m in self.trunk if isinstance(m, nn.Linear)]
@@ -428,6 +449,12 @@ class TwoHead(nn.Module):
         for i, m in enumerate(lin):
             w = m.weight.detach().cpu().numpy().astype(np.float32)
             if i == 0:
+                if self.proj is not None:
+                    # D-132: 射影の列を畳み込む  W_id·x + W_pf·((x@M)/s) = (W_id + (W_pf/s)·Mᵀ)·x
+                    pr = self.proj.detach().cpu().numpy().astype(np.float64)
+                    ps = self.proj_scale.detach().cpu().numpy().astype(np.float64)
+                    w64 = w.astype(np.float64)
+                    w = (w64[:, :OBS_DIM] + (w64[:, OBS_DIM:] / ps[None, :]) @ pr.T).astype(np.float32)
                 w = w / self.scale.detach().cpu().numpy()[None, :]
             trunk.append((w, m.bias.detach().cpu().numpy().astype(np.float32)))
         value = (self.value.weight.detach().cpu().numpy(), self.value.bias.detach().cpu().numpy())
@@ -667,11 +694,29 @@ def train(args):
     for _s0 in range(0, tr.n, 200000):
         _mx = np.maximum(_mx, np.abs(tr.obs[_s0:_s0 + 200000].astype(np.float32)).max(0))
     scale = np.maximum(1.0, _mx)
+    # D-132: カードの効果表現の射影（既定は使わない）。目盛りは入力と同じ作法（絶対値の最大・下限 1）。
+    proj = proj_scale = proj_info = None
+    if getattr(args, "card_profile", False):
+        if args.init:
+            raise SystemExit("--card-profile と --init は同時に使えない（書き出した重みから射影の成分は戻せない）")
+        import card_profile_proj
+        proj, proj_info = card_profile_proj.build_projection()
+        _pm = np.zeros(proj.shape[1], np.float32)
+        _pt = torch.from_numpy(proj).t().contiguous().to_sparse_csr()
+        _sc = torch.from_numpy(scale.astype(np.float32))
+        for _s0 in range(0, tr.n, 20000):                  # 小分けにする（密に掛けると 1 回で数 GB になり落ちた）
+            _x = torch.from_numpy(tr.obs[_s0:_s0 + 20000].astype(np.float32)) / _sc
+            _pm = np.maximum(_pm, (_pt @ _x.t()).t().abs().max(0).values.numpy())
+        proj_scale = np.maximum(1.0, _pm)
+        print(f"カードの効果表現の射影 {proj_info['version']}: 特徴 {proj_info['n_features']} 列"
+              f"（アクション 15 塊 × {proj_info['vocab_action']}・キャラ 13 塊 × {proj_info['vocab_chara']}）")
     if args.init:
         model = TwoHead.from_net(Net.load(args.init), scale)
         print(f"init from {args.init}")
     else:
-        model = TwoHead(args.hidden, args.depth, args.phead, scale)
+        model = TwoHead(args.hidden, args.depth, args.phead, scale, proj=proj, proj_scale=proj_scale)
+    n_params = int(sum(p_.numel() for p_ in model.parameters()))
+    print(f"学習する重みの数 {n_params:,}（書き出すネットは射影の有無によらず同じ形）")
     teacher = None
     if args.distil_from:
         # 先生は**学習しない**（重みを固定して、生徒の目標を出すだけ）。
@@ -746,7 +791,10 @@ def train(args):
             "n_league_train": int(tr.league.sum()), "n_v_train": int(tr.vw.sum()),
             "vtarget": args.vtarget, "calib_scale": args.calib_scale, "calib_by": args.calib_by,
             "distil_from": args.distil_from,
-            "n_fresh_used": int(tr.n_fresh_used), "wd": args.wd, "wv": args.wv, "wp": args.wp}
+            "n_fresh_used": int(tr.n_fresh_used), "wd": args.wd, "wv": args.wv, "wp": args.wp,
+            "card_profile": proj_info, "n_params_trained": n_params,
+            "n_params_exported": int(sum(w.size + b.size for w, b in net.trunk) + net.value[0].size
+                                     + net.value[1].size + sum(w.size + b.size for w, b in net.policy))}
     with open(args.out.replace(".json", ".meta.json"), "w", encoding="utf-8") as f:
         json.dump(meta, f, ensure_ascii=False, indent=1)
     print(f"saved {args.out} ({time.time()-t0:.0f}s)")
@@ -791,6 +839,8 @@ def main():
     ap.add_argument("--distil-from", default=None,
                     help="この版の π を**先生**として真似る（蒸留・D-065 便 4 の速度の手当て）。"
                          "--wv 0 と一緒に使う。生徒は --hidden / --phead で小さくする")
+    ap.add_argument("--card-profile", action="store_true",
+                    help="カードの効果表現の射影を第 1 層に足して学ぶ（D-132。書き出しで畳み込むので Rust の形は同じ）")
     ap.add_argument("--seed", type=int, default=0); ap.add_argument("--threads", type=int, default=2)
     ap.add_argument("--max-records", type=int, default=None)
     a = ap.parse_args()

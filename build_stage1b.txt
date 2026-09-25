@@ -1,0 +1,13 @@
+   Compiling meicho_rs v0.1.0 (C:\Users\奥村優斗\OneDrive\ドキュメント\eclipse_workフォルダ\meicho_engine_v0.1\engine\rust)
+warning: variable does not need to be mutable
+    --> src\engine.rs:1850:21
+     |
+1850 |                 let mut backs: Vec<String> = if chosen_backs.is_empty() {
+     |                     ----^^^^^
+     |                     |
+     |                     help: remove this `mut`
+     |
+     = note: `#[warn(unused_mut)]` (part of `#[warn(unused)]`) on by default
+
+warning: `meicho_rs` (lib) generated 1 warning (run `cargo fix --lib -p meicho_rs` to apply 1 suggestion)
+    Finished `release` profile [optimized] target(s) in 39.49s

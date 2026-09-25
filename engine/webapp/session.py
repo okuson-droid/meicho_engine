@@ -245,6 +245,7 @@ class Session:
         ob_b = observe(before, self.human_seat)
 
         acts = {}
+        think_ms: dict = {}
         if human_action is not None:
             if self.human_seat not in need:
                 raise IllegalMove("あなたの決定を求められていない")
@@ -258,7 +259,11 @@ class Session:
             # 候補表が別の行に付く**（記録としては嘘になる）。
             if hasattr(self.ai, "last_clash"):
                 self.ai.last_clash = None
+            # D-117（TE-4）: AI が考えた時間だけを測る。下の `ms` は「前のステップの終わりから」
+            # なので、人間の入力を待つステップでは人間の操作時間が混ざる。`ms` の意味は変えない。
+            t_ai = time.perf_counter()
             acts[pi] = self.ai.act(before, pi)
+            think_ms[pi] = int((time.perf_counter() - t_ai) * 1000)
 
         # **辞書は必ず席の昇順で組み直してから渡す。**
         # `engine._apply_inner` は `actions.items()` を回すので、
@@ -281,6 +286,10 @@ class Session:
                 "seat": pi, "action": a, "auto": bool(auto and pi == self.human_seat),
                 "ms": int((now - self._t0) * 1000),
             }
+            # D-117（TE-4）: AI の行にだけ、AI 自身の思考時間を足す。**思考時間を集計するならこちらを使う。**
+            # 足すのはキー 1 つだけ——再生（`record.replay`）は `action` しか読まないので壊れない。
+            if pi in think_ms:
+                row["think_ms"] = think_ms[pi]
             # D-7（文献計画 便 D）: AI の**対抗**の行にだけ、見比べた候補と点数を足す。
             # 便 F（相手の型）で「AI が何を迷って何を選んだか」と「マスターが実際に
             # 何を出したか」を突き合わせる材料になる。

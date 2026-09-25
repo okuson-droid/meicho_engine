@@ -7,8 +7,7 @@ use crate::cards::{CardDb, Op, Params};
 use serde_json::{json, Map, Value};
 
 pub const HAND_LIMIT: usize = 8;
-pub const STARTING_LIFE: i64 = 20;
-pub const MAX_LIFE: i64 = 20;
+pub const STARTING_LIFE: i64 = 20;   // 開始ライフ。上限ではない（A-6・D-104）。旧名 MAX_LIFE は D-107 で削除
 pub const OPENING_HAND: usize = 5;
 pub const DRAW_PER_TURN: usize = 2;
 pub const FIRST_TURN_DRAW: usize = 1;
@@ -71,6 +70,24 @@ pub struct SkillRef {
     pub idx: u8,
 }
 
+/// 処理待ちの待ち行列の種類（A-3・`_start_next_pending` の `queue` の写し）。
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum PendingQueue {
+    /// 外側の待ち行列（`pending_skills`）。
+    Skills,
+    /// 効果の解決中に誘発した割り込み（`pending_triggers`）。
+    Triggers,
+}
+
+impl PendingQueue {
+    pub fn as_str(self) -> &'static str {
+        match self {
+            PendingQueue::Skills => "pending_skills",
+            PendingQueue::Triggers => "pending_triggers",
+        }
+    }
+}
+
 #[derive(Clone, Debug, PartialEq)]
 pub enum Choice {
     PayOrDamage { player: u8, cost: i64, amount: i64 },
@@ -80,7 +97,9 @@ pub enum Choice {
     DiscardForEffect { player: u8, remaining: i64 },
     /// レベルアップの手札コスト（reason = "levelup"）
     Discard { player: u8 },
-    Order { player: u8, options: Vec<(i64, SkillRef)> },
+    /// A-7 / A-3: 同じプレイヤーの処理待ちが 2 つ以上あるときの解決順（公式 700.1.2/.3）。
+    /// `queue` はどちらの待ち行列から取るか。Python の選択辞書の `queue` と同じ値を持つ。
+    Order { player: u8, queue: PendingQueue, options: Vec<(i64, SkillRef)> },
     PayCostCard { player: u8, remaining: i64, options: Vec<(usize,u16)> },
     ZoneCard { player: u8, zone_owner: u8, zone: Zone, destination: Destination,
                remaining: i64, optional: bool, match_params: Params, options: Vec<(usize,u16)> },
@@ -201,6 +220,8 @@ pub struct GameState {
     pub choice_resume: Option<Resume>,
     pub phase_before_choice: Option<Phase>,
     pub peeked_opp_hand: [Option<Vec<u16>>; 2],
+    /// D-121（段階1C-a）: pi が相手の手札について確かに知っている札（`meicho/state.py` の同名の欄と 1 対 1）。
+    pub known_opp_hand: [Vec<u16>; 2],
     // --- v0.12 / BP01（D-079 追記 3）。`meicho/state.py` の同名の欄と 1 対 1。---
     // **すべて既定値で SD001/SD02 の対局が 1 手も変わらない**（T-K-1）。
     pub last_turn_clash_winner: Option<u8>,
@@ -256,6 +277,7 @@ impl GameState {
             choice_resume: None,
             phase_before_choice: None,
             peeked_opp_hand: [None, None],
+            known_opp_hand: [Vec::new(), Vec::new()],
             last_turn_clash_winner: None,
             last_turn_clash_pass: [false, false],
             damage_taken_mod: [0, 0],
@@ -315,8 +337,8 @@ impl GameState {
             Choice::Discard { player } => {
                 json!({"player": player, "kind": "discard", "reason": "levelup"})
             }
-            Choice::Order { player, options } => json!({
-                "player": player, "kind": "order",
+            Choice::Order { player, queue, options } => json!({
+                "player": player, "kind": "order", "queue": queue.as_str(),
                 "options": options.iter().map(|(i, r)| json!({
                     "index": i, "card": db.chara_or_action_id(r.kind, r.card), "skill_index": r.idx
                 })).collect::<Vec<_>>()
@@ -380,6 +402,10 @@ impl GameState {
             Some(Resume::RushDamage { pi, cid }) => {
                 json!({"kind": "rush_damage", "pi": pi, "cid": db.action[*cid as usize].card_id})
             }
+            Some(Resume::AfterClashCosts) => json!({"kind": "after_clash_costs"}),
+            Some(Resume::StartRush { pi, cid }) => {
+                json!({"kind": "start_rush", "pi": pi, "cid": db.action[*cid as usize].card_id})
+            }
         };
         let effect = match &self.pending_effect {
             None => Value::Null,
@@ -430,6 +456,7 @@ impl GameState {
                 None => Value::Null,
                 Some(v) => Self::aids(db, v),
             }).collect::<Vec<_>>(),
+            "known_opp_hand": self.known_opp_hand.iter().map(|v| Self::aids(db, v)).collect::<Vec<_>>(),
             // --- v0.12 / BP01（D-079 追記 3）。Python の `asdict` と同じ鍵・同じ形。---
             "last_turn_clash_winner": self.last_turn_clash_winner,
             "last_turn_clash_pass": self.last_turn_clash_pass,

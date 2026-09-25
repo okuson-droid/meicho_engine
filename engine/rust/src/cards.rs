@@ -309,6 +309,11 @@ pub struct Params {
     pub level: Option<i64>,
     /// `cost_mod` のコスト修正値 (u20)。下限 0 は `effective_cost` が掛ける。
     pub delta: Option<i64>,
+    // --- B-8 の直し（D-093 追記 1）---
+    /// `pay_cost_return_self_to_hand` の「支払いはもう済んだ」印。**Python の `prm["paid"]` の写し**。
+    /// 以前は `chosen` を流用していたが、`chosen` はドロー枚数などにも使うため名前が食い違い、
+    /// 状態の JSON が Python と一致しなかった（`paid: true` 対 `chosen: 1`）。
+    pub paid: Option<bool>,
 }
 
 impl Params {
@@ -336,6 +341,8 @@ impl Params {
                 "card_name" => p.card_name = val.as_str().map(|s| s.to_string()),
                 "level" => p.level = val.as_i64(),
                 "delta" => p.delta = val.as_i64(),
+                // B-8 の直し（D-093 追記 1）。カードデータには現れないが to_json が書くので受け皿を置く。
+                "paid" => p.paid = val.as_bool(),
                 _ => panic!("unknown op param {k}"),
             }
         }
@@ -362,6 +369,7 @@ impl Params {
         if let Some(x) = &self.card_name { m.insert("card_name".into(), x.clone().into()); }
         if let Some(x) = self.level { m.insert("level".into(), x.into()); }
         if let Some(x) = self.delta { m.insert("delta".into(), x.into()); }
+        if let Some(x) = self.paid { m.insert("paid".into(), x.into()); }
         serde_json::Value::Object(m)
     }
 }

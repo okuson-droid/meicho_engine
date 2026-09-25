@@ -1,0 +1,75 @@
+/* デザイン値の定義は**ここ 1 か所**（要件 R-UI-1）。色・文字・余白・角丸・時間定数。
+   画面のどの CSS / JS も、値を直書きせずここを参照する。配色は 1 系統だけで、画面を移っても反転しない。 */
+:root {
+  /* 面 */
+  --bg: #121a24;            /* 卓の外 */
+  --felt: #1b2735;          /* 卓 */
+  --felt-line: #2c3c50;     /* ゾーンの枠 */
+  --panel: #223043;         /* パネル・ダイアログ */
+  --panel-2: #2a3a50;
+  --ink: #e8eef5;           /* 文字 */
+  --ink-2: #a9b8c9;         /* 補助の文字 */
+  --ink-3: #74869b;
+  /* 意味のある色 */
+  --accent: #f2c14e;        /* いま触れる（光る） */
+  --accent-ink: #231a04;
+  --ok: #5fd39a;
+  --warn: #f0a04b;
+  --danger: #ef6b6b;
+  --me: #6fb6ff;
+  --opp: #ff9a8a;
+  /* カードの色（赤・緑・青） */
+  --c-red: #d9534f;    --c-red-bg: #3a2326;
+  --c-green: #4caf6e;  --c-green-bg: #1f3529;
+  --c-blue: #4a90d9;   --c-blue-bg: #1f2d42;
+  --c-chara-bg: #2d2a3d; --c-chara: #a08be0;
+  --card-back: #33465e; --card-back-2: #28384c;
+  /* 文字 */
+  --font: system-ui, -apple-system, "Segoe UI", "Hiragino Sans", "Yu Gothic UI", "Meiryo", sans-serif;
+  --fs-xs: 11px; --fs-s: 13px; --fs-m: 15px; --fs-l: 18px; --fs-xl: 24px;
+  /* 余白・角丸・影 */
+  --sp-1: 4px; --sp-2: 8px; --sp-3: 12px; --sp-4: 16px; --sp-5: 24px;
+  --r-s: 4px; --r-m: 8px; --r-l: 12px;
+  --shadow: 0 6px 20px rgba(0, 0, 0, .45);
+  --tap: 44px;              /* 触れる要素の最小の大きさ */
+  /* 時間定数（JS は getComputedStyle で読む。演出の本体は M4） */
+  --t-fast: 120ms; --t-move: 260ms; --t-toast: 2600ms;
+  /* 演出（M4・要件 R-FX-1／R-FX-4）。1 拍ぶんの長さ。JS（fx.js）はここを読む。速度の設定で割られる */
+  --fx-flight: 300ms;       /* カード 1 枚が飛ぶ */
+  --fx-stagger: 90ms;       /* 同じ種類の移動を続けて出すときのずらし */
+  --fx-placed: 350ms;       /* 裏向きで置く */
+  --fx-reveal: 1300ms;      /* 対抗の公開（真ん中に並べて同時に表にする・APP-022）・開始時のキャラの公開 */
+  --fx-chara: 600ms;        /* レベルアップ */
+  --fx-switch: 450ms;       /* リーダーの切り替え */
+  --fx-judge: 1700ms;       /* 判定の勝ち負け（勝った側を光らせ、負けた側を沈める・APP-022） */
+  --fx-call: 1500ms;        /* 入力の番の知らせ（対抗の提出・先攻後攻・APP-022） */
+  --fx-life: 650ms;         /* ライフの増減 */
+  --fx-turn: 750ms;         /* ターンの交代 */
+  --fx-refresh: 600ms;      /* トラッシュをデッキに戻す */
+  --fx-known: 850ms;        /* 相手の手札が判明（2026-09-24 マスター「もう少し長く」500 → 850） */
+  --fx-show: 1700ms;        /* 効果によるカードの公開（2026-09-24 マスター「もう少し長く」1100 → 1700） */
+  --fx-skill: 700ms;        /* 効果の解決の区切り（どのカードの効果かを出し、次の効果との間を取る・APP-024） */
+  --fx-over: 1600ms;        /* 決着 */
+  --fx-gap: 120ms;          /* 拍と拍の間 */
+  --fx-max: 8000ms;         /* 1 回の再生の上限。超えるぶんは全体を早回しにする（APP-024 で 6 → 8 秒。長くしたぶんが早回しで削られないように） */
+  --t-longpress: 380ms;     /* これより長く押し続けたら拡大 */
+  --drag-slop: 8px;         /* これより動いたらドラッグ */
+  /* 盤面の寸法。カードの大きさは**画面の高さから逆算**する: 縦に並ぶのは カード 4 段＋自分の手札＋相手の手札の見えている分。
+     1 画面に必ず収める（スクロールさせない）。横幅が足りない画面では横幅で頭打ちにする */
+  --board-overhead: 132px;  /* 中央の帯・ゾーンの見出し・すき間の合計 */
+  --hand-scale: 1.22;       /* 自分の手札は盤面のカードより大きく */
+  --opp-hand-show: .45;     /* 相手の手札は下の端だけ見せる */
+  --ch: min(calc((100dvh - var(--board-overhead)) / (4 + var(--hand-scale) + var(--opp-hand-show))), calc(7.2vw * 1.4), 170px);
+  --cw: calc(var(--ch) / 1.4);
+  --cw-hand: calc(var(--cw) * var(--hand-scale));
+  --ch-hand: calc(var(--cw-hand) * 1.4);
+  --zone-pad-top: 12px;
+  --mid-h: 48px;
+}
+/* 背の低い画面（スマホの横持ち）: 見出しと帯を詰めて、カードに場所を回す */
+@media (max-height: 480px) {
+  :root { --board-overhead: 96px; --hand-scale: 1.12; --opp-hand-show: .28; --zone-pad-top: 9px; --mid-h: 44px; --fs-m: 14px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  :root { --t-fast: 0ms; --t-move: 0ms; }
+}

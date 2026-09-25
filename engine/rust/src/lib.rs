@@ -26,6 +26,7 @@ use std::sync::{Arc, RwLock};
 
 use cards::CardDb;
 use engine::Action;
+use crate::state::Zone;
 use state::GameState;
 
 static DB: RwLock<Option<Arc<CardDb>>> = RwLock::new(None);
@@ -345,11 +346,14 @@ fn observe(py: Python<'_>, s: &PyGameState, pi: u8) -> PyResult<PyObject> {
 // DRL（`DRL_PLAN.md` 段階 0）: 符号化・ネットの推論（Python 版との一致テスト用の入口）
 // ---------------------------------------------------------------------------
 
-/// `encode.encode(observe(s, pi), pi)` と同じ整数列（Rust 版・`GameState` から直接）。
+/// `encode.encode(observe(s, pi), pi, opp_decklist)` と同じ整数列（Rust 版・`GameState` から直接）。
+/// `opp_decklist` は相手のデッキ表の想定（v6・D-124）。
 #[pyfunction]
-fn encode_obs(s: &PyGameState, pi: u8) -> PyResult<Vec<i8>> {
+#[pyo3(signature = (s, pi, opp_decklist=None))]
+fn encode_obs(s: &PyGameState, pi: u8, opp_decklist: Option<Vec<String>>) -> PyResult<Vec<i8>> {
     let d = db()?;
-    Ok(encode::encode_state(&d, &s.inner, pi))
+    let deck = decklist_from_py(&d, opp_decklist)?;
+    Ok(encode::encode_state_with(&d, &s.inner, pi, deck.as_deref()))
 }
 
 /// 合法手それぞれの行動符号（`encode.action_code` と同じ 6 整数）。順序は `legal_actions` と同じ。
@@ -362,10 +366,12 @@ fn encode_actions(s: &PyGameState, pi: u8) -> PyResult<Vec<[i64; encode::ACT_COD
 
 /// ネットを読んで (価値, 合法手のスコア) を返す（一致テスト用）。価値の頭が無ければ NaN。
 #[pyfunction]
-fn net_eval(path: &str, s: &PyGameState, pi: u8) -> PyResult<(f64, Vec<f64>)> {
+#[pyo3(signature = (path, s, pi, opp_decklist=None))]
+fn net_eval(path: &str, s: &PyGameState, pi: u8, opp_decklist: Option<Vec<String>>) -> PyResult<(f64, Vec<f64>)> {
     let d = db()?;
     let n = net::load(path).map_err(PyValueError::new_err)?;
-    let x: Vec<f32> = encode::encode_state(&d, &s.inner, pi).iter().map(|&v| v as f32).collect();
+    let deck = decklist_from_py(&d, opp_decklist)?;
+    let x: Vec<f32> = encode::encode_state_with(&d, &s.inner, pi, deck.as_deref()).iter().map(|&v| v as f32).collect();
     let h = n.trunk(&x);
     let v = if n.has_value() { n.value_from_trunk(&h) as f64 } else { f64::NAN };
     let acts = engine::legal_actions(&d, &s.inner, pi);
@@ -889,6 +895,16 @@ impl AnyAgent {
     }
     /// 直前の決定の「選んだ手を別の決定化で取り直した値」（記録形式 v3 の `fresh`・D-065 §2.5）。
     /// 探索していない決定・`reeval_samples=0`・そもそも探索しない種別なら NaN。
+    /// 相手のデッキ表の想定（記録の符号化の信念の要約に使う・D-124）。探索しない種別は None。
+    fn opp_pool(&self) -> Option<&[u16]> {
+        match self {
+            AnyAgent::Greedy(g) => g.opp_decklist.as_deref(),
+            AnyAgent::Planner(p) => p.g.opp_decklist.as_deref(),
+            AnyAgent::Challenger(c) => c.planner.g.opp_decklist.as_deref(),
+            _ => None,
+        }
+    }
+
     fn last_fresh(&self) -> f64 {
         match self {
             AnyAgent::Greedy(g) => g.last_fresh,
@@ -1095,18 +1111,39 @@ fn run_one(d: &CardDb, cd: &[Vec<u16>; 2], ad: &[Vec<u16>; 2], seed: i64, ags: &
     (if draw { None } else { o }, s.turn_no, s.players[0].life, s.players[1].life, draw, false, steps, digest)
 }
 
+/// 段階 1C-b（D-123）: 相手デッキ表（`pool`）を**その局の相手の席の**行動デッキに差し替えた仕様を返す。
+///
+/// `series` 系は奇数シードで A/B の席を入れ替えるが、デッキは席に固定である。仕様に固定の
+/// `pool` を持たせると、異種デッキ戦では半分の局で相手デッキ表が誤る。`opp_from_seat=true`
+/// のとき、Greedy／Planner の `pool` を `ad[1 - seat]` に置き換える（ほかの種別はそのまま）。
+fn with_opp_pool(spec: &AgentSpec, opp_deck: &[u16]) -> AgentSpec {
+    let mut sp = spec.clone();
+    match &mut sp {
+        AgentSpec::Greedy { pool, .. } | AgentSpec::Planner { pool, .. } => *pool = Some(opp_deck.to_vec()),
+        _ => {}
+    }
+    sp
+}
+
+/// 1 局ぶんのエージェント 2 体を席順に作る（`series` 系の共通部分）。
+/// `flip` なら A が席 1。`opp_from_seat` なら各自の `pool` を相手の席の行動デッキにする。
+fn seat_agents(ad: &[Vec<u16>; 2], sa: &AgentSpec, sb: &AgentSpec, seed: i64, flip: bool, opp_from_seat: bool) -> [AnyAgent; 2] {
+    let (s0, s1) = if flip { (sb, sa) } else { (sa, sb) };
+    if opp_from_seat {
+        [build_agent(&with_opp_pool(s0, &ad[1]), seed * 2), build_agent(&with_opp_pool(s1, &ad[0]), seed * 2 + 1)]
+    } else {
+        [build_agent(s0, seed * 2), build_agent(s1, seed * 2 + 1)]
+    }
+}
+
 /// `series` / `series_digest` の中身。各シードの (a_won, turns, steps, fired_a, digest)。
 fn run_series(d: &Arc<CardDb>, cd: &[Vec<u16>; 2], ad: &[Vec<u16>; 2], sa: &AgentSpec, sb: &AgentSpec,
-              seed0: i64, n: i64, workers: usize, max_turns: i64) -> Vec<(Option<bool>, i64, i64, u64, u64)> {
+              seed0: i64, n: i64, workers: usize, max_turns: i64, opp_from_seat: bool) -> Vec<(Option<bool>, i64, i64, u64, u64)> {
     let seeds: Vec<i64> = (seed0..seed0 + n).collect();
     let workers = workers.max(1);
     let job = |seed: i64| -> (Option<bool>, i64, i64, u64, u64) {
         let flip = seed % 2 == 1;
-        let mut ags: [AnyAgent; 2] = if flip {
-            [build_agent(sb, seed * 2), build_agent(sa, seed * 2 + 1)]
-        } else {
-            [build_agent(sa, seed * 2), build_agent(sb, seed * 2 + 1)]
-        };
+        let mut ags: [AnyAgent; 2] = seat_agents(ad, sa, sb, seed, flip, opp_from_seat);
         let (winner, turns, _l0, _l1, draw, aborted, steps, digest) = run_one(d, cd, ad, seed, &mut ags, max_turns);
         let a_seat: usize = if flip { 1 } else { 0 };
         let fired = ags[a_seat].fired();
@@ -1173,7 +1210,8 @@ fn run_one_record(d: &CardDb, cd: &[Vec<u16>; 2], ad: &[Vec<u16>; 2], seed: i64,
                 buf.extend_from_slice(&f32::NAN.to_le_bytes());
                 // 版 3: z の直後に fresh（探索していない決定・reeval_samples=0 なら NaN）
                 buf.extend_from_slice(&(ags[pi as usize].last_fresh() as f32).to_le_bytes());
-                for v in encode::encode_state(d, &s, pi) {
+                // v6（D-124）: 信念の要約は記録する席のエージェントの想定デッキ表で作る
+                for v in encode::encode_state_with(d, &s, pi, ags[pi as usize].opp_pool()) {
                     buf.push(v as u8);
                 }
                 for x in legal.iter().take(255) {
@@ -1224,7 +1262,7 @@ fn encode_phase(p: state::Phase) -> u8 {
 /// 戻り値は各シードの (a_won, turns, steps, fired_a, digest) と、書いたファイルの一覧。
 fn run_series_record(d: &Arc<CardDb>, cd: &[Vec<u16>; 2], ad: &[Vec<u16>; 2], sa: &AgentSpec, sb: &AgentSpec,
                      seed0: i64, n: i64, workers: usize, max_turns: i64, out_path: &str,
-                     record_a: bool, record_b: bool) -> std::io::Result<(Vec<(Option<bool>, i64, i64, u64, u64)>, Vec<String>)> {
+                     record_a: bool, record_b: bool, opp_from_seat: bool) -> std::io::Result<(Vec<(Option<bool>, i64, i64, u64, u64)>, Vec<String>)> {
     use std::io::Write;
     let seeds: Vec<i64> = (seed0..seed0 + n).collect();
     let workers = workers.max(1);
@@ -1237,11 +1275,7 @@ fn run_series_record(d: &Arc<CardDb>, cd: &[Vec<u16>; 2], ad: &[Vec<u16>; 2], sa
     };
     let job = |seed: i64, buf: &mut Vec<u8>| -> (Option<bool>, i64, i64, u64, u64) {
         let flip = seed % 2 == 1;
-        let mut ags: [AnyAgent; 2] = if flip {
-            [build_agent(sb, seed * 2), build_agent(sa, seed * 2 + 1)]
-        } else {
-            [build_agent(sa, seed * 2), build_agent(sb, seed * 2 + 1)]
-        };
+        let mut ags: [AnyAgent; 2] = seat_agents(ad, sa, sb, seed, flip, opp_from_seat);
         let rec = if flip { [record_b, record_a] } else { [record_a, record_b] };
         let (winner, turns, _l0, _l1, draw, aborted, steps, digest) = run_one_record(d, cd, ad, seed, &mut ags, max_turns, buf, rec);
         let a_seat: usize = if flip { 1 } else { 0 };
@@ -1293,15 +1327,15 @@ fn decks_from_py(d: &CardDb, chara_decks: &[Vec<String>], action_decks: &[Vec<St
 /// 戻り値は各シードの (a_won: Optional[bool], turns, steps, fired_a)。引き分け・打ち切りは None。
 /// `fired_a` は A が挑戦者（delta つき）のとき δ が手に関与した回数（それ以外は 0）。
 #[pyfunction]
-#[pyo3(signature = (chara_decks, action_decks, spec_a, spec_b, seed0, n, workers=1, max_turns=200))]
+#[pyo3(signature = (chara_decks, action_decks, spec_a, spec_b, seed0, n, workers=1, max_turns=200, opp_from_seat=false))]
 fn series(py: Python<'_>, chara_decks: Vec<Vec<String>>, action_decks: Vec<Vec<String>>,
-          spec_a: &Bound<'_, PyDict>, spec_b: &Bound<'_, PyDict>, seed0: i64, n: i64, workers: usize, max_turns: i64)
-          -> PyResult<Vec<(Option<bool>, i64, i64, u64)>> {
+          spec_a: &Bound<'_, PyDict>, spec_b: &Bound<'_, PyDict>, seed0: i64, n: i64, workers: usize, max_turns: i64,
+          opp_from_seat: bool) -> PyResult<Vec<(Option<bool>, i64, i64, u64)>> {
     let d = db()?;
     let sa = spec_from_py(&d, spec_a)?;
     let sb = spec_from_py(&d, spec_b)?;
     let (cd, ad) = decks_from_py(&d, &chara_decks, &action_decks)?;
-    let out = py.allow_threads(|| run_series(&d, &cd, &ad, &sa, &sb, seed0, n, workers, max_turns));
+    let out = py.allow_threads(|| run_series(&d, &cd, &ad, &sa, &sb, seed0, n, workers, max_turns, opp_from_seat));
     Ok(out.into_iter().map(|(w, t, s, f, _)| (w, t, s, f)).collect())
 }
 
@@ -1311,30 +1345,30 @@ fn series(py: Python<'_>, chara_decks: Vec<Vec<String>>, action_decks: Vec<Vec<S
 /// 2 つの列の digest が全局一致したら、その 2 者は**毎手同じ手を選んだ**（挙動が同じ）。
 /// 発見ループの選別（δ が champion の手を変えたか）に使う。
 #[pyfunction]
-#[pyo3(signature = (chara_decks, action_decks, spec_a, spec_b, seed0, n, workers=1, max_turns=200))]
+#[pyo3(signature = (chara_decks, action_decks, spec_a, spec_b, seed0, n, workers=1, max_turns=200, opp_from_seat=false))]
 fn series_digest(py: Python<'_>, chara_decks: Vec<Vec<String>>, action_decks: Vec<Vec<String>>,
-                 spec_a: &Bound<'_, PyDict>, spec_b: &Bound<'_, PyDict>, seed0: i64, n: i64, workers: usize, max_turns: i64)
-                 -> PyResult<Vec<(Option<bool>, i64, i64, u64, u64)>> {
+                 spec_a: &Bound<'_, PyDict>, spec_b: &Bound<'_, PyDict>, seed0: i64, n: i64, workers: usize, max_turns: i64,
+                 opp_from_seat: bool) -> PyResult<Vec<(Option<bool>, i64, i64, u64, u64)>> {
     let d = db()?;
     let sa = spec_from_py(&d, spec_a)?;
     let sb = spec_from_py(&d, spec_b)?;
     let (cd, ad) = decks_from_py(&d, &chara_decks, &action_decks)?;
-    Ok(py.allow_threads(|| run_series(&d, &cd, &ad, &sa, &sb, seed0, n, workers, max_turns)))
+    Ok(py.allow_threads(|| run_series(&d, &cd, &ad, &sa, &sb, seed0, n, workers, max_turns, opp_from_seat)))
 }
 
 /// 記録つき自己対戦（DRL 段階 0）。`series_digest` と同じ戻り値に加えて、書いたファイルの一覧を返す。
 /// 各決定（合法手が 2 つ以上のもの）を `out_path.<worker>` にバイナリで書く（形式は `run_one_record`）。
 #[pyfunction]
-#[pyo3(signature = (chara_decks, action_decks, spec_a, spec_b, seed0, n, out_path, workers=1, max_turns=200, record_a=true, record_b=true))]
+#[pyo3(signature = (chara_decks, action_decks, spec_a, spec_b, seed0, n, out_path, workers=1, max_turns=200, record_a=true, record_b=true, opp_from_seat=false))]
 fn series_record(py: Python<'_>, chara_decks: Vec<Vec<String>>, action_decks: Vec<Vec<String>>,
                  spec_a: &Bound<'_, PyDict>, spec_b: &Bound<'_, PyDict>, seed0: i64, n: i64, out_path: String,
-                 workers: usize, max_turns: i64, record_a: bool, record_b: bool)
+                 workers: usize, max_turns: i64, record_a: bool, record_b: bool, opp_from_seat: bool)
                  -> PyResult<(Vec<(Option<bool>, i64, i64, u64, u64)>, Vec<String>)> {
     let d = db()?;
     let sa = spec_from_py(&d, spec_a)?;
     let sb = spec_from_py(&d, spec_b)?;
     let (cd, ad) = decks_from_py(&d, &chara_decks, &action_decks)?;
-    py.allow_threads(|| run_series_record(&d, &cd, &ad, &sa, &sb, seed0, n, workers, max_turns, &out_path, record_a, record_b))
+    py.allow_threads(|| run_series_record(&d, &cd, &ad, &sa, &sb, seed0, n, workers, max_turns, &out_path, record_a, record_b, opp_from_seat))
         .map_err(|e| PyRuntimeError::new_err(e.to_string()))
 }
 
@@ -1354,6 +1388,9 @@ fn features() -> Vec<String> {
         "draw_buckets".to_string(),               // 便 C 段 C-4（D-077）: 決定化の山札の上位をコスト帯×色で層別に散らす
         "bundle_p".to_string(),                   // 便 A 後半（D-082）: 束ねた対抗ゲームを解いて提出分布を決める
         "bp01_k5".to_string(),                    // 段 K-5: cost_mod / grant_rush_draw_to_variation_skills / levelup の level
+        "opp_from_seat".to_string(),              // 段階 1C-b（D-123）: series 系の相手デッキ表を席ごとに相手の行動デッキにする
+        "encoding_v6".to_string(),                // 段階 1C-c（D-124）: 符号化 v6（信念の要約・統一した hand_known）
+        "te13_switched_scope".to_string(),        // TE-13（D-134）: 【切り替え】は入れ替わった 2 枠だけが誘発する
     ]
 }
 

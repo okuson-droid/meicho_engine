@@ -154,7 +154,9 @@ def test_provenance_block_is_stable_and_complete(tmp_path):
     # 中身が違えば sha256 も違う
     assert a["models"]["value_net"]["sha256"] != a["models"]["policy_net"]["sha256"]
     assert a["band"] == [650000, 650199]
-    assert a["rules_version"] == "v0.11"
+    # D-117: 以前は "v0.11" を固定していた（直書きの取り残しを検査が守ってしまっていた）
+    from meicho.version import RULES_VERSION
+    assert a["rules_version"] == RULES_VERSION
     # kwargs に**絶対パスを残さない**（環境をまたいで再現できなくなる・C-1 の教訓）。
     # 中身の同一性は sha256 が担うので、名前はファイル名だけでよい。
     assert a["kwargs"]["value_net"] == os.path.basename(v)
@@ -705,9 +707,17 @@ def test_proto_modes_are_registered_and_defaults_unchanged():
 def test_defaults_unchanged_lit_d():
     """`bench_agents.py` の fingerprint 3 種が不変（素の計画探索を測る）。"""
     import bench_agents
-    assert bench_agents.fingerprint("H", 50) == "773a71c15c5bc16e"
-    assert bench_agents.fingerprint("G", 20) == "677f28cc3b6995ee"
-    assert bench_agents.fingerprint("P", 10) == "6e39c2aa4b35d876"
+    # **2026-09-17 に H と G を貼り替えた（D-095・マスター裁定）。P は不変である。**
+    # 公式 701 のルールチェックを実装したので（A-1・A-2／rules v0.14）、リフレッシュの時点が
+    # 早まり山札の並びが変わった。**エージェントの打ち方は 1 行も変えていない。**
+    # 旧値: H `773a71c15c5bc16e` / G `677f28cc3b6995ee`（どちらも v0.13 以前）。
+    # P が不変なのは、planner の対局がこの帯でリフレッシュを踏まないからである
+    # （`BASELINE_DIGESTS_230000` も同じ理由で不変だった）。
+    # D-104: A-6（回復の上限撤廃・rules v0.18）で SD001 の対局が変わったため貼り替えた。
+    # 旧値: H 0e36f6aafd63a52e / G e197a6cc20748642 / P 6e39c2aa4b35d876
+    assert bench_agents.fingerprint("H", 50) == "6427a7b28f7a10fe"
+    assert bench_agents.fingerprint("G", 20) == "59e116cbb2fd094d"
+    assert bench_agents.fingerprint("P", 10) == "453bc27c27c11997"
 
 
 def test_champion_fingerprint_unchanged_lit_d():

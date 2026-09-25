@@ -233,7 +233,7 @@ def _state_with_scan(seed0=680400, max_seeds=12, max_steps=400):
             if not need:
                 break
             for pi in need:
-                if observe(s, pi)["opp"]["hand_known"]:
+                if observe(s, pi)["opp"]["hand_known_scan"]:
                     return s, pi, seed
             s = apply(s, {pi: agents[pi].act(s, pi) for pi in need})
     pytest.skip("スキャンが解決する局面が見つからない")
@@ -247,7 +247,7 @@ def test_known_hand_forced_into_opponent_hand():
     `hand_known` が空の局面では、同じ乱数状態から従来と同じ手札が出る。
     """
     s, pi, _ = _state_with_scan()
-    known = observe(s, pi)["opp"]["hand_known"]
+    known = observe(s, pi)["opp"]["hand_known_scan"]
     assert known, "前提が壊れている（見えている札が無い）"
     ag = PlannerAgent(7, opp_decklist=POOL, known_hand=True)
     for _ in range(20):
@@ -265,7 +265,7 @@ def test_known_hand_forced_into_opponent_hand():
 
     # 見えていない局面（配った直後）では、同じ乱数状態から従来と同じ手札が出る
     s0 = initial_state(CONFIG, 680401)
-    assert not observe(s0, 0)["opp"]["hand_known"]
+    assert not observe(s0, 0)["opp"]["hand_known_scan"]
     a = PlannerAgent(11, opp_decklist=POOL)
     b = PlannerAgent(11, opp_decklist=POOL, known_hand=True)
     assert (a._determinize(s0, 0).players[1].hand
@@ -279,7 +279,7 @@ def test_known_hand_default_off_is_bitwise_identical():
     ここが崩れると同じシードの対局が変わり、過去に取った勝率が比較できなくなる。
     """
     s, pi, _ = _state_with_scan()
-    assert observe(s, pi)["opp"]["hand_known"], "前提が壊れている"
+    assert observe(s, pi)["opp"]["hand_known_scan"], "前提が壊れている"
     a = PlannerAgent(23, opp_decklist=POOL)                    # 既定
     b = PlannerAgent(23, opp_decklist=POOL, known_hand=False)  # 明示的に 0
     for _ in range(5):
@@ -334,14 +334,14 @@ def test_known_hand_uses_observe_not_state():
     """
     import meicho.greedy as G
     s, pi, _ = _state_with_scan()
-    real = observe(s, pi)["opp"]["hand_known"]
+    real = observe(s, pi)["opp"]["hand_known_scan"]
     assert real
 
     # (1) `observe` が「何も見えていない」と言えば、決定化は素の振る舞いに戻る
     def blind(state, q):
         o = observe(state, q)
         if q == pi:
-            o["opp"] = dict(o["opp"], hand_known=[])
+            o["opp"] = dict(o["opp"], hand_known_scan=[])
         return o
 
     ag = PlannerAgent(31, opp_decklist=POOL, known_hand=True)
@@ -363,7 +363,7 @@ def test_known_hand_uses_observe_not_state():
     def lying(state, q):
         o = observe(state, q)
         if q == pi:
-            o["opp"] = dict(o["opp"], hand_known=list(fake))
+            o["opp"] = dict(o["opp"], hand_known_scan=list(fake))
         return o
 
     ag2 = PlannerAgent(31, opp_decklist=POOL, known_hand=True)
@@ -418,7 +418,7 @@ def test_rust_has_peeked_and_matches_python(tmp_path):
             break
         acts = {}
         for q in need:
-            if observe(py, q)["opp"]["hand_known"]:
+            if observe(py, q)["opp"]["hand_known_scan"]:
                 seen_scan += 1
             py_agents[q].last_clash = None       # 前の対抗の記録を持ち越さない
             a_py = py_agents[q].act(py, q)
@@ -808,7 +808,7 @@ def _state_where(pred, seed=688000, phase=Phase.ACTION, max_steps=400, what=""):
                 continue
             wc = world_counts(ags[pi]._unseen(s, pi),
                               len(s.players[1 - pi].hand),
-                              observe(s, pi)["opp"]["hand_known"])
+                              observe(s, pi)["opp"]["hand_known_scan"])
             if pred(wc["W"]):
                 return s, pi, wc["W"]
         s = apply(s, {q: ags[q].act(s, q) for q in need})
@@ -854,7 +854,7 @@ def test_endgame_enumeration_is_exhaustive():
     s, pi, w = _small_w_state()
     ag = PlannerAgent(3, **_champ_kw(**KHE))
     unseen = ag._unseen(s, pi)
-    known = observe(s, pi)["opp"]["hand_known"]
+    known = observe(s, pi)["opp"]["hand_known_scan"]
     hands = enumerate_hands(unseen, len(s.players[1 - pi].hand), known)
     assert len(hands) == w
     true_hand = sorted(s.players[1 - pi].hand)      # 検査だけが見てよい（D-026）
@@ -907,7 +907,7 @@ def test_endgame_off_above_threshold():
     assert ag._worlds_enumerated is True
     assert len(ts) == min(w, ag.endgame_eval)
     assert sum(ws) == pytest.approx(6.0), "重みの合計が本数に揃っていない"
-    known = _C(observe(s, pi)["opp"]["hand_known"])
+    known = _C(observe(s, pi)["opp"]["hand_known_scan"])
     unseen = _C(ag._unseen(s, pi))
     seen_hands = set()
     for t in ts:
@@ -1024,14 +1024,19 @@ def test_endgame_requires_opp_decklist():
 
 # ===================================================== T-C-16
 def test_worlds_module_matches_diag_pimc():
-    """`meicho/worlds.py` に移した W の数え方が便 M の記録と 1 行も違わない。
+    """`meicho/worlds.py` に移した W の数え方が、基準の記録と 1 行も違わない。
 
-    記録（`results/lit/m5m1_pimc.jsonl`）の**先頭 200 行**は帯の頭の 2 局である。
-    同じ 2 局を回し直し、W・W_nokwn・H_w（と H_w_nokwn）を突き合わせる。
+    **基準は `results/lit/m5m1_pimc_v018.jsonl`（D-115）である。**元は便 M の記録
+    `results/lit/m5m1_pimc.jsonl` を見ていたが、ルールの直し（A-2・A-6 ほか・rules v0.14〜v0.18）で
+    同じシードでも**対局そのものが変わり**、59 行目の phase が食い違うようになった（D-098 §2(e)）。
+    0〜58 行目は W まで元の記録と一致した＝**W の数え方は変わっていない**。そこで元の記録は便 M の
+    出典として残し、いまのエンジンで帯の頭の 2 局を回し直した別名の記録を基準にした
+    （`experiments/regen_m5m1_pimc.py`）。**これ以後この検査は「転記の番人」ではなく「W の数え方の回帰の番人」である。**
+    ルールをまた直して対局が変わったら、同じ道具で基準を作り直し、decisions.md に残すこと。
     """
-    path = os.path.join(_HERE, "..", "results", "lit", "m5m1_pimc.jsonl")
+    path = os.path.join(_HERE, "..", "results", "lit", "m5m1_pimc_v018.jsonl")
     if not os.path.exists(path):
-        pytest.skip("便 M の記録が無い環境")
+        pytest.skip("基準の記録が無い環境（experiments/regen_m5m1_pimc.py で作る）")
     import diag_pimc
     want = []
     with open(path, encoding="utf-8") as f:
@@ -1248,8 +1253,22 @@ KHEB_CHAMPION_KWARGS = {"extra_turns": 1,
                         "known_hand": True,
                         "endgame_enum": 64,
                         "draw_buckets": 1}
-KHEB_CHAMPION_FINGERPRINT = "e82b796960e04c4a"
-PREV_CHAMPION_FINGERPRINT = "9b5ad48d2de6a7e0"      # `planner_vc4cps`（一つ前）
+# D-098（2026-09-17・マスター裁定）: 貼り替えた。**動いた理由が 2 つ重なっている。**
+#   (a) 段階1A（D-088・2026-09-14）が決定列に新しい選択行動を足した。D-091 はこの 3 体を
+#       「D-088 以前の値・未再測」の札つきで**残していた**ので、今日より前から古かった。
+#   (b) A-2（公式 701.1.2 のリフレッシュの時点・D-095／rules v0.14）。
+#   **(a) と (b) の寄与は分けて測っていない。**今日 PC で測った 1 つの値に両方が入っている。
+#   旧値 kheb = e82b796960e04c4a / prev = 9b5ad48d2de6a7e0
+# D-104（2026-09-19・マスター裁定）: **A-6（回復にライフの上限は無い・公式 101.6・rules v0.18）で動いた。**
+#   D-011（2026-08-21 のマスター裁定「上限 20 でクリップ」）を覆したため、`SD01-023`「奏鳴」(+5) が
+#   **序盤から本当に +5 回復する**ようになり、SD001 の対局が変わった。SD02 と BP01 の仮デッキは
+#   回復カードを持たないので**1 手も動いていない**。
+#   実測（A-6 の前後・ミラー 200 局）: SD001/random 手順 4・勝敗 1／SD001/heuristic 手順 8・勝敗 1／
+#   **planner/SD001 手順 80・勝敗 37**／champion の指紋の帯 471500..471509 は手順 4/10・勝敗 4/10。
+#   **これは AI の打ち方の変化ではなく、ゲームのルールが公式に合ったことによる変化である。**
+#   旧値（v0.17）: KHEB f3d1b52aed0abdad / PREV 2d884df547ac6990
+KHEB_CHAMPION_FINGERPRINT = "b4d3b2a1986b71b9"
+PREV_CHAMPION_FINGERPRINT = "ff72e98e303d87ae"      # `planner_vc4cps`（一つ前）
 
 
 def test_kheb_is_the_champion_now():

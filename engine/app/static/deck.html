@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>デッキメーカー — MeichoSim（非公式）</title>
+<meta name="robots" content="noindex,nofollow">
+<link rel="stylesheet" href="/static/css/deck.css">
+</head>
+<body>
+<div class="app">
+  <header class="topbar">
+    <div class="brand">
+      <span class="mark">対決</span>
+      <h1>デッキメーカー</h1>
+      <span class="sub" id="setline">BP01 / SD01 / SD02</span>
+      <span class="unofficial">非公式</span>
+    </div>
+    <div class="topbar-right">
+      <span class="chip-status"><span class="dot off" id="dot-cards"></span><span id="lbl-cards">カード未読込</span></span>
+      <span class="chip-status"><span class="dot off" id="dot-imgs"></span><span id="lbl-imgs">画像なし</span></span>
+      <button class="btn" id="btn-data">データ</button>
+      <a class="btn" id="btn-home" href="/">ホームへ</a>
+    </div>
+  </header>
+
+  <nav class="tabbar" role="tablist">
+    <button id="tab-filter" aria-pressed="false">絞込</button>
+    <button id="tab-pool" aria-pressed="true">カード</button>
+    <button id="tab-deck" aria-pressed="false">デッキ</button>
+  </nav>
+
+  <main class="cols">
+    <!-- ============ filters ============ -->
+    <aside class="col col-filter" id="pane-filter">
+      <div class="fgroup">
+        <div class="flabel"><span>検索</span><button id="f-reset">すべて解除</button></div>
+        <div class="search">
+          <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="7" cy="7" r="4.5"/><path d="M10.5 10.5L14 14"/></svg>
+          <input type="search" id="f-q" placeholder="名前・番号・効果" autocomplete="off">
+        </div>
+      </div>
+
+      <div class="fgroup">
+        <div class="flabel"><span>種類</span></div>
+        <div class="chips" id="f-type"></div>
+      </div>
+
+      <div class="fgroup">
+        <div class="flabel"><span>色</span></div>
+        <div class="chips" id="f-color"></div>
+      </div>
+
+      <div class="fgroup">
+        <div class="flabel"><span>コスト</span></div>
+        <div class="chips" id="f-cost"></div>
+      </div>
+
+      <div class="fgroup">
+        <div class="flabel"><span>レベル</span></div>
+        <div class="chips" id="f-level"></div>
+      </div>
+
+      <div class="fgroup">
+        <div class="flabel"><span>属性</span></div>
+        <div class="chips" id="f-attribute"></div>
+      </div>
+
+      <div class="fgroup">
+        <div class="flabel"><span>武器</span></div>
+        <div class="chips" id="f-weapon"></div>
+      </div>
+
+      <div class="fgroup">
+        <div class="flabel"><span>所属</span></div>
+        <div class="chips" id="f-affiliation"></div>
+      </div>
+
+      <div class="fgroup">
+        <div class="flabel"><span>収録</span></div>
+        <div class="chips" id="f-set"></div>
+      </div>
+
+      <div class="fgroup">
+        <div class="flabel"><span>専用キャラ</span></div>
+        <select class="sel" id="f-ded"><option value="">すべて</option></select>
+      </div>
+
+      <div class="fgroup">
+        <div class="flabel"><span>表示</span></div>
+        <label class="switch"><input type="checkbox" id="f-legal"><span>このデッキに入れられるものだけ</span></label>
+        <label class="switch"><input type="checkbox" id="f-indeck"><span>デッキに入っているものだけ</span></label>
+        <label class="switch"><input type="checkbox" id="f-hasimg"><span>画像があるものだけ</span></label>
+      </div>
+    </aside>
+
+    <!-- ============ pool ============ -->
+    <section class="col col-pool active" id="pane-pool">
+      <div class="poolbar">
+        <span class="poolcount"><b id="pool-n">0</b> 種 <span id="pool-of"></span></span>
+        <div class="right">
+          <select class="sel" id="sort" style="width:auto">
+            <option value="code">番号順</option>
+            <option value="name">名前順</option>
+            <option value="cost">コスト順</option>
+            <option value="speed">速度順</option>
+            <option value="damage">ダメージ順</option>
+            <option value="level">レベル順</option>
+          </select>
+          <div class="seg" role="group" aria-label="表示サイズ">
+            <button id="size-s" aria-pressed="true">小</button>
+            <button id="size-l" aria-pressed="false">大</button>
+          </div>
+        </div>
+      </div>
+      <div id="pool-body"></div>
+    </section>
+
+    <!-- ============ deck ============ -->
+    <aside class="col col-deck" id="pane-deck">
+      <div class="deckhead">
+        <div class="deckpick">
+          <select class="sel" id="deck-select"></select>
+          <button class="btn sm" id="deck-new" title="新規デッキ">＋</button>
+          <button class="btn sm" id="deck-dup" title="複製">複製</button>
+          <button class="btn sm" id="deck-del" title="削除">削除</button>
+        </div>
+        <input class="deckname" id="deck-name" value="新しいデッキ" aria-label="デッキ名">
+        <textarea class="deckdesc" id="deck-desc" rows="1" placeholder="メモ（任意）" aria-label="デッキの説明"></textarea>
+        <div class="counters">
+          <div class="counter" id="cnt-chara"><span class="k">キャラ</span><span class="v">0<small>/3–15</small></span></div>
+          <div class="counter" id="cnt-action"><span class="k">アクション</span><span class="v">0<small>/40</small></span></div>
+        </div>
+      </div>
+      <div class="checks" id="checks"></div>
+      <div class="dsection">
+        <h3>キャラデッキ</h3>
+        <div class="dlist" id="list-chara"></div>
+      </div>
+      <div class="dsection">
+        <h3>アクションデッキ</h3>
+        <div class="dlist" id="list-action"></div>
+      </div>
+      <div class="deckfoot">
+        <button class="btn primary" id="deck-image">画像にする</button>
+        <button class="btn" id="deck-export">ファイルに書き出す</button>
+        <label class="filelabel" for="deck-import">読み込む<input type="file" id="deck-import" accept=".json,application/json" hidden></label>
+        <button class="btn" id="deck-code">コードを出す</button>
+        <button class="btn" id="deck-code-in">コードから読む</button>
+        <button class="btn ghost" id="deck-clear">空にする</button>
+      </div>
+    </aside>
+  </main>
+</div>
+<noscript>このページは JavaScript を使う。</noscript>
+<script type="module" src="/static/js/deck.js"></script>
+</body>
+</html>

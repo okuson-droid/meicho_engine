@@ -431,19 +431,67 @@ pub fn legal_actions(db: &CardDb, s: &GameState, pi: u8) -> Vec<Action> {
 // 効果解決
 // ---------------------------------------------------------------------------
 
-fn draw(s: &mut GameState, pi: usize, count: usize) {
-    for _ in 0..count {
-        if s.players[pi].action_deck.is_empty() {
-            if s.players[pi].trash.is_empty() {
-                return; // 引けない（裁定未確認だが実害なし）
-            }
+/// 公式 701 ルールチェック（`_rule_check` の写し）。**勝敗条件 → デッキリフレッシュ**の順。
+///
+/// 701.1.1.1: ライフ 0、または**アクションデッキエリアおよびトラッシュが空**なら敗北。
+/// 双方同時なら引き分け（102.2）。701.1.2.1: デッキが空ならトラッシュを戻してシャッフル。
+/// 呼ぶ場所は 700.1.1（処理待ちチェックの先頭）と 903.1（引いた後）である。
+fn rule_check(s: &mut GameState) {
+    if s.outcome.is_some() {
+        return;
+    }
+    let lost: Vec<usize> = (0..2usize)
+        .filter(|&pi| s.players[pi].life <= 0
+            || (s.players[pi].action_deck.is_empty() && s.players[pi].trash.is_empty()))
+        .collect();
+    if !lost.is_empty() {
+        for &pi in &lost {
+            if s.players[pi].life < 0 { s.players[pi].life = 0; }
+        }
+        s.outcome = Some(if lost.len() == 2 { DRAW } else { (1 - lost[0]) as i8 });
+        s.phase = Phase::GameOver;
+        return;
+    }
+    // ターンプレイヤーから（103.5 の順序）。乱数を引く順が Python と揃う。
+    let tp = s.turn_player as usize;
+    for pi in [tp, 1 - tp] {
+        if s.players[pi].action_deck.is_empty() && !s.players[pi].trash.is_empty() {
             let t = std::mem::take(&mut s.players[pi].trash);
             s.players[pi].action_deck = t;
             let mut r = next_rng(s);
-            r.shuffle(&mut s.players[pi].action_deck); // §6.2 デッキ再構成
+            r.shuffle(&mut s.players[pi].action_deck);
         }
+    }
+}
+
+/// カードを引く（公式 903・`_draw` の写し）。903.2 は「X 枚引く」＝引く行動を X 回、
+/// 903.1 は 1 枚ごとに「手札に加え、その後ルールチェック」と定めるので 1 枚ずつ回す。
+/// D-121（段階1C-a）: 公開されてから owner の手札に入った札を、相手の知識に足す（`engine.py::_note_public_to_hand`）。
+fn note_public_to_hand(s: &mut GameState, owner: usize, cards: &[u16]) {
+    s.known_opp_hand[1 - owner].extend_from_slice(cards);
+}
+
+/// D-121: owner の手札から見える形で cid が出た。相手の知識から 1 枚減らす（`engine.py::_know_hand_out`）。
+fn know_hand_out(s: &mut GameState, owner: usize, cid: u16) {
+    let k = &mut s.known_opp_hand[1 - owner];
+    if let Some(p) = k.iter().position(|&c| c == cid) {
+        k.remove(p);
+    }
+}
+
+/// D-121: observer が相手の手札について知っていたことを全部捨てる（見えない出方）。
+fn know_forget(s: &mut GameState, observer: usize) {
+    s.known_opp_hand[observer].clear();
+}
+
+fn draw(s: &mut GameState, pi: usize, count: usize) {
+    for _ in 0..count {
+        rule_check(s);
+        if s.outcome.is_some() { return; }
         let c = s.players[pi].action_deck.remove(0);
         s.players[pi].hand.push(c);
+        rule_check(s);
+        if s.outcome.is_some() { return; }
     }
 }
 
@@ -461,12 +509,17 @@ fn damage_by(
         return;
     }
     let mut amount = amount + s.damage_taken_mod[pi] + static_damage_taken_mod(db, s, pi);
-    if !s.first_damage_taken_this_turn[pi] {
+    let is_first = !s.first_damage_taken_this_turn[pi];
+    if is_first {
         amount += first_damage_taken_mod(db, s, pi);
-        s.first_damage_taken_this_turn[pi] = true;
     }
     if amount <= 0 {
+        // B-7 (公式 901.2.1・D-100): 「0 ダメージを受ける」場合はダメージを受けていないとして
+        // 扱うので、「各ターン、自分が最初に受けるダメージ」の旗も**消費しない**。
         return;
+    }
+    if is_first {
+        s.first_damage_taken_this_turn[pi] = true;
     }
     let p = &mut s.players[pi];
     p.life -= amount;
@@ -509,6 +562,7 @@ fn queue_fire_on_card(
             .map(|&k| SkillRef { player: pi as u8, kind, card: cid, idx: k })
             .collect(),
     };
+    let refs = keep_triggering(db, s, refs);
     if !refs.is_empty() {
         s.pending_triggers.extend(refs);
     }
@@ -518,7 +572,8 @@ fn queue_fire_on_card(
 /// 【自分のライフが回復した時】を割り込みで積む。
 fn heal(db: &CardDb, s: &mut GameState, pi: usize, amount: i64) {
     let before = s.players[pi].life;
-    s.players[pi].life = MAX_LIFE.min(before + amount);
+    // A-6 (公式 101.6・D-104): **回復に上限は無い。**STARTING_LIFE は開始ライフで、上限ではない。
+    s.players[pi].life = if amount > 0 { before + amount } else { before };
     if s.players[pi].life > before {
         s.heals_this_turn[pi] += 1;
         queue_fire_nested(db, s, Timing::OnHeal, &[pi]);
@@ -548,7 +603,13 @@ fn ctx_switched_contains(ctx: &Ctx, name: &str) -> bool {
 /// オペコード1個を適用する。`ctx` は `s.pending_ctx` を一時的に取り出したもの。
 fn apply_op(db: &CardDb, s: &mut GameState, owner: usize, op: Op, prm: &Params, ctx: &mut Ctx) -> Result<()> {
     match op {
-        Op::Draw | Op::RevealTopToHand => draw(s, owner, prm.count.unwrap() as usize),
+        Op::Draw => draw(s, owner, prm.count.unwrap() as usize),
+        Op::RevealTopToHand => {
+            let nb = s.players[owner].hand.len();
+            draw(s, owner, prm.count.unwrap() as usize);
+            let got: Vec<u16> = s.players[owner].hand[nb..].to_vec();
+            note_public_to_hand(s, owner, &got);
+        }
         Op::TopToConcerto => {
             for _ in 0..prm.count.unwrap() {
                 if !s.players[owner].action_deck.is_empty() {
@@ -586,7 +647,8 @@ fn apply_op(db: &CardDb, s: &mut GameState, owner: usize, op: Op, prm: &Params, 
                             }
                         }
                         // v0.12: 【切り替え】は実際に行われたときだけ誘発する (§7)。
-                        queue_fire_nested(db, s, Timing::Switched, &[owner]);
+                        // v0.19 (TE-13・D-134): 入れ替わった 2 枠だけ（公式 913.9.1）。
+                        queue_switch_triggers(db, s, owner, b);
                     }
                 }
             }
@@ -615,6 +677,7 @@ fn apply_op(db: &CardDb, s: &mut GameState, owner: usize, op: Op, prm: &Params, 
                 if let Some(pos) = p.action_area.iter().position(|&c| c == cid) {
                     p.action_area.remove(pos);
                     p.hand.push(cid);
+                    note_public_to_hand(s, owner, &[cid]);
                 }
             }
         }
@@ -634,6 +697,7 @@ fn apply_op(db: &CardDb, s: &mut GameState, owner: usize, op: Op, prm: &Params, 
                 if !s.players[owner].hand.is_empty() {
                     let c = s.players[owner].hand.remove(0);
                     s.players[owner].trash.push(c);
+                    know_hand_out(s, owner, c);
                     ctx.discarded = Some(true);
                 }
             }
@@ -649,6 +713,7 @@ fn apply_op(db: &CardDb, s: &mut GameState, owner: usize, op: Op, prm: &Params, 
         Op::ForbidRushNextTurn => s.pending_rush_forbidden[1 - owner] = true,
         Op::PeekOpponentHand => {
             s.peeked_opp_hand[owner] = Some(s.players[1 - owner].hand.clone());
+            s.known_opp_hand[owner] = s.players[1 - owner].hand.clone();   // D-121
         }
         // --- v0.12 / BP01（D-079 追記 3）。`meicho/engine.py::_apply_op` の写し。---
         Op::DrawTo => {
@@ -696,10 +761,11 @@ fn apply_op(db: &CardDb, s: &mut GameState, owner: usize, op: Op, prm: &Params, 
             if let Some(cid) = want {
                 let p = &s.players[owner];
                 if p.action_area.contains(&cid) && p.concerto.len() as i64 >= cost {
-                    if prm.chosen != Some(1) { pay_cost(s, owner, cost); }
+                    if prm.paid != Some(true) { pay_cost(s, owner, cost); }
                     let pos = s.players[owner].action_area.iter().position(|&x| x == cid).unwrap();
                     s.players[owner].action_area.remove(pos);
                     s.players[owner].hand.push(cid);
+                    note_public_to_hand(s, owner, &[cid]);
                 }
             }
         }
@@ -723,6 +789,7 @@ fn apply_op(db: &CardDb, s: &mut GameState, owner: usize, op: Op, prm: &Params, 
                 let idx = next_rng(s).randbelow(len as u64) as usize;
                 let c = s.players[target].hand.remove(idx);
                 s.players[target].trash.push(c);
+                know_hand_out(s, target, c);     // トラッシュは公開領域
             }
         }
         Op::OppConcertoToTrash => {
@@ -746,6 +813,9 @@ fn apply_op(db: &CardDb, s: &mut GameState, owner: usize, op: Op, prm: &Params, 
                 let c = s.players[target].hand.remove(idx);
                 s.players[target].action_deck.push(c);
             }
+            // D-121（D-118 R-2・TE-10）: どの札がデッキの下へ行ったかは公開されない（公式 103.4）。
+            s.peeked_opp_hand[owner] = None;
+            know_forget(s, owner);
         }
         Op::MillOpponentDeckTop => {
             let target = 1 - owner;
@@ -781,6 +851,7 @@ fn apply_op(db: &CardDb, s: &mut GameState, owner: usize, op: Op, prm: &Params, 
                 let Some(i) = idx else { break };
                 let c = s.players[owner].trash.remove(i);
                 s.players[owner].hand.push(c);
+                note_public_to_hand(s, owner, &[c]);
             }
         }
         Op::TrashToConcerto => {
@@ -796,15 +867,17 @@ fn apply_op(db: &CardDb, s: &mut GameState, owner: usize, op: Op, prm: &Params, 
             }
         }
         Op::ReturnToCharaDeck => {
-            // 「このカードをキャラデッキに戻す」(u4)。下のカードが最上段に戻る＝レベルが下がる。
+            // 「このカードをキャラデッキに戻す」(u4 改訂・D-094)。v0.13 ではこのカードは
+            // 最上段とは限らない——【レベルアップ】は 603.1.2.2.2 のとおり**下になったカード**が
+            // 誘発するので、重なりの途中からも抜く。最上段を抜いたときだけレベルが下がる。
             let cid = match s.pending_effect.as_ref().and_then(|pe| pe.card) {
                 Some((CardKind::Chara, c)) => Some(c),
                 _ => None,
             };
             if let Some(cid) = cid {
                 for si in 0..3usize {
-                    if s.players[owner].slots[si].last() == Some(&cid) {
-                        s.players[owner].slots[si].pop();
+                    if let Some(pos) = s.players[owner].slots[si].iter().position(|&x| x == cid) {
+                        s.players[owner].slots[si].remove(pos);
                         s.players[owner].chara_deck.push(cid);
                         break;
                     }
@@ -832,6 +905,7 @@ fn apply_op(db: &CardDb, s: &mut GameState, owner: usize, op: Op, prm: &Params, 
                     let Some(i) = idx else { break };
                     let c = s.players[owner].trash.remove(i);
                     s.players[owner].hand.push(c);
+                    note_public_to_hand(s, owner, &[c]);
                 }
             }
         }
@@ -868,7 +942,8 @@ fn apply_op(db: &CardDb, s: &mut GameState, owner: usize, op: Op, prm: &Params, 
                             names.push(nm);
                         }
                     }
-                    queue_fire_nested(db, s, Timing::Switched, &[owner]);
+                    // v0.19 (TE-13・D-134): 入れ替わった 2 枠だけ（公式 913.9.1）。
+                    queue_switch_triggers(db, s, owner, b);
                     break;
                 }
             }
@@ -883,6 +958,7 @@ fn apply_op(db: &CardDb, s: &mut GameState, owner: usize, op: Op, prm: &Params, 
             if let Some(i) = idx {
                 let c = s.players[owner].action_deck.remove(i);
                 s.players[owner].hand.push(c);
+                note_public_to_hand(s, owner, &[c]);
             }
             let mut r = next_rng(s);
             r.shuffle(&mut s.players[owner].action_deck);
@@ -893,6 +969,7 @@ fn apply_op(db: &CardDb, s: &mut GameState, owner: usize, op: Op, prm: &Params, 
             for cid in revealed {
                 if trash_matches(&db.action[cid as usize], prm) {
                     s.players[owner].hand.push(cid);
+                    note_public_to_hand(s, owner, &[cid]);
                 } else {
                     s.players[owner].trash.push(cid);
                 }
@@ -902,7 +979,11 @@ fn apply_op(db: &CardDb, s: &mut GameState, owner: usize, op: Op, prm: &Params, 
     Ok(())
 }
 
-fn skill_condition_met(db: &CardDb, s: &GameState, owner: usize, sk: &Skill) -> bool {
+/// 誘発条件・使用条件の判定（`_skill_condition_met` の写し）。
+/// `card` はそのスキルが載っているカード（D-096 で足した）。判定を誘発時点へ移したので、
+/// 解決中でないときにも「このカード」が要る。省略時は `pending_effect` から引く。
+fn skill_condition_met_on(db: &CardDb, s: &GameState, owner: usize, sk: &Skill,
+                          card: Option<u16>) -> bool {
     let Some(c) = &sk.condition else { return true };
     if let Some(want_win) = c.self_result_win {
         let is_win = s.clash_winner == Some(owner as u8);
@@ -991,10 +1072,10 @@ fn skill_condition_met(db: &CardDb, s: &GameState, owner: usize, sk: &Skill) -> 
     }
     if let Some(want) = c.entered_turn_is_not_current {
         // 「このカードがこのターン以外に登場した場合」(BP01-011)。
-        let cid = match s.pending_effect.as_ref().and_then(|pe| pe.card) {
+        let cid = card.or_else(|| match s.pending_effect.as_ref().and_then(|pe| pe.card) {
             Some((CardKind::Chara, c)) => Some(c),
             _ => None,
-        };
+        });
         let si = cid.and_then(|cid| {
             (0..3usize).find(|&i| s.players[owner].slots[i].last() == Some(&cid))
         });
@@ -1059,12 +1140,26 @@ fn deref_skill<'a>(db: &'a CardDb, r: &SkillRef) -> &'a Skill {
 // 効果解決エンジン（中断・再開可能） D-022
 // ---------------------------------------------------------------------------
 
+/// 従来どおりの入口（使用条件・常在型の走査など、解決中の呼び出し）。
+fn skill_condition_met(db: &CardDb, s: &GameState, owner: usize, sk: &Skill) -> bool {
+    skill_condition_met_on(db, s, owner, sk, None)
+}
+
+/// **誘発した時点で**条件を満たす参照だけを残す（公式 800.5.3・FAQ 47/48・D-096）。
+/// `active_skill_refs` の側では絞らない——あちらは条件つきの常在型スキルの走査にも使う
+/// （`BP01-055`・`BP01-062`）。常在型の条件は読むたびに評価されなければならない。
+fn keep_triggering(db: &CardDb, s: &GameState, refs: Vec<SkillRef>) -> Vec<SkillRef> {
+    refs.into_iter()
+        .filter(|r| skill_condition_met_on(db, s, r.player as usize, deref_skill(db, r), Some(r.card)))
+        .collect()
+}
+
 fn queue_fire(db: &CardDb, s: &mut GameState, timing: Timing, players_order: [usize; 2], resume: Resume) {
     let mut refs = Vec::new();
     for &pi in &players_order {
         active_skill_refs(db, s, pi, timing, &mut refs);
     }
-    s.pending_skills = refs;
+    s.pending_skills = keep_triggering(db, s, refs);
     s.pending_effect = None;
     s.pending_ctx = Ctx::default();
     s.pending_shared_ctx = false;
@@ -1079,54 +1174,81 @@ fn queue_fire_nested(db: &CardDb, s: &mut GameState, timing: Timing, players_ord
     for &pi in players_order {
         active_skill_refs(db, s, pi, timing, &mut refs);
     }
+    let refs = keep_triggering(db, s, refs);
     if !refs.is_empty() {
         s.pending_triggers.extend(refs);
     }
 }
 
-/// 割り込みの待ち行列から 1 つ解決を始める（`_start_next_trigger` の写し）。
-/// 順番の選択 (A-7) は挟まない。
-fn start_next_trigger(db: &CardDb, s: &mut GameState) -> Result<()> {
-    let r = s.pending_triggers.remove(0);
-    if !skill_condition_met(db, s, r.player as usize, deref_skill(db, &r)) {
-        return Ok(());
+/// リーダーの切り替えの直後に【切り替え】を積む（`_queue_switch_triggers` の写し・TE-13・D-134）。
+///
+/// 公式 603.1.2.1.1／906.2／913.9.1: 誘発するのは**切り替えられたキャラ**＝入れ替わった
+/// 2 枠（リーダー枠 0 と枠 `b`）だけ。v0.18 までは `queue_fire_nested` で席の全キャラ枠を拾っていた。
+/// 重なりの下のカードも拾う（枠ごと動く・§6.3-3）。【リーダー】前置は入れ替え後の位置で見る。
+/// 列挙の順は枠 0 → 枠 `b`、枠の中は下から上（Python と同じ）。
+fn queue_switch_triggers(db: &CardDb, s: &mut GameState, pi: usize, b: usize) {
+    let mut refs = Vec::new();
+    for si in [0usize, b] {
+        for &cid in s.players[pi].slots[si].iter() {
+            for &(k, leader_only) in db.chara_timing_index(cid, Timing::Switched) {
+                if leader_only && si != 0 {
+                    continue;
+                }
+                refs.push(SkillRef { player: pi as u8, kind: CardKind::Chara, card: cid, idx: k });
+            }
+        }
     }
-    let sk = deref_skill(db, &r);
-    if sk.optional {
-        s.pending_choices.push(Choice::UseOptional {
-            player: r.player, card: r.card, skill_index: r.idx, r: r.clone(),
-        });
-        return Ok(());
+    let refs = keep_triggering(db, s, refs);
+    if !refs.is_empty() {
+        s.pending_triggers.extend(refs);
     }
-    let pi = r.player as usize;
-    start_skill_effect(s, pi, sk, Some((r.kind, r.card)));
-    Ok(())
 }
 
-fn start_next_skill(db: &CardDb, s: &mut GameState) -> Result<()> {
-    let pi = s.pending_skills[0].player;
+/// レベルアップの直後に誘発するものを積む（`_queue_levelup_triggers` の写し）。
+///
+/// 公式 603.1.2.2.1: 【登場】は**一番上に置かれたカード**だけ（908.1・908.2）。
+/// 公式 603.1.2.2.2: 【レベルアップ】は**その下に重ねて置かれたカード**だけ。複数あればすべて。
+///
+/// v0.12 までは両方を `queue_fire_nested` でキャラエリア全体から列挙していた（B-2・B-3・D-092）。
+/// 下のカードが複数あるときの順番は、A-3（D-099）で `start_next_pending` の順序選択に置き換えた。
+fn queue_levelup_triggers(db: &CardDb, s: &mut GameState, pi: usize, si: usize) {
+    let stack = s.players[pi].slots[si].clone();
+    let Some((&top, rest)) = stack.split_last() else { return };
+    queue_fire_on_card(db, s, Timing::Enter, pi, CardKind::Chara, top);
+    for &cid in rest.iter().rev() {
+        queue_fire_on_card(db, s, Timing::Levelup, pi, CardKind::Chara, cid);
+    }
+}
+
+/// 待ち行列から 1 つ選んで解決を始める（`_start_next_pending` の写し・A-7／A-3）。
+///
+/// 公式 700.1.2/.3 は「そのプレイヤーが処理待ちのスキルを 1 つ選ぶ」と定め、
+/// **選ぶことは待ち行列の種類によらない**。v0.15 までは `pending_skills` だけが
+/// 順序選択を持ち、`pending_triggers` は `remove(0)` の固定順だった（D-092 の A-3）。
+fn start_next_pending(db: &CardDb, s: &mut GameState, q: PendingQueue) -> Result<()> {
+    let queue: &mut Vec<SkillRef> = match q {
+        PendingQueue::Skills => &mut s.pending_skills,
+        PendingQueue::Triggers => &mut s.pending_triggers,
+    };
+    if queue.is_empty() {
+        return Ok(());
+    }
+    let pi = queue[0].player;
     let mut n = 0;
-    while n < s.pending_skills.len() && s.pending_skills[n].player == pi {
+    while n < queue.len() && queue[n].player == pi {
         n += 1;
     }
-    let rest: Vec<SkillRef> = s.pending_skills[n..].to_vec();
-    let group: Vec<SkillRef> = s.pending_skills[..n]
-        .iter()
-        .copied()
-        .filter(|r| skill_condition_met(db, s, pi as usize, deref_skill(db, r)))
-        .collect();
-    s.pending_skills = group.iter().copied().chain(rest.into_iter()).collect();
-    if group.is_empty() {
+    // D-096: 条件は積むときに見た（`keep_triggering`）。ここで見直さない（公式 800.4）。
+    if n >= 2 {
+        let options: Vec<(i64, SkillRef)> =
+            queue[..n].iter().enumerate().map(|(i, r)| (i as i64, *r)).collect();
+        s.pending_choices.push(Choice::Order { player: pi, queue: q, options });
         return Ok(());
     }
-    if group.len() >= 2 {
-        s.pending_choices.push(Choice::Order {
-            player: pi,
-            options: group.iter().enumerate().map(|(i, r)| (i as i64, *r)).collect(),
-        });
-        return Ok(());
-    }
-    let r = s.pending_skills.remove(0);
+    let r = match q {
+        PendingQueue::Skills => s.pending_skills.remove(0),
+        PendingQueue::Triggers => s.pending_triggers.remove(0),
+    };
     begin_skill(db, s, r)
 }
 
@@ -1163,13 +1285,13 @@ fn step_effect(db: &CardDb, s: &mut GameState) -> Result<()> {
         } else { s.pending_effect.as_mut().unwrap().ops.remove(0); }
         return Ok(());
     }
-    if op == Op::PayCostReturnSelfToHand && prm0.chosen.is_none() {
+    if op == Op::PayCostReturnSelfToHand && prm0.paid != Some(true) {
         let cost = prm0.cost.unwrap();
         let valid = s.pending_effect.as_ref().unwrap().card.map_or(false, |(k,c)|
             k == CardKind::Action && s.players[owner].action_area.contains(&c))
             && s.players[owner].concerto.len() as i64 >= cost;
         if !valid { s.pending_effect.as_mut().unwrap().ops.remove(0); return Ok(()); }
-        s.pending_effect.as_mut().unwrap().ops[0].1.chosen = Some(1);
+        s.pending_effect.as_mut().unwrap().ops[0].1.paid = Some(true);
         if queue_pay_cost(s, owner, cost) { return Ok(()); }
     }
     if matches!(op, Op::OppConcertoToTrash | Op::OppTrashToDeckBottom | Op::TrashToHand | Op::TrashToConcerto) {
@@ -1180,11 +1302,20 @@ fn step_effect(db: &CardDb, s: &mut GameState) -> Result<()> {
             _ => (owner, Zone::Trash, Destination::Concerto, false),
         };
         let remaining = prm0.count.unwrap_or(1);
-        let opts = distinct_zone_options(zone_ref(&s.players[zone_owner], zone), zone, Some(&prm0), db);
+        // B-8 (D-093 追記 1): Python は**相手の領域**を動かす 2 つの op
+        // (`opp_concerto_to_trash` / `opp_trash_to_deck_bottom`) に match_params を渡さない。
+        // 絞り込みを持つのは**自分のトラッシュから拾う** 2 つだけである（`engine.py` の呼び分け）。
+        // ここで 4 つまとめて prm0 を入れていたため状態の JSON が食い違い、BP01 の仮デッキの
+        // 毎手一致が落ちていた（`count` は絞り込みの鍵ではないので選択肢と打ち方は変わっていない）。
+        let match_params = match op {
+            Op::TrashToHand | Op::TrashToConcerto => prm0,
+            _ => Params::default(),
+        };
+        let opts = distinct_zone_options(zone_ref(&s.players[zone_owner], zone), zone, Some(&match_params), db);
         if remaining <= 0 || opts.is_empty() { s.pending_effect.as_mut().unwrap().ops.remove(0); }
         else { let options=opts.into_iter().filter_map(|a|match a{Action::ChooseCard{index,card,..}=>Some((index,card)),_=>None}).collect();
             s.pending_choices.push(Choice::ZoneCard { player: owner as u8, zone_owner: zone_owner as u8,
-            zone, destination, remaining, optional, match_params: prm0, options }); }
+            zone, destination, remaining, optional, match_params, options }); }
         return Ok(());
     }
     if op == Op::LevelupByEffect {
@@ -1220,7 +1351,10 @@ fn step_effect(db: &CardDb, s: &mut GameState) -> Result<()> {
             return Ok(());
         }
         s.pending_effect.as_mut().unwrap().ops.remove(0);
+        let nb = s.players[owner].hand.len();
         draw(s, owner, prm0.chosen.unwrap() as usize);
+        let got: Vec<u16> = s.players[owner].hand[nb..].to_vec();
+        note_public_to_hand(s, owner, &got);
         return Ok(());
     }
 
@@ -1242,6 +1376,7 @@ fn step_effect(db: &CardDb, s: &mut GameState) -> Result<()> {
         };
         let c = s.players[owner].hand.remove(idx);
         s.players[owner].trash.push(c);
+        know_hand_out(s, owner, c);
         s.pending_effect.as_mut().unwrap().ops[0].1.count = Some(count - 1);
         // v0.12: 「そうした場合」の連結（BP01-065 / 067）。既存カードは誰も読まない。
         s.pending_ctx.discarded = Some(true);
@@ -1255,8 +1390,32 @@ fn step_effect(db: &CardDb, s: &mut GameState) -> Result<()> {
     r
 }
 
+/// 対抗で置けないターンプレイヤーは手札をすべて公開する
+/// （公式 604.1.1.2 後段・B-9・`_reveal_stuck_turn_player_hand` の写し）。
+///
+/// 公開の時点は 604.1.1.3（非ターンプレイヤーが置く）より前である。置けるかどうかは
+/// 手札から決まる（そこに選択は無い）ので、提出を集める前に公開しても同時手番の構造は壊れない。
+fn reveal_stuck_turn_player_hand(db: &CardDb, s: &mut GameState) {
+    if s.phase != Phase::ClashSubmit {
+        return;
+    }
+    let tp = s.turn_player as usize;
+    if s.pending_submission[tp] != Submission::None {
+        return;
+    }
+    let usable = s.players[tp].hand.iter()
+        .any(|&cid| usable_in_clash(db, s, tp, &db.action[cid as usize]));
+    if usable {
+        return;
+    }
+    s.peeked_opp_hand[1 - tp] = Some(s.players[tp].hand.clone());
+    s.known_opp_hand[1 - tp] = s.players[tp].hand.clone();                // D-121
+}
+
 fn pump(db: &CardDb, s: &mut GameState) -> Result<()> {
     loop {
+        // 公式 700.1.1: 処理待ちチェックの先頭でルールチェックを実行する（D-095）。
+        rule_check(s);
         if s.outcome.is_some() {
             s.pending_skills.clear();
             s.pending_triggers.clear();
@@ -1287,11 +1446,11 @@ fn pump(db: &CardDb, s: &mut GameState) -> Result<()> {
         }
         // 割り込み（効果の途中で誘発したもの）を、外側の待ち行列より先に片付ける。
         if !s.pending_triggers.is_empty() {
-            start_next_trigger(db, s)?;
+            start_next_pending(db, s, PendingQueue::Triggers)?;
             continue;
         }
         if !s.pending_skills.is_empty() {
-            start_next_skill(db, s)?;
+            start_next_pending(db, s, PendingQueue::Skills)?;
             continue;
         }
         if let Some(resume) = s.choice_resume.take() {
@@ -1299,6 +1458,8 @@ fn pump(db: &CardDb, s: &mut GameState) -> Result<()> {
             dispatch_resume(db, s, resume)?;
             continue;
         }
+        // B-9 (604.1.1.2 後段): 誰かの行動を待つ状態に落ち着いた。
+        reveal_stuck_turn_player_hand(db, s);
         return Ok(());
     }
 }
@@ -1498,8 +1659,7 @@ fn levelup_by_effect(db: &CardDb, s: &mut GameState, owner: usize, name: &str, l
         let cid = s.players[owner].chara_deck.remove(pos);
         s.players[owner].slots[si].push(cid);
         s.slot_entered_turn[owner][si] = s.turn_no;
-        queue_fire_nested(db, s, Timing::Enter, &[owner]);
-        queue_fire_nested(db, s, Timing::Levelup, &[owner]);
+        queue_levelup_triggers(db, s, owner, si);
         break;
     }
 }
@@ -1622,6 +1782,8 @@ fn after_turn_start(s: &mut GameState) {
     let n = if s.turn_no == 1 { FIRST_TURN_DRAW } else { DRAW_PER_TURN };
     let tp = s.turn_player as usize;
     draw(s, tp, n);
+    // §9-5 / D-021。**v0.14 以後はほぼ到達しない**——双方のデッキとトラッシュが空なら
+    // 701.1.1.1 が先に引き分けにする（102.2）。R-1 の裁定どおり残す（D-095）。
     if is_deadlocked(s) {
         s.outcome = Some(DRAW);
         s.phase = Phase::GameOver;
@@ -1642,6 +1804,7 @@ fn resolve_clash(db: &CardDb, s: &mut GameState) {
             }
             Submission::Hand(idx) => {
                 let cid = s.players[pi].hand.remove(idx);
+                know_hand_out(s, pi, cid);           // D-121: 対抗の提出は公開される
                 s.players[pi].action_area.push(cid);
                 let cost = effective_cost(s, pi, &db.action[cid as usize]);
                 costs.push((pi, cost));
@@ -1726,6 +1889,7 @@ fn after_judge(db: &CardDb, s: &mut GameState) {
 
 fn do_rush(db: &CardDb, s: &mut GameState, pi: usize, hand_idx: usize) {
     let cid = s.players[pi].hand.remove(hand_idx);
+    know_hand_out(s, pi, cid);
     let card = &db.action[cid as usize];
     s.rush_allowance -= 1;
     let cost = effective_cost(s, pi, card);
@@ -1739,13 +1903,15 @@ fn do_rush(db: &CardDb, s: &mut GameState, pi: usize, hand_idx: usize) {
 
 fn start_rush(db: &CardDb, s: &mut GameState, pi: usize, cid: u16) {
     let card = &db.action[cid as usize];
-    s.pending_skills = card
+    // D-096: ここは `queue_fire` を通らずに直接組むので、**誘発時点の条件は自分で見る**。
+    let rush_refs: Vec<SkillRef> = card
         .skills
         .iter()
         .enumerate()
         .filter(|(_, sk)| sk.timing == Timing::Rush)
         .map(|(k, _)| SkillRef { player: pi as u8, kind: CardKind::Action, card: cid, idx: k as u8 })
         .collect();
+    s.pending_skills = keep_triggering(db, s, rush_refs);
     s.pending_effect = None;
     s.pending_ctx = Ctx::default();
     s.pending_shared_ctx = true;
@@ -1835,16 +2001,16 @@ fn apply_inner(db: &CardDb, s: &mut GameState, actions: &[&(u8, Action)]) -> Res
             for (pi, act) in actions {
                 let pu = *pi as usize;
                 let Action::Setup { leader, backs: chosen_backs } = act else { return err("setup expected") };
-                // lv0: name → cid（同名の Lv0 が複数あれば後勝ち。Python の dict 内包と同じ）
+                // lv0: name → cid。**同名の Lv.0 が 2 枚あったら拒む**
+                // （A-5・公式 101.1.1.1・D-100。以前は後勝ちで黙って片方を選んでいた）。
                 let mut lv0: Vec<(String, u16)> = Vec::new();
                 for &c in &s.players[pu].chara_deck {
                     let cc = &db.chara[c as usize];
                     if cc.level == 0 {
-                        if let Some(e) = lv0.iter_mut().find(|(n, _)| *n == cc.name) {
-                            e.1 = c;
-                        } else {
-                            lv0.push((cc.name.clone(), c));
+                        if lv0.iter().any(|(n, _)| *n == cc.name) {
+                            return err("Lv.0 が2枚ある");
                         }
+                        lv0.push((cc.name.clone(), c));
                     }
                 }
                 let mut backs: Vec<String> = if chosen_backs.is_empty() {
@@ -1879,6 +2045,10 @@ fn apply_inner(db: &CardDb, s: &mut GameState, actions: &[&(u8, Action)]) -> Res
                 let back: Vec<u16> = idxs.iter().map(|&i| p.hand[i]).collect();
                 p.hand = p.hand.iter().enumerate().filter(|(i, _)| !idxs.contains(i)).map(|(_, &c)| c).collect();
                 p.action_deck.extend(back.iter().copied());
+                if !back.is_empty() {
+                    s.known_opp_hand[1 - pu].clear();   // D-121: 戻した札は相手に公開されない
+                }
+                let p = &mut s.players[pu];
                 for _ in 0..back.len() {
                     if !p.action_deck.is_empty() {
                         let c = p.action_deck.remove(0);
@@ -1908,6 +2078,7 @@ fn apply_inner(db: &CardDb, s: &mut GameState, actions: &[&(u8, Action)]) -> Res
                     }
                     let c = s.players[tpu].hand.remove(*hand);
                     s.players[tpu].concerto.push(c);
+                    know_hand_out(s, tpu, c);
                     s.used_charge = true;
                 }
                 Action::Switch { back } => {
@@ -1918,7 +2089,8 @@ fn apply_inner(db: &CardDb, s: &mut GameState, actions: &[&(u8, Action)]) -> Res
                     s.slot_entered_turn[tpu].swap(0, *back);
                     s.used_switch = true;
                     // v0.12: 行動としての切り替えでも【切り替え】は誘発する (§7)。
-                    queue_fire_nested(db, s, Timing::Switched, &[tpu]);
+                    // v0.19 (TE-13・D-134): 入れ替わった 2 枠だけ（公式 603.1.2.1.1）。
+                    queue_switch_triggers(db, s, tpu, *back);
                 }
                 Action::Levelup { slot, card } => {
                     if s.used_levelup {
@@ -1937,9 +2109,9 @@ fn apply_inner(db: &CardDb, s: &mut GameState, actions: &[&(u8, Action)]) -> Res
                     s.players[tpu].slots[*slot].push(*card);
                     s.slot_entered_turn[tpu][*slot] = s.turn_no;
                     s.used_levelup = true;
-                    // v0.12: 【登場】と【レベルアップ】。準備 (§5-4) では誘発しない (u1)。
-                    queue_fire_nested(db, s, Timing::Enter, &[tpu]);
-                    queue_fire_nested(db, s, Timing::Levelup, &[tpu]);
+                    // v0.13 (D-094): 【登場】は置いたカード、【レベルアップ】はその下のカード。
+                    // 準備 (§5-4) では誘発しない (u1・公式 908.3)。
+                    queue_levelup_triggers(db, s, tpu, *slot);
                     if c.level > 0 {
                         for _ in 0..c.level {
                             s.pending_choices.push(Choice::Discard { player: tp });
@@ -2003,6 +2175,7 @@ fn apply_inner(db: &CardDb, s: &mut GameState, actions: &[&(u8, Action)]) -> Res
             let tpu = tp as usize;
             let c = s.players[tpu].hand.remove(*hand);
             s.players[tpu].trash.push(c);
+            know_hand_out(s, tpu, c);
             if s.players[tpu].hand.len() <= HAND_LIMIT {
                 next_turn(db, s);
             }
@@ -2076,14 +2249,19 @@ fn apply_choice(db: &CardDb, s: &mut GameState, actions: &[&(u8, Action)]) -> Re
             s.pending_choices.remove(0);
             let c = s.players[pu].hand.remove(*hand);
             s.players[pu].trash.push(c);
+            know_hand_out(s, pu, c);
         }
-        Choice::Order { options, .. } => {
+        Choice::Order { queue, options, .. } => {
             let Action::Resolve { index } = act else { return err("resolve expected") };
             if !options.iter().any(|(i, _)| i == index) {
                 return err("index not in options");
             }
+            let q = queue;
             s.pending_choices.remove(0);
-            let r = s.pending_skills.remove(*index as usize);
+            let r = match q {
+                PendingQueue::Skills => s.pending_skills.remove(*index as usize),
+                PendingQueue::Triggers => s.pending_triggers.remove(*index as usize),
+            };
             begin_skill(db, s, r)?;
         }
         Choice::PayCostCard { remaining, .. } => {
@@ -2110,7 +2288,8 @@ fn apply_choice(db: &CardDb, s: &mut GameState, actions: &[&(u8, Action)]) -> Re
                 let cid = zone_mut(&mut s.players[zone_owner as usize], zone).remove(*index);
                 match destination { Destination::Trash => s.players[zone_owner as usize].trash.push(cid),
                     Destination::ActionDeck => s.players[zone_owner as usize].action_deck.push(cid),
-                    Destination::Hand => s.players[zone_owner as usize].hand.push(cid),
+                    Destination::Hand => { s.players[zone_owner as usize].hand.push(cid);
+                        note_public_to_hand(s, zone_owner as usize, &[cid]); }   // D-121: 公開領域から手札へ
                     Destination::Concerto => s.players[zone_owner as usize].concerto.push(cid) }
                 let left = remaining - 1;
                 let opts = distinct_zone_options(zone_ref(&s.players[zone_owner as usize], zone), zone, Some(&match_params), db);
@@ -2128,8 +2307,7 @@ fn apply_choice(db: &CardDb, s: &mut GameState, actions: &[&(u8, Action)]) -> Re
             let cid=s.players[pu].chara_deck.remove(*index); s.players[pu].slots[*slot].push(cid);
             s.slot_entered_turn[pu][*slot]=s.turn_no;
             s.pending_effect.as_mut().unwrap().ops.remove(0);
-            queue_fire_nested(db, s, Timing::Enter, &[pu]);
-            queue_fire_nested(db, s, Timing::Levelup, &[pu]);
+            queue_levelup_triggers(db, s, pu, *slot);
         }
     }
     Ok(())
@@ -2168,6 +2346,21 @@ pub fn known_opponent_hand_ids(s: &GameState, pi: usize) -> Vec<u16> {
             out.push(cid);
         }
     }
+    out
+}
+
+/// D-121（段階1C-a）: `observe` の `opp.hand_known`（統一した既知の相手手札）。`known_opp_hand` といまの手札の積。
+/// 並びは `card_id` 順（Python の `sorted` と同じ）。
+fn known_opponent_hand_unified(db: &CardDb, s: &GameState, pi: usize) -> Vec<String> {
+    let mut have: Vec<u16> = s.players[1 - pi].hand.clone();
+    let mut out: Vec<String> = Vec::new();
+    for &cid in &s.known_opp_hand[pi] {
+        if let Some(p) = have.iter().position(|&c| c == cid) {
+            have.remove(p);
+            out.push(db.action[cid as usize].card_id.clone());
+        }
+    }
+    out.sort();
     out
 }
 
@@ -2226,7 +2419,8 @@ pub fn observe(db: &CardDb, s: &GameState, pi: u8) -> serde_json::Value {
         "opp": {
             "life": opp.life,
             "hand_count": opp.hand.len(),
-            "hand_known": known_opponent_hand(db, s, pu),
+            "hand_known": known_opponent_hand_unified(db, s, pu),
+            "hand_known_scan": known_opponent_hand(db, s, pu),
             "concerto": aids(&opp.concerto),
             "trash": aids(&opp.trash),
             "action_area": aids(&opp.action_area),

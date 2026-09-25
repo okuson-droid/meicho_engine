@@ -207,7 +207,7 @@ def _one(args):
             opp = s.players[1 - pi]
             true_hand = list(opp.hand)
             unseen = agents[pi]._unseen(s, pi)
-            known = observe(s, pi)["opp"]["hand_known"]
+            known = observe(s, pi)["opp"]["hand_known_scan"]   # D-121: 便 C の定義（champion が使うぶん）のまま
             wc = world_counts(unseen, len(true_hand), known)
             wc0 = world_counts(unseen, len(true_hand), ())
             next_card = None
@@ -436,7 +436,7 @@ def run_regression(kw: dict, knobs: dict, ks=(6, 24), path: str = None,
         opp = s.players[1 - ai]
         true_hand = list(opp.hand)
         unseen = PlannerAgent(0, opp_decklist=pool, **skw)._unseen(s, ai)
-        known = observe(s, ai)["opp"]["hand_known"]
+        known = observe(s, ai)["opp"]["hand_known_scan"]   # D-121: 同上
         wc = world_counts(unseen, len(true_hand), known)
         wc0 = world_counts(unseen, len(true_hand), ())
         next_card = (opp.hand[hu_act["hand"]]

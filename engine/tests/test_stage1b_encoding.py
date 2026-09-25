@@ -18,8 +18,10 @@ def _state():
 
 
 def test_v5_dimensions_and_version_are_derived():
-    assert E.ENCODING_VERSION == 5
-    assert E.OBS_DIM == E.N_SCALAR + 14*E.NA + 13*E.NC + 2*len(E.ACTION_TAGS)
+    # D-124: 現行は v6（v5 の列の後ろに信念の要約と統一した hand_known を足した）。v5 の部分の形はここで守る
+    assert E.ENCODING_VERSION == 6
+    assert E.OBS_DIM_V5 == E.N_SCALAR + 14*E.NA + 13*E.NC + 2*len(E.ACTION_TAGS)
+    assert E.OBS_DIM == E.OBS_DIM_V5 + E.N_BELIEF + E.NA
     assert E.ACT_DIM == len(E.ACTION_TYPES)+E.NA+3*E.NC+6+E.NA
     assert E.ACT_CODE_LEN == 13
 
@@ -60,5 +62,5 @@ def test_model_migration_keeps_old_outputs(tmp_path):
     net.encoding_version=4; net.save(str(p))
     assert M.migrate(str(p))=="migrated"
     with open(p,encoding="utf-8") as f: d=json.load(f)
-    assert (d["encoding_version"],d["obs_dim"],d["act_dim"])==(5,E.OBS_DIM,E.ACT_DIM)
+    assert (d["encoding_version"],d["obs_dim"],d["act_dim"])==(5,E.OBS_DIM_V5,E.ACT_DIM)
     assert (tmp_path/"net.json.enc4.bak.json").exists()

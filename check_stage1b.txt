@@ -1,0 +1,7 @@
+..................sss                                                    [100%]
+18 passed, 3 skipped in 66.01s (0:01:06)
+wheel の札       ['bp01_k5', 'bundle_p', 'd065_bin1', 'd065_reeval_isolated_rng', 'draw_buckets', 'endgame_enum', 'known_hand', 'lethal_uniform', 'world_weight']
+champion         planner_vc4cps_kheb_b75
+期待             9d4ff39d024e4394
+実測             9d4ff39d024e4394
+→ 一致

@@ -28,8 +28,10 @@ class Phase(str, Enum):
 
 
 HAND_LIMIT = 8          # §6.5
-STARTING_LIFE = 20      # §1
-MAX_LIFE = 20           # §1 回復効果はこの値を超えない（D-011）
+STARTING_LIFE = 20      # §1 **開始ライフ**（公式 101.6「ライフを 20 に設定します」）。
+                        # **上限ではない。**D-011 の「回復は 20 で頭打ち」は
+                        # 公式条文が出る前の補いで、A-6（D-104・rules v0.18）で覆した。
+                        # 同じ値の旧名 `MAX_LIFE` は誤解を呼ぶので消した（D-107・D-123 で実施）。
 OPENING_HAND = 5        # §5-5
 DRAW_PER_TURN = 2       # §6.2
 FIRST_TURN_DRAW = 1     # §6.2 先攻の最初のターン
@@ -185,6 +187,15 @@ class GameState:
     # observe() では現在の相手の手札との積集合を返すため、
     # 既に場に出た・捨てられたカードは自動的に落ちる（D-023）。
     peeked_opp_hand: list = field(default_factory=lambda: [None, None])
+    # D-121（段階1C-a・D-118・マスター裁定「最終的には統一する」）: pi が相手の手札について**確かに知っている**カード
+    # （多重集合・list[str]）。observe() の `opp.hand_known` はこれを返す。更新の規則（`engine._know_*`）:
+    #   - スキャン・B-9 の手札公開: 相手の手札まるごとで置き換える
+    #   - 公開されてから相手の手札に入った（山札の公開・サーチ・トラッシュや場からの回収）: 足す
+    #   - 相手の手札から**見える形で**出た（使用・チャージ・捨てる・対抗・連撃）: その札を 1 枚減らす
+    #   - 相手の手札から**見えない形で**出た（手札 → デッキの下・マリガン）: 全部捨てる
+    # `peeked_opp_hand` の「いまの手札との積」と違い、見える形で出たあとに同じ番号を見えない形で引いても
+    # 「知っている」ことにならない（D-023 の積には、この漏れがあった・D-121）。
+    known_opp_hand: list = field(default_factory=lambda: [[], []])
 
     # --- v0.12 / BP01 の状態欄（D-079 追記 3・便 K 段 K-2）------------------
     #
@@ -281,6 +292,7 @@ class GameState:
         s.phase_before_choice = self.phase_before_choice
         s.peeked_opp_hand = [None if h is None else h[:]
                              for h in self.peeked_opp_hand]
+        s.known_opp_hand = [h[:] for h in self.known_opp_hand]
         # --- v0.12 / BP01（D-079 追記 3）---
         s.last_turn_clash_winner = self.last_turn_clash_winner
         s.last_turn_clash_pass = self.last_turn_clash_pass[:]

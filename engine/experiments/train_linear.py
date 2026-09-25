@@ -55,6 +55,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."
 import numpy as np                                              # noqa: E402
 
 from meicho import features as F                                # noqa: E402
+from meicho.version import ENGINE_VERSION, RULES_VERSION         # noqa: E402  D-117
 import gendata                                                  # noqa: E402
 from meicho.planner import TUNED_WEIGHTS                        # noqa: E402
 
@@ -331,8 +332,8 @@ def main():
                        "cols": dd["cols"], "interactions": dd["interactions"],
                        "w": dd["w"], "mu": dd["mu"], "sd": dd["sd"],
                        "lam": dd["lam"], "dataset": "c1_v1",
-                       "def_hash": man["def_hash"], "rules_version": "v0.10",
-                       "engine_version": "v0.1"}, f,
+                       "def_hash": man["def_hash"], "rules_version": RULES_VERSION,
+                       "engine_version": ENGINE_VERSION}, f,
                       ensure_ascii=False, indent=2)
     out = os.path.join(MODELS, "c1_linear_v1.json")
     payload = {
@@ -341,7 +342,7 @@ def main():
         "cols": d["cols"], "interactions": d["interactions"],
         "w": d["w"], "mu": d["mu"], "sd": d["sd"], "lam": d["lam"],
         "dataset": "c1_v1", "def_hash": man["def_hash"],
-        "rules_version": "v0.10", "engine_version": "v0.1",
+        "rules_version": RULES_VERSION, "engine_version": ENGINE_VERSION,   # D-117
         "boot_seed": BOOT_SEED, "cv_folds": CV_FOLDS,
         "metrics": rows,
         "interaction_gain_vs_logit22": {"delta": inter_gain[0],

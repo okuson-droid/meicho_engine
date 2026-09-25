@@ -98,7 +98,8 @@ def test_defaults_unchanged_lit_a():
 
     見るのは 2 つ。
     1. `bench_agents.py` の fingerprint 3 種（素の H・貪欲・計画探索）
-    2. **便 A 当時の champion（`planner_vb3cps`）**の fingerprint `7251a931d252a57a`
+    2. **便 A 当時の champion（`planner_vb3cps`）**の fingerprint
+       （値は `test_champion_vc4.OLD_CHAMPION_FINGERPRINT` から読む。ここには写さない）
        （手順は `test_lit_d.py` と同じ。**spec を明示して固定する**——`champion.py` を
        動的に読むと、便 E-0 の交代でこの検査が「新 champion の固定」に化けるため）
 
@@ -112,9 +113,17 @@ def test_defaults_unchanged_lit_a():
     from experiments.arena_rs import ensure_cards, series_rs_digest
     ensure_cards()
 
-    assert bench_agents.fingerprint("H", 50) == "773a71c15c5bc16e"
-    assert bench_agents.fingerprint("G", 20) == "677f28cc3b6995ee"
-    assert bench_agents.fingerprint("P", 10) == "6e39c2aa4b35d876"
+    # **2026-09-17 に H と G を貼り替えた（D-095・マスター裁定）。P は不変である。**
+    # 公式 701 のルールチェックを実装したので（A-1・A-2／rules v0.14）、リフレッシュの時点が
+    # 早まり山札の並びが変わった。**エージェントの打ち方は 1 行も変えていない。**
+    # 旧値: H `773a71c15c5bc16e` / G `677f28cc3b6995ee`（どちらも v0.13 以前）。
+    # P が不変なのは、planner の対局がこの帯でリフレッシュを踏まないからである
+    # （`BASELINE_DIGESTS_230000` も同じ理由で不変だった）。
+    # D-104: A-6（回復の上限撤廃・rules v0.18）で SD001 の対局が変わったため貼り替えた。
+    # 旧値: H 0e36f6aafd63a52e / G e197a6cc20748642 / P 6e39c2aa4b35d876
+    assert bench_agents.fingerprint("H", 50) == "6427a7b28f7a10fe"
+    assert bench_agents.fingerprint("G", 20) == "59e116cbb2fd094d"
+    assert bench_agents.fingerprint("P", 10) == "453bc27c27c11997"
 
     from tests.test_champion_vc4 import (OLD_CHAMPION_FINGERPRINT,
                                          OLD_CHAMPION_KWARGS, resolved_kwargs)

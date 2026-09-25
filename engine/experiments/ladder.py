@@ -36,7 +36,8 @@ GAUNTLET_DIR = os.path.join(_HERE, "gauntlets")
 SEED_BANDS = os.path.join(_HERE, "seed_bands.json")
 RESULTS_JSON = os.path.join(_HERE, "..", "results", "ladder.json")
 RESULTS_MD = os.path.join(_HERE, "..", "results", "ladder.md")
-RULES_VERSION = "v0.10"
+# D-117: 版は `meicho/version.py` の 1 か所で持つ（以前は "v0.10" の直書きが取り残されていた）
+from meicho.version import RULES_VERSION                             # noqa: E402
 ENGINE_VERSION = "0.1"
 JST = timezone(timedelta(hours=9))
 

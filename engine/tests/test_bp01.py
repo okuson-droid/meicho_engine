@@ -56,15 +56,36 @@ UNLISTED_PATH = os.path.join(CARDS_DIR, "BP01_UNLISTED.json")
 # D-087 で支払い選択が行動列に現れるようになったため digest は更新した。
 # 既定AIの打ち方が従来どおりであることは fingerprint 3種で別に守る。
 DIGEST_N_DEFAULT = 500
+# **2026-09-17 に 8 件すべて貼り替えた（D-095・マスター裁定）。**
+# 理由: 公式 701 のルールチェックを実装した（A-1・A-2／rules v0.14）。デッキリフレッシュが
+# ドローの中ではなくルールチェックの時点で起きるようになったので、**シャッフルの乱数を引く位置が動き、
+# 以後の山札の並びが変わる**。SD001/SD02 のミラー 200 局で手順が 42%・55%、勝敗が 20%・19% 変わった。
+# **これは AI の打ち方の変化ではなく、ゲームのルールが公式に合ったことによる変化である。**
+# 旧値（v0.13 以前・**2026-09-17 より前に取ったすべての対局はこちらの世界の数字である**）:
+#   heuristic SD001  500 4616b6b94466c72f / 2000 ce2d068ed9fcc971
+#   heuristic SD02   500 e9ccf236005d104d / 2000 485262a8e44727d8
+#   random    SD001  500 66cbdec0d59dcdf8 / 2000 5940939168189f69
+#   random    SD02   500 9dada41b872f6efa / 2000 7259b3dcd44e6f26
+# **2000 局の 4 件は `_digest_n()` が 500 を返すかぎり検査で回らない。**今回はすべて実測して貼り替えた。
+# D-104（2026-09-19・マスター裁定）: **A-6（回復にライフの上限は無い・公式 101.6・rules v0.18）で動いた。**
+#   D-011（2026-08-21 のマスター裁定「上限 20 でクリップ」）を覆したため、`SD01-023`「奏鳴」(+5) が
+#   **序盤から本当に +5 回復する**ようになり、SD001 の対局が変わった。SD02 と BP01 の仮デッキは
+#   回復カードを持たないので**1 手も動いていない**。
+#   実測（A-6 の前後・ミラー 200 局）: SD001/random 手順 4・勝敗 1／SD001/heuristic 手順 8・勝敗 1／
+#   **planner/SD001 手順 80・勝敗 37**／champion の指紋の帯 471500..471509 は手順 4/10・勝敗 4/10。
+#   **これは AI の打ち方の変化ではなく、ゲームのルールが公式に合ったことによる変化である。**
+#   旧値（v0.17 以前）: heuristic SD001 500 a265f31ff2f013af / 2000 f1792a13761b4838
+#                       random    SD001 500 ce2cf5e727232732 / 2000 7850c09681344947
+#   **SD02 の 4 件は動いていない**（回復カードを持たない）。2000 局の 2 件も実測して貼り替えた。
 FROZEN_DIGESTS = {
-    ("heuristic", "SD001", 500): "4616b6b94466c72f",
-    ("heuristic", "SD001", 2000): "ce2d068ed9fcc971",
-    ("heuristic", "SD02", 500): "e9ccf236005d104d",
-    ("heuristic", "SD02", 2000): "485262a8e44727d8",
-    ("random", "SD001", 500): "66cbdec0d59dcdf8",
-    ("random", "SD001", 2000): "5940939168189f69",
-    ("random", "SD02", 500): "9dada41b872f6efa",
-    ("random", "SD02", 2000): "7259b3dcd44e6f26",
+    ("heuristic", "SD001", 500): "77502dad26c172ef",
+    ("heuristic", "SD001", 2000): "f667be2829b21bdd",
+    ("heuristic", "SD02", 500): "fc342e6495d3a285",
+    ("heuristic", "SD02", 2000): "94aefac5dada6839",
+    ("random", "SD001", 500): "77d66ffdac60bb7f",
+    ("random", "SD001", 2000): "7948ae54d107c9ae",
+    ("random", "SD02", 500): "22b4f984ad248a4c",
+    ("random", "SD02", 2000): "7e3a870ad4a19597",
 }
 
 # 登録簿 52 枚の添字（`encode.ACTION_IDS` / `CHARA_IDS` の順＝Rust の `CardDb` の順）。
@@ -178,7 +199,9 @@ def test_encoding_dims_follow_the_registry():
     """
     from meicho.encode import (ACT_DIM, ACTION_TAGS, ACTION_TYPES, NA, NC,
                                N_SCALAR, OBS_DIM)
-    assert OBS_DIM == N_SCALAR + 14 * NA + 13 * NC + 2 * len(ACTION_TAGS)
+    # D-124（v6）: v5 の形の後ろに信念の要約（N_BELIEF）と統一した hand_known（NA）
+    from meicho.encode import N_BELIEF
+    assert OBS_DIM == N_SCALAR + 14 * NA + 13 * NC + 2 * len(ACTION_TAGS) + N_BELIEF + NA
     assert ACT_DIM == len(ACTION_TYPES) + NA + 3 * NC + 3 + 2 + 1 + NA
 
 
@@ -189,6 +212,22 @@ def _unlisted_codes() -> list:
         return []
     with open(UNLISTED_PATH, encoding="utf-8") as f:
         return list(json.load(f)["codes"])
+
+
+def test_scripts_is_importable_without_another_test_module_having_run():
+    """`scripts/` は **conftest が** sys.path に入れる（D-105）。
+
+    この検査より前は、`scripts/` を入れるのは `test_bp01.py` の中の
+    `sys.path.insert` 4 か所と `test_cards_folder.py` / `test_dist.py` の
+    モジュール頭だった。**4 か所のうち 1 か所が抜けていて**、
+    `test_unlisted_list_is_empty_because_the_three_were_published` は
+    「`test_cards_folder.py` が同じ収集に入っていれば通る」状態だった。
+    全検査では収集順で先に入るので**通り**、そのファイルだけ名指しで回すと**落ちる**。
+
+    **どこから呼んでも同じになるように、経路は conftest 1 か所で持つ。**
+    """
+    import importlib
+    importlib.import_module("reconcile_cards")
 
 
 def test_unlisted_list_is_empty_because_the_three_were_published():
@@ -295,7 +334,6 @@ def test_every_bp01_number_is_registered():
     帰結である。** 以後この検査が守るのは「登録簿が痩せていないこと」で、
     効果（`skills`）が埋まっているかは見ない。そちらは段ごとの検査が担う。
     """
-    sys.path.insert(0, os.path.join(_ROOT, "scripts"))
     import reconcile_cards
     from meicho.cards import ACTION_CARDS, CHARA_CARDS
     known = set(ACTION_CARDS) | set(CHARA_CARDS)
@@ -309,7 +347,6 @@ def test_unregistered_set_is_a_subset_of_the_k0_ledger():
     減るのは正しい（段が進んだ）。増えたら `cards/` に新しい番号が入ったのに
     実装が追いついていない、という取りこぼしである。
     """
-    sys.path.insert(0, os.path.join(_ROOT, "scripts"))
     import reconcile_cards
     from meicho.cards import ACTION_CARDS, CHARA_CARDS
     known = set(ACTION_CARDS) | set(CHARA_CARDS)
@@ -330,7 +367,6 @@ def test_new_encoding_columns_are_never_used_in_sd_games():
 
     ネットは読まない（重みに触れないので torch も wheel も要らない）。
     """
-    sys.path.insert(0, os.path.join(_ROOT, "scripts"))
     import migrate_nets_k as M
     import migrate_nets_stage1b as B
     from meicho import encode as E
@@ -384,7 +420,6 @@ def test_migration_is_exact_in_float64_on_a_synthetic_net():
     再結合の丸めで、移行の誤りではない（`scripts/migrate_nets_k.py` の注記）。
     """
     np = pytest.importorskip("numpy")
-    sys.path.insert(0, os.path.join(_ROOT, "scripts"))
     import migrate_nets_k as M
 
     rng = np.random.RandomState(7)

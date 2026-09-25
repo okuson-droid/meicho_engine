@@ -71,10 +71,19 @@ def _run(s: GameState) -> GameState:
 # --- タイミング -------------------------------------------------------------
 
 def test_enter_and_levelup_fire_on_the_levelup_action_but_not_on_setup():
-    """【登場】/【レベルアップ】はレベルアップ行動で誘発し、準備では誘発しない (u1)。
+    """【登場】/【レベルアップ】はレベルアップ行動で誘発し、準備では誘発しない (u1・公式 908.3)。
 
-    `BP01-017` 漂泊者（女）Lv1「【登場】/【レベルアップ】自分のデッキの上から1枚を公開し、
-    手札に加えてもよい」。並記は別の場面なので**2 回**引ける。
+    `BP01-017` 漂泊者（女）Lv1「■【登場】/【レベルアップ】自分のデッキの上から1枚を公開し、
+    手札に加えてもよい」。
+
+    **2026-09-17 に期待値を 2 枚から 1 枚へ書き換えた（D-092 B-1/B-2・D-094・rules v0.13）。**
+    公式テキストの `■` は 1 つ＝**1 段落＝1 スキル**（800.3）で、アイコンが 2 つ付いているだけである。
+    そして 603.1.2.2.1/.2 が【登場】＝一番上に置かれたカード、【レベルアップ】＝その下のカード、と
+    誘発の主体を分けるので、**置いたばかりの `BP01-017` は【登場】でしか誘発しない**。
+    下の `BP01-018`（Lv0）は【レベルアップ】を持たない。よって加わるのは **1 枚**である。
+
+    旧版はここを「並記は別の場面なので 2 回引ける」(u1) と読んで 2 枚を要求しており、
+    BP01 のキャラ Lv1 の 8 枚すべてでレベルアップ 1 回の利得が 2 倍になっていた。
     """
     s = _state()
     _put(s, 0, 0, "BP01-018")               # 漂泊者（女）Lv0
@@ -84,8 +93,8 @@ def test_enter_and_levelup_fire_on_the_levelup_action_but_not_on_setup():
     before = len(s.players[0].hand)
     s = E.apply(s, {0: {"type": "levelup", "slot": 0, "card": "BP01-017"}})
     s = _run(s)
-    # コストで 1 枚捨て、【登場】と【レベルアップ】で 2 枚加える
-    assert len(s.players[0].hand) == before - 1 + 2, s.players[0].hand
+    # コストで 1 枚捨て、【登場】で 1 枚加える（【レベルアップ】は誘発しない）
+    assert len(s.players[0].hand) == before - 1 + 1, s.players[0].hand
     assert s.slot_entered_turn[0][0] == 3
 
     # 準備（§5-4）では誘発しない: 初期局面を作っただけで手札が増えないこと
@@ -151,7 +160,11 @@ def test_clash_phase_end_fires_for_both_players():
 def test_on_heal_is_capped_by_the_per_turn_count():
     """【ライフが回復した時】は 1 ターン 2 回まで（`BP01-006`）。
 
-    3 回目の回復では引かない。**回復量が 0 のときは誘発しない**（上限に張り付いている等）。
+    3 回目の回復では引かない。**回復量が 0 のときは誘発しない**。
+
+    **A-6（D-104・rules v0.18）で後半を書き替えた。**v0.17 までは「満タンなら 0 回復になる」
+    ことで「0 では数えない」を確かめていたが、**回復にライフの上限は無くなった**ので
+    満タンからでも本物の回復になる。0 回復は**明示的に 0 を渡して**確かめる。
     """
     s = _state()
     _put(s, 0, 0, "BP01-006")
@@ -166,12 +179,21 @@ def test_on_heal_is_capped_by_the_per_turn_count():
     assert drawn == [1, 1, 0, 0], drawn
     assert s.heals_this_turn[0] == 4
 
-    # 満タンでは回復しないので数えない
+    # 0 回復は数えない（明示的に 0 を渡す）
     t = _state()
     _put(t, 0, 0, "BP01-006")
     _put(t, 1, 0, "SD01-001")
-    E._heal(t, 0, 1)
+    E._heal(t, 0, 0)
     assert t.heals_this_turn[0] == 0, "0 回復で数えている"
+
+    # **満タンからの回復は、いまは本物の回復である**（A-6・D-104）。
+    u = _state()
+    _put(u, 0, 0, "BP01-006")
+    _put(u, 1, 0, "SD01-001")
+    assert u.players[0].life == 20
+    E._heal(u, 0, 1)
+    assert u.players[0].life == 21
+    assert u.heals_this_turn[0] == 1
 
 
 def test_on_damage_dealt_fires_only_for_the_card_that_dealt_it():

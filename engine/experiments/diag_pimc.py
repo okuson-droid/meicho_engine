@@ -191,7 +191,7 @@ def _one(args):
             break
         for pi in sorted(need):
             unseen = agents[pi]._unseen(s, pi)
-            known = observe(s, pi)["opp"]["hand_known"]
+            known = observe(s, pi)["opp"]["hand_known_scan"]   # D-121: 便 M の定義（スキャン・B-9 のぶん）のまま
             n_hand = len(s.players[1 - pi].hand)
             wc = world_counts(unseen, n_hand, known)
             wc0 = world_counts(unseen, n_hand, ())

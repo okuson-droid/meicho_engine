@@ -58,9 +58,27 @@ SUPPORTED_VERSIONS = (2, 3)
 # (1) のみ適用した中間値（参考。秧秧Lv2 未修正）:
 #   [7275559978076803677, 11749350498370779981, 4298370481803233947,
 #    17983142086817364878, 5895518031443260061, 1981973080909425922]
+# D-091（2026-09-16・マスター裁定）: 段階1A（D-088）が自動選択を合法手にしたため、
+# 決定列に新しい選択行動が現れる。digest は決定列を丸ごと取るので、**打ち方を変えなくても
+# 動く**（`STAGE1A_NOTES.md` §3 が「全決定列には新しい選択行動が現れる」と認め、T-K-1 の
+# digest はそこで更新済み。この定数は更新し忘れていた）。
+# 打ち方が変わっていないと判断した根拠は、Python と Rust の毎手一致の検査が通っていること
+# （`test_rust_engine.py` / `test_rust_agents.py` / `test_opp_policy_net_python_matches_rust`）。
+# **勝敗そのものを突き合わせた直接の測定はしていない**——疑いが出たら実測すること。
+# 旧値（D-054 時点・D-088 より前。**現在の値と直接は比較できない**）:
+#   [7275559978076803677, 11749350498370779981, 4298370481803233947,
+#    17601092096101737152, 5895518031443260061, 1981973080909425922]
+# D-104（2026-09-19・マスター裁定）: **A-6（回復にライフの上限は無い・公式 101.6・rules v0.18）で動いた。**
+#   D-011（2026-08-21 のマスター裁定「上限 20 でクリップ」）を覆したため、`SD01-023`「奏鳴」(+5) が
+#   **序盤から本当に +5 回復する**ようになり、SD001 の対局が変わった。SD02 と BP01 の仮デッキは
+#   回復カードを持たないので**1 手も動いていない**。
+#   実測（A-6 の前後・ミラー 200 局）: SD001/random 手順 4・勝敗 1／SD001/heuristic 手順 8・勝敗 1／
+#   **planner/SD001 手順 80・勝敗 37**／champion の指紋の帯 471500..471509 は手順 4/10・勝敗 4/10。
+#   **これは AI の打ち方の変化ではなく、ゲームのルールが公式に合ったことによる変化である。**
+#   旧値（v0.17 以前）: seed 230001 が 6452662970305802937。他の 5 局は不変である。
 BASELINE_DIGESTS_230000 = [
-    7275559978076803677, 11749350498370779981, 4298370481803233947,
-    17601092096101737152, 5895518031443260061, 1981973080909425922,
+    3883421622943331980, 6668190221415650951, 12799890403010092276,
+    6891336813256004936, 2710111376256602586, 11064977964443866600,
 ]
 
 
@@ -89,6 +107,78 @@ class Records:
 
 
 def read_records(paths, max_records: int | None = None) -> Records:
+    """複数ファイルを読み、1 つの `Records` にまとめる。
+
+    **2 回読む**（D-132）: 1 回目で決定の数と行動の総数だけを数え、2 回目で先に確保した配列へ
+    直接書き込む。1 決定ずつ小さな配列を作って最後に `np.stack` する旧方式（`_read_records_listwise`）は、
+    100 万決定（段階2 の教材・D-131）で「小さな配列の山＋積み上げた配列」の両方がメモリに乗り、
+    作業環境（約 6 GB）で落ちた。結果は旧方式と 1 ビットも違わない（`tests/test_drl.py` で固定）。
+    """
+    total, total_acts, obs_dim, layout = 0, 0, None, []
+    for path in paths:
+        with open(path, "rb") as f:
+            data = f.read()
+        magic, ver, od, acl = HEADER.unpack_from(data, 0)
+        assert magic == b"MCDR" and ver in SUPPORTED_VERSIONS and acl == ACT_CODE_LEN, \
+            (magic, ver, acl)
+        if obs_dim is None:
+            obs_dim = od
+        assert od == obs_dim
+        head = REC_HEAD_V3 if ver >= 3 else REC_HEAD
+        pos, L, cnt = HEADER.size, len(data), 0
+        while pos < L:
+            na = head.unpack_from(data, pos)[5]
+            pos += head.size + obs_dim + na * acl + na * 4
+            cnt += 1
+            total_acts += na
+            total += 1
+            if max_records is not None and total >= max_records:
+                break
+        layout.append((path, ver, cnt))
+        del data
+        if max_records is not None and total >= max_records:
+            break
+    n = total
+    od = obs_dim or 0
+    seed = np.zeros(n, np.int64); step = np.zeros(n, np.int32); turn = np.zeros(n, np.int16)
+    pis = np.zeros(n, np.int8); phase = np.zeros(n, np.int8); nacts = np.zeros(n, np.int16)
+    chosen = np.zeros(n, np.int16); zs = np.zeros(n, np.float32); fresh = np.zeros(n, np.float32)
+    obs = np.zeros((n, od), np.int8)
+    acts_flat = np.zeros((total_acts, ACT_CODE_LEN), np.int8)
+    scores_flat = np.zeros(total_acts, np.float32)
+    i = k = 0
+    for path, ver, cnt in layout:
+        with open(path, "rb") as f:
+            data = f.read()
+        head = REC_HEAD_V3 if ver >= 3 else REC_HEAD
+        pos = HEADER.size
+        for _ in range(cnt):
+            if ver >= 3:
+                sd, st, tu, pi, ph, na, ch, z, fr = head.unpack_from(data, pos)
+            else:
+                sd, st, tu, pi, ph, na, ch, z = head.unpack_from(data, pos)
+                fr = float("nan")
+            pos += head.size
+            obs[i] = np.frombuffer(data, np.int8, od, pos)
+            pos += od
+            acts_flat[k:k + na] = np.frombuffer(data, np.int8, na * ACT_CODE_LEN, pos).reshape(na, ACT_CODE_LEN)
+            pos += na * ACT_CODE_LEN
+            scores_flat[k:k + na] = np.frombuffer(data, "<f4", na, pos)
+            pos += na * 4
+            seed[i], step[i], turn[i], pis[i], phase[i] = sd, st, tu, pi, ph
+            nacts[i], chosen[i], zs[i], fresh[i] = na, ch, z, fr
+            i += 1
+            k += na
+        del data
+    assert i == n and k == total_acts
+    act_off = np.zeros(n + 1, np.int64)
+    if n:
+        act_off[1:] = np.cumsum(nacts.astype(np.int64))
+    return Records(n=n, seed=seed, step=step, turn=turn, pi=pis, phase=phase, n_acts=nacts, chosen=chosen,
+                   z=zs, fresh=fresh, obs=obs, act_off=act_off, acts_flat=acts_flat, scores_flat=scores_flat)
+
+
+def _read_records_listwise(paths, max_records: int | None = None) -> Records:
     """複数ファイルを読み、1 つの `Records` にまとめる。"""
     seeds, steps, turns, pis, phases, nacts, chosen, zs = [], [], [], [], [], [], [], []
     freshes = []

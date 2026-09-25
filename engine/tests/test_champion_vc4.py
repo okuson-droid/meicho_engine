@@ -45,11 +45,27 @@ OLD_CHAMPION_KWARGS = {"extra_turns": 1,
                        "solo_samples": 4,
                        "policy_net": "pi_small64_e10.json",
                        "policy_scope": "proxy"}
-OLD_CHAMPION_FINGERPRINT = "7251a931d252a57a"
+# D-098（2026-09-17・マスター裁定）: 貼り替えた。**動いた理由が 2 つ重なっている。**
+#   (a) 段階1A（D-088・2026-09-14）が決定列に新しい選択行動を足した。D-091 はこの 3 体を
+#       「D-088 以前の値・未再測」の札つきで**残していた**ので、今日より前から古かった。
+#   (b) A-2（公式 701.1.2 のリフレッシュの時点・D-095／rules v0.14）。
+#   **(a) と (b) の寄与は分けて測っていない。**今日 PC で測った 1 つの値に両方が入っている。
+#   旧値 planner_vb3cps = 7251a931d252a57a
+# D-104（2026-09-19・マスター裁定）: **A-6（回復にライフの上限は無い・公式 101.6・rules v0.18）で動いた。**
+#   D-011（2026-08-21 のマスター裁定「上限 20 でクリップ」）を覆したため、`SD01-023`「奏鳴」(+5) が
+#   **序盤から本当に +5 回復する**ようになり、SD001 の対局が変わった。SD02 と BP01 の仮デッキは
+#   回復カードを持たないので**1 手も動いていない**。
+#   実測（A-6 の前後・ミラー 200 局）: SD001/random 手順 4・勝敗 1／SD001/heuristic 手順 8・勝敗 1／
+#   **planner/SD001 手順 80・勝敗 37**／champion の指紋の帯 471500..471509 は手順 4/10・勝敗 4/10。
+#   **これは AI の打ち方の変化ではなく、ゲームのルールが公式に合ったことによる変化である。**
+#   旧値（v0.17）: OLD c84616b0d707a705 / NEW 2d884df547ac6990
+OLD_CHAMPION_FINGERPRINT = "87988cc627c0b64e"
 # 交代したときの新 champion（葉だけ V_4' に差し替えたもの）。
 NEW_CHAMPION_KWARGS = {**OLD_CHAMPION_KWARGS, "value_net": "drl_sd001_vc4.json"}
 # §4.1 で実際に取った値を入れる（交代する場合。取るまでは None＝T-C5 は skip）。
-NEW_CHAMPION_FINGERPRINT: str | None = "9b5ad48d2de6a7e0"
+# D-098 で貼り替えた（理由は OLD_CHAMPION_FINGERPRINT の札と同じ）。
+#   旧値 planner_vc4cps = 9b5ad48d2de6a7e0
+NEW_CHAMPION_FINGERPRINT: str | None = "ff72e98e303d87ae"
 # 輪 2 で V_4' を葉に積む反復の番号（`vb.kwargs_for("SD001", 5, loop=2)`）。
 LOOP2_ITERATION_FOR_VC4 = 5
 # 便 C の階段が champion に足したつまみ（D-081 追記 1）。輪 2 の探索器（`vb.py`）には無い。
@@ -187,7 +203,10 @@ def test_rust_feature_tests_skip_on_old_wheel(monkeypatch):
 
 # ------------------------------------------- T-C4 旧 champion の fingerprint
 def test_old_champion_fingerprint_pinned():
-    """旧 champion（`planner_vb3cps`）の spec を**明示**して `7251a931d252a57a`。
+    """旧 champion（`planner_vb3cps`）の spec を**明示**して固定する。
+
+    **値は `OLD_CHAMPION_FINGERPRINT` にしか書かない**——ここに literal を写すと、
+    貼り替えのたびに docstring だけが古くなる（実際 D-104 で `c84616b0d707a705` が残った）。
 
     `champion.py` を動的に読むと、交代した瞬間にこの検査は「新 champion の固定」に化ける。
     **交代しても旧 champion の値は固定し続ける**——過去の勝率を読み直すための基準だからである。

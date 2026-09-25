@@ -75,8 +75,11 @@ def walk_clashes(rec: dict, cfg) -> list:
     読むために、同じ再生をここでもう一度なぞる（記録どおりに動かすだけなので結果は同じ）。
     """
     from meicho.engine import initial_state, outcome
-    from webapp.record import ReplayAgent
-    agents = [ReplayAgent(rec["actions"], 0), ReplayAgent(rec["actions"], 1)]
+    from webapp.record import ReplayAgent, is_legacy_stage1a
+    # 段階1A より前の記録の補完は `webapp.record.replay` と**同じ判定**を通す（D-098）。
+    legacy = is_legacy_stage1a(rec)
+    agents = [ReplayAgent(rec["actions"], 0, legacy_stage1a=legacy),
+              ReplayAgent(rec["actions"], 1, legacy_stage1a=legacy)]
     s = initial_state(cfg, rec["seed"])
     out, steps = [], 0
     while outcome(s) is None and s.turn_no <= 200:

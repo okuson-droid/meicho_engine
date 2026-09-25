@@ -1,0 +1,308 @@
+...F....FF.....FFFFF                                                     [100%]
+================================== FAILURES ===================================
+____________________ test_worlds_module_matches_diag_pimc _____________________
+
+    def test_worlds_module_matches_diag_pimc():
+        """`meicho/worlds.py` に移した W の数え方が便 M の記録と 1 行も違わない。
+    
+        記録（`results/lit/m5m1_pimc.jsonl`）の**先頭 200 行**は帯の頭の 2 局である。
+        同じ 2 局を回し直し、W・W_nokwn・H_w（と H_w_nokwn）を突き合わせる。
+        """
+        path = os.path.join(_HERE, "..", "results", "lit", "m5m1_pimc.jsonl")
+        if not os.path.exists(path):
+            pytest.skip("便 M の記録が無い環境")
+        import diag_pimc
+        want = []
+        with open(path, encoding="utf-8") as f:
+            for line in f:
+                if line.strip():
+                    want.append(json.loads(line))
+                if len(want) >= 200:
+                    break
+        seeds = sorted({r["seed"] for r in want[:200]})[:2]
+        # **記録を作った探索器で回し直す。** 便 M の記録は当時の champion（`planner_vc4cps`）の
+        # 打ち方でできている。champion につまみが増えると**別の手を選び、別の局面を通り、
+        # W も phase も変わる**（便 C の交代のときは 10 行目の W が 4636 と 4516 で食い違い、
+        # 便 A 後半の交代のときは 70 行目の phase が CLASH_SUBMIT と ACTION で食い違った）。
+        # **これは「W の数え方が変わった」のではなく「回している対局が変わった」**である。
+        # `_pre_bin_c_kwargs()` が当時の探索器に戻し、戻せなければそこで止める。
+        kw = _pre_bin_c_kwargs()
+        got = []
+        for sd in seeds:
+            rows, _ = diag_pimc._one(("SD001", kw, sd, 200))
+            got.extend(rows)
+        keys = ("seed", "seat", "turn", "phase", "W", "W_nokwn", "H_w", "H_w_nokwn",
+                "n_hand", "pool_size", "known_n")
+        n = min(200, len(got))
+        assert n >= 100, "回し直した行が少なすぎる"
+        for i in range(n):
+            for k in keys:
+>               assert got[i][k] == pytest.approx(want[i][k]) if isinstance(
+                    want[i][k], float) else got[i][k] == want[i][k], \
+                    f"{i} 行目の {k} が違う: {got[i][k]} != {want[i][k]}"
+E               AssertionError: 59 行目の phase が違う: ACTION != CLASH_SUBMIT
+E               assert False
+
+_          = {'seed': 673601, 'T': 11, 'steps': 96, 'winner': 0, ...}
+diag_pimc  = <module 'diag_pimc' from 'C:\\Users\\奥村優斗\\OneDrive\\ドキュメント\\eclipse_workフォルダ\\meicho_engine_v0.1\\engine\\experiments\\diag_pimc.py'>
+f          = <_io.TextIOWrapper name='C:\\Users\\奥村優斗\\OneDrive\\ドキュメント\\eclipse_workフォルダ\\meicho_engine_v0.1\\engine\\tests\\..\\results\\lit\\m5m1_pimc.jsonl' mode='r' encoding='utf-8'>
+got        = [{'seed': 673600, 'seat': 0, 'turn': 0, 'phase': 'SETUP_CHARA', ...}, {'seed': 673600, 'seat': 1, 'turn': 0, 'phase': ...00, 'seat': 0, 'turn': 1, 'phase': 'ACTION', ...}, {'seed': 673600, 'seat': 0, 'turn': 1, 'phase': 'ACTION', ...}, ...]
+i          = 59
+k          = 'phase'
+keys       = ('seed', 'seat', 'turn', 'phase', 'W', 'W_nokwn', ...)
+kw         = {'extra_turns': 1, 'value_net': 'C:\\Users\\奥村優斗\\OneDrive\\ドキュメント\\eclipse_workフォルダ\\meicho_engine_v0.1\\engine\\resu...\\eclipse_workフォルダ\\meicho_engine_v0.1\\engine\\results\\models\\drl_sd001_s1.json', 'opp_policy_root_only': True, ...}
+line       = '{"seed": 673601, "seat": 0, "turn": 9, "phase": "CLASH_SUBMIT", "W": 69, "H_w": 5.971388374808979, "W_nokwn": 69, "H_..._hand": 2, "pool_size": 15, "known_n": 0, "W0": 1, "W0_amb": 18564, "D": 1.0, "D_amb": 0.5692221654911662, "r": 0.0}\n'
+n          = 192
+path       = 'C:\\Users\\奥村優斗\\OneDrive\\ドキュメント\\eclipse_workフォルダ\\meicho_engine_v0.1\\engine\\tests\\..\\results\\lit\\m5m1_pimc.jsonl'
+rows       = [{'seed': 673601, 'seat': 0, 'turn': 0, 'phase': 'SETUP_CHARA', ...}, {'seed': 673601, 'seat': 1, 'turn': 0, 'phase': ...01, 'seat': 0, 'turn': 1, 'phase': 'ACTION', ...}, {'seed': 673601, 'seat': 0, 'turn': 1, 'phase': 'ACTION', ...}, ...]
+sd         = 673601
+seeds      = [673600, 673601]
+want       = [{'seed': 673600, 'seat': 0, 'turn': 0, 'phase': 'SETUP_CHARA', ...}, {'seed': 673600, 'seat': 1, 'turn': 0, 'phase': ...00, 'seat': 0, 'turn': 1, 'phase': 'ACTION', ...}, {'seed': 673600, 'seat': 0, 'turn': 1, 'phase': 'ACTION', ...}, ...]
+
+tests\test_lit_c.py:1061: AssertionError
+____________________ test_old_champion_fingerprint_pinned _____________________
+
+    def test_old_champion_fingerprint_pinned():
+        """旧 champion（`planner_vb3cps`）の spec を**明示**して `7251a931d252a57a`。
+    
+        `champion.py` を動的に読むと、交代した瞬間にこの検査は「新 champion の固定」に化ける。
+        **交代しても旧 champion の値は固定し続ける**——過去の勝率を読み直すための基準だからである。
+        """
+        _rs()
+>       assert _fingerprint(OLD_CHAMPION_KWARGS) == OLD_CHAMPION_FINGERPRINT
+E       AssertionError: assert 'c84616b0d707a705' == '7251a931d252a57a'
+E         
+E         - 7251a931d252a57a
+E         + c84616b0d707a705
+
+
+tests\test_champion_vc4.py:196: AssertionError
+________________________ test_new_champion_fingerprint ________________________
+
+    def test_new_champion_fingerprint():
+        """新 champion（`planner_vc4cps`）の fingerprint。手順は旧と同じ（§1）。"""
+        _rs()
+>       assert _fingerprint(NEW_CHAMPION_KWARGS) == NEW_CHAMPION_FINGERPRINT
+E       AssertionError: assert '2d884df547ac6990' == '9b5ad48d2de6a7e0'
+E         
+E         - 9b5ad48d2de6a7e0
+E         + 2d884df547ac6990
+
+
+tests\test_champion_vc4.py:203: AssertionError
+________________________ test_defaults_unchanged_lit_a ________________________
+
+    def test_defaults_unchanged_lit_a():
+        """`lethal_uniform=0.0`（既定）では一手も変わらない。
+    
+        見るのは 2 つ。
+        1. `bench_agents.py` の fingerprint 3 種（素の H・貪欲・計画探索）
+        2. **便 A 当時の champion（`planner_vb3cps`）**の fingerprint `7251a931d252a57a`
+           （手順は `test_lit_d.py` と同じ。**spec を明示して固定する**——`champion.py` を
+           動的に読むと、便 E-0 の交代でこの検査が「新 champion の固定」に化けるため）
+    
+        ここが動いたら**止める**——過去に取ったすべての勝率が比較できなくなる。
+        旧値 `f82625f68bb79a2d` は作り方が失われているので基準に使わない（便 D の判断②）。
+        """
+        pytest.importorskip("meicho_rs")
+        import hashlib
+    
+        from experiments import bench_agents
+        from experiments.arena_rs import ensure_cards, series_rs_digest
+        ensure_cards()
+    
+        # **2026-09-17 に H と G を貼り替えた（D-095・マスター裁定）。P は不変である。**
+        # 公式 701 のルールチェックを実装したので（A-1・A-2／rules v0.14）、リフレッシュの時点が
+        # 早まり山札の並びが変わった。**エージェントの打ち方は 1 行も変えていない。**
+        # 旧値: H `773a71c15c5bc16e` / G `677f28cc3b6995ee`（どちらも v0.13 以前）。
+        # P が不変なのは、planner の対局がこの帯でリフレッシュを踏まないからである
+        # （`BASELINE_DIGESTS_230000` も同じ理由で不変だった）。
+        assert bench_agents.fingerprint("H", 50) == "0e36f6aafd63a52e"
+        assert bench_agents.fingerprint("G", 20) == "e197a6cc20748642"
+        assert bench_agents.fingerprint("P", 10) == "6e39c2aa4b35d876"
+    
+        from tests.test_champion_vc4 import (OLD_CHAMPION_FINGERPRINT,
+                                             OLD_CHAMPION_KWARGS, resolved_kwargs)
+        sp = {"kind": "planner", "opp_decklist": POOL, **resolved_kwargs(OLD_CHAMPION_KWARGS)}
+        out = series_rs_digest(sp, sp, 10, CONFIG, workers=2, seed0=471500)
+        fp = hashlib.sha256(repr([r[4] for r in out]).encode()).hexdigest()[:16]
+>       assert fp == OLD_CHAMPION_FINGERPRINT, (
+            "便 A 当時の champion の挙動が変わった。便 A のつまみは既定で無効なので、"
+            "ここが動いたら**止めて**原因を調べること")
+E       AssertionError: 便 A 当時の champion の挙動が変わった。便 A のつまみは既定で無効なので、ここが動いたら**止めて**原因を調べること
+E       assert 'c84616b0d707a705' == '7251a931d252a57a'
+E         
+E         - 7251a931d252a57a
+E         + c84616b0d707a705
+
+OLD_CHAMPION_FINGERPRINT = '7251a931d252a57a'
+OLD_CHAMPION_KWARGS = {'extra_turns': 1, 'value_net': 'drl_sd001_vb3.json', 'opp_policy_net': 'drl_sd001_s1.json', 'opp_policy_root_only': True, ...}
+bench_agents = <module 'experiments.bench_agents' from 'C:\\Users\\奥村優斗\\OneDrive\\ドキュメント\\eclipse_workフォルダ\\meicho_engine_v0.1\\engine\\experiments\\..\\tests\\..\\experiments\\bench_agents.py'>
+ensure_cards = <function ensure_cards at 0x000001B8B96DED40>
+fp         = 'c84616b0d707a705'
+hashlib    = <module 'hashlib' from 'C:\\Program Files\\WindowsApps\\PythonSoftwareFoundation.Python.3.11_3.11.2544.0_x64__qbz5n2kfra8p0\\Lib\\hashlib.py'>
+out        = [(False, 14, 125, 0, 2796659311340462364), (True, 14, 116, 0, 9893640624319316121), (True, 13, 115, 0, 119848982532809...136, 0, 5630594843500784609), (False, 11, 104, 0, 15470665480413414002), (False, 11, 99, 0, 10084811327762024503), ...]
+resolved_kwargs = <function resolved_kwargs at 0x000001B8B9636A20>
+series_rs_digest = <function series_rs_digest at 0x000001B8B96DF420>
+sp         = {'kind': 'planner', 'opp_decklist': ['SD01-017', 'SD01-017', 'SD01-019', 'SD01-019', 'SD01-022', 'SD01-022', ...], 'ex...Users\\奥村優斗\\OneDrive\\ドキュメント\\eclipse_workフォルダ\\meicho_engine_v0.1\\engine\\results\\models\\drl_sd001_vb3.json', ...}
+
+tests\test_lit_a.py:130: AssertionError
+_________________________ test_a2_defaults_unchanged __________________________
+
+    def test_a2_defaults_unchanged():
+        """既定（`bundle_p=0`）で fingerprint 4 種が不変。Rust の digest も不変。
+    
+        ここが動いたら**止める**——過去に取ったすべての勝率が比較できなくなる。
+        """
+        import hashlib
+        rs = _rs()
+        from experiments import bench_agents
+        from experiments.arena_rs import PLANNER, series_rs_digest
+        from meicho.drl_data import BASELINE_DIGESTS_230000
+        from meicho.drlnet import resolve_model
+    
+        # **2026-09-17 に H と G を貼り替えた（D-095・マスター裁定）。P は不変である。**
+        # 公式 701 のルールチェックを実装したので（A-1・A-2／rules v0.14）、リフレッシュの時点が
+        # 早まり山札の並びが変わった。**エージェントの打ち方は 1 行も変えていない。**
+        # 旧値: H `773a71c15c5bc16e` / G `677f28cc3b6995ee`（どちらも v0.13 以前）。
+        # P が不変なのは、planner の対局がこの帯でリフレッシュを踏まないからである
+        # （`BASELINE_DIGESTS_230000` も同じ理由で不変だった）。
+        assert bench_agents.fingerprint("H", 50) == "0e36f6aafd63a52e"
+        assert bench_agents.fingerprint("G", 20) == "e197a6cc20748642"
+        assert bench_agents.fingerprint("P", 10) == "6e39c2aa4b35d876"
+    
+        def fp(kw):
+            kwr = {k: (resolve_model(v)
+                       if k in ("value_net", "opp_policy_net", "policy_net") else v)
+                   for k, v in kw.items()}
+            out = series_rs_digest({"kind": "planner", "opp_decklist": POOL, **kwr},
+                                   {"kind": "planner", "opp_decklist": POOL, **kwr},
+                                   10, CONFIG, workers=2, seed0=471500)
+            return hashlib.sha256(repr([r[4] for r in out]).encode()).hexdigest()[:16]
+    
+        # **名指しした spec** で固定する（交代でこの検査が化けないように・上の註）。
+>       assert fp(KHEB_KWARGS) == KHEB_FINGERPRINT, "便 C の champion の指紋が動いた"
+E       AssertionError: 便 C の champion の指紋が動いた
+E       assert 'f3d1b52aed0abdad' == 'e82b796960e04c4a'
+E         
+E         - e82b796960e04c4a
+E         + f3d1b52aed0abdad
+
+BASELINE_DIGESTS_230000 = [3883421622943331980, 6452662970305802937, 12799890403010092276, 6891336813256004936, 2710111376256602586, 11064977964443866600]
+PLANNER    = <function PLANNER at 0x000001B8B96DF240>
+bench_agents = <module 'experiments.bench_agents' from 'C:\\Users\\奥村優斗\\OneDrive\\ドキュメント\\eclipse_workフォルダ\\meicho_engine_v0.1\\engine\\experiments\\..\\tests\\..\\experiments\\bench_agents.py'>
+fp         = <function test_a2_defaults_unchanged.<locals>.fp at 0x000001B8B96DE8E0>
+hashlib    = <module 'hashlib' from 'C:\\Program Files\\WindowsApps\\PythonSoftwareFoundation.Python.3.11_3.11.2544.0_x64__qbz5n2kfra8p0\\Lib\\hashlib.py'>
+resolve_model = <function resolve_model at 0x000001B8AB037420>
+rs         = <module 'meicho_rs' from 'C:\\Users\\奥村優斗\\AppData\\Local\\Packages\\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\\LocalCache\\local-packages\\Python311\\site-packages\\meicho_rs\\__init__.py'>
+series_rs_digest = <function series_rs_digest at 0x000001B8B96DF420>
+
+tests\test_lit_a2.py:183: AssertionError
+_______________ test_a2_rust_p_one_has_the_champion_fingerprint _______________
+
+    def test_a2_rust_p_one_has_the_champion_fingerprint():
+        """Rust 側でも `bundle_p=1.0` の指紋が現行 champion と同じ。"""
+        import hashlib
+        _rs()
+        from experiments.arena_rs import series_rs_digest
+        from meicho.drlnet import resolve_model
+        kw = {**KHEB_KWARGS, "bundle_p": 1.0}
+        kwr = {k: (resolve_model(v)
+                   if k in ("value_net", "opp_policy_net", "policy_net") else v)
+               for k, v in kw.items()}
+        sp = {"kind": "planner", "opp_decklist": POOL, **kwr}
+        out = series_rs_digest(sp, sp, 10, CONFIG, workers=2, seed0=471500)
+        got = hashlib.sha256(repr([r[4] for r in out]).encode()).hexdigest()[:16]
+>       assert got == KHEB_FINGERPRINT
+E       AssertionError: assert 'f3d1b52aed0abdad' == 'e82b796960e04c4a'
+E         
+E         - e82b796960e04c4a
+E         + f3d1b52aed0abdad
+
+got        = 'f3d1b52aed0abdad'
+hashlib    = <module 'hashlib' from 'C:\\Program Files\\WindowsApps\\PythonSoftwareFoundation.Python.3.11_3.11.2544.0_x64__qbz5n2kfra8p0\\Lib\\hashlib.py'>
+kw         = {'extra_turns': 1, 'value_net': 'drl_sd001_vc4.json', 'opp_policy_net': 'drl_sd001_s1.json', 'opp_policy_root_only': True, ...}
+kwr        = {'extra_turns': 1, 'value_net': 'C:\\Users\\奥村優斗\\OneDrive\\ドキュメント\\eclipse_workフォルダ\\meicho_engine_v0.1\\engine\\resu...\\eclipse_workフォルダ\\meicho_engine_v0.1\\engine\\results\\models\\drl_sd001_s1.json', 'opp_policy_root_only': True, ...}
+out        = [(True, 16, 120, 0, 11372483712723820352), (False, 11, 96, 0, 12996946625048750878), (True, 9, 88, 0, 1476675343451870..., 67, 0, 14243937148038899577), (False, 10, 99, 0, 11122818176206508142), (False, 7, 69, 0, 12731083963183071433), ...]
+resolve_model = <function resolve_model at 0x000001B8AB037420>
+series_rs_digest = <function series_rs_digest at 0x000001B8B96DF420>
+sp         = {'kind': 'planner', 'opp_decklist': ['SD01-017', 'SD01-017', 'SD01-019', 'SD01-019', 'SD01-022', 'SD01-022', ...], 'ex...Users\\奥村優斗\\OneDrive\\ドキュメント\\eclipse_workフォルダ\\meicho_engine_v0.1\\engine\\results\\models\\drl_sd001_vc4.json', ...}
+
+tests\test_lit_a2.py:437: AssertionError
+_______________________ test_kheb_champion_fingerprint ________________________
+
+    def test_kheb_champion_fingerprint():
+        """新 champion の fingerprint。手順は `tests/test_champion_vc4.py` §1 と同じ。
+    
+        一つ前の champion（`planner_vc4cps`）の指紋も**変わっていない**ことを合わせて見る
+        ——交代で過去の測定の読み直しができなくなるのを防ぐためである。
+        """
+        _rs_has_draw_buckets()
+        from tests.test_champion_vc4 import _fingerprint, NEW_CHAMPION_KWARGS
+>       assert _fingerprint(KHEB_CHAMPION_KWARGS) == KHEB_CHAMPION_FINGERPRINT
+E       AssertionError: assert 'f3d1b52aed0abdad' == 'e82b796960e04c4a'
+E         
+E         - e82b796960e04c4a
+E         + f3d1b52aed0abdad
+
+NEW_CHAMPION_KWARGS = {'extra_turns': 1, 'value_net': 'drl_sd001_vc4.json', 'opp_policy_net': 'drl_sd001_s1.json', 'opp_policy_root_only': True, ...}
+_fingerprint = <function _fingerprint at 0x000001B8B96368E0>
+
+tests\test_lit_c.py:1279: AssertionError
+__________________ test_champion_fingerprint_unchanged_lit_d __________________
+
+    def test_champion_fingerprint_unchanged_lit_d():
+        """**便 D 当時の champion**（`planner_vb3cps`）の fingerprint（帯 471500..471509・**手順つき**）。
+    
+        **なぜ手順を書くか**: `D065_NOTES.md` に残っていた `f82625f68bb79a2d` は、
+        どう作った値かが**どこにも書かれていない**（便 D で再現できなかった）。
+        値だけあって手順が無い基準は、次に誰かが「合わない」と気付いたとき
+        「壊れたのか、作り方が違うのか」を区別できない。ここで手順ごと固定する。
+    
+        手順: Rust 版で champion 同士のミラー 10 局（seeds 471500..471509）を回し、
+        各局の digest（その局の全決定を畳み込んだ値）の列を sha256 して先頭 16 桁。
+        """
+        pytest.importorskip("meicho_rs")
+        import hashlib
+    
+        from experiments.arena_rs import ensure_cards, series_rs_digest
+        from tests.test_champion_vc4 import (OLD_CHAMPION_FINGERPRINT,
+                                             OLD_CHAMPION_KWARGS, resolved_kwargs)
+        ensure_cards()
+        # **便 D 当時の champion（`planner_vb3cps`）の spec を明示**して固定する。
+        # `champion.py` を動的に読むと、便 E-0 の交代でこの検査の意味が
+        # 「便 D 当時の挙動の固定」から「今の champion の固定」に化けてしまう。
+        sp = {"kind": "planner", "opp_decklist": POOL,
+              **resolved_kwargs(OLD_CHAMPION_KWARGS)}
+        out = series_rs_digest(sp, sp, 10, CONFIG, workers=2, seed0=471500)
+        fp = hashlib.sha256(repr([r[4] for r in out]).encode()).hexdigest()[:16]
+>       assert fp == OLD_CHAMPION_FINGERPRINT, (
+            "便 D 当時の champion の挙動が変わった。便 D は探索器を 1 つも触っていないので、"
+            "ここが動いたら**止めて**原因を調べること")
+E       AssertionError: 便 D 当時の champion の挙動が変わった。便 D は探索器を 1 つも触っていないので、ここが動いたら**止めて**原因を調べること
+E       assert 'c84616b0d707a705' == '7251a931d252a57a'
+E         
+E         - 7251a931d252a57a
+E         + c84616b0d707a705
+
+OLD_CHAMPION_FINGERPRINT = '7251a931d252a57a'
+OLD_CHAMPION_KWARGS = {'extra_turns': 1, 'value_net': 'drl_sd001_vb3.json', 'opp_policy_net': 'drl_sd001_s1.json', 'opp_policy_root_only': True, ...}
+ensure_cards = <function ensure_cards at 0x000001B8B96DED40>
+fp         = 'c84616b0d707a705'
+hashlib    = <module 'hashlib' from 'C:\\Program Files\\WindowsApps\\PythonSoftwareFoundation.Python.3.11_3.11.2544.0_x64__qbz5n2kfra8p0\\Lib\\hashlib.py'>
+out        = [(False, 14, 125, 0, 2796659311340462364), (True, 14, 116, 0, 9893640624319316121), (True, 13, 115, 0, 119848982532809...136, 0, 5630594843500784609), (False, 11, 104, 0, 15470665480413414002), (False, 11, 99, 0, 10084811327762024503), ...]
+resolved_kwargs = <function resolved_kwargs at 0x000001B8B9636A20>
+series_rs_digest = <function series_rs_digest at 0x000001B8B96DF420>
+sp         = {'kind': 'planner', 'opp_decklist': ['SD01-017', 'SD01-017', 'SD01-019', 'SD01-019', 'SD01-022', 'SD01-022', ...], 'ex...Users\\奥村優斗\\OneDrive\\ドキュメント\\eclipse_workフォルダ\\meicho_engine_v0.1\\engine\\results\\models\\drl_sd001_vb3.json', ...}
+
+tests\test_lit_d.py:744: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_lit_c.py::test_worlds_module_matches_diag_pimc - AssertionE...
+FAILED tests/test_champion_vc4.py::test_old_champion_fingerprint_pinned - Ass...
+FAILED tests/test_champion_vc4.py::test_new_champion_fingerprint - AssertionE...
+FAILED tests/test_lit_a.py::test_defaults_unchanged_lit_a - AssertionError: ...
+FAILED tests/test_lit_a2.py::test_a2_defaults_unchanged - AssertionError: 便 ...
+FAILED tests/test_lit_a2.py::test_a2_rust_p_one_has_the_champion_fingerprint
+FAILED tests/test_lit_c.py::test_kheb_champion_fingerprint - AssertionError: ...
+FAILED tests/test_lit_d.py::test_champion_fingerprint_unchanged_lit_d - Asser...
+8 failed, 12 passed in 1753.65s (0:29:13)
