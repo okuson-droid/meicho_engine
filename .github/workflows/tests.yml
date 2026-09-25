@@ -2,7 +2,8 @@ name: Tests
 
 # DEVFLOW_PLAN_20260925.md §5.1
 # push のたびに engine/ の検査を回し、通過・失敗・skip を名前つきで Summary に出す。
-# cards/ と results/ は GitHub に無いので、それらに触る検査は落ちる（最初の実行の失敗一覧を読んでから除外を決める）。
+# cards/ と results/ は GitHub に無いので、それらに触る検査は落ちる。その一覧は engine/ci/missing_assets_allowlist.txt に
+# 名指しで持ち（2026-09-25 の #2 の 46 件・理由は全部 FileNotFound か画像索引が空）、一覧で説明できない失敗だけで赤にする。
 
 on:
   push:
@@ -48,38 +49,60 @@ jobs:
           python -m pytest tests -q -rfs --junitxml=../pytest.xml 2>&1 | tee ../pytest_output.txt
         continue-on-error: true
 
-      - name: Write the summary (passed / failed / skipped, with names)
+      - name: Write the summary (passed / failed / skipped, with names; failures split by the missing-assets allowlist)
         if: always()
         run: |
           python - <<'EOF'
           import os, xml.etree.ElementTree as ET
+          allow = set()
+          with open("engine/ci/missing_assets_allowlist.txt", encoding="utf-8") as f:
+              for line in f:
+                  line = line.strip()
+                  if line and not line.startswith("#"):
+                      allow.add(line)
           path = "pytest.xml"
           out = []
           if os.path.exists(path):
               root = ET.parse(path).getroot()
               suites = root.findall("testsuite") or [root]
               tests = errors = failures = skipped = 0
-              names_f, names_s = [], []
+              failed_keys, passed_keys, names_s = set(), set(), []
               for s in suites:
                   tests += int(s.get("tests", 0)); errors += int(s.get("errors", 0))
                   failures += int(s.get("failures", 0)); skipped += int(s.get("skipped", 0))
                   for tc in s.iter("testcase"):
-                      key = f"{tc.get('classname')}::{tc.get('name')}"
+                      fname = tc.get("classname", "").split(".")[-1] + ".py"
+                      key = f"{fname}::{tc.get('name').split('[', 1)[0]}"
                       if tc.find("failure") is not None or tc.find("error") is not None:
-                          names_f.append(key)
-                      sk = tc.find("skipped")
-                      if sk is not None:
-                          names_s.append(f"{key} — {sk.get('message', '')[:120]}")
+                          failed_keys.add(key)
+                      elif tc.find("skipped") is not None:
+                          names_s.append(f"{key} — {tc.find('skipped').get('message', '')[:120]}")
+                      else:
+                          passed_keys.add(key)
               passed = tests - errors - failures - skipped
+              explained = sorted(failed_keys & allow)
+              unexplained = sorted(failed_keys - allow)
+              stale = sorted(allow & passed_keys)
               out.append(f"## pytest: 通過 {passed} / 失敗 {failures + errors} / skip {skipped}（全 {tests}）")
+              out.append(f"失敗のうち「資材が無い」一覧で説明できるもの {len(explained)}・**説明できないもの {len(unexplained)}**")
               out.append("")
-              out.append("### 失敗")
-              out += [f"- {n}" for n in names_f] or ["- なし"]
+              out.append("### 説明できない失敗（本物として扱う）")
+              out += [f"- {n}" for n in unexplained] or ["- なし"]
+              out.append("")
+              out.append("### 資材が無いために落ちた検査（engine/ci/missing_assets_allowlist.txt）")
+              out += [f"- {n}" for n in explained] or ["- なし"]
+              out.append("")
+              out.append("### 一覧にあるのに通った検査（一覧から消すこと）")
+              out += [f"- {n}" for n in stale] or ["- なし"]
               out.append("")
               out.append("### skip（『通った』ではない）")
               out += [f"- {n}" for n in names_s] or ["- なし"]
+              with open("unexplained.txt", "w", encoding="utf-8") as f:
+                  f.write("\n".join(unexplained))
           else:
               out.append("## pytest.xml が無い（収集の段階で落ちた）。pytest_output.txt を見ること")
+              with open("unexplained.txt", "w", encoding="utf-8") as f:
+                  f.write("COLLECTION_FAILED")
           with open(os.environ["GITHUB_STEP_SUMMARY"], "a", encoding="utf-8") as f:
               f.write("\n".join(out) + "\n")
           EOF
@@ -94,15 +117,15 @@ jobs:
             pytest_output.txt
           if-no-files-found: ignore
 
-      - name: Fail the job if any test failed
+      - name: Fail the job only on failures the allowlist does not explain
         run: |
           python - <<'EOF'
-          import sys, xml.etree.ElementTree as ET
+          import sys
           try:
-              root = ET.parse("pytest.xml").getroot()
-          except Exception as e:
-              print("pytest.xml が読めない:", e); sys.exit(1)
-          suites = root.findall("testsuite") or [root]
-          bad = sum(int(s.get("failures", 0)) + int(s.get("errors", 0)) for s in suites)
-          sys.exit(1 if bad else 0)
+              bad = open("unexplained.txt", encoding="utf-8").read().strip()
+          except FileNotFoundError:
+              print("unexplained.txt が無い"); sys.exit(1)
+          if bad:
+              print("説明できない失敗:"); print(bad); sys.exit(1)
+          print("説明できない失敗なし")
           EOF

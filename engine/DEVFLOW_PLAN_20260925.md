@@ -222,8 +222,10 @@ GitHub Desktop の `Changes` を見て、変わったファイルが「置き換
 
 ### 5.1 `tests.yml` — push のたびに検査を回して「通過・失敗・skip」を出す
 - `ubuntu-latest` で Python 3.11 と Rust を入れ、`pip install ./engine/rust` で部品を作り、`engine/` で `python -m pytest tests -q -rfs` を回す（既定＝重い 20 件は飛ばす。約 7 分の見込み）。
-- **最初の 1 回は失敗が出る前提である。**`cards/`（画像・`cards_structured`）と `results/`（ネット・記録）が無いので、それらに触る検査は落ちる。
-  **失敗一覧は数えるものではなく読むもの**（CLAUDE.md）——最初の実行の失敗一覧をクロエに貼ってほしい。「資材が無い」で説明できるものは `test_sets.json` の `pc_tests` に寄せるか、CI では `-m "not pc"` で外す形にする。**説明できない失敗が 1 件でもあれば、それは PC でも作業環境でも見えていなかった本物**である。
+- **`cards/`（画像・`cards_structured`・BP01 の台帳 JSON）と `results/`（ネット・`decksim/`）が GitHub に無いので、それらに触る検査は落ちる。**
+  2026-09-25 の実行 #2 で落ちたのは 46 件（パラメータ違いを含めて 49）。**46 件すべて理由を読んだ**（作業環境に同じ clone を作って同じ組を回し、失敗の集合が一致することを確かめた）——全部が `FileNotFoundError`（上の 2 か所の資材）か、画像の索引が空であることによる `StopIteration`／`AssertionError` で、**説明できない失敗は 0**。
+  その 46 件は `engine/ci/missing_assets_allowlist.txt` に**名指し**で持つ。Summary は失敗を「一覧で説明できる」「説明できない」に分けて出し、**赤にするのは説明できない失敗があるときだけ**。一覧にあるのに通った検査も別枠で出す（資材を置いたら一覧から消す合図）。
+  `test_sets.json` の `pc_tests`（50 件）とは重なりが 32 件しか無い——あちらは「作業環境にネット 4 本などがあった状態」で作った組で、CI は「GitHub にあるものだけ」の状態なので、別の集合として持つのが正しい。**説明できない失敗が 1 件でもあれば、それは PC でも作業環境でも見えていなかった本物**である。
 - 出力は Actions の画面の `Summary` に「通過 / 失敗 / skip」の 3 つの数と、失敗・skip の名前が並ぶ。**skip は「通った」ではない**ので skip も名前で出す。
 - `.github/workflows/stage1b-rust.yml`（Codex のブランチ用）は残しておく。動くのは `stage1b-encoding-v5` への push か PR のときだけなので邪魔にならない。要らなくなったら段 1 のあとに消す（判断 §8-3）。
 

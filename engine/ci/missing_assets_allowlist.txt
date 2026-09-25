@@ -1,0 +1,50 @@
+# CI（GitHub Actions）で「資材が無い」ために回らない検査の一覧（DEVFLOW_PLAN_20260925.md §5.1・2026-09-25）
+# 資材 = cards/（BP01_UNLISTED.json・BP01_NO_IMAGE.json・cards_structured.csv・画像）と engine/results/（models/・decksim/）。どちらも .gitignore で GitHub に無い。
+# 1 行 1 検査。書式は test_<file>.py::<名前>（パラメータの [..] は付けない）。ここに無い検査が落ちたら本物の失敗として扱う。
+# 資材が GitHub に置かれてこの一覧の検査が通るようになったら、行を消す（消し忘れは Summary の「一覧にあるのに通った」で分かる）。
+test_bp01.py::test_every_bp01_number_is_registered
+test_bp01.py::test_no_image_allowlist_is_consistent
+test_bp01.py::test_unlisted_list_is_empty_because_the_three_were_published
+test_bp01.py::test_unregistered_set_is_a_subset_of_the_k0_ledger
+test_card_images.py::test_chara_card_carries_an_image
+test_card_images.py::test_every_implemented_card_has_an_image
+test_card_images.py::test_url_for_returns_none_when_there_is_no_image
+test_card_images.py::test_view_carries_an_image_url_without_dropping_the_engine_text
+test_champion_vc4.py::test_old_champion_fingerprint_pinned
+test_champion_vc4.py::test_t14_positions_pinned_to_explicit_specs
+test_d065.py::test_nash_delta_fixes_the_human_positions
+test_d065.py::test_opp_mix_fixes_the_human_positions
+test_dist.py::test_real_tree_assembles_and_passes_verify
+test_drl.py::test_champion_definition_is_consistent_everywhere
+test_eval_s2_repr.py::test_blocks_are_balanced
+test_ladder.py::test_registry_builds_every_factory_and_gauntlet_agents
+test_lit_a.py::test_defaults_unchanged_lit_a
+test_lit_a.py::test_lethal_uniform_fixes_the_human_positions
+test_lit_a.py::test_reeval_uses_the_same_rule
+test_lit_a2.py::test_a2_bundles_over_enumerated_worlds
+test_lit_c.py::test_draw_buckets_stratified_and_deterministic
+test_lit_c.py::test_endgame_enumeration_is_exhaustive
+test_lit_c.py::test_world_weight_falls_back_to_uniform
+test_lit_c.py::test_world_weight_never_zero
+test_lit_c.py::test_world_weight_reach_probability_hand_made
+test_lit_d.py::test_champion_fingerprint_unchanged_lit_d
+test_lit_d.py::test_last_clash_is_recorded_by_the_agent
+test_lit_d.py::test_measurement_outputs_carry_provenance
+test_lit_d.py::test_peek_counter_best_responds_and_is_not_registered
+test_s2_schedule.py::test_allocation_shares_and_even_blocks
+test_s2_schedule.py::test_anchor_blocks_record_teacher_seat_only
+test_s2_schedule.py::test_band_overflow_is_refused
+test_s2_schedule.py::test_decks_exist_on_disk
+test_s2_schedule.py::test_decks_meta_keys_match_block_names
+test_s2_schedule.py::test_deterministic_bytes
+test_s2_schedule.py::test_non_train_deck_is_dropped_even_if_marked_later
+test_s2_schedule.py::test_only_refuses_non_train
+test_s2_schedule.py::test_only_restricts_to_one_deck
+test_s2_schedule.py::test_only_train_decks_on_both_sides
+test_s2_schedule.py::test_output_passes_record_mix_shape_check
+test_s2_schedule.py::test_p_planned_sums_to_one
+test_s2_schedule.py::test_seeds_contiguous_disjoint_and_within_band
+test_s2_schedule.py::test_split_parts_cover_the_whole_schedule
+test_value_bootstrap.py::test_eval_vb_null_run
+test_value_bootstrap.py::test_every_spec_maker_resolves_the_proxy_pi
+test_value_bootstrap.py::test_vb_record_delta_manifest
