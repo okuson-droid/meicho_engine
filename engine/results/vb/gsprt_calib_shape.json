@@ -1,0 +1,55 @@
+{
+ "tool": "gate_sprt_calibration.py",
+ "params": {
+  "alpha": 0.025,
+  "beta": 0.1,
+  "p0": 0.5,
+  "p1": 0.55,
+  "max_games": 2400,
+  "A": 3.58351893845611,
+  "B": -2.2772672850097555,
+  "chunk_pairs": 20,
+  "pair_scores": [
+   0.0,
+   0.25,
+   0.5,
+   0.75,
+   1.0
+  ],
+  "epsilon": 0.001
+ },
+ "when": "2026-09-09T10:31:04+09:00",
+ "platform": "Linux-6.18.44-fc-v24-x86_64-with-glibc2.39",
+ "pairs": 300,
+ "games": 600,
+ "counts": [
+  71,
+  0,
+  152,
+  0,
+  77
+ ],
+ "mean_pair_score": 0.51,
+ "wins": 306.0,
+ "decided": 600,
+ "winrate": 0.51,
+ "wilson": [
+  0.47006344264931826,
+  0.5498093186841175
+ ],
+ "seed0": 670000,
+ "workers": 2,
+ "sec": 2632.4,
+ "pair": {
+  "challenger": "planner_vb3cps",
+  "base": "planner_vb3cp",
+  "challenger_diff": {
+   "value_net": "drl_sd001_vb3.json",
+   "policy_net": "pi_small64_e10.json"
+  },
+  "base_diff": {
+   "value_net": "drl_sd001_vb3.json",
+   "policy_net": "drl_sd001_vb3.json"
+  }
+ }
+}

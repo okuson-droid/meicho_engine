@@ -1,0 +1,64 @@
+{
+ "agg": {
+  "games": 600,
+  "n": 600,
+  "wins_champion": 87,
+  "p": 0.145,
+  "ci": 0.028173934762471497,
+  "peek_clashes": 5964,
+  "peek_changed": 2404,
+  "changed_rate": 0.40308517773306507
+ },
+ "n_wanted": 600,
+ "seed0": 651000,
+ "rows_file": "a2_peek_baseline.jsonl",
+ "cand": "champion",
+ "provenance": {
+  "label": "champion:planner_vc4cps_kheb",
+  "kwargs": {
+   "extra_turns": 1,
+   "value_net": "drl_sd001_vc4.json",
+   "opp_policy_net": "drl_sd001_s1.json",
+   "opp_policy_root_only": true,
+   "choice_phases": true,
+   "solo_samples": 4,
+   "policy_net": "pi_small64_e10.json",
+   "policy_scope": "proxy",
+   "known_hand": true,
+   "endgame_enum": 64,
+   "draw_buckets": 1
+  },
+  "models": {
+   "value_net": {
+    "file": "drl_sd001_vc4.json",
+    "sha256": "f050f22ee0a38993677a85f14d8e605e625450084c31a31e620ced54e19a58cd",
+    "bytes": 5848050
+   },
+   "opp_policy_net": {
+    "file": "drl_sd001_s1.json",
+    "sha256": "84b9b3df71cfbbcad283feae7929fb1920f8182820d23760e94b0fe1898ffe32",
+    "bytes": 5860264
+   },
+   "policy_net": {
+    "file": "pi_small64_e10.json",
+    "sha256": "88ea7e0f170e2059aa9d382f6ec31f6e8a0f37d47425ad91bcd07a1e60674dbe",
+    "bytes": 1059704
+   }
+  },
+  "engine": "python",
+  "rust_features": null,
+  "band": [
+   651000,
+   651599
+  ],
+  "rules_version": "v0.11",
+  "engine_version": "v0.1",
+  "written_at": "2026-09-12T05:56:57+09:00",
+  "extra": {
+   "tool": "peek_counter",
+   "M": "M7",
+   "cand": "champion",
+   "note": "測定専用。champion 候補にしない・学習の相手にしない（D-026）"
+  }
+ }
+}

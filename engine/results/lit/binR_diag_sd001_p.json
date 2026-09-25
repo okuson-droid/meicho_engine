@@ -1,0 +1,34 @@
+{
+ "deck": "SD001",
+ "agent": "planner",
+ "band": [
+  822800,
+  822899
+ ],
+ "games": 100,
+ "games_with_extra_at_clash": 100,
+ "summary": {
+  "clash": {
+   "decisions": 2626,
+   "with_extra": 1628,
+   "frac_with_extra": 0.61995430312262,
+   "mean_extra_cards": 2.2094594594594597,
+   "mean_known_frac_base": 0.21205716725518722,
+   "mean_known_frac_aug": 0.405992852032456,
+   "mean_bits_saved_when_extra": 3.1250650796310264,
+   "median_W_ratio_when_extra": 9.155,
+   "inconsistent": 0
+  },
+  "all": {
+   "decisions": 11530,
+   "with_extra": 7319,
+   "frac_with_extra": 0.6347788378143973,
+   "mean_extra_cards": 2.2712119141959284,
+   "mean_known_frac_base": 0.2215927926270501,
+   "mean_known_frac_aug": 0.43629621703343013,
+   "mean_bits_saved_when_extra": 3.40619690653988,
+   "median_W_ratio_when_extra": 10.51793160967473,
+   "inconsistent": 0
+  }
+ }
+}

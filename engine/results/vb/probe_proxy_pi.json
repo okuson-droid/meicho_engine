@@ -1,0 +1,23 @@
+{
+ "deck": "SD001",
+ "cand": "proxy_pi",
+ "diff": {
+  "policy_net": "drl_sd001_vb3.json"
+ },
+ "n": 600,
+ "seed0": 432600,
+ "wins": 374,
+ "decided": 600,
+ "p": 0.6233333333333333,
+ "ci": 0.03877209038203373,
+ "lo": 0.5845612429512995,
+ "hi": 0.6621054237153671,
+ "sec": 2332.351543903351,
+ "rate": 0.25725109989031014,
+ "champion": {
+  "extra_turns": 1,
+  "value_net": "drl_sd001_vb3.json",
+  "opp_policy_net": "drl_sd001_s1.json",
+  "opp_policy_root_only": true
+ }
+}

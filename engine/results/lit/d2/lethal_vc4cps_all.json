@@ -1,0 +1,5046 @@
+[
+ {
+  "game_id": "g001",
+  "seed": 130004,
+  "opponent": "planner_vc4cps",
+  "human_seat": 0,
+  "tables": [
+   {
+    "turn": 1,
+    "life_ai": 20,
+    "life_hu": 20,
+    "concerto_ai": 0,
+    "concerto_hu": 1,
+    "levels_ai": [
+     0,
+     0,
+     0
+    ],
+    "levels_hu": [
+     0,
+     1,
+     0
+    ],
+    "level_sum_ai": 0,
+    "level_sum_hu": 1,
+    "hand_n_ai": 5,
+    "hand_n_hu": 4,
+    "hand_ai": [
+     "スキャン",
+     "轟音",
+     "息継ぎ",
+     "鉤縄",
+     "ジャンプ"
+    ],
+    "hand_hu": [
+     "スキャン",
+     "ジャンプ",
+     "奏鳴",
+     "スキャン"
+    ],
+    "hu_acts": [
+     "スキャン(G c0 s5)",
+     "ジャンプ(G c0 s7)",
+     "スキャン(G c0 s5)"
+    ],
+    "rows": [
+     {
+      "ai_act": "スキャン(G c0 s5)",
+      "cells": [
+       {
+        "lethal": false,
+        "life_ai": 20,
+        "life_hu": 20
+       },
+       {
+        "lethal": false,
+        "life_ai": 20,
+        "life_hu": 20
+       },
+       {
+        "lethal": false,
+        "life_ai": 20,
+        "life_hu": 20
+       }
+      ]
+     },
+     {
+      "ai_act": "轟音(R c0 s0)",
+      "cells": [
+       {
+        "lethal": false,
+        "life_ai": 20,
+        "life_hu": 20
+       },
+       {
+        "lethal": false,
+        "life_ai": 20,
+        "life_hu": 20
+       },
+       {
+        "lethal": false,
+        "life_ai": 20,
+        "life_hu": 20
+       }
+      ]
+     },
+     {
+      "ai_act": "息継ぎ(R c0 s0)",
+      "cells": [
+       {
+        "lethal": false,
+        "life_ai": 20,
+        "life_hu": 18
+       },
+       {
+        "lethal": false,
+        "life_ai": 20,
+        "life_hu": 18
+       },
+       {
+        "lethal": false,
+        "life_ai": 20,
+        "life_hu": 18
+       }
+      ]
+     },
+     {
+      "ai_act": "ジャンプ(G c0 s7)",
+      "cells": [
+       {
+        "lethal": false,
+        "life_ai": 20,
+        "life_hu": 20
+       },
+       {
+        "lethal": false,
+        "life_ai": 20,
+        "life_hu": 20
+       },
+       {
+        "lethal": false,
+        "life_ai": 20,
+        "life_hu": 20
+       }
+      ]
+     },
+     {
+      "ai_act": "pass",
+      "cells": [
+       {
+        "lethal": false,
+        "life_ai": 20,
+        "life_hu": 20
+       },
+       {
+        "lethal": false,
+        "life_ai": 20,
+        "life_hu": 20
+       },
+       {
+        "lethal": false,
+        "life_ai": 20,
+        "life_hu": 20
+       }
+      ]
+     }
+    ],
+    "ai_has_lethal": false,
+    "ai_has_forced_lethal": false,
+    "actual_ai": "息継ぎ(R c0 s0)",
+    "actual_hu": "スキャン(G c0 s5)",
+    "lethal_vs_actual": [],
+    "ai_took_lethal": false,
+    "missed_lethal": false
+   },
+   {
+    "turn": 2,
+    "life_ai": 20,
+    "life_hu": 20,
+    "concerto_ai": 1,
+    "concerto_hu": 1,
+    "levels_ai": [
+     0,
+     1,
+     0
+    ],
+    "levels_hu": [
+     0,
+     1,
+     0
+    ],
+    "level_sum_ai": 1,
+    "level_sum_hu": 1,
+    "hand_n_ai": 4,
+    "hand_n_hu": 5,
+    "hand_ai": [
+     "スキャン",
+     "轟音",
+     "ジャンプ",
+     "躍動する炎"
+    ],
+    "hand_hu": [
+     "ジャンプ",
+     "奏鳴",
+     "スキャン",
+     "燃える烈火",
+     "ババン・回避反撃"
+    ],
+    "hu_acts": [
+     "ジャンプ(G c0 s7)",
+     "スキャン(G c0 s5)",
+     "ババン・回避反撃(B c0 s0)",
+     "pass"
+    ],
+    "rows": [
+     {
+      "ai_act": "スキャン(G c0 s5)",
+      "cells": [
+       {
+        "lethal": false,
+        "life_ai": 20,
+        "life_hu": 20
+       },
+       {
+        "lethal": false,
+        "life_ai": 20,
+        "life_hu": 20
+       },
+       {
+        "lethal": false,
+        "life_ai": 20,
+        "life_hu": 20
+       },
+       {
+        "lethal": false,
+        "life_ai": 20,
+        "life_hu": 20
+       }
+      ]
+     },
+     {
+      "ai_act": "轟音(R c0 s0)",
+      "cells": [
+       {
+        "lethal": false,
+        "life_ai": 20,
+        "life_hu": 18
+       },
+       {
+        "lethal": false,
+        "life_ai": 20,
+        "life_hu": 18
+       },
+       {
+        "lethal": false,
+        "life_ai": 17,
+        "life_hu": 20
+       },
+       {
+        "lethal": false,
+        "life_ai": 20,
+        "life_hu": 18
+       }
+      ]
+     },
+     {
+      "ai_act": "ジャンプ(G c0 s7)",
+      "cells": [
+       {
+        "lethal": false,
+        "life_ai": 20,
+        "life_hu": 19
+       },
+       {
+        "lethal": false,
+        "life_ai": 20,
+        "life_hu": 19
+       },
+       {
+        "lethal": false,
+        "life_ai": 20,
+        "life_hu": 19
+       },
+       {
+        "lethal": false,
+        "life_ai": 20,
+        "life_hu": 19
+       }
+      ]
+     },
+     {
+      "ai_act": "躍動する炎(R c0 s0)",
+      "cells": [
+       {
+        "lethal": false,
+        "life_ai": 20,
+        "life_hu": 20
+       },
+       {
+        "lethal": false,
+        "life_ai": 20,
+        "life_hu": 20
+       },
+       {
+        "lethal": false,
+        "life_ai": 17,
+        "life_hu": 20
+       },
+       {
+        "lethal": false,
+        "life_ai": 20,
+        "life_hu": 20
+       }
+      ]
+     }
+    ],
+    "ai_has_lethal": false,
+    "ai_has_forced_lethal": false,
+    "actual_ai": "スキャン(G c0 s5)",
+    "actual_hu": "ジャンプ(G c0 s7)",
+    "lethal_vs_actual": [],
+    "ai_took_lethal": false,
+    "missed_lethal": false
+   },
+   {
+    "turn": 3,
+    "life_ai": 20,
+    "life_hu": 20,
+    "concerto_ai": 1,
+    "concerto_hu": 3,
+    "levels_ai": [
+     0,
+     1,
+     0
+    ],
+    "levels_hu": [
+     0,
+     2,
+     0
+    ],
+    "level_sum_ai": 1,
+    "level_sum_hu": 2,
+    "hand_n_ai": 5,
+    "hand_n_hu": 5,
+    "hand_ai": [
+     "轟音",
+     "ジャンプ",
+     "躍動する炎",
+     "旋風",
+     "ババン・通常攻撃"
+    ],
+    "hand_hu": [
+     "スキャン",
+     "燃える烈火",
+     "ババン・回避反撃",
+     "ジャンプ",
+     "ババン・回避反撃"
+    ],
+    "hu_acts": [
+     "スキャン(G c0 s5)",
+     "ババン・回避反撃(B c0 s0)",
+     "ジャンプ(G c0 s7)",
+     "ババン・回避反撃(B c0 s0)"
+    ],
+    "rows": [
+     {
+      "ai_act": "轟音(R c0 s0)",
+      "cells": [
+       {
+        "lethal": false,
+        "life_ai": 20,
+        "life_hu": 17
+       },
+       {
+        "lethal": false,
+        "life_ai": 17,
+        "life_hu": 20
+       },
+       {
+        "lethal": false,
+        "life_ai": 20,
+        "life_hu": 17
+       },
+       {
+        "lethal": false,
+        "life_ai": 17,
+        "life_hu": 20
+       }
+      ]
+     },
+     {
+      "ai_act": "ジャンプ(G c0 s7)",
+      "cells": [
+       {
+        "lethal": false,
+        "life_ai": 20,
+        "life_hu": 19
+       },
+       {
+        "lethal": false,
+        "life_ai": 20,
+        "life_hu": 19
+       },
+       {
+        "lethal": false,
+        "life_ai": 18,
+        "life_hu": 20
+       },
+       {
+        "lethal": false,
+        "life_ai": 20,
+        "life_hu": 19
+       }
+      ]
+     },
+     {
+      "ai_act": "躍動する炎(R c0 s0)",
+      "cells": [
+       {
+        "lethal": false,
+        "life_ai": 20,
+        "life_hu": 19
+       },
+       {
+        "lethal": false,
+        "life_ai": 17,
+        "life_hu": 20
+       },
+       {
+        "lethal": false,
+        "life_ai": 20,
+        "life_hu": 19
+       },
+       {
+        "lethal": false,
+        "life_ai": 17,
+        "life_hu": 20
+       }
+      ]
+     },
+     {
+      "ai_act": "ババン・通常攻撃(R c0 s6)",
+      "cells": [
+       {
+        "lethal": false,
+        "life_ai": 20,
+        "life_hu": 17
+       },
+       {
+        "lethal": false,
+        "life_ai": 17,
+        "life_hu": 20
+       },
+       {
+        "lethal": false,
+        "life_ai": 20,
+        "life_hu": 17
+       },
+       {
+        "lethal": false,
+        "life_ai": 17,
+        "life_hu": 20
+       }
+      ]
+     },
+     {
+      "ai_act": "pass",
+      "cells": [
+       {
+        "lethal": false,
+        "life_ai": 20,
+        "life_hu": 20
+       },
+       {
+        "lethal": false,
+        "life_ai": 17,
+        "life_hu": 20
+       },
+       {
+        "lethal": false,
+        "life_ai": 18,
+        "life_hu": 20
+       },
+       {
+        "lethal": false,
+        "life_ai": 17,
+        "life_hu": 20
+       }
+      ]
+     }
+    ],
+    "ai_has_lethal": false,
+    "ai_has_forced_lethal": false,
+    "actual_ai": "ジャンプ(G c0 s7)",
+    "actual_hu": "ジャンプ(G c0 s7)",
+    "lethal_vs_actual": [],
+    "ai_took_lethal": false,
+    "missed_lethal": false
+   },
+   {
+    "turn": 4,
+    "life_ai": 20,
+    "life_hu": 20,
+    "concerto_ai": 2,
+    "concerto_hu": 3,
+    "levels_ai": [
+     0,
+     1,
+     0
+    ],
+    "levels_hu": [
+     0,
+     2,
+     0
+    ],
+    "level_sum_ai": 1,
+    "level_sum_hu": 2,
+    "hand_n_ai": 7,
+    "hand_n_hu": 7,
+    "hand_ai": [
+     "躍動する炎",
+     "旋風",
+     "ババン・通常攻撃",
+     "奏鳴",
+     "羽の刃・通常攻撃",
+     "鉤縄",
+     "燃える闘志"
+    ],
+    "hand_hu": [
+     "スキャン",
+     "燃える烈火",
+     "ババン・回避反撃",
+     "ババン・回避反撃",
+     "躍動する炎",
+     "燃える闘志",
+     "鉤縄"
+    ],
+    "hu_acts": [
+     "スキャン(G c0 s5)",
+     "ババン・回避反撃(B c0 s0)",
+     "ババン・回避反撃(B c0 s0)",
+     "躍動する炎(R c0 s0)",
+     "鉤縄(G c1 s8)",
+     "pass"
+    ],
+    "rows": [
+     {
+      "ai_act": "躍動する炎(R c0 s0)",
+      "cells": [
+       {
+        "lethal": false,
+        "life_ai": 20,
+        "life_hu": 18
+       },
+       {
+        "lethal": false,
+        "life_ai": 17,
+        "life_hu": 20
+       },
+       {
+        "lethal": false,
+        "life_ai": 17,
+        "life_hu": 20
+       },
+       {
+        "lethal": false,
+        "life_ai": 20,
+        "life_hu": 18
+       },
+       {
+        "lethal": false,
+        "life_ai": 20,
+        "life_hu": 18
+       },
+       {
+        "lethal": false,
+        "life_ai": 20,
+        "life_hu": 18
+       }
+      ]
+     },
+     {
+      "ai_act": "ババン・通常攻撃(R c0 s6)",
+      "cells": [
+       {
+        "lethal": false,
+        "life_ai": 20,
+        "life_hu": 14
+       },
+       {
+        "lethal": false,
+        "life_ai": 17,
+        "life_hu": 20
+       },
+       {
+        "lethal": false,
+        "life_ai": 17,
+        "life_hu": 20
+       },
+       {
+        "lethal": false,
+        "life_ai": 20,
+        "life_hu": 14
+       },
+       {
+        "lethal": false,
+        "life_ai": 20,
+        "life_hu": 14
+       },
+       {
+        "lethal": false,
+        "life_ai": 20,
+        "life_hu": 14
+       }
+      ]
+     },
+     {
+      "ai_act": "羽の刃・通常攻撃(R c0 s8)",
+      "cells": [
+       {
+        "lethal": false,
+        "life_ai": 20,
+        "life_hu": 14
+       },
+       {
+        "lethal": false,
+        "life_ai": 17,
+        "life_hu": 20
+       },
+       {
+        "lethal": false,
+        "life_ai": 17,
+        "life_hu": 20
+       },
+       {
+        "lethal": false,
+        "life_ai": 20,
+        "life_hu": 14
+       },
+       {
+        "lethal": false,
+        "life_ai": 20,
+        "life_hu": 14
+       },
+       {
+        "lethal": false,
+        "life_ai": 20,
+        "life_hu": 14
+       }
+      ]
+     },
+     {
+      "ai_act": "鉤縄(G c1 s8)",
+      "cells": [
+       {
+        "lethal": false,
+        "life_ai": 20,
+        "life_hu": 18
+       },
+       {
+        "lethal": false,
+        "life_ai": 20,
+        "life_hu": 18
+       },
+       {
+        "lethal": false,
+        "life_ai": 20,
+        "life_hu": 18
+       },
+       {
+        "lethal": false,
+        "life_ai": 20,
+        "life_hu": 20
+       },
+       {
+        "lethal": false,
+        "life_ai": 20,
+        "life_hu": 18
+       },
+       {
+        "lethal": false,
+        "life_ai": 20,
+        "life_hu": 18
+       }
+      ]
+     }
+    ],
+    "ai_has_lethal": false,
+    "ai_has_forced_lethal": false,
+    "actual_ai": "鉤縄(G c1 s8)",
+    "actual_hu": "スキャン(G c0 s5)",
+    "lethal_vs_actual": [],
+    "ai_took_lethal": false,
+    "missed_lethal": false
+   },
+   {
+    "turn": 5,
+    "life_ai": 20,
+    "life_hu": 16,
+    "concerto_ai": 0,
+    "concerto_hu": 4,
+    "levels_ai": [
+     1,
+     0,
+     0
+    ],
+    "levels_hu": [
+     2,
+     0,
+     0
+    ],
+    "level_sum_ai": 1,
+    "level_sum_hu": 2,
+    "hand_n_ai": 7,
+    "hand_n_hu": 9,
+    "hand_ai": [
+     "旋風",
+     "ババン・通常攻撃",
+     "奏鳴",
+     "羽の刃・通常攻撃",
+     "音の形・回避",
+     "奏鳴",
+     "燃える闘志"
+    ],
+    "hand_hu": [
+     "燃える烈火",
+     "ババン・回避反撃",
+     "ババン・回避反撃",
+     "躍動する炎",
+     "燃える闘志",
+     "鉤縄",
+     "ババン・通常攻撃",
+     "羽の刃・回避",
+     "燃える闘志"
+    ],
+    "hu_acts": [
+     "燃える烈火(R c3 s12)",
+     "ババン・回避反撃(B c0 s0)",
+     "ババン・回避反撃(B c0 s0)",
+     "躍動する炎(R c0 s0)",
+     "燃える闘志(R c1 s8)",
+     "鉤縄(G c1 s8)",
+     "ババン・通常攻撃(R c0 s6)",
+     "羽の刃・回避(B c0 s0)",
+     "燃える闘志(R c1 s8)"
+    ],
+    "rows": [
+     {
+      "ai_act": "ババン・通常攻撃(R c0 s6)",
+      "cells": [
+       {
+        "lethal": false,
+        "life_ai": 1,
+        "life_hu": 15
+       },
+       {
+        "lethal": false,
+        "life_ai": 17,
+        "life_hu": 15
+       },
+       {
+        "lethal": false,
+        "life_ai": 17,
+        "life_hu": 15
+       },
+       {
+        "lethal": false,
+        "life_ai": 19,
+        "life_hu": 13
+       },
+       {
+        "lethal": false,
+        "life_ai": 1,
+        "life_hu": 15
+       },
+       {
+        "lethal": false,
+        "life_ai": 20,
+        "life_hu": 13
+       },
+       {
+        "lethal": false,
+        "life_ai": 1,
+        "life_hu": 15
+       },
+       {
+        "lethal": false,
+        "life_ai": 5,
+        "life_hu": 15
+       },
+       {
+        "lethal": false,
+        "life_ai": 1,
+        "life_hu": 15
+       }
+      ]
+     },
+     {
+      "ai_act": "羽の刃・通常攻撃(R c0 s8)",
+      "cells": [
+       {
+        "lethal": false,
+        "life_ai": 1,
+        "life_hu": 15
+       },
+       {
+        "lethal": false,
+        "life_ai": 17,
+        "life_hu": 15
+       },
+       {
+        "lethal": false,
+        "life_ai": 17,
+        "life_hu": 15
+       },
+       {
+        "lethal": false,
+        "life_ai": 19,
+        "life_hu": 13
+       },
+       {
+        "lethal": false,
+        "life_ai": 1,
+        "life_hu": 15
+       },
+       {
+        "lethal": false,
+        "life_ai": 20,
+        "life_hu": 13
+       },
+       {
+        "lethal": false,
+        "life_ai": 19,
+        "life_hu": 13
+       },
+       {
+        "lethal": false,
+        "life_ai": 5,
+        "life_hu": 15
+       },
+       {
+        "lethal": false,
+        "life_ai": 1,
+        "life_hu": 15
+       }
+      ]
+     },
+     {
+      "ai_act": "音の形・回避(B c0 s0)",
+      "cells": [
+       {
+        "lethal": false,
+        "life_ai": 19,
+        "life_hu": 16
+       },
+       {
+        "lethal": false,
+        "life_ai": 20,
+        "life_hu": 16
+       },
+       {
+        "lethal": false,
+        "life_ai": 20,
+        "life_hu": 16
+       },
+       {
+        "lethal": false,
+        "life_ai": 19,
+        "life_hu": 16
+       },
+       {
+        "lethal": false,
+        "life_ai": 19,
+        "life_hu": 16
+       },
+       {
+        "lethal": false,
+        "life_ai": 9,
+        "life_hu": 16
+       },
+       {
+        "lethal": false,
+        "life_ai": 19,
+        "life_hu": 16
+       },
+       {
+        "lethal": false,
+        "life_ai": 20,
+        "life_hu": 16
+       },
+       {
+        "lethal": false,
+        "life_ai": 19,
+        "life_hu": 16
+       }
+      ]
+     },
+     {
+      "ai_act": "pass",
+      "cells": [
+       {
+        "lethal": false,
+        "life_ai": 1,
+        "life_hu": 16
+       },
+       {
+        "lethal": false,
+        "life_ai": 17,
+        "life_hu": 16
+       },
+       {
+        "lethal": false,
+        "life_ai": 17,
+        "life_hu": 16
+       },
+       {
+        "lethal": false,
+        "life_ai": 3,
+        "life_hu": 16
+       },
+       {
+        "lethal": false,
+        "life_ai": 1,
+        "life_hu": 16
+       },
+       {
+        "lethal": false,
+        "life_ai": 9,
+        "life_hu": 16
+       },
+       {
+        "lethal": false,
+        "life_ai": 1,
+        "life_hu": 16
+       },
+       {
+        "lethal": false,
+        "life_ai": 5,
+        "life_hu": 16
+       },
+       {
+        "lethal": false,
+        "life_ai": 1,
+        "life_hu": 16
+       }
+      ]
+     }
+    ],
+    "ai_has_lethal": false,
+    "ai_has_forced_lethal": false,
+    "actual_ai": "音の形・回避(B c0 s0)",
+    "actual_hu": "燃える闘志(R c1 s8)",
+    "lethal_vs_actual": [],
+    "ai_took_lethal": false,
+    "missed_lethal": false
+   },
+   {
+    "turn": 6,
+    "life_ai": 19,
+    "life_hu": 16,
+    "concerto_ai": 1,
+    "concerto_hu": 3,
+    "levels_ai": [
+     0,
+     1,
+     1
+    ],
+    "levels_hu": [
+     2,
+     0,
+     0
+    ],
+    "level_sum_ai": 2,
+    "level_sum_hu": 2,
+    "hand_n_ai": 6,
+    "hand_n_hu": 8,
+    "hand_ai": [
+     "旋風",
+     "ババン・通常攻撃",
+     "羽の刃・通常攻撃",
+     "スキャン",
+     "羽の刃・回避",
+     "燃える烈火"
+    ],
+    "hand_hu": [
+     "燃える烈火",
+     "ババン・回避反撃",
+     "ババン・回避反撃",
+     "躍動する炎",
+     "燃える闘志",
+     "鉤縄",
+     "ババン・通常攻撃",
+     "燃える闘志"
+    ],
+    "hu_acts": [
+     "燃える烈火(R c3 s12)",
+     "ババン・回避反撃(B c0 s0)",
+     "ババン・回避反撃(B c0 s0)",
+     "躍動する炎(R c0 s0)",
+     "燃える闘志(R c1 s8)",
+     "鉤縄(G c1 s8)",
+     "ババン・通常攻撃(R c0 s6)",
+     "燃える闘志(R c1 s8)",
+     "pass"
+    ],
+    "rows": [
+     {
+      "ai_act": "ババン・通常攻撃(R c0 s6)",
+      "cells": [
+       {
+        "lethal": false,
+        "life_ai": 5,
+        "life_hu": 16
+       },
+       {
+        "lethal": false,
+        "life_ai": 16,
+        "life_hu": 16
+       },
+       {
+        "lethal": false,
+        "life_ai": 16,
+        "life_hu": 16
+       },
+       {
+        "lethal": false,
+        "life_ai": 18,
+        "life_hu": 14
+       },
+       {
+        "lethal": false,
+        "life_ai": 5,
+        "life_hu": 16
+       },
+       {
+        "lethal": false,
+        "life_ai": 19,
+        "life_hu": 14
+       },
+       {
+        "lethal": false,
+        "life_ai": 18,
+        "life_hu": 14
+       },
+       {
+        "lethal": false,
+        "life_ai": 5,
+        "life_hu": 16
+       },
+       {
+        "lethal": false,
+        "life_ai": 19,
+        "life_hu": 14
+       }
+      ]
+     },
+     {
+      "ai_act": "羽の刃・通常攻撃(R c0 s8)",
+      "cells": [
+       {
+        "lethal": false,
+        "life_ai": 5,
+        "life_hu": 16
+       },
+       {
+        "lethal": false,
+        "life_ai": 16,
+        "life_hu": 16
+       },
+       {
+        "lethal": false,
+        "life_ai": 16,
+        "life_hu": 16
+       },
+       {
+        "lethal": false,
+        "life_ai": 18,
+        "life_hu": 14
+       },
+       {
+        "lethal": false,
+        "life_ai": 18,
+        "life_hu": 14
+       },
+       {
+        "lethal": false,
+        "life_ai": 19,
+        "life_hu": 14
+       },
+       {
+        "lethal": false,
+        "life_ai": 18,
+        "life_hu": 14
+       },
+       {
+        "lethal": false,
+        "life_ai": 18,
+        "life_hu": 14
+       },
+       {
+        "lethal": false,
+        "life_ai": 19,
+        "life_hu": 14
+       }
+      ]
+     },
+     {
+      "ai_act": "スキャン(G c0 s5)",
+      "cells": [
+       {
+        "lethal": false,
+        "life_ai": 5,
+        "life_hu": 16
+       },
+       {
+        "lethal": false,
+        "life_ai": 19,
+        "life_hu": 16
+       },
+       {
+        "lethal": false,
+        "life_ai": 19,
+        "life_hu": 16
+       },
+       {
+        "lethal": false,
+        "life_ai": 7,
+        "life_hu": 16
+       },
+       {
+        "lethal": false,
+        "life_ai": 5,
+        "life_hu": 16
+       },
+       {
+        "lethal": false,
+        "life_ai": 9,
+        "life_hu": 16
+       },
+       {
+        "lethal": false,
+        "life_ai": 5,
+        "life_hu": 16
+       },
+       {
+        "lethal": false,
+        "life_ai": 5,
+        "life_hu": 16
+       },
+       {
+        "lethal": false,
+        "life_ai": 19,
+        "life_hu": 16
+       }
+      ]
+     },
+     {
+      "ai_act": "羽の刃・回避(B c0 s0)",
+      "cells": [
+       {
+        "lethal": false,
+        "life_ai": 18,
+        "life_hu": 14
+       },
+       {
+        "lethal": false,
+        "life_ai": 19,
+        "life_hu": 16
+       },
+       {
+        "lethal": false,
+        "life_ai": 19,
+        "life_hu": 16
+       },
+       {
+        "lethal": false,
+        "life_ai": 18,
+        "life_hu": 14
+       },
+       {
+        "lethal": false,
+        "life_ai": 18,
+        "life_hu": 14
+       },
+       {
+        "lethal": false,
+        "life_ai": 9,
+        "life_hu": 16
+       },
+       {
+        "lethal": false,
+        "life_ai": 18,
+        "life_hu": 14
+       },
+       {
+        "lethal": false,
+        "life_ai": 18,
+        "life_hu": 14
+       },
+       {
+        "lethal": false,
+        "life_ai": 19,
+        "life_hu": 14
+       }
+      ]
+     }
+    ],
+    "ai_has_lethal": false,
+    "ai_has_forced_lethal": false,
+    "actual_ai": "羽の刃・通常攻撃(R c0 s8)",
+    "actual_hu": "ババン・通常攻撃(R c0 s6)",
+    "lethal_vs_actual": [],
+    "ai_took_lethal": false,
+    "missed_lethal": false
+   },
+   {
+    "turn": 7,
+    "life_ai": 18,
+    "life_hu": 15,
+    "concerto_ai": 1,
+    "concerto_hu": 4,
+    "levels_ai": [
+     0,
+     1,
+     1
+    ],
+    "levels_hu": [
+     2,
+     0,
+     0
+    ],
+    "level_sum_ai": 2,
+    "level_sum_hu": 2,
+    "hand_n_ai": 5,
+    "hand_n_hu": 8,
+    "hand_ai": [
+     "旋風",
+     "ババン・通常攻撃",
+     "スキャン",
+     "羽の刃・回避",
+     "燃える烈火"
+    ],
+    "hand_hu": [
+     "燃える烈火",
+     "ババン・回避反撃",
+     "ババン・回避反撃",
+     "躍動する炎",
+     "燃える闘志",
+     "鉤縄",
+     "燃える闘志",
+     "音の形・通常攻撃"
+    ],
+    "hu_acts": [
+     "燃える烈火(R c3 s12)",
+     "ババン・回避反撃(B c0 s0)",
+     "ババン・回避反撃(B c0 s0)",
+     "躍動する炎(R c0 s0)",
+     "燃える闘志(R c1 s8)",
+     "鉤縄(G c1 s8)",
+     "燃える闘志(R c1 s8)",
+     "音の形・通常攻撃(R c0 s8)"
+    ],
+    "rows": [
+     {
+      "ai_act": "ババン・通常攻撃(R c0 s6)",
+      "cells": [
+       {
+        "lethal": false,
+        "life_ai": 0,
+        "life_hu": 15
+       },
+       {
+        "lethal": false,
+        "life_ai": 15,
+        "life_hu": 15
+       },
+       {
+        "lethal": false,
+        "life_ai": 15,
+        "life_hu": 15
+       },
+       {
+        "lethal": false,
+        "life_ai": 17,
+        "life_hu": 14
+       },
+       {
+        "lethal": false,
+        "life_ai": 0,
+        "life_hu": 15
+       },
+       {
+        "lethal": false,
+        "life_ai": 18,
+        "life_hu": 14
+       },
+       {
+        "lethal": false,
+        "life_ai": 0,
+        "life_hu": 15
+       },
+       {
+        "lethal": false,
+        "life_ai": 0,
+        "life_hu": 15
+       }
+      ]
+     },
+     {
+      "ai_act": "スキャン(G c0 s5)",
+      "cells": [
+       {
+        "lethal": false,
+        "life_ai": 0,
+        "life_hu": 15
+       },
+       {
+        "lethal": false,
+        "life_ai": 18,
+        "life_hu": 15
+       },
+       {
+        "lethal": false,
+        "life_ai": 18,
+        "life_hu": 15
+       },
+       {
+        "lethal": false,
+        "life_ai": 1,
+        "life_hu": 15
+       },
+       {
+        "lethal": false,
+        "life_ai": 0,
+        "life_hu": 15
+       },
+       {
+        "lethal": false,
+        "life_ai": 7,
+        "life_hu": 15
+       },
+       {
+        "lethal": false,
+        "life_ai": 0,
+        "life_hu": 15
+       },
+       {
+        "lethal": false,
+        "life_ai": 0,
+        "life_hu": 15
+       }
+      ]
+     },
+     {
+      "ai_act": "羽の刃・回避(B c0 s0)",
+      "cells": [
+       {
+        "lethal": false,
+        "life_ai": 17,
+        "life_hu": 14
+       },
+       {
+        "lethal": false,
+        "life_ai": 18,
+        "life_hu": 15
+       },
+       {
+        "lethal": false,
+        "life_ai": 18,
+        "life_hu": 15
+       },
+       {
+        "lethal": false,
+        "life_ai": 17,
+        "life_hu": 14
+       },
+       {
+        "lethal": false,
+        "life_ai": 17,
+        "life_hu": 14
+       },
+       {
+        "lethal": false,
+        "life_ai": 7,
+        "life_hu": 15
+       },
+       {
+        "lethal": false,
+        "life_ai": 17,
+        "life_hu": 14
+       },
+       {
+        "lethal": false,
+        "life_ai": 17,
+        "life_hu": 14
+       }
+      ]
+     },
+     {
+      "ai_act": "pass",
+      "cells": [
+       {
+        "lethal": false,
+        "life_ai": 0,
+        "life_hu": 15
+       },
+       {
+        "lethal": false,
+        "life_ai": 15,
+        "life_hu": 15
+       },
+       {
+        "lethal": false,
+        "life_ai": 15,
+        "life_hu": 15
+       },
+       {
+        "lethal": false,
+        "life_ai": 1,
+        "life_hu": 15
+       },
+       {
+        "lethal": false,
+        "life_ai": 0,
+        "life_hu": 15
+       },
+       {
+        "lethal": false,
+        "life_ai": 7,
+        "life_hu": 15
+       },
+       {
+        "lethal": false,
+        "life_ai": 0,
+        "life_hu": 15
+       },
+       {
+        "lethal": false,
+        "life_ai": 0,
+        "life_hu": 15
+       }
+      ]
+     }
+    ],
+    "ai_has_lethal": false,
+    "ai_has_forced_lethal": false,
+    "actual_ai": "スキャン(G c0 s5)",
+    "actual_hu": "音の形・通常攻撃(R c0 s8)",
+    "lethal_vs_actual": [],
+    "ai_took_lethal": false,
+    "missed_lethal": false
+   }
+  ]
+ },
+ {
+  "game_id": "g002",
+  "seed": 130005,
+  "opponent": "planner_vc4cps",
+  "human_seat": 1,
+  "tables": [
+   {
+    "turn": 1,
+    "life_ai": 20,
+    "life_hu": 20,
+    "concerto_ai": 1,
+    "concerto_hu": 0,
+    "levels_ai": [
+     1,
+     0,
+     0
+    ],
+    "levels_hu": [
+     0,
+     0,
+     0
+    ],
+    "level_sum_ai": 1,
+    "level_sum_hu": 0,
+    "hand_n_ai": 4,
+    "hand_n_hu": 5,
+    "hand_ai": [
+     "息継ぎ",
+     "鉤縄",
+     "ババン・回避反撃",
+     "音の形・回避"
+    ],
+    "hand_hu": [
+     "鉤縄",
+     "音の形・回避",
+     "音の形・通常攻撃",
+     "スキャン",
+     "奏鳴"
+    ],
+    "hu_acts": [
+     "音の形・回避(B c0 s0)",
+     "音の形・通常攻撃(R c0 s8)",
+     "スキャン(G c0 s5)",
+     "pass"
+    ],
+    "rows": [
+     {
+      "ai_act": "息継ぎ(R c0 s0)",
+      "cells": [
+       {
+        "lethal": false,
+        "life_ai": 20,
+        "life_hu": 20
+       },
+       {
+        "lethal": false,
+        "life_ai": 19,
+        "life_hu": 20
+       },
+       {
+        "lethal": false,
+        "life_ai": 20,
+        "life_hu": 20
+       },
+       {
+        "lethal": false,
+        "life_ai": 20,
+        "life_hu": 20
+       }
+      ]
+     },
+     {
+      "ai_act": "鉤縄(G c1 s8)",
+      "cells": [
+       {
+        "lethal": false,
+        "life_ai": 20,
+        "life_hu": 19
+       },
+       {
+        "lethal": false,
+        "life_ai": 19,
+        "life_hu": 20
+       },
+       {
+        "lethal": false,
+        "life_ai": 20,
+        "life_hu": 19
+       },
+       {
+        "lethal": false,
+        "life_ai": 20,
+        "life_hu": 19
+       }
+      ]
+     },
+     {
+      "ai_act": "ババン・回避反撃(B c0 s0)",
+      "cells": [
+       {
+        "lethal": false,
+        "life_ai": 20,
+        "life_hu": 20
+       },
+       {
+        "lethal": false,
+        "life_ai": 20,
+        "life_hu": 17
+       },
+       {
+        "lethal": false,
+        "life_ai": 20,
+        "life_hu": 20
+       },
+       {
+        "lethal": false,
+        "life_ai": 20,
+        "life_hu": 17
+       }
+      ]
+     },
+     {
+      "ai_act": "音の形・回避(B c0 s0)",
+      "cells": [
+       {
+        "lethal": false,
+        "life_ai": 20,
+        "life_hu": 20
+       },
+       {
+        "lethal": false,
+        "life_ai": 20,
+        "life_hu": 20
+       },
+       {
+        "lethal": false,
+        "life_ai": 20,
+        "life_hu": 20
+       },
+       {
+        "lethal": false,
+        "life_ai": 20,
+        "life_hu": 20
+       }
+      ]
+     }
+    ],
+    "ai_has_lethal": false,
+    "ai_has_forced_lethal": false,
+    "actual_ai": "鉤縄(G c1 s8)",
+    "actual_hu": "スキャン(G c0 s5)",
+    "lethal_vs_actual": [],
+    "ai_took_lethal": false,
+    "missed_lethal": false
+   },
+   {
+    "turn": 2,
+    "life_ai": 20,
+    "life_hu": 20,
+    "concerto_ai": 0,
+    "concerto_hu": 1,
+    "levels_ai": [
+     0,
+     1,
+     0
+    ],
+    "levels_hu": [
+     1,
+     0,
+     0
+    ],
+    "level_sum_ai": 1,
+    "level_sum_hu": 1,
+    "hand_n_ai": 6,
+    "hand_n_hu": 6,
+    "hand_ai": [
+     "息継ぎ",
+     "ババン・回避反撃",
+     "音の形・回避",
+     "音の形・通常攻撃",
+     "ジャンプ",
+     "ババン・通常攻撃"
+    ],
+    "hand_hu": [
+     "鉤縄",
+     "音の形・通常攻撃",
+     "燃える闘志",
+     "音の形・回避",
+     "ババン・通常攻撃",
+     "燃える烈火"
+    ],
+    "hu_acts": [
+     "鉤縄(G c1 s8)",
+     "音の形・通常攻撃(R c0 s8)",
+     "燃える闘志(R c1 s8)",
+     "音の形・回避(B c0 s0)",
+     "ババン・通常攻撃(R c0 s6)"
+    ],
+    "rows": [
+     {
+      "ai_act": "息継ぎ(R c0 s0)",
+      "cells": [
+       {
+        "lethal": false,
+        "life_ai": 20,
+        "life_hu": 17
+       },
+       {
+        "lethal": false,
+        "life_ai": 15,
+        "life_hu": 19
+       },
+       {
+        "lethal": false,
+        "life_ai": 15,
+        "life_hu": 19
+       },
+       {
+        "lethal": false,
+        "life_ai": 20,
+        "life_hu": 19
+       },
+       {
+        "lethal": false,
+        "life_ai": 15,
+        "life_hu": 19
+       }
+      ]
+     },
+     {
+      "ai_act": "ババン・回避反撃(B c0 s0)",
+      "cells": [
+       {
+        "lethal": false,
+        "life_ai": 18,
+        "life_hu": 20
+       },
+       {
+        "lethal": false,
+        "life_ai": 19,
+        "life_hu": 17
+       },
+       {
+        "lethal": false,
+        "life_ai": 19,
+        "life_hu": 17
+       },
+       {
+        "lethal": false,
+        "life_ai": 20,
+        "life_hu": 20
+       },
+       {
+        "lethal": false,
+        "life_ai": 19,
+        "life_hu": 17
+       }
+      ]
+     },
+     {
+      "ai_act": "音の形・回避(B c0 s0)",
+      "cells": [
+       {
+        "lethal": false,
+        "life_ai": 18,
+        "life_hu": 20
+       },
+       {
+        "lethal": false,
+        "life_ai": 19,
+        "life_hu": 20
+       },
+       {
+        "lethal": false,
+        "life_ai": 19,
+        "life_hu": 20
+       },
+       {
+        "lethal": false,
+        "life_ai": 20,
+        "life_hu": 20
+       },
+       {
+        "lethal": false,
+        "life_ai": 19,
+        "life_hu": 20
+       }
+      ]
+     },
+     {
+      "ai_act": "音の形・通常攻撃(R c0 s8)",
+      "cells": [
+       {
+        "lethal": false,
+        "life_ai": 20,
+        "life_hu": 17
+       },
+       {
+        "lethal": false,
+        "life_ai": 15,
+        "life_hu": 19
+       },
+       {
+        "lethal": false,
+        "life_ai": 15,
+        "life_hu": 19
+       },
+       {
+        "lethal": false,
+        "life_ai": 20,
+        "life_hu": 19
+       },
+       {
+        "lethal": false,
+        "life_ai": 19,
+        "life_hu": 17
+       }
+      ]
+     },
+     {
+      "ai_act": "ジャンプ(G c0 s7)",
+      "cells": [
+       {
+        "lethal": false,
+        "life_ai": 18,
+        "life_hu": 20
+       },
+       {
+        "lethal": false,
+        "life_ai": 15,
+        "life_hu": 20
+       },
+       {
+        "lethal": false,
+        "life_ai": 15,
+        "life_hu": 20
+       },
+       {
+        "lethal": false,
+        "life_ai": 20,
+        "life_hu": 19
+       },
+       {
+        "lethal": false,
+        "life_ai": 15,
+        "life_hu": 20
+       }
+      ]
+     },
+     {
+      "ai_act": "ババン・通常攻撃(R c0 s6)",
+      "cells": [
+       {
+        "lethal": false,
+        "life_ai": 20,
+        "life_hu": 17
+       },
+       {
+        "lethal": false,
+        "life_ai": 15,
+        "life_hu": 19
+       },
+       {
+        "lethal": false,
+        "life_ai": 15,
+        "life_hu": 19
+       },
+       {
+        "lethal": false,
+        "life_ai": 20,
+        "life_hu": 19
+       },
+       {
+        "lethal": false,
+        "life_ai": 15,
+        "life_hu": 19
+       }
+      ]
+     },
+     {
+      "ai_act": "pass",
+      "cells": [
+       {
+        "lethal": false,
+        "life_ai": 18,
+        "life_hu": 20
+       },
+       {
+        "lethal": false,
+        "life_ai": 15,
+        "life_hu": 20
+       },
+       {
+        "lethal": false,
+        "life_ai": 15,
+        "life_hu": 20
+       },
+       {
+        "lethal": false,
+        "life_ai": 20,
+        "life_hu": 20
+       },
+       {
+        "lethal": false,
+        "life_ai": 15,
+        "life_hu": 20
+       }
+      ]
+     }
+    ],
+    "ai_has_lethal": false,
+    "ai_has_forced_lethal": false,
+    "actual_ai": "息継ぎ(R c0 s0)",
+    "actual_hu": "音の形・通常攻撃(R c0 s8)",
+    "lethal_vs_actual": [],
+    "ai_took_lethal": false,
+    "missed_lethal": false
+   },
+   {
+    "turn": 3,
+    "life_ai": 18,
+    "life_hu": 19,
+    "concerto_ai": 1,
+    "concerto_hu": 1,
+    "levels_ai": [
+     0,
+     1,
+     1
+    ],
+    "levels_hu": [
+     1,
+     0,
+     0
+    ],
+    "level_sum_ai": 2,
+    "level_sum_hu": 1,
+    "hand_n_ai": 5,
+    "hand_n_hu": 5,
+    "hand_ai": [
+     "ババン・回避反撃",
+     "音の形・通常攻撃",
+     "ジャンプ",
+     "燃える闘志",
+     "音の形・回避"
+    ],
+    "hand_hu": [
+     "鉤縄",
+     "燃える闘志",
+     "音の形・回避",
+     "ババン・通常攻撃",
+     "燃える烈火"
+    ],
+    "hu_acts": [
+     "鉤縄(G c1 s8)",
+     "燃える闘志(R c1 s8)",
+     "音の形・回避(B c0 s0)",
+     "ババン・通常攻撃(R c0 s6)",
+     "pass"
+    ],
+    "rows": [
+     {
+      "ai_act": "ババン・回避反撃(B c0 s0)",
+      "cells": [
+       {
+        "lethal": false,
+        "life_ai": 17,
+        "life_hu": 19
+       },
+       {
+        "lethal": false,
+        "life_ai": 17,
+        "life_hu": 16
+       },
+       {
+        "lethal": false,
+        "life_ai": 18,
+        "life_hu": 19
+       },
+       {
+        "lethal": false,
+        "life_ai": 17,
+        "life_hu": 16
+       },
+       {
+        "lethal": false,
+        "life_ai": 18,
+        "life_hu": 16
+       }
+      ]
+     },
+     {
+      "ai_act": "音の形・通常攻撃(R c0 s8)",
+      "cells": [
+       {
+        "lethal": false,
+        "life_ai": 18,
+        "life_hu": 18
+       },
+       {
+        "lethal": false,
+        "life_ai": 17,
+        "life_hu": 18
+       },
+       {
+        "lethal": false,
+        "life_ai": 18,
+        "life_hu": 19
+       },
+       {
+        "lethal": false,
+        "life_ai": 17,
+        "life_hu": 18
+       },
+       {
+        "lethal": false,
+        "life_ai": 18,
+        "life_hu": 18
+       }
+      ]
+     },
+     {
+      "ai_act": "ジャンプ(G c0 s7)",
+      "cells": [
+       {
+        "lethal": false,
+        "life_ai": 17,
+        "life_hu": 19
+       },
+       {
+        "lethal": false,
+        "life_ai": 14,
+        "life_hu": 19
+       },
+       {
+        "lethal": false,
+        "life_ai": 18,
+        "life_hu": 18
+       },
+       {
+        "lethal": false,
+        "life_ai": 14,
+        "life_hu": 19
+       },
+       {
+        "lethal": false,
+        "life_ai": 18,
+        "life_hu": 18
+       }
+      ]
+     },
+     {
+      "ai_act": "音の形・回避(B c0 s0)",
+      "cells": [
+       {
+        "lethal": false,
+        "life_ai": 17,
+        "life_hu": 19
+       },
+       {
+        "lethal": false,
+        "life_ai": 17,
+        "life_hu": 19
+       },
+       {
+        "lethal": false,
+        "life_ai": 18,
+        "life_hu": 19
+       },
+       {
+        "lethal": false,
+        "life_ai": 17,
+        "life_hu": 19
+       },
+       {
+        "lethal": false,
+        "life_ai": 18,
+        "life_hu": 19
+       }
+      ]
+     }
+    ],
+    "ai_has_lethal": false,
+    "ai_has_forced_lethal": false,
+    "actual_ai": "音の形・回避(B c0 s0)",
+    "actual_hu": "pass",
+    "lethal_vs_actual": [],
+    "ai_took_lethal": false,
+    "missed_lethal": false
+   },
+   {
+    "turn": 4,
+    "life_ai": 18,
+    "life_hu": 19,
+    "concerto_ai": 2,
+    "concerto_hu": 2,
+    "levels_ai": [
+     0,
+     1,
+     1
+    ],
+    "levels_hu": [
+     0,
+     1,
+     0
+    ],
+    "level_sum_ai": 2,
+    "level_sum_hu": 1,
+    "hand_n_ai": 4,
+    "hand_n_hu": 6,
+    "hand_ai": [
+     "ババン・回避反撃",
+     "音の形・通常攻撃",
+     "ジャンプ",
+     "燃える闘志"
+    ],
+    "hand_hu": [
+     "鉤縄",
+     "燃える闘志",
+     "音の形・回避",
+     "ババン・通常攻撃",
+     "燃える烈火",
+     "音の刃"
+    ],
+    "hu_acts": [
+     "鉤縄(G c1 s8)",
+     "音の形・回避(B c0 s0)",
+     "ババン・通常攻撃(R c0 s6)",
+     "音の刃(R c1 s16)"
+    ],
+    "rows": [
+     {
+      "ai_act": "ババン・回避反撃(B c0 s0)",
+      "cells": [
+       {
+        "lethal": false,
+        "life_ai": 16,
+        "life_hu": 19
+       },
+       {
+        "lethal": false,
+        "life_ai": 18,
+        "life_hu": 19
+       },
+       {
+        "lethal": false,
+        "life_ai": 18,
+        "life_hu": 16
+       },
+       {
+        "lethal": false,
+        "life_ai": 18,
+        "life_hu": 16
+       }
+      ]
+     },
+     {
+      "ai_act": "音の形・通常攻撃(R c0 s8)",
+      "cells": [
+       {
+        "lethal": false,
+        "life_ai": 18,
+        "life_hu": 18
+       },
+       {
+        "lethal": false,
+        "life_ai": 18,
+        "life_hu": 19
+       },
+       {
+        "lethal": false,
+        "life_ai": 18,
+        "life_hu": 18
+       },
+       {
+        "lethal": false,
+        "life_ai": 16,
+        "life_hu": 19
+       }
+      ]
+     },
+     {
+      "ai_act": "ジャンプ(G c0 s7)",
+      "cells": [
+       {
+        "lethal": false,
+        "life_ai": 16,
+        "life_hu": 19
+       },
+       {
+        "lethal": false,
+        "life_ai": 18,
+        "life_hu": 18
+       },
+       {
+        "lethal": false,
+        "life_ai": 16,
+        "life_hu": 19
+       },
+       {
+        "lethal": false,
+        "life_ai": 16,
+        "life_hu": 19
+       }
+      ]
+     },
+     {
+      "ai_act": "pass",
+      "cells": [
+       {
+        "lethal": false,
+        "life_ai": 16,
+        "life_hu": 19
+       },
+       {
+        "lethal": false,
+        "life_ai": 18,
+        "life_hu": 19
+       },
+       {
+        "lethal": false,
+        "life_ai": 16,
+        "life_hu": 19
+       },
+       {
+        "lethal": false,
+        "life_ai": 16,
+        "life_hu": 19
+       }
+      ]
+     }
+    ],
+    "ai_has_lethal": false,
+    "ai_has_forced_lethal": false,
+    "actual_ai": "ババン・回避反撃(B c0 s0)",
+    "actual_hu": "鉤縄(G c1 s8)",
+    "lethal_vs_actual": [],
+    "ai_took_lethal": false,
+    "missed_lethal": false
+   },
+   {
+    "turn": 5,
+    "life_ai": 18,
+    "life_hu": 19,
+    "concerto_ai": 4,
+    "concerto_hu": 1,
+    "levels_ai": [
+     2,
+     0,
+     1
+    ],
+    "levels_hu": [
+     0,
+     1,
+     0
+    ],
+    "level_sum_ai": 3,
+    "level_sum_hu": 1,
+    "hand_n_ai": 2,
+    "hand_n_hu": 8,
+    "hand_ai": [
+     "ジャンプ",
+     "燃える闘志"
+    ],
+    "hand_hu": [
+     "燃える闘志",
+     "音の形・回避",
+     "ババン・通常攻撃",
+     "燃える烈火",
+     "音の刃",
+     "鉤縄",
+     "羽の刃・回避",
+     "燃える烈火"
+    ],
+    "hu_acts": [
+     "音の形・回避(B c0 s0)",
+     "ババン・通常攻撃(R c0 s6)",
+     "音の刃(R c1 s16)",
+     "鉤縄(G c1 s8)",
+     "羽の刃・回避(B c0 s0)",
+     "pass"
+    ],
+    "rows": [
+     {
+      "ai_act": "ジャンプ(G c0 s7)",
+      "cells": [
+       {
+        "lethal": false,
+        "life_ai": 18,
+        "life_hu": 19
+       },
+       {
+        "lethal": false,
+        "life_ai": 16,
+        "life_hu": 19
+       },
+       {
+        "lethal": false,
+        "life_ai": 16,
+        "life_hu": 19
+       },
+       {
+        "lethal": false,
+        "life_ai": 16,
+        "life_hu": 19
+       },
+       {
+        "lethal": false,
+        "life_ai": 18,
+        "life_hu": 19
+       },
+       {
+        "lethal": false,
+        "life_ai": 18,
+        "life_hu": 19
+       }
+      ]
+     }
+    ],
+    "ai_has_lethal": false,
+    "ai_has_forced_lethal": false,
+    "actual_ai": "ジャンプ(G c0 s7)",
+    "actual_hu": "ババン・通常攻撃(R c0 s6)",
+    "lethal_vs_actual": [],
+    "ai_took_lethal": false,
+    "missed_lethal": false
+   },
+   {
+    "turn": 6,
+    "life_ai": 17,
+    "life_hu": 19,
+    "concerto_ai": 4,
+    "concerto_hu": 2,
+    "levels_ai": [
+     2,
+     0,
+     1
+    ],
+    "levels_hu": [
+     2,
+     0,
+     0
+    ],
+    "level_sum_ai": 3,
+    "level_sum_hu": 2,
+    "hand_n_ai": 4,
+    "hand_n_hu": 6,
+    "hand_ai": [
+     "燃える闘志",
+     "燃える闘志",
+     "スキャン",
+     "息継ぎ"
+    ],
+    "hand_hu": [
+     "燃える闘志",
+     "燃える烈火",
+     "音の刃",
+     "鉤縄",
+     "羽の刃・回避",
+     "音の形・通常攻撃"
+    ],
+    "hu_acts": [
+     "燃える闘志(R c1 s8)",
+     "鉤縄(G c1 s8)",
+     "羽の刃・回避(B c0 s0)",
+     "音の形・通常攻撃(R c0 s8)"
+    ],
+    "rows": [
+     {
+      "ai_act": "スキャン(G c0 s5)",
+      "cells": [
+       {
+        "lethal": false,
+        "life_ai": 10,
+        "life_hu": 19
+       },
+       {
+        "lethal": false,
+        "life_ai": 11,
+        "life_hu": 19
+       },
+       {
+        "lethal": false,
+        "life_ai": 17,
+        "life_hu": 19
+       },
+       {
+        "lethal": false,
+        "life_ai": 10,
+        "life_hu": 19
+       }
+      ]
+     },
+     {
+      "ai_act": "息継ぎ(R c0 s0)",
+      "cells": [
+       {
+        "lethal": false,
+        "life_ai": 10,
+        "life_hu": 19
+       },
+       {
+        "lethal": false,
+        "life_ai": 17,
+        "life_hu": 19
+       },
+       {
+        "lethal": false,
+        "life_ai": 11,
+        "life_hu": 19
+       },
+       {
+        "lethal": false,
+        "life_ai": 10,
+        "life_hu": 19
+       }
+      ]
+     },
+     {
+      "ai_act": "pass",
+      "cells": [
+       {
+        "lethal": false,
+        "life_ai": 10,
+        "life_hu": 19
+       },
+       {
+        "lethal": false,
+        "life_ai": 11,
+        "life_hu": 19
+       },
+       {
+        "lethal": false,
+        "life_ai": 11,
+        "life_hu": 19
+       },
+       {
+        "lethal": false,
+        "life_ai": 10,
+        "life_hu": 19
+       }
+      ]
+     }
+    ],
+    "ai_has_lethal": false,
+    "ai_has_forced_lethal": false,
+    "actual_ai": "スキャン(G c0 s5)",
+    "actual_hu": "音の形・通常攻撃(R c0 s8)",
+    "lethal_vs_actual": [],
+    "ai_took_lethal": false,
+    "missed_lethal": false
+   },
+   {
+    "turn": 7,
+    "life_ai": 15,
+    "life_hu": 19,
+    "concerto_ai": 5,
+    "concerto_hu": 2,
+    "levels_ai": [
+     2,
+     0,
+     2
+    ],
+    "levels_hu": [
+     2,
+     0,
+     0
+    ],
+    "level_sum_ai": 4,
+    "level_sum_hu": 2,
+    "hand_n_ai": 6,
+    "hand_n_hu": 5,
+    "hand_ai": [
+     "燃える闘志",
+     "燃える闘志",
+     "奏鳴",
+     "ババン・回避反撃",
+     "燃える烈火",
+     "轟音"
+    ],
+    "hand_hu": [
+     "燃える闘志",
+     "燃える烈火",
+     "音の刃",
+     "鉤縄",
+     "羽の刃・回避"
+    ],
+    "hu_acts": [
+     "燃える闘志(R c1 s8)",
+     "鉤縄(G c1 s8)",
+     "羽の刃・回避(B c0 s0)",
+     "pass"
+    ],
+    "rows": [
+     {
+      "ai_act": "燃える闘志(R c1 s8)",
+      "cells": [
+       {
+        "lethal": true,
+        "life_ai": 14,
+        "life_hu": 0
+       },
+       {
+        "lethal": true,
+        "life_ai": 15,
+        "life_hu": 0
+       },
+       {
+        "lethal": false,
+        "life_ai": 10,
+        "life_hu": 18
+       },
+       {
+        "lethal": true,
+        "life_ai": 15,
+        "life_hu": 0
+       }
+      ]
+     },
+     {
+      "ai_act": "燃える闘志(R c1 s8)",
+      "cells": [
+       {
+        "lethal": true,
+        "life_ai": 14,
+        "life_hu": 0
+       },
+       {
+        "lethal": true,
+        "life_ai": 15,
+        "life_hu": 0
+       },
+       {
+        "lethal": false,
+        "life_ai": 10,
+        "life_hu": 18
+       },
+       {
+        "lethal": true,
+        "life_ai": 15,
+        "life_hu": 0
+       }
+      ]
+     },
+     {
+      "ai_act": "ババン・回避反撃(B c0 s0)",
+      "cells": [
+       {
+        "lethal": false,
+        "life_ai": 14,
+        "life_hu": 16
+       },
+       {
+        "lethal": false,
+        "life_ai": 10,
+        "life_hu": 19
+       },
+       {
+        "lethal": false,
+        "life_ai": 15,
+        "life_hu": 19
+       },
+       {
+        "lethal": false,
+        "life_ai": 15,
+        "life_hu": 16
+       }
+      ]
+     },
+     {
+      "ai_act": "燃える烈火(R c3 s12)",
+      "cells": [
+       {
+        "lethal": true,
+        "life_ai": 14,
+        "life_hu": 0
+       },
+       {
+        "lethal": true,
+        "life_ai": 15,
+        "life_hu": 0
+       },
+       {
+        "lethal": false,
+        "life_ai": 10,
+        "life_hu": 18
+       },
+       {
+        "lethal": true,
+        "life_ai": 15,
+        "life_hu": 0
+       }
+      ]
+     },
+     {
+      "ai_act": "轟音(R c0 s0)",
+      "cells": [
+       {
+        "lethal": false,
+        "life_ai": 9,
+        "life_hu": 18
+       },
+       {
+        "lethal": true,
+        "life_ai": 15,
+        "life_hu": 0
+       },
+       {
+        "lethal": false,
+        "life_ai": 10,
+        "life_hu": 18
+       },
+       {
+        "lethal": true,
+        "life_ai": 15,
+        "life_hu": 0
+       }
+      ]
+     }
+    ],
+    "ai_has_lethal": true,
+    "ai_has_forced_lethal": false,
+    "actual_ai": "ババン・回避反撃(B c0 s0)",
+    "actual_hu": "羽の刃・回避(B c0 s0)",
+    "lethal_vs_actual": [],
+    "ai_took_lethal": false,
+    "missed_lethal": false
+   },
+   {
+    "turn": 9,
+    "life_ai": 15,
+    "life_hu": 19,
+    "concerto_ai": 6,
+    "concerto_hu": 3,
+    "levels_ai": [
+     0,
+     2,
+     2
+    ],
+    "levels_hu": [
+     0,
+     0,
+     2
+    ],
+    "level_sum_ai": 4,
+    "level_sum_hu": 2,
+    "hand_n_ai": 7,
+    "hand_n_hu": 5,
+    "hand_ai": [
+     "燃える闘志",
+     "燃える闘志",
+     "奏鳴",
+     "燃える烈火",
+     "轟音",
+     "躍動する炎",
+     "旋風"
+    ],
+    "hand_hu": [
+     "燃える闘志",
+     "燃える烈火",
+     "音の刃",
+     "ババン・回避反撃",
+     "躍動する炎"
+    ],
+    "hu_acts": [
+     "ババン・回避反撃(B c0 s0)",
+     "躍動する炎(R c0 s0)",
+     "pass"
+    ],
+    "rows": [
+     {
+      "ai_act": "轟音(R c0 s0)",
+      "cells": [
+       {
+        "lethal": false,
+        "life_ai": 12,
+        "life_hu": 19
+       },
+       {
+        "lethal": true,
+        "life_ai": 15,
+        "life_hu": 0
+       },
+       {
+        "lethal": true,
+        "life_ai": 15,
+        "life_hu": 0
+       }
+      ]
+     },
+     {
+      "ai_act": "躍動する炎(R c0 s0)",
+      "cells": [
+       {
+        "lethal": false,
+        "life_ai": 12,
+        "life_hu": 19
+       },
+       {
+        "lethal": true,
+        "life_ai": 15,
+        "life_hu": 0
+       },
+       {
+        "lethal": true,
+        "life_ai": 15,
+        "life_hu": 0
+       }
+      ]
+     },
+     {
+      "ai_act": "旋風(R c2 s13)",
+      "cells": [
+       {
+        "lethal": false,
+        "life_ai": 12,
+        "life_hu": 19
+       },
+       {
+        "lethal": true,
+        "life_ai": 15,
+        "life_hu": 0
+       },
+       {
+        "lethal": true,
+        "life_ai": 15,
+        "life_hu": 0
+       }
+      ]
+     }
+    ],
+    "ai_has_lethal": true,
+    "ai_has_forced_lethal": false,
+    "actual_ai": "轟音(R c0 s0)",
+    "actual_hu": "ババン・回避反撃(B c0 s0)",
+    "lethal_vs_actual": [],
+    "ai_took_lethal": false,
+    "missed_lethal": false
+   },
+   {
+    "turn": 10,
+    "life_ai": 12,
+    "life_hu": 19,
+    "concerto_ai": 6,
+    "concerto_hu": 5,
+    "levels_ai": [
+     0,
+     2,
+     2
+    ],
+    "levels_hu": [
+     2,
+     0,
+     0
+    ],
+    "level_sum_ai": 4,
+    "level_sum_hu": 2,
+    "hand_n_ai": 6,
+    "hand_n_hu": 5,
+    "hand_ai": [
+     "燃える闘志",
+     "燃える闘志",
+     "奏鳴",
+     "燃える烈火",
+     "躍動する炎",
+     "旋風"
+    ],
+    "hand_hu": [
+     "燃える闘志",
+     "燃える烈火",
+     "音の刃",
+     "躍動する炎",
+     "ジャンプ"
+    ],
+    "hu_acts": [
+     "燃える闘志(R c1 s8)",
+     "燃える烈火(R c3 s12)",
+     "躍動する炎(R c0 s0)",
+     "ジャンプ(G c0 s7)"
+    ],
+    "rows": [
+     {
+      "ai_act": "躍動する炎(R c0 s0)",
+      "cells": [
+       {
+        "lethal": false,
+        "life_ai": 0,
+        "life_hu": 19
+       },
+       {
+        "lethal": false,
+        "life_ai": 0,
+        "life_hu": 19
+       },
+       {
+        "lethal": false,
+        "life_ai": 0,
+        "life_hu": 19
+       },
+       {
+        "lethal": false,
+        "life_ai": 12,
+        "life_hu": 15
+       }
+      ]
+     },
+     {
+      "ai_act": "旋風(R c2 s13)",
+      "cells": [
+       {
+        "lethal": true,
+        "life_ai": 11,
+        "life_hu": 0
+       },
+       {
+        "lethal": true,
+        "life_ai": 11,
+        "life_hu": 0
+       },
+       {
+        "lethal": true,
+        "life_ai": 11,
+        "life_hu": 0
+       },
+       {
+        "lethal": true,
+        "life_ai": 12,
+        "life_hu": 0
+       }
+      ]
+     },
+     {
+      "ai_act": "pass",
+      "cells": [
+       {
+        "lethal": false,
+        "life_ai": 0,
+        "life_hu": 19
+       },
+       {
+        "lethal": false,
+        "life_ai": 0,
+        "life_hu": 19
+       },
+       {
+        "lethal": false,
+        "life_ai": 0,
+        "life_hu": 19
+       },
+       {
+        "lethal": false,
+        "life_ai": 2,
+        "life_hu": 19
+       }
+      ]
+     }
+    ],
+    "ai_has_lethal": true,
+    "ai_has_forced_lethal": true,
+    "actual_ai": "旋風(R c2 s13)",
+    "actual_hu": "ジャンプ(G c0 s7)",
+    "lethal_vs_actual": [
+     "旋風(R c2 s13)"
+    ],
+    "ai_took_lethal": true,
+    "missed_lethal": false
+   }
+  ]
+ },
+ {
+  "game_id": "g003",
+  "seed": 130006,
+  "opponent": "planner_vc4cps",
+  "human_seat": 0,
+  "tables": [
+   {
+    "turn": 1,
+    "life_ai": 20,
+    "life_hu": 20,
+    "concerto_ai": 0,
+    "concerto_hu": 1,
+    "levels_ai": [
+     0,
+     0,
+     0
+    ],
+    "levels_hu": [
+     0,
+     1,
+     0
+    ],
+    "level_sum_ai": 0,
+    "level_sum_hu": 1,
+    "hand_n_ai": 5,
+    "hand_n_hu": 4,
+    "hand_ai": [
+     "スキャン",
+     "羽の刃・通常攻撃",
+     "ババン・通常攻撃",
+     "奏鳴",
+     "ジャンプ"
+    ],
+    "hand_hu": [
+     "燃える闘志",
+     "スキャン",
+     "羽の刃・通常攻撃",
+     "鉤縄"
+    ],
+    "hu_acts": [
+     "スキャン(G c0 s5)",
+     "羽の刃・通常攻撃(R c0 s8)",
+     "鉤縄(G c1 s8)"
+    ],
+    "rows": [
+     {
+      "ai_act": "スキャン(G c0 s5)",
+      "cells": [
+       {
+        "lethal": false,
+        "life_ai": 20,
+        "life_hu": 20
+       },
+       {
+        "lethal": false,
+        "life_ai": 19,
+        "life_hu": 20
+       },
+       {
+        "lethal": false,
+        "life_ai": 19,
+        "life_hu": 20
+       }
+      ]
+     },
+     {
+      "ai_act": "羽の刃・通常攻撃(R c0 s8)",
+      "cells": [
+       {
+        "lethal": false,
+        "life_ai": 20,
+        "life_hu": 18
+       },
+       {
+        "lethal": false,
+        "life_ai": 19,
+        "life_hu": 20
+       },
+       {
+        "lethal": false,
+        "life_ai": 20,
+        "life_hu": 18
+       }
+      ]
+     },
+     {
+      "ai_act": "ババン・通常攻撃(R c0 s6)",
+      "cells": [
+       {
+        "lethal": false,
+        "life_ai": 20,
+        "life_hu": 18
+       },
+       {
+        "lethal": false,
+        "life_ai": 19,
+        "life_hu": 20
+       },
+       {
+        "lethal": false,
+        "life_ai": 20,
+        "life_hu": 18
+       }
+      ]
+     },
+     {
+      "ai_act": "ジャンプ(G c0 s7)",
+      "cells": [
+       {
+        "lethal": false,
+        "life_ai": 20,
+        "life_hu": 19
+       },
+       {
+        "lethal": false,
+        "life_ai": 19,
+        "life_hu": 20
+       },
+       {
+        "lethal": false,
+        "life_ai": 19,
+        "life_hu": 20
+       }
+      ]
+     },
+     {
+      "ai_act": "pass",
+      "cells": [
+       {
+        "lethal": false,
+        "life_ai": 20,
+        "life_hu": 20
+       },
+       {
+        "lethal": false,
+        "life_ai": 19,
+        "life_hu": 20
+       },
+       {
+        "lethal": false,
+        "life_ai": 19,
+        "life_hu": 20
+       }
+      ]
+     }
+    ],
+    "ai_has_lethal": false,
+    "ai_has_forced_lethal": false,
+    "actual_ai": "ババン・通常攻撃(R c0 s6)",
+    "actual_hu": "鉤縄(G c1 s8)",
+    "lethal_vs_actual": [],
+    "ai_took_lethal": false,
+    "missed_lethal": false
+   },
+   {
+    "turn": 2,
+    "life_ai": 20,
+    "life_hu": 19,
+    "concerto_ai": 1,
+    "concerto_hu": 0,
+    "levels_ai": [
+     0,
+     1,
+     0
+    ],
+    "levels_hu": [
+     0,
+     1,
+     0
+    ],
+    "level_sum_ai": 1,
+    "level_sum_hu": 1,
+    "hand_n_ai": 4,
+    "hand_n_hu": 5,
+    "hand_ai": [
+     "スキャン",
+     "羽の刃・通常攻撃",
+     "ジャンプ",
+     "音の形・通常攻撃"
+    ],
+    "hand_hu": [
+     "燃える闘志",
+     "スキャン",
+     "羽の刃・通常攻撃",
+     "燃える闘志",
+     "奏鳴"
+    ],
+    "hu_acts": [
+     "スキャン(G c0 s5)",
+     "羽の刃・通常攻撃(R c0 s8)",
+     "pass"
+    ],
+    "rows": [
+     {
+      "ai_act": "スキャン(G c0 s5)",
+      "cells": [
+       {
+        "lethal": false,
+        "life_ai": 20,
+        "life_hu": 19
+       },
+       {
+        "lethal": false,
+        "life_ai": 19,
+        "life_hu": 19
+       },
+       {
+        "lethal": false,
+        "life_ai": 20,
+        "life_hu": 19
+       }
+      ]
+     },
+     {
+      "ai_act": "羽の刃・通常攻撃(R c0 s8)",
+      "cells": [
+       {
+        "lethal": false,
+        "life_ai": 20,
+        "life_hu": 17
+       },
+       {
+        "lethal": false,
+        "life_ai": 20,
+        "life_hu": 17
+       },
+       {
+        "lethal": false,
+        "life_ai": 20,
+        "life_hu": 17
+       }
+      ]
+     },
+     {
+      "ai_act": "ジャンプ(G c0 s7)",
+      "cells": [
+       {
+        "lethal": false,
+        "life_ai": 20,
+        "life_hu": 18
+       },
+       {
+        "lethal": false,
+        "life_ai": 19,
+        "life_hu": 19
+       },
+       {
+        "lethal": false,
+        "life_ai": 20,
+        "life_hu": 18
+       }
+      ]
+     },
+     {
+      "ai_act": "音の形・通常攻撃(R c0 s8)",
+      "cells": [
+       {
+        "lethal": false,
+        "life_ai": 20,
+        "life_hu": 17
+       },
+       {
+        "lethal": false,
+        "life_ai": 20,
+        "life_hu": 17
+       },
+       {
+        "lethal": false,
+        "life_ai": 20,
+        "life_hu": 17
+       }
+      ]
+     }
+    ],
+    "ai_has_lethal": false,
+    "ai_has_forced_lethal": false,
+    "actual_ai": "スキャン(G c0 s5)",
+    "actual_hu": "スキャン(G c0 s5)",
+    "lethal_vs_actual": [],
+    "ai_took_lethal": false,
+    "missed_lethal": false
+   },
+   {
+    "turn": 3,
+    "life_ai": 20,
+    "life_hu": 19,
+    "concerto_ai": 1,
+    "concerto_hu": 1,
+    "levels_ai": [
+     0,
+     1,
+     0
+    ],
+    "levels_hu": [
+     2,
+     0,
+     0
+    ],
+    "level_sum_ai": 1,
+    "level_sum_hu": 2,
+    "hand_n_ai": 6,
+    "hand_n_hu": 5,
+    "hand_ai": [
+     "羽の刃・通常攻撃",
+     "ジャンプ",
+     "音の形・通常攻撃",
+     "ババン・通常攻撃",
+     "ババン・回避反撃",
+     "音の形・回避"
+    ],
+    "hand_hu": [
+     "燃える闘志",
+     "羽の刃・通常攻撃",
+     "燃える闘志",
+     "スキャン",
+     "羽の刃・通常攻撃"
+    ],
+    "hu_acts": [
+     "燃える闘志(R c1 s8)",
+     "羽の刃・通常攻撃(R c0 s8)",
+     "燃える闘志(R c1 s8)",
+     "スキャン(G c0 s5)",
+     "羽の刃・通常攻撃(R c0 s8)"
+    ],
+    "rows": [
+     {
+      "ai_act": "羽の刃・通常攻撃(R c0 s8)",
+      "cells": [
+       {
+        "lethal": false,
+        "life_ai": 12,
+        "life_hu": 19
+       },
+       {
+        "lethal": false,
+        "life_ai": 12,
+        "life_hu": 19
+       },
+       {
+        "lethal": false,
+        "life_ai": 12,
+        "life_hu": 19
+       },
+       {
+        "lethal": false,
+        "life_ai": 20,
+        "life_hu": 16
+       },
+       {
+        "lethal": false,
+        "life_ai": 12,
+        "life_hu": 19
+       }
+      ]
+     },
+     {
+      "ai_act": "ジャンプ(G c0 s7)",
+      "cells": [
+       {
+        "lethal": false,
+        "life_ai": 12,
+        "life_hu": 19
+       },
+       {
+        "lethal": false,
+        "life_ai": 12,
+        "life_hu": 19
+       },
+       {
+        "lethal": false,
+        "life_ai": 12,
+        "life_hu": 19
+       },
+       {
+        "lethal": false,
+        "life_ai": 20,
+        "life_hu": 18
+       },
+       {
+        "lethal": false,
+        "life_ai": 12,
+        "life_hu": 19
+       }
+      ]
+     },
+     {
+      "ai_act": "音の形・通常攻撃(R c0 s8)",
+      "cells": [
+       {
+        "lethal": false,
+        "life_ai": 12,
+        "life_hu": 19
+       },
+       {
+        "lethal": false,
+        "life_ai": 12,
+        "life_hu": 19
+       },
+       {
+        "lethal": false,
+        "life_ai": 12,
+        "life_hu": 19
+       },
+       {
+        "lethal": false,
+        "life_ai": 20,
+        "life_hu": 16
+       },
+       {
+        "lethal": false,
+        "life_ai": 12,
+        "life_hu": 19
+       }
+      ]
+     },
+     {
+      "ai_act": "ババン・通常攻撃(R c0 s6)",
+      "cells": [
+       {
+        "lethal": false,
+        "life_ai": 12,
+        "life_hu": 19
+       },
+       {
+        "lethal": false,
+        "life_ai": 12,
+        "life_hu": 19
+       },
+       {
+        "lethal": false,
+        "life_ai": 12,
+        "life_hu": 19
+       },
+       {
+        "lethal": false,
+        "life_ai": 20,
+        "life_hu": 16
+       },
+       {
+        "lethal": false,
+        "life_ai": 12,
+        "life_hu": 19
+       }
+      ]
+     },
+     {
+      "ai_act": "ババン・回避反撃(B c0 s0)",
+      "cells": [
+       {
+        "lethal": false,
+        "life_ai": 19,
+        "life_hu": 16
+       },
+       {
+        "lethal": false,
+        "life_ai": 19,
+        "life_hu": 16
+       },
+       {
+        "lethal": false,
+        "life_ai": 19,
+        "life_hu": 16
+       },
+       {
+        "lethal": false,
+        "life_ai": 20,
+        "life_hu": 19
+       },
+       {
+        "lethal": false,
+        "life_ai": 19,
+        "life_hu": 16
+       }
+      ]
+     },
+     {
+      "ai_act": "音の形・回避(B c0 s0)",
+      "cells": [
+       {
+        "lethal": false,
+        "life_ai": 19,
+        "life_hu": 19
+       },
+       {
+        "lethal": false,
+        "life_ai": 19,
+        "life_hu": 19
+       },
+       {
+        "lethal": false,
+        "life_ai": 19,
+        "life_hu": 19
+       },
+       {
+        "lethal": false,
+        "life_ai": 20,
+        "life_hu": 19
+       },
+       {
+        "lethal": false,
+        "life_ai": 19,
+        "life_hu": 19
+       }
+      ]
+     },
+     {
+      "ai_act": "pass",
+      "cells": [
+       {
+        "lethal": false,
+        "life_ai": 12,
+        "life_hu": 19
+       },
+       {
+        "lethal": false,
+        "life_ai": 12,
+        "life_hu": 19
+       },
+       {
+        "lethal": false,
+        "life_ai": 12,
+        "life_hu": 19
+       },
+       {
+        "lethal": false,
+        "life_ai": 20,
+        "life_hu": 19
+       },
+       {
+        "lethal": false,
+        "life_ai": 12,
+        "life_hu": 19
+       }
+      ]
+     }
+    ],
+    "ai_has_lethal": false,
+    "ai_has_forced_lethal": false,
+    "actual_ai": "羽の刃・通常攻撃(R c0 s8)",
+    "actual_hu": "羽の刃・通常攻撃(R c0 s8)",
+    "lethal_vs_actual": [],
+    "ai_took_lethal": false,
+    "missed_lethal": false
+   },
+   {
+    "turn": 4,
+    "life_ai": 18,
+    "life_hu": 19,
+    "concerto_ai": 2,
+    "concerto_hu": 1,
+    "levels_ai": [
+     0,
+     2,
+     0
+    ],
+    "levels_hu": [
+     2,
+     0,
+     0
+    ],
+    "level_sum_ai": 2,
+    "level_sum_hu": 2,
+    "hand_n_ai": 4,
+    "hand_n_hu": 4,
+    "hand_ai": [
+     "ジャンプ",
+     "ババン・回避反撃",
+     "音の形・回避",
+     "鉤縄"
+    ],
+    "hand_hu": [
+     "燃える闘志",
+     "羽の刃・通常攻撃",
+     "燃える闘志",
+     "スキャン"
+    ],
+    "hu_acts": [
+     "燃える闘志(R c1 s8)",
+     "羽の刃・通常攻撃(R c0 s8)",
+     "燃える闘志(R c1 s8)",
+     "スキャン(G c0 s5)",
+     "pass"
+    ],
+    "rows": [
+     {
+      "ai_act": "ジャンプ(G c0 s7)",
+      "cells": [
+       {
+        "lethal": false,
+        "life_ai": 11,
+        "life_hu": 19
+       },
+       {
+        "lethal": false,
+        "life_ai": 11,
+        "life_hu": 19
+       },
+       {
+        "lethal": false,
+        "life_ai": 11,
+        "life_hu": 19
+       },
+       {
+        "lethal": false,
+        "life_ai": 18,
+        "life_hu": 18
+       },
+       {
+        "lethal": false,
+        "life_ai": 18,
+        "life_hu": 18
+       }
+      ]
+     },
+     {
+      "ai_act": "ババン・回避反撃(B c0 s0)",
+      "cells": [
+       {
+        "lethal": false,
+        "life_ai": 17,
+        "life_hu": 16
+       },
+       {
+        "lethal": false,
+        "life_ai": 17,
+        "life_hu": 16
+       },
+       {
+        "lethal": false,
+        "life_ai": 17,
+        "life_hu": 16
+       },
+       {
+        "lethal": false,
+        "life_ai": 18,
+        "life_hu": 19
+       },
+       {
+        "lethal": false,
+        "life_ai": 18,
+        "life_hu": 16
+       }
+      ]
+     },
+     {
+      "ai_act": "音の形・回避(B c0 s0)",
+      "cells": [
+       {
+        "lethal": false,
+        "life_ai": 17,
+        "life_hu": 19
+       },
+       {
+        "lethal": false,
+        "life_ai": 17,
+        "life_hu": 19
+       },
+       {
+        "lethal": false,
+        "life_ai": 17,
+        "life_hu": 19
+       },
+       {
+        "lethal": false,
+        "life_ai": 18,
+        "life_hu": 19
+       },
+       {
+        "lethal": false,
+        "life_ai": 18,
+        "life_hu": 19
+       }
+      ]
+     },
+     {
+      "ai_act": "鉤縄(G c1 s8)",
+      "cells": [
+       {
+        "lethal": false,
+        "life_ai": 11,
+        "life_hu": 19
+       },
+       {
+        "lethal": false,
+        "life_ai": 11,
+        "life_hu": 19
+       },
+       {
+        "lethal": false,
+        "life_ai": 11,
+        "life_hu": 19
+       },
+       {
+        "lethal": false,
+        "life_ai": 18,
+        "life_hu": 18
+       },
+       {
+        "lethal": false,
+        "life_ai": 18,
+        "life_hu": 18
+       }
+      ]
+     }
+    ],
+    "ai_has_lethal": false,
+    "ai_has_forced_lethal": false,
+    "actual_ai": "ジャンプ(G c0 s7)",
+    "actual_hu": "羽の刃・通常攻撃(R c0 s8)",
+    "lethal_vs_actual": [],
+    "ai_took_lethal": false,
+    "missed_lethal": false
+   },
+   {
+    "turn": 5,
+    "life_ai": 16,
+    "life_hu": 19,
+    "concerto_ai": 2,
+    "concerto_hu": 2,
+    "levels_ai": [
+     0,
+     2,
+     0
+    ],
+    "levels_hu": [
+     0,
+     2,
+     0
+    ],
+    "level_sum_ai": 2,
+    "level_sum_hu": 2,
+    "hand_n_ai": 5,
+    "hand_n_hu": 4,
+    "hand_ai": [
+     "ババン・回避反撃",
+     "音の形・回避",
+     "鉤縄",
+     "燃える烈火",
+     "ババン・回避反撃"
+    ],
+    "hand_hu": [
+     "燃える闘志",
+     "燃える闘志",
+     "スキャン",
+     "音の形・回避"
+    ],
+    "hu_acts": [
+     "スキャン(G c0 s5)",
+     "音の形・回避(B c0 s0)"
+    ],
+    "rows": [
+     {
+      "ai_act": "ババン・回避反撃(B c0 s0)",
+      "cells": [
+       {
+        "lethal": false,
+        "life_ai": 16,
+        "life_hu": 19
+       },
+       {
+        "lethal": false,
+        "life_ai": 16,
+        "life_hu": 19
+       }
+      ]
+     },
+     {
+      "ai_act": "音の形・回避(B c0 s0)",
+      "cells": [
+       {
+        "lethal": false,
+        "life_ai": 16,
+        "life_hu": 19
+       },
+       {
+        "lethal": false,
+        "life_ai": 16,
+        "life_hu": 19
+       }
+      ]
+     },
+     {
+      "ai_act": "鉤縄(G c1 s8)",
+      "cells": [
+       {
+        "lethal": false,
+        "life_ai": 16,
+        "life_hu": 18
+       },
+       {
+        "lethal": false,
+        "life_ai": 16,
+        "life_hu": 18
+       }
+      ]
+     },
+     {
+      "ai_act": "ババン・回避反撃(B c0 s0)",
+      "cells": [
+       {
+        "lethal": false,
+        "life_ai": 16,
+        "life_hu": 19
+       },
+       {
+        "lethal": false,
+        "life_ai": 16,
+        "life_hu": 19
+       }
+      ]
+     },
+     {
+      "ai_act": "pass",
+      "cells": [
+       {
+        "lethal": false,
+        "life_ai": 16,
+        "life_hu": 19
+       },
+       {
+        "lethal": false,
+        "life_ai": 16,
+        "life_hu": 19
+       }
+      ]
+     }
+    ],
+    "ai_has_lethal": false,
+    "ai_has_forced_lethal": false,
+    "actual_ai": "鉤縄(G c1 s8)",
+    "actual_hu": "スキャン(G c0 s5)",
+    "lethal_vs_actual": [],
+    "ai_took_lethal": false,
+    "missed_lethal": false
+   },
+   {
+    "turn": 6,
+    "life_ai": 16,
+    "life_hu": 19,
+    "concerto_ai": 2,
+    "concerto_hu": 2,
+    "levels_ai": [
+     0,
+     2,
+     0
+    ],
+    "levels_hu": [
+     0,
+     2,
+     0
+    ],
+    "level_sum_ai": 2,
+    "level_sum_hu": 2,
+    "hand_n_ai": 8,
+    "hand_n_hu": 5,
+    "hand_ai": [
+     "ババン・回避反撃",
+     "音の形・回避",
+     "燃える烈火",
+     "ババン・回避反撃",
+     "鉤縄",
+     "鉤縄",
+     "燃える闘志",
+     "轟音"
+    ],
+    "hand_hu": [
+     "燃える闘志",
+     "燃える闘志",
+     "音の形・回避",
+     "奏鳴",
+     "息継ぎ"
+    ],
+    "hu_acts": [
+     "音の形・回避(B c0 s0)",
+     "息継ぎ(R c0 s0)",
+     "pass"
+    ],
+    "rows": [
+     {
+      "ai_act": "ババン・回避反撃(B c0 s0)",
+      "cells": [
+       {
+        "lethal": false,
+        "life_ai": 16,
+        "life_hu": 19
+       },
+       {
+        "lethal": false,
+        "life_ai": 16,
+        "life_hu": 16
+       },
+       {
+        "lethal": false,
+        "life_ai": 16,
+        "life_hu": 16
+       }
+      ]
+     },
+     {
+      "ai_act": "音の形・回避(B c0 s0)",
+      "cells": [
+       {
+        "lethal": false,
+        "life_ai": 16,
+        "life_hu": 19
+       },
+       {
+        "lethal": false,
+        "life_ai": 16,
+        "life_hu": 19
+       },
+       {
+        "lethal": false,
+        "life_ai": 16,
+        "life_hu": 19
+       }
+      ]
+     },
+     {
+      "ai_act": "ババン・回避反撃(B c0 s0)",
+      "cells": [
+       {
+        "lethal": false,
+        "life_ai": 16,
+        "life_hu": 19
+       },
+       {
+        "lethal": false,
+        "life_ai": 16,
+        "life_hu": 16
+       },
+       {
+        "lethal": false,
+        "life_ai": 16,
+        "life_hu": 16
+       }
+      ]
+     },
+     {
+      "ai_act": "鉤縄(G c1 s8)",
+      "cells": [
+       {
+        "lethal": false,
+        "life_ai": 16,
+        "life_hu": 14
+       },
+       {
+        "lethal": false,
+        "life_ai": 16,
+        "life_hu": 19
+       },
+       {
+        "lethal": false,
+        "life_ai": 16,
+        "life_hu": 14
+       }
+      ]
+     },
+     {
+      "ai_act": "鉤縄(G c1 s8)",
+      "cells": [
+       {
+        "lethal": false,
+        "life_ai": 16,
+        "life_hu": 14
+       },
+       {
+        "lethal": false,
+        "life_ai": 16,
+        "life_hu": 19
+       },
+       {
+        "lethal": false,
+        "life_ai": 16,
+        "life_hu": 14
+       }
+      ]
+     },
+     {
+      "ai_act": "轟音(R c0 s0)",
+      "cells": [
+       {
+        "lethal": false,
+        "life_ai": 16,
+        "life_hu": 19
+       },
+       {
+        "lethal": false,
+        "life_ai": 16,
+        "life_hu": 19
+       },
+       {
+        "lethal": false,
+        "life_ai": 16,
+        "life_hu": 19
+       }
+      ]
+     }
+    ],
+    "ai_has_lethal": false,
+    "ai_has_forced_lethal": false,
+    "actual_ai": "音の形・回避(B c0 s0)",
+    "actual_hu": "pass",
+    "lethal_vs_actual": [],
+    "ai_took_lethal": false,
+    "missed_lethal": false
+   },
+   {
+    "turn": 7,
+    "life_ai": 16,
+    "life_hu": 19,
+    "concerto_ai": 3,
+    "concerto_hu": 3,
+    "levels_ai": [
+     0,
+     2,
+     0
+    ],
+    "levels_hu": [
+     0,
+     2,
+     0
+    ],
+    "level_sum_ai": 2,
+    "level_sum_hu": 2,
+    "hand_n_ai": 7,
+    "hand_n_hu": 6,
+    "hand_ai": [
+     "ババン・回避反撃",
+     "ババン・回避反撃",
+     "鉤縄",
+     "鉤縄",
+     "燃える闘志",
+     "轟音",
+     "燃える烈火"
+    ],
+    "hand_hu": [
+     "燃える闘志",
+     "燃える闘志",
+     "音の形・回避",
+     "息継ぎ",
+     "ジャンプ",
+     "ババン・回避反撃"
+    ],
+    "hu_acts": [
+     "音の形・回避(B c0 s0)",
+     "息継ぎ(R c0 s0)",
+     "ジャンプ(G c0 s7)",
+     "ババン・回避反撃(B c0 s0)"
+    ],
+    "rows": [
+     {
+      "ai_act": "ババン・回避反撃(B c0 s0)",
+      "cells": [
+       {
+        "lethal": false,
+        "life_ai": 16,
+        "life_hu": 19
+       },
+       {
+        "lethal": false,
+        "life_ai": 16,
+        "life_hu": 16
+       },
+       {
+        "lethal": false,
+        "life_ai": 16,
+        "life_hu": 19
+       },
+       {
+        "lethal": false,
+        "life_ai": 16,
+        "life_hu": 19
+       }
+      ]
+     },
+     {
+      "ai_act": "ババン・回避反撃(B c0 s0)",
+      "cells": [
+       {
+        "lethal": false,
+        "life_ai": 16,
+        "life_hu": 19
+       },
+       {
+        "lethal": false,
+        "life_ai": 16,
+        "life_hu": 16
+       },
+       {
+        "lethal": false,
+        "life_ai": 16,
+        "life_hu": 19
+       },
+       {
+        "lethal": false,
+        "life_ai": 16,
+        "life_hu": 19
+       }
+      ]
+     },
+     {
+      "ai_act": "鉤縄(G c1 s8)",
+      "cells": [
+       {
+        "lethal": false,
+        "life_ai": 16,
+        "life_hu": 14
+       },
+       {
+        "lethal": false,
+        "life_ai": 16,
+        "life_hu": 19
+       },
+       {
+        "lethal": false,
+        "life_ai": 16,
+        "life_hu": 14
+       },
+       {
+        "lethal": false,
+        "life_ai": 16,
+        "life_hu": 14
+       }
+      ]
+     },
+     {
+      "ai_act": "鉤縄(G c1 s8)",
+      "cells": [
+       {
+        "lethal": false,
+        "life_ai": 16,
+        "life_hu": 14
+       },
+       {
+        "lethal": false,
+        "life_ai": 16,
+        "life_hu": 19
+       },
+       {
+        "lethal": false,
+        "life_ai": 16,
+        "life_hu": 14
+       },
+       {
+        "lethal": false,
+        "life_ai": 16,
+        "life_hu": 14
+       }
+      ]
+     },
+     {
+      "ai_act": "轟音(R c0 s0)",
+      "cells": [
+       {
+        "lethal": false,
+        "life_ai": 16,
+        "life_hu": 19
+       },
+       {
+        "lethal": false,
+        "life_ai": 16,
+        "life_hu": 19
+       },
+       {
+        "lethal": false,
+        "life_ai": 16,
+        "life_hu": 19
+       },
+       {
+        "lethal": false,
+        "life_ai": 13,
+        "life_hu": 19
+       }
+      ]
+     },
+     {
+      "ai_act": "pass",
+      "cells": [
+       {
+        "lethal": false,
+        "life_ai": 16,
+        "life_hu": 19
+       },
+       {
+        "lethal": false,
+        "life_ai": 16,
+        "life_hu": 19
+       },
+       {
+        "lethal": false,
+        "life_ai": 16,
+        "life_hu": 19
+       },
+       {
+        "lethal": false,
+        "life_ai": 13,
+        "life_hu": 19
+       }
+      ]
+     }
+    ],
+    "ai_has_lethal": false,
+    "ai_has_forced_lethal": false,
+    "actual_ai": "ババン・回避反撃(B c0 s0)",
+    "actual_hu": "ジャンプ(G c0 s7)",
+    "lethal_vs_actual": [],
+    "ai_took_lethal": false,
+    "missed_lethal": false
+   },
+   {
+    "turn": 8,
+    "life_ai": 16,
+    "life_hu": 19,
+    "concerto_ai": 5,
+    "concerto_hu": 4,
+    "levels_ai": [
+     0,
+     2,
+     0
+    ],
+    "levels_hu": [
+     2,
+     0,
+     0
+    ],
+    "level_sum_ai": 2,
+    "level_sum_hu": 2,
+    "hand_n_ai": 7,
+    "hand_n_hu": 5,
+    "hand_ai": [
+     "ババン・回避反撃",
+     "鉤縄",
+     "鉤縄",
+     "燃える闘志",
+     "轟音",
+     "燃える烈火",
+     "羽の刃・回避"
+    ],
+    "hand_hu": [
+     "燃える闘志",
+     "燃える闘志",
+     "音の形・回避",
+     "ババン・回避反撃",
+     "燃える烈火"
+    ],
+    "hu_acts": [
+     "燃える闘志(R c1 s8)",
+     "燃える闘志(R c1 s8)",
+     "音の形・回避(B c0 s0)",
+     "ババン・回避反撃(B c0 s0)",
+     "燃える烈火(R c3 s12)",
+     "pass"
+    ],
+    "rows": [
+     {
+      "ai_act": "ババン・回避反撃(B c0 s0)",
+      "cells": [
+       {
+        "lethal": false,
+        "life_ai": 15,
+        "life_hu": 16
+       },
+       {
+        "lethal": false,
+        "life_ai": 15,
+        "life_hu": 16
+       },
+       {
+        "lethal": false,
+        "life_ai": 16,
+        "life_hu": 19
+       },
+       {
+        "lethal": false,
+        "life_ai": 16,
+        "life_hu": 19
+       },
+       {
+        "lethal": false,
+        "life_ai": 15,
+        "life_hu": 16
+       },
+       {
+        "lethal": false,
+        "life_ai": 16,
+        "life_hu": 16
+       }
+      ]
+     },
+     {
+      "ai_act": "鉤縄(G c1 s8)",
+      "cells": [
+       {
+        "lethal": false,
+        "life_ai": 0,
+        "life_hu": 19
+       },
+       {
+        "lethal": false,
+        "life_ai": 0,
+        "life_hu": 19
+       },
+       {
+        "lethal": false,
+        "life_ai": 16,
+        "life_hu": 9
+       },
+       {
+        "lethal": false,
+        "life_ai": 16,
+        "life_hu": 9
+       },
+       {
+        "lethal": false,
+        "life_ai": 0,
+        "life_hu": 19
+       },
+       {
+        "lethal": false,
+        "life_ai": 16,
+        "life_hu": 9
+       }
+      ]
+     },
+     {
+      "ai_act": "鉤縄(G c1 s8)",
+      "cells": [
+       {
+        "lethal": false,
+        "life_ai": 0,
+        "life_hu": 19
+       },
+       {
+        "lethal": false,
+        "life_ai": 0,
+        "life_hu": 19
+       },
+       {
+        "lethal": false,
+        "life_ai": 16,
+        "life_hu": 9
+       },
+       {
+        "lethal": false,
+        "life_ai": 16,
+        "life_hu": 9
+       },
+       {
+        "lethal": false,
+        "life_ai": 0,
+        "life_hu": 19
+       },
+       {
+        "lethal": false,
+        "life_ai": 16,
+        "life_hu": 9
+       }
+      ]
+     },
+     {
+      "ai_act": "轟音(R c0 s0)",
+      "cells": [
+       {
+        "lethal": false,
+        "life_ai": 0,
+        "life_hu": 19
+       },
+       {
+        "lethal": false,
+        "life_ai": 0,
+        "life_hu": 19
+       },
+       {
+        "lethal": false,
+        "life_ai": 16,
+        "life_hu": 19
+       },
+       {
+        "lethal": false,
+        "life_ai": 13,
+        "life_hu": 19
+       },
+       {
+        "lethal": false,
+        "life_ai": 0,
+        "life_hu": 19
+       },
+       {
+        "lethal": false,
+        "life_ai": 16,
+        "life_hu": 19
+       }
+      ]
+     },
+     {
+      "ai_act": "羽の刃・回避(B c0 s0)",
+      "cells": [
+       {
+        "lethal": false,
+        "life_ai": 15,
+        "life_hu": 9
+       },
+       {
+        "lethal": false,
+        "life_ai": 15,
+        "life_hu": 9
+       },
+       {
+        "lethal": false,
+        "life_ai": 16,
+        "life_hu": 19
+       },
+       {
+        "lethal": false,
+        "life_ai": 16,
+        "life_hu": 19
+       },
+       {
+        "lethal": false,
+        "life_ai": 15,
+        "life_hu": 9
+       },
+       {
+        "lethal": false,
+        "life_ai": 16,
+        "life_hu": 9
+       }
+      ]
+     }
+    ],
+    "ai_has_lethal": false,
+    "ai_has_forced_lethal": false,
+    "actual_ai": "ババン・回避反撃(B c0 s0)",
+    "actual_hu": "燃える闘志(R c1 s8)",
+    "lethal_vs_actual": [],
+    "ai_took_lethal": false,
+    "missed_lethal": false
+   },
+   {
+    "turn": 9,
+    "life_ai": 15,
+    "life_hu": 16,
+    "concerto_ai": 5,
+    "concerto_hu": 4,
+    "levels_ai": [
+     0,
+     2,
+     0
+    ],
+    "levels_hu": [
+     2,
+     0,
+     0
+    ],
+    "level_sum_ai": 2,
+    "level_sum_hu": 2,
+    "hand_n_ai": 6,
+    "hand_n_hu": 7,
+    "hand_ai": [
+     "鉤縄",
+     "鉤縄",
+     "燃える闘志",
+     "轟音",
+     "燃える烈火",
+     "羽の刃・回避"
+    ],
+    "hand_hu": [
+     "燃える闘志",
+     "音の形・回避",
+     "ババン・回避反撃",
+     "燃える烈火",
+     "燃える闘志",
+     "鉤縄",
+     "轟音"
+    ],
+    "hu_acts": [
+     "燃える闘志(R c1 s8)",
+     "音の形・回避(B c0 s0)",
+     "ババン・回避反撃(B c0 s0)",
+     "燃える烈火(R c3 s12)",
+     "燃える闘志(R c1 s8)",
+     "鉤縄(G c1 s8)",
+     "轟音(R c0 s0)"
+    ],
+    "rows": [
+     {
+      "ai_act": "鉤縄(G c1 s8)",
+      "cells": [
+       {
+        "lethal": false,
+        "life_ai": 0,
+        "life_hu": 16
+       },
+       {
+        "lethal": false,
+        "life_ai": 15,
+        "life_hu": 6
+       },
+       {
+        "lethal": false,
+        "life_ai": 15,
+        "life_hu": 6
+       },
+       {
+        "lethal": false,
+        "life_ai": 0,
+        "life_hu": 16
+       },
+       {
+        "lethal": false,
+        "life_ai": 0,
+        "life_hu": 16
+       },
+       {
+        "lethal": false,
+        "life_ai": 5,
+        "life_hu": 16
+       },
+       {
+        "lethal": false,
+        "life_ai": 0,
+        "life_hu": 16
+       }
+      ]
+     },
+     {
+      "ai_act": "鉤縄(G c1 s8)",
+      "cells": [
+       {
+        "lethal": false,
+        "life_ai": 0,
+        "life_hu": 16
+       },
+       {
+        "lethal": false,
+        "life_ai": 15,
+        "life_hu": 6
+       },
+       {
+        "lethal": false,
+        "life_ai": 15,
+        "life_hu": 6
+       },
+       {
+        "lethal": false,
+        "life_ai": 0,
+        "life_hu": 16
+       },
+       {
+        "lethal": false,
+        "life_ai": 0,
+        "life_hu": 16
+       },
+       {
+        "lethal": false,
+        "life_ai": 5,
+        "life_hu": 16
+       },
+       {
+        "lethal": false,
+        "life_ai": 0,
+        "life_hu": 16
+       }
+      ]
+     },
+     {
+      "ai_act": "轟音(R c0 s0)",
+      "cells": [
+       {
+        "lethal": false,
+        "life_ai": 0,
+        "life_hu": 16
+       },
+       {
+        "lethal": false,
+        "life_ai": 15,
+        "life_hu": 16
+       },
+       {
+        "lethal": false,
+        "life_ai": 12,
+        "life_hu": 16
+       },
+       {
+        "lethal": false,
+        "life_ai": 0,
+        "life_hu": 16
+       },
+       {
+        "lethal": false,
+        "life_ai": 0,
+        "life_hu": 16
+       },
+       {
+        "lethal": false,
+        "life_ai": 15,
+        "life_hu": 16
+       },
+       {
+        "lethal": false,
+        "life_ai": 0,
+        "life_hu": 16
+       }
+      ]
+     },
+     {
+      "ai_act": "羽の刃・回避(B c0 s0)",
+      "cells": [
+       {
+        "lethal": false,
+        "life_ai": 14,
+        "life_hu": 6
+       },
+       {
+        "lethal": false,
+        "life_ai": 15,
+        "life_hu": 16
+       },
+       {
+        "lethal": false,
+        "life_ai": 15,
+        "life_hu": 16
+       },
+       {
+        "lethal": false,
+        "life_ai": 14,
+        "life_hu": 6
+       },
+       {
+        "lethal": false,
+        "life_ai": 14,
+        "life_hu": 6
+       },
+       {
+        "lethal": false,
+        "life_ai": 5,
+        "life_hu": 16
+       },
+       {
+        "lethal": false,
+        "life_ai": 14,
+        "life_hu": 6
+       }
+      ]
+     },
+     {
+      "ai_act": "pass",
+      "cells": [
+       {
+        "lethal": false,
+        "life_ai": 0,
+        "life_hu": 16
+       },
+       {
+        "lethal": false,
+        "life_ai": 15,
+        "life_hu": 16
+       },
+       {
+        "lethal": false,
+        "life_ai": 12,
+        "life_hu": 16
+       },
+       {
+        "lethal": false,
+        "life_ai": 0,
+        "life_hu": 16
+       },
+       {
+        "lethal": false,
+        "life_ai": 0,
+        "life_hu": 16
+       },
+       {
+        "lethal": false,
+        "life_ai": 5,
+        "life_hu": 16
+       },
+       {
+        "lethal": false,
+        "life_ai": 0,
+        "life_hu": 16
+       }
+      ]
+     }
+    ],
+    "ai_has_lethal": false,
+    "ai_has_forced_lethal": false,
+    "actual_ai": "羽の刃・回避(B c0 s0)",
+    "actual_hu": "燃える闘志(R c1 s8)",
+    "lethal_vs_actual": [],
+    "ai_took_lethal": false,
+    "missed_lethal": false
+   },
+   {
+    "turn": 10,
+    "life_ai": 14,
+    "life_hu": 16,
+    "concerto_ai": 6,
+    "concerto_hu": 3,
+    "levels_ai": [
+     2,
+     0,
+     1
+    ],
+    "levels_hu": [
+     2,
+     0,
+     0
+    ],
+    "level_sum_ai": 3,
+    "level_sum_hu": 2,
+    "hand_n_ai": 5,
+    "hand_n_hu": 8,
+    "hand_ai": [
+     "鉤縄",
+     "燃える闘志",
+     "燃える烈火",
+     "燃える闘志",
+     "轟音"
+    ],
+    "hand_hu": [
+     "燃える闘志",
+     "音の形・回避",
+     "ババン・回避反撃",
+     "燃える烈火",
+     "鉤縄",
+     "轟音",
+     "躍動する炎",
+     "燃える闘志"
+    ],
+    "hu_acts": [
+     "燃える闘志(R c1 s8)",
+     "音の形・回避(B c0 s0)",
+     "ババン・回避反撃(B c0 s0)",
+     "燃える烈火(R c3 s12)",
+     "鉤縄(G c1 s8)",
+     "轟音(R c0 s0)",
+     "躍動する炎(R c0 s0)",
+     "燃える闘志(R c1 s8)",
+     "pass"
+    ],
+    "rows": [
+     {
+      "ai_act": "鉤縄(G c1 s8)",
+      "cells": [
+       {
+        "lethal": false,
+        "life_ai": 1,
+        "life_hu": 16
+       },
+       {
+        "lethal": false,
+        "life_ai": 14,
+        "life_hu": 1
+       },
+       {
+        "lethal": false,
+        "life_ai": 14,
+        "life_hu": 1
+       },
+       {
+        "lethal": false,
+        "life_ai": 1,
+        "life_hu": 16
+       },
+       {
+        "lethal": false,
+        "life_ai": 14,
+        "life_hu": 1
+       },
+       {
+        "lethal": false,
+        "life_ai": 1,
+        "life_hu": 16
+       },
+       {
+        "lethal": false,
+        "life_ai": 3,
+        "life_hu": 16
+       },
+       {
+        "lethal": false,
+        "life_ai": 1,
+        "life_hu": 16
+       },
+       {
+        "lethal": false,
+        "life_ai": 14,
+        "life_hu": 1
+       }
+      ]
+     },
+     {
+      "ai_act": "燃える闘志(R c1 s8)",
+      "cells": [
+       {
+        "lethal": true,
+        "life_ai": 13,
+        "life_hu": 0
+       },
+       {
+        "lethal": false,
+        "life_ai": 14,
+        "life_hu": 15
+       },
+       {
+        "lethal": false,
+        "life_ai": 11,
+        "life_hu": 15
+       },
+       {
+        "lethal": false,
+        "life_ai": 1,
+        "life_hu": 15
+       },
+       {
+        "lethal": true,
+        "life_ai": 14,
+        "life_hu": 0
+       },
+       {
+        "lethal": true,
+        "life_ai": 13,
+        "life_hu": 0
+       },
+       {
+        "lethal": true,
+        "life_ai": 13,
+        "life_hu": 0
+       },
+       {
+        "lethal": true,
+        "life_ai": 13,
+        "life_hu": 0
+       },
+       {
+        "lethal": true,
+        "life_ai": 14,
+        "life_hu": 0
+       }
+      ]
+     },
+     {
+      "ai_act": "燃える烈火(R c3 s12)",
+      "cells": [
+       {
+        "lethal": true,
+        "life_ai": 13,
+        "life_hu": 0
+       },
+       {
+        "lethal": false,
+        "life_ai": 14,
+        "life_hu": 15
+       },
+       {
+        "lethal": false,
+        "life_ai": 11,
+        "life_hu": 15
+       },
+       {
+        "lethal": true,
+        "life_ai": 13,
+        "life_hu": 0
+       },
+       {
+        "lethal": true,
+        "life_ai": 14,
+        "life_hu": 0
+       },
+       {
+        "lethal": true,
+        "life_ai": 13,
+        "life_hu": 0
+       },
+       {
+        "lethal": true,
+        "life_ai": 13,
+        "life_hu": 0
+       },
+       {
+        "lethal": true,
+        "life_ai": 13,
+        "life_hu": 0
+       },
+       {
+        "lethal": true,
+        "life_ai": 14,
+        "life_hu": 0
+       }
+      ]
+     },
+     {
+      "ai_act": "燃える闘志(R c1 s8)",
+      "cells": [
+       {
+        "lethal": true,
+        "life_ai": 13,
+        "life_hu": 0
+       },
+       {
+        "lethal": false,
+        "life_ai": 14,
+        "life_hu": 15
+       },
+       {
+        "lethal": false,
+        "life_ai": 11,
+        "life_hu": 15
+       },
+       {
+        "lethal": false,
+        "life_ai": 1,
+        "life_hu": 15
+       },
+       {
+        "lethal": true,
+        "life_ai": 14,
+        "life_hu": 0
+       },
+       {
+        "lethal": true,
+        "life_ai": 13,
+        "life_hu": 0
+       },
+       {
+        "lethal": true,
+        "life_ai": 13,
+        "life_hu": 0
+       },
+       {
+        "lethal": true,
+        "life_ai": 13,
+        "life_hu": 0
+       },
+       {
+        "lethal": true,
+        "life_ai": 14,
+        "life_hu": 0
+       }
+      ]
+     },
+     {
+      "ai_act": "轟音(R c0 s0)",
+      "cells": [
+       {
+        "lethal": false,
+        "life_ai": 1,
+        "life_hu": 15
+       },
+       {
+        "lethal": false,
+        "life_ai": 14,
+        "life_hu": 15
+       },
+       {
+        "lethal": false,
+        "life_ai": 11,
+        "life_hu": 15
+       },
+       {
+        "lethal": false,
+        "life_ai": 1,
+        "life_hu": 15
+       },
+       {
+        "lethal": true,
+        "life_ai": 14,
+        "life_hu": 0
+       },
+       {
+        "lethal": true,
+        "life_ai": 13,
+        "life_hu": 0
+       },
+       {
+        "lethal": true,
+        "life_ai": 13,
+        "life_hu": 0
+       },
+       {
+        "lethal": false,
+        "life_ai": 1,
+        "life_hu": 15
+       },
+       {
+        "lethal": true,
+        "life_ai": 14,
+        "life_hu": 0
+       }
+      ]
+     }
+    ],
+    "ai_has_lethal": true,
+    "ai_has_forced_lethal": false,
+    "actual_ai": "鉤縄(G c1 s8)",
+    "actual_hu": "ババン・回避反撃(B c0 s0)",
+    "lethal_vs_actual": [],
+    "ai_took_lethal": false,
+    "missed_lethal": false
+   },
+   {
+    "turn": 11,
+    "life_ai": 14,
+    "life_hu": 1,
+    "concerto_ai": 1,
+    "concerto_hu": 4,
+    "levels_ai": [
+     2,
+     0,
+     1
+    ],
+    "levels_hu": [
+     2,
+     0,
+     0
+    ],
+    "level_sum_ai": 3,
+    "level_sum_hu": 2,
+    "hand_n_ai": 3,
+    "hand_n_hu": 8,
+    "hand_ai": [
+     "燃える闘志",
+     "轟音",
+     "スキャン"
+    ],
+    "hand_hu": [
+     "燃える闘志",
+     "燃える烈火",
+     "鉤縄",
+     "轟音",
+     "躍動する炎",
+     "燃える闘志",
+     "ババン・回避反撃",
+     "羽の刃・回避"
+    ],
+    "hu_acts": [
+     "燃える闘志(R c1 s8)",
+     "燃える烈火(R c3 s12)",
+     "鉤縄(G c1 s8)",
+     "轟音(R c0 s0)",
+     "躍動する炎(R c0 s0)",
+     "燃える闘志(R c1 s8)",
+     "ババン・回避反撃(B c0 s0)",
+     "羽の刃・回避(B c0 s0)"
+    ],
+    "rows": [
+     {
+      "ai_act": "燃える闘志(R c1 s8)",
+      "cells": [
+       {
+        "lethal": true,
+        "life_ai": 13,
+        "life_hu": 0
+       },
+       {
+        "lethal": true,
+        "life_ai": 13,
+        "life_hu": 0
+       },
+       {
+        "lethal": true,
+        "life_ai": 14,
+        "life_hu": 0
+       },
+       {
+        "lethal": true,
+        "life_ai": 13,
+        "life_hu": 0
+       },
+       {
+        "lethal": true,
+        "life_ai": 13,
+        "life_hu": 0
+       },
+       {
+        "lethal": true,
+        "life_ai": 13,
+        "life_hu": 0
+       },
+       {
+        "lethal": true,
+        "life_ai": 14,
+        "life_hu": 0
+       },
+       {
+        "lethal": true,
+        "life_ai": 14,
+        "life_hu": 0
+       }
+      ]
+     },
+     {
+      "ai_act": "轟音(R c0 s0)",
+      "cells": [
+       {
+        "lethal": true,
+        "life_ai": 13,
+        "life_hu": 0
+       },
+       {
+        "lethal": true,
+        "life_ai": 13,
+        "life_hu": 0
+       },
+       {
+        "lethal": true,
+        "life_ai": 14,
+        "life_hu": 0
+       },
+       {
+        "lethal": true,
+        "life_ai": 13,
+        "life_hu": 0
+       },
+       {
+        "lethal": true,
+        "life_ai": 13,
+        "life_hu": 0
+       },
+       {
+        "lethal": true,
+        "life_ai": 13,
+        "life_hu": 0
+       },
+       {
+        "lethal": true,
+        "life_ai": 14,
+        "life_hu": 0
+       },
+       {
+        "lethal": true,
+        "life_ai": 14,
+        "life_hu": 0
+       }
+      ]
+     },
+     {
+      "ai_act": "スキャン(G c0 s5)",
+      "cells": [
+       {
+        "lethal": false,
+        "life_ai": 0,
+        "life_hu": 1
+       },
+       {
+        "lethal": false,
+        "life_ai": 0,
+        "life_hu": 1
+       },
+       {
+        "lethal": false,
+        "life_ai": 4,
+        "life_hu": 1
+       },
+       {
+        "lethal": false,
+        "life_ai": 0,
+        "life_hu": 1
+       },
+       {
+        "lethal": false,
+        "life_ai": 0,
+        "life_hu": 1
+       },
+       {
+        "lethal": false,
+        "life_ai": 0,
+        "life_hu": 1
+       },
+       {
+        "lethal": false,
+        "life_ai": 14,
+        "life_hu": 1
+       },
+       {
+        "lethal": false,
+        "life_ai": 14,
+        "life_hu": 1
+       }
+      ]
+     },
+     {
+      "ai_act": "pass",
+      "cells": [
+       {
+        "lethal": false,
+        "life_ai": 0,
+        "life_hu": 1
+       },
+       {
+        "lethal": false,
+        "life_ai": 0,
+        "life_hu": 1
+       },
+       {
+        "lethal": false,
+        "life_ai": 4,
+        "life_hu": 1
+       },
+       {
+        "lethal": false,
+        "life_ai": 0,
+        "life_hu": 1
+       },
+       {
+        "lethal": false,
+        "life_ai": 0,
+        "life_hu": 1
+       },
+       {
+        "lethal": false,
+        "life_ai": 0,
+        "life_hu": 1
+       },
+       {
+        "lethal": false,
+        "life_ai": 11,
+        "life_hu": 1
+       },
+       {
+        "lethal": false,
+        "life_ai": 0,
+        "life_hu": 1
+       }
+      ]
+     }
+    ],
+    "ai_has_lethal": true,
+    "ai_has_forced_lethal": true,
+    "actual_ai": "燃える闘志(R c1 s8)",
+    "actual_hu": "鉤縄(G c1 s8)",
+    "lethal_vs_actual": [
+     "燃える闘志(R c1 s8)",
+     "轟音(R c0 s0)"
+    ],
+    "ai_took_lethal": true,
+    "missed_lethal": false
+   }
+  ]
+ }
+]

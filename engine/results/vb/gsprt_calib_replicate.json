@@ -1,0 +1,69 @@
+{
+ "tool": "gate_sprt_calibration.py",
+ "params": {
+  "alpha": 0.025,
+  "beta": 0.1,
+  "p0": 0.5,
+  "p1": 0.55,
+  "max_games": 2400,
+  "A": 3.58351893845611,
+  "B": -2.2772672850097555,
+  "chunk_pairs": 20,
+  "pair_scores": [
+   0.0,
+   0.25,
+   0.5,
+   0.75,
+   1.0
+  ],
+  "epsilon": 0.001
+ },
+ "when": "2026-09-09T11:56:25+09:00",
+ "platform": "Linux-6.18.44-fc-v24-x86_64-with-glibc2.39",
+ "runs": 2,
+ "span_pairs": 400,
+ "seed0": 670400,
+ "rows": [
+  {
+   "run": 0,
+   "seed0": 670400,
+   "verdict": "fail",
+   "pairs": 140,
+   "games": 280,
+   "llr": -2.516881947822698,
+   "mean_pair_score": 0.4785714285714286,
+   "counts": [
+    39,
+    0,
+    68,
+    0,
+    33
+   ]
+  },
+  {
+   "run": 1,
+   "seed0": 670800,
+   "verdict": "fail",
+   "pairs": 100,
+   "games": 200,
+   "llr": -2.526440484020917,
+   "mean_pair_score": 0.465,
+   "counts": [
+    27,
+    0,
+    53,
+    0,
+    20
+   ]
+  }
+ ],
+ "n_pass": 0,
+ "n_fail": 2,
+ "n_span_limit": 0,
+ "pass_rate": 0.0,
+ "pass_wilson": [
+  0.0,
+  0.6576280471103807
+ ],
+ "sec": 2079.7
+}

@@ -1,0 +1,13 @@
+{
+ "champion": {
+  "games": 40,
+  "sec": 48.8,
+  "sec_per_game": 1.22
+ },
+ "b50": {
+  "games": 40,
+  "sec": 53.7,
+  "sec_per_game": 1.3425
+ },
+ "ratio": 1.1004
+}

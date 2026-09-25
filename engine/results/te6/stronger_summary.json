@@ -1,0 +1,55 @@
+{
+ "te": "TE-6 追加（裁定 C）",
+ "deck": "SD02",
+ "mode": "mirror",
+ "opponent": "planner_lh (planner, extra_turns=1)",
+ "engine": "Python",
+ "rules": "v0.18",
+ "result": {
+  "stronger_1_C1_kheb": {
+   "seeds": "716000..716299",
+   "n": 300,
+   "excluded": 0,
+   "wins": 134,
+   "p": 0.4467,
+   "ci95": 0.0563,
+   "lo": 0.3904,
+   "hi": 0.5029
+  },
+  "stronger_1_C2_s12": {
+   "seeds": "716000..716299",
+   "n": 300,
+   "excluded": 0,
+   "wins": 165,
+   "p": 0.55,
+   "ci95": 0.0563,
+   "lo": 0.4937,
+   "hi": 0.6063
+  },
+  "stronger_1_C3_mcts640": {
+   "seeds": "716000..716299",
+   "n": 300,
+   "excluded": 0,
+   "wins": 157,
+   "p": 0.5233,
+   "ci95": 0.0565,
+   "lo": 0.4668,
+   "hi": 0.5799
+  },
+  "stronger_2_C2_s12": {
+   "seeds": "717000..717599",
+   "n": 600,
+   "excluded": 0,
+   "wins": 298,
+   "p": 0.4967,
+   "ci95": 0.04,
+   "lo": 0.4567,
+   "hi": 0.5367
+  }
+ },
+ "pilot_sec_per_game_1worker_n2": {
+  "C1_kheb": 1.8,
+  "C2_s12": 1.4,
+  "C3_mcts640": 8.9
+ }
+}

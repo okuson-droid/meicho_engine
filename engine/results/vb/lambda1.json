@@ -1,0 +1,65 @@
+{
+ "deck": "SD001",
+ "vb": 1,
+ "seed0": 391300,
+ "n": 600,
+ "rows": [
+  {
+   "label": "0.5",
+   "net": "drl_sd001_vb1_lam05.json",
+   "p": 0.56,
+   "ci": 0.03971922792133133,
+   "lo": 0.5202807720786687,
+   "hi": 0.5997192279213314,
+   "wins": 336,
+   "decided": 600,
+   "rate": 6.095705744375691,
+   "canary": {
+    "games": 200,
+    "reached": 131,
+    "never": 69,
+    "mean_turn": 4.816793893129771,
+    "mean_extra_draws": 4.862595419847328,
+    "total_extra_draws_per_game": 3.185
+   }
+  },
+  {
+   "label": "0.7",
+   "net": "drl_sd001_vb1_lam07.json",
+   "p": 0.5283333333333333,
+   "ci": 0.039944045215127476,
+   "lo": 0.48838928811820587,
+   "hi": 0.5682773785484608,
+   "wins": 317,
+   "decided": 600,
+   "rate": 6.2577197722712175,
+   "canary": {
+    "games": 200,
+    "reached": 112,
+    "never": 88,
+    "mean_turn": 5.375,
+    "mean_extra_draws": 4.410714285714286,
+    "total_extra_draws_per_game": 2.47
+   }
+  },
+  {
+   "label": "1.0",
+   "net": "drl_sd001_vb1_lam10.json",
+   "p": 0.2916666666666667,
+   "ci": 0.036369948421026775,
+   "lo": 0.25529671824563993,
+   "hi": 0.32803661508769344,
+   "wins": 175,
+   "decided": 600,
+   "rate": 7.1607896273822655,
+   "canary": {
+    "games": 200,
+    "reached": 40,
+    "never": 160,
+    "mean_turn": 9.15,
+    "mean_extra_draws": 3.475,
+    "total_extra_draws_per_game": 0.695
+   }
+  }
+ ]
+}

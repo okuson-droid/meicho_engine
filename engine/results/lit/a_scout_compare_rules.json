@@ -1,0 +1,13 @@
+{
+ "n": 100,
+ "agree_with_argmax": {
+  "argmax": 1.0,
+  "regret": 0.76,
+  "uniform": 0.75
+ },
+ "differ_from_argmax": {
+  "argmax": 0.0,
+  "regret": 0.24,
+  "uniform": 0.25
+ }
+}

@@ -1,0 +1,13 @@
+{
+ "champion": {
+  "games": 40,
+  "sec": 48.6,
+  "sec_per_game": 1.215
+ },
+ "kheb": {
+  "games": 40,
+  "sec": 57.0,
+  "sec_per_game": 1.425
+ },
+ "ratio": 1.1728
+}

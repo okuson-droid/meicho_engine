@@ -1,0 +1,13 @@
+{
+ "champion": {
+  "games": 40,
+  "sec": 48.3,
+  "sec_per_game": 1.2075
+ },
+ "b90": {
+  "games": 40,
+  "sec": 56.4,
+  "sec_per_game": 1.41
+ },
+ "ratio": 1.1677
+}

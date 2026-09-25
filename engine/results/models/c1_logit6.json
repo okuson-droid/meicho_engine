@@ -1,0 +1,67 @@
+{
+  "kind": "logistic",
+  "model": "logit6",
+  "feature_names": [
+    "life_diff",
+    "life_me",
+    "life_opp",
+    "concerto_diff",
+    "concerto_me",
+    "concerto_opp",
+    "concerto_gap",
+    "hand_diff",
+    "hand_me",
+    "hand_opp",
+    "live_reds",
+    "live_red_ratio",
+    "level_diff",
+    "level_me",
+    "deck_me",
+    "deck_opp",
+    "trash_me",
+    "trash_opp",
+    "turn_no",
+    "clash_red_diff",
+    "clash_green_diff",
+    "clash_pass_diff"
+  ],
+  "cols": [
+    "life_diff",
+    "concerto_diff",
+    "hand_diff",
+    "live_reds",
+    "level_diff",
+    "turn_no"
+  ],
+  "interactions": [],
+  "w": [
+    1.1139665508071968,
+    0.7328175112454873,
+    1.119890453390918,
+    0.06078569948268484,
+    -0.06983673913139161,
+    0.0021730477479300976,
+    -0.002653947761088058
+  ],
+  "mu": [
+    0.0,
+    0.0,
+    0.0,
+    2.220552492738159,
+    0.0,
+    7.24660620072322
+  ],
+  "sd": [
+    5.269892855045309,
+    2.0239247186644063,
+    3.7748288830372148,
+    1.730594489069837,
+    1.6770675524008172,
+    4.278607991863049
+  ],
+  "lam": 10.0,
+  "dataset": "c1_v1",
+  "def_hash": "b383ca62d669ae72",
+  "rules_version": "v0.10",
+  "engine_version": "v0.1"
+}

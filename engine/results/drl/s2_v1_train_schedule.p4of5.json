@@ -1,0 +1,608 @@
+{
+ "generator": {
+  "tool": "experiments/make_s2_schedule.py",
+  "version": "s2sched-1",
+  "decision": "D-129",
+  "shares": {
+   "mirror": 0.4,
+   "cross": 0.4,
+   "anchor": 0.2
+  },
+  "anchor_opponents": [
+   "heuristic",
+   "greedy",
+   "planner"
+  ],
+  "n_total_requested": 10000,
+  "per_block": {
+   "mirror": 250,
+   "cross": 34,
+   "anchor": 42
+  },
+  "only": null,
+  "pilot_n": null,
+  "band": [
+   827000,
+   838999
+  ],
+  "env": {
+   "path": "results/decksim/env_v1.json",
+   "version": "decksim-3"
+  }
+ },
+ "n_total_actual": 10096,
+ "teacher": {
+  "name": "netfree",
+  "tau": 0.0
+ },
+ "name": "s2_v1_train.p4of5",
+ "part": {
+  "index": 4,
+  "of": 5,
+  "games": 2016
+ },
+ "decks": {
+  "env/ENV_SANGE_RF_ANKO": {
+   "lineage": "ENV_SANGE_RF_ANKO",
+   "group": 0,
+   "split": "train"
+  },
+  "env/ENV_SANGE_RF_CHIXIA": {
+   "lineage": "ENV_SANGE_RF_CHIXIA",
+   "group": 1,
+   "split": "train"
+  },
+  "env/ENV_SANGE_RF_JINSHI": {
+   "lineage": "ENV_SANGE_RF_JINSHI",
+   "group": 2,
+   "split": "train"
+  },
+  "env/ENV_SANGE_RM_ANKO": {
+   "lineage": "ENV_SANGE_RF_ANKO",
+   "group": 0,
+   "split": "train"
+  },
+  "env/ENV_SANGE_RM_CHIXIA": {
+   "lineage": "ENV_SANGE_RF_CHIXIA",
+   "group": 1,
+   "split": "train"
+  },
+  "env/ENV_SANGE_RM_JINSHI": {
+   "lineage": "ENV_SANGE_RF_JINSHI",
+   "group": 2,
+   "split": "train"
+  },
+  "env/ENV_SANGE_SK_ANKO": {
+   "lineage": "ENV_SANGE_SK_ANKO",
+   "group": 4,
+   "split": "train"
+  },
+  "env/ENV_SANGE_SK_TSUBAKI": {
+   "lineage": "ENV_SANGE_SK_TSUBAKI",
+   "group": 7,
+   "split": "train"
+  },
+  "env/ENV_YANG_RF_ANKO": {
+   "lineage": "ENV_SANGE_RF_ANKO",
+   "group": 0,
+   "split": "train"
+  },
+  "env/ENV_YANG_RF_CHIXIA": {
+   "lineage": "ENV_SANGE_RF_CHIXIA",
+   "group": 1,
+   "split": "train"
+  },
+  "env/ENV_YANG_RF_JINSHI": {
+   "lineage": "ENV_SANGE_RF_JINSHI",
+   "group": 2,
+   "split": "train"
+  },
+  "env/ENV_YANG_RM_ANKO": {
+   "lineage": "ENV_SANGE_RF_ANKO",
+   "group": 0,
+   "split": "train"
+  },
+  "env/ENV_YANG_RM_CHIXIA": {
+   "lineage": "ENV_SANGE_RF_CHIXIA",
+   "group": 1,
+   "split": "train"
+  },
+  "env/ENV_YANG_RM_JINSHI": {
+   "lineage": "ENV_SANGE_RF_JINSHI",
+   "group": 2,
+   "split": "train"
+  },
+  "env/ENV_YANG_SK_ANKO": {
+   "lineage": "ENV_SANGE_SK_ANKO",
+   "group": 4,
+   "split": "train"
+  },
+  "env/ENV_YANG_SK_TSUBAKI": {
+   "lineage": "ENV_SANGE_SK_TSUBAKI",
+   "group": 7,
+   "split": "train"
+  }
+ },
+ "blocks": [
+  {
+   "kind": "anchor",
+   "deck_a": "env/ENV_SANGE_RF_ANKO",
+   "deck_b": "env/ENV_SANGE_RF_ANKO",
+   "seed0": 835080,
+   "n": 42,
+   "record": "a",
+   "opponent": "heuristic",
+   "p_planned": 0.004160063391442155
+  },
+  {
+   "kind": "anchor",
+   "deck_a": "env/ENV_SANGE_RF_ANKO",
+   "deck_b": "env/ENV_SANGE_RF_ANKO",
+   "seed0": 835122,
+   "n": 42,
+   "record": "a",
+   "opponent": "greedy",
+   "p_planned": 0.004160063391442155
+  },
+  {
+   "kind": "anchor",
+   "deck_a": "env/ENV_SANGE_RF_ANKO",
+   "deck_b": "env/ENV_SANGE_RF_ANKO",
+   "seed0": 835164,
+   "n": 42,
+   "record": "a",
+   "opponent": "planner",
+   "p_planned": 0.004160063391442155
+  },
+  {
+   "kind": "anchor",
+   "deck_a": "env/ENV_SANGE_RF_CHIXIA",
+   "deck_b": "env/ENV_SANGE_RF_CHIXIA",
+   "seed0": 835206,
+   "n": 42,
+   "record": "a",
+   "opponent": "heuristic",
+   "p_planned": 0.004160063391442155
+  },
+  {
+   "kind": "anchor",
+   "deck_a": "env/ENV_SANGE_RF_CHIXIA",
+   "deck_b": "env/ENV_SANGE_RF_CHIXIA",
+   "seed0": 835248,
+   "n": 42,
+   "record": "a",
+   "opponent": "greedy",
+   "p_planned": 0.004160063391442155
+  },
+  {
+   "kind": "anchor",
+   "deck_a": "env/ENV_SANGE_RF_CHIXIA",
+   "deck_b": "env/ENV_SANGE_RF_CHIXIA",
+   "seed0": 835290,
+   "n": 42,
+   "record": "a",
+   "opponent": "planner",
+   "p_planned": 0.004160063391442155
+  },
+  {
+   "kind": "anchor",
+   "deck_a": "env/ENV_SANGE_RF_JINSHI",
+   "deck_b": "env/ENV_SANGE_RF_JINSHI",
+   "seed0": 835332,
+   "n": 42,
+   "record": "a",
+   "opponent": "heuristic",
+   "p_planned": 0.004160063391442155
+  },
+  {
+   "kind": "anchor",
+   "deck_a": "env/ENV_SANGE_RF_JINSHI",
+   "deck_b": "env/ENV_SANGE_RF_JINSHI",
+   "seed0": 835374,
+   "n": 42,
+   "record": "a",
+   "opponent": "greedy",
+   "p_planned": 0.004160063391442155
+  },
+  {
+   "kind": "anchor",
+   "deck_a": "env/ENV_SANGE_RF_JINSHI",
+   "deck_b": "env/ENV_SANGE_RF_JINSHI",
+   "seed0": 835416,
+   "n": 42,
+   "record": "a",
+   "opponent": "planner",
+   "p_planned": 0.004160063391442155
+  },
+  {
+   "kind": "anchor",
+   "deck_a": "env/ENV_SANGE_RM_ANKO",
+   "deck_b": "env/ENV_SANGE_RM_ANKO",
+   "seed0": 835458,
+   "n": 42,
+   "record": "a",
+   "opponent": "heuristic",
+   "p_planned": 0.004160063391442155
+  },
+  {
+   "kind": "anchor",
+   "deck_a": "env/ENV_SANGE_RM_ANKO",
+   "deck_b": "env/ENV_SANGE_RM_ANKO",
+   "seed0": 835500,
+   "n": 42,
+   "record": "a",
+   "opponent": "greedy",
+   "p_planned": 0.004160063391442155
+  },
+  {
+   "kind": "anchor",
+   "deck_a": "env/ENV_SANGE_RM_ANKO",
+   "deck_b": "env/ENV_SANGE_RM_ANKO",
+   "seed0": 835542,
+   "n": 42,
+   "record": "a",
+   "opponent": "planner",
+   "p_planned": 0.004160063391442155
+  },
+  {
+   "kind": "anchor",
+   "deck_a": "env/ENV_SANGE_RM_CHIXIA",
+   "deck_b": "env/ENV_SANGE_RM_CHIXIA",
+   "seed0": 835584,
+   "n": 42,
+   "record": "a",
+   "opponent": "heuristic",
+   "p_planned": 0.004160063391442155
+  },
+  {
+   "kind": "anchor",
+   "deck_a": "env/ENV_SANGE_RM_CHIXIA",
+   "deck_b": "env/ENV_SANGE_RM_CHIXIA",
+   "seed0": 835626,
+   "n": 42,
+   "record": "a",
+   "opponent": "greedy",
+   "p_planned": 0.004160063391442155
+  },
+  {
+   "kind": "anchor",
+   "deck_a": "env/ENV_SANGE_RM_CHIXIA",
+   "deck_b": "env/ENV_SANGE_RM_CHIXIA",
+   "seed0": 835668,
+   "n": 42,
+   "record": "a",
+   "opponent": "planner",
+   "p_planned": 0.004160063391442155
+  },
+  {
+   "kind": "anchor",
+   "deck_a": "env/ENV_SANGE_RM_JINSHI",
+   "deck_b": "env/ENV_SANGE_RM_JINSHI",
+   "seed0": 835710,
+   "n": 42,
+   "record": "a",
+   "opponent": "heuristic",
+   "p_planned": 0.004160063391442155
+  },
+  {
+   "kind": "anchor",
+   "deck_a": "env/ENV_SANGE_RM_JINSHI",
+   "deck_b": "env/ENV_SANGE_RM_JINSHI",
+   "seed0": 835752,
+   "n": 42,
+   "record": "a",
+   "opponent": "greedy",
+   "p_planned": 0.004160063391442155
+  },
+  {
+   "kind": "anchor",
+   "deck_a": "env/ENV_SANGE_RM_JINSHI",
+   "deck_b": "env/ENV_SANGE_RM_JINSHI",
+   "seed0": 835794,
+   "n": 42,
+   "record": "a",
+   "opponent": "planner",
+   "p_planned": 0.004160063391442155
+  },
+  {
+   "kind": "anchor",
+   "deck_a": "env/ENV_SANGE_SK_ANKO",
+   "deck_b": "env/ENV_SANGE_SK_ANKO",
+   "seed0": 835836,
+   "n": 42,
+   "record": "a",
+   "opponent": "heuristic",
+   "p_planned": 0.004160063391442155
+  },
+  {
+   "kind": "anchor",
+   "deck_a": "env/ENV_SANGE_SK_ANKO",
+   "deck_b": "env/ENV_SANGE_SK_ANKO",
+   "seed0": 835878,
+   "n": 42,
+   "record": "a",
+   "opponent": "greedy",
+   "p_planned": 0.004160063391442155
+  },
+  {
+   "kind": "anchor",
+   "deck_a": "env/ENV_SANGE_SK_ANKO",
+   "deck_b": "env/ENV_SANGE_SK_ANKO",
+   "seed0": 835920,
+   "n": 42,
+   "record": "a",
+   "opponent": "planner",
+   "p_planned": 0.004160063391442155
+  },
+  {
+   "kind": "anchor",
+   "deck_a": "env/ENV_SANGE_SK_TSUBAKI",
+   "deck_b": "env/ENV_SANGE_SK_TSUBAKI",
+   "seed0": 835962,
+   "n": 42,
+   "record": "a",
+   "opponent": "heuristic",
+   "p_planned": 0.004160063391442155
+  },
+  {
+   "kind": "anchor",
+   "deck_a": "env/ENV_SANGE_SK_TSUBAKI",
+   "deck_b": "env/ENV_SANGE_SK_TSUBAKI",
+   "seed0": 836004,
+   "n": 42,
+   "record": "a",
+   "opponent": "greedy",
+   "p_planned": 0.004160063391442155
+  },
+  {
+   "kind": "anchor",
+   "deck_a": "env/ENV_SANGE_SK_TSUBAKI",
+   "deck_b": "env/ENV_SANGE_SK_TSUBAKI",
+   "seed0": 836046,
+   "n": 42,
+   "record": "a",
+   "opponent": "planner",
+   "p_planned": 0.004160063391442155
+  },
+  {
+   "kind": "anchor",
+   "deck_a": "env/ENV_YANG_RF_ANKO",
+   "deck_b": "env/ENV_YANG_RF_ANKO",
+   "seed0": 836088,
+   "n": 42,
+   "record": "a",
+   "opponent": "heuristic",
+   "p_planned": 0.004160063391442155
+  },
+  {
+   "kind": "anchor",
+   "deck_a": "env/ENV_YANG_RF_ANKO",
+   "deck_b": "env/ENV_YANG_RF_ANKO",
+   "seed0": 836130,
+   "n": 42,
+   "record": "a",
+   "opponent": "greedy",
+   "p_planned": 0.004160063391442155
+  },
+  {
+   "kind": "anchor",
+   "deck_a": "env/ENV_YANG_RF_ANKO",
+   "deck_b": "env/ENV_YANG_RF_ANKO",
+   "seed0": 836172,
+   "n": 42,
+   "record": "a",
+   "opponent": "planner",
+   "p_planned": 0.004160063391442155
+  },
+  {
+   "kind": "anchor",
+   "deck_a": "env/ENV_YANG_RF_CHIXIA",
+   "deck_b": "env/ENV_YANG_RF_CHIXIA",
+   "seed0": 836214,
+   "n": 42,
+   "record": "a",
+   "opponent": "heuristic",
+   "p_planned": 0.004160063391442155
+  },
+  {
+   "kind": "anchor",
+   "deck_a": "env/ENV_YANG_RF_CHIXIA",
+   "deck_b": "env/ENV_YANG_RF_CHIXIA",
+   "seed0": 836256,
+   "n": 42,
+   "record": "a",
+   "opponent": "greedy",
+   "p_planned": 0.004160063391442155
+  },
+  {
+   "kind": "anchor",
+   "deck_a": "env/ENV_YANG_RF_CHIXIA",
+   "deck_b": "env/ENV_YANG_RF_CHIXIA",
+   "seed0": 836298,
+   "n": 42,
+   "record": "a",
+   "opponent": "planner",
+   "p_planned": 0.004160063391442155
+  },
+  {
+   "kind": "anchor",
+   "deck_a": "env/ENV_YANG_RF_JINSHI",
+   "deck_b": "env/ENV_YANG_RF_JINSHI",
+   "seed0": 836340,
+   "n": 42,
+   "record": "a",
+   "opponent": "heuristic",
+   "p_planned": 0.004160063391442155
+  },
+  {
+   "kind": "anchor",
+   "deck_a": "env/ENV_YANG_RF_JINSHI",
+   "deck_b": "env/ENV_YANG_RF_JINSHI",
+   "seed0": 836382,
+   "n": 42,
+   "record": "a",
+   "opponent": "greedy",
+   "p_planned": 0.004160063391442155
+  },
+  {
+   "kind": "anchor",
+   "deck_a": "env/ENV_YANG_RF_JINSHI",
+   "deck_b": "env/ENV_YANG_RF_JINSHI",
+   "seed0": 836424,
+   "n": 42,
+   "record": "a",
+   "opponent": "planner",
+   "p_planned": 0.004160063391442155
+  },
+  {
+   "kind": "anchor",
+   "deck_a": "env/ENV_YANG_RM_ANKO",
+   "deck_b": "env/ENV_YANG_RM_ANKO",
+   "seed0": 836466,
+   "n": 42,
+   "record": "a",
+   "opponent": "heuristic",
+   "p_planned": 0.004160063391442155
+  },
+  {
+   "kind": "anchor",
+   "deck_a": "env/ENV_YANG_RM_ANKO",
+   "deck_b": "env/ENV_YANG_RM_ANKO",
+   "seed0": 836508,
+   "n": 42,
+   "record": "a",
+   "opponent": "greedy",
+   "p_planned": 0.004160063391442155
+  },
+  {
+   "kind": "anchor",
+   "deck_a": "env/ENV_YANG_RM_ANKO",
+   "deck_b": "env/ENV_YANG_RM_ANKO",
+   "seed0": 836550,
+   "n": 42,
+   "record": "a",
+   "opponent": "planner",
+   "p_planned": 0.004160063391442155
+  },
+  {
+   "kind": "anchor",
+   "deck_a": "env/ENV_YANG_RM_CHIXIA",
+   "deck_b": "env/ENV_YANG_RM_CHIXIA",
+   "seed0": 836592,
+   "n": 42,
+   "record": "a",
+   "opponent": "heuristic",
+   "p_planned": 0.004160063391442155
+  },
+  {
+   "kind": "anchor",
+   "deck_a": "env/ENV_YANG_RM_CHIXIA",
+   "deck_b": "env/ENV_YANG_RM_CHIXIA",
+   "seed0": 836634,
+   "n": 42,
+   "record": "a",
+   "opponent": "greedy",
+   "p_planned": 0.004160063391442155
+  },
+  {
+   "kind": "anchor",
+   "deck_a": "env/ENV_YANG_RM_CHIXIA",
+   "deck_b": "env/ENV_YANG_RM_CHIXIA",
+   "seed0": 836676,
+   "n": 42,
+   "record": "a",
+   "opponent": "planner",
+   "p_planned": 0.004160063391442155
+  },
+  {
+   "kind": "anchor",
+   "deck_a": "env/ENV_YANG_RM_JINSHI",
+   "deck_b": "env/ENV_YANG_RM_JINSHI",
+   "seed0": 836718,
+   "n": 42,
+   "record": "a",
+   "opponent": "heuristic",
+   "p_planned": 0.004160063391442155
+  },
+  {
+   "kind": "anchor",
+   "deck_a": "env/ENV_YANG_RM_JINSHI",
+   "deck_b": "env/ENV_YANG_RM_JINSHI",
+   "seed0": 836760,
+   "n": 42,
+   "record": "a",
+   "opponent": "greedy",
+   "p_planned": 0.004160063391442155
+  },
+  {
+   "kind": "anchor",
+   "deck_a": "env/ENV_YANG_RM_JINSHI",
+   "deck_b": "env/ENV_YANG_RM_JINSHI",
+   "seed0": 836802,
+   "n": 42,
+   "record": "a",
+   "opponent": "planner",
+   "p_planned": 0.004160063391442155
+  },
+  {
+   "kind": "anchor",
+   "deck_a": "env/ENV_YANG_SK_ANKO",
+   "deck_b": "env/ENV_YANG_SK_ANKO",
+   "seed0": 836844,
+   "n": 42,
+   "record": "a",
+   "opponent": "heuristic",
+   "p_planned": 0.004160063391442155
+  },
+  {
+   "kind": "anchor",
+   "deck_a": "env/ENV_YANG_SK_ANKO",
+   "deck_b": "env/ENV_YANG_SK_ANKO",
+   "seed0": 836886,
+   "n": 42,
+   "record": "a",
+   "opponent": "greedy",
+   "p_planned": 0.004160063391442155
+  },
+  {
+   "kind": "anchor",
+   "deck_a": "env/ENV_YANG_SK_ANKO",
+   "deck_b": "env/ENV_YANG_SK_ANKO",
+   "seed0": 836928,
+   "n": 42,
+   "record": "a",
+   "opponent": "planner",
+   "p_planned": 0.004160063391442155
+  },
+  {
+   "kind": "anchor",
+   "deck_a": "env/ENV_YANG_SK_TSUBAKI",
+   "deck_b": "env/ENV_YANG_SK_TSUBAKI",
+   "seed0": 836970,
+   "n": 42,
+   "record": "a",
+   "opponent": "heuristic",
+   "p_planned": 0.004160063391442155
+  },
+  {
+   "kind": "anchor",
+   "deck_a": "env/ENV_YANG_SK_TSUBAKI",
+   "deck_b": "env/ENV_YANG_SK_TSUBAKI",
+   "seed0": 837012,
+   "n": 42,
+   "record": "a",
+   "opponent": "greedy",
+   "p_planned": 0.004160063391442155
+  },
+  {
+   "kind": "anchor",
+   "deck_a": "env/ENV_YANG_SK_TSUBAKI",
+   "deck_b": "env/ENV_YANG_SK_TSUBAKI",
+   "seed0": 837054,
+   "n": 42,
+   "record": "a",
+   "opponent": "planner",
+   "p_planned": 0.004160063391442155
+  }
+ ]
+}

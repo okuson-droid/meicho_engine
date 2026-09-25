@@ -1,0 +1,40 @@
+{"seed": 659300, "ai_seat": 0, "clash": 7, "lethal_avail": 1, "lethal_taken": 1, "missed": [], "winner": 0, "turns": 7}
+{"seed": 659301, "ai_seat": 1, "clash": 11, "lethal_avail": 1, "lethal_taken": 1, "missed": [], "winner": 1, "turns": 11}
+{"seed": 659302, "ai_seat": 0, "clash": 14, "lethal_avail": 1, "lethal_taken": 1, "missed": [], "winner": 0, "turns": 14}
+{"seed": 659303, "ai_seat": 1, "clash": 10, "lethal_avail": 1, "lethal_taken": 1, "missed": [], "winner": 1, "turns": 10}
+{"seed": 659304, "ai_seat": 0, "clash": 12, "lethal_avail": 1, "lethal_taken": 1, "missed": [], "winner": 0, "turns": 12}
+{"seed": 659305, "ai_seat": 1, "clash": 8, "lethal_avail": 1, "lethal_taken": 1, "missed": [], "winner": 1, "turns": 8}
+{"seed": 659306, "ai_seat": 0, "clash": 17, "lethal_avail": 3, "lethal_taken": 1, "missed": [[13, "ジャンプ(G0)", "opp:息継ぎ(R0)", "lethal:旋風(R2)", "life me6/opp4 conc3"], [14, "ババン・回避反撃(B0)", "opp:スキャン(G0)", "lethal:旋風(R2)", "life me5/opp4 conc3"]], "winner": 0, "turns": 17}
+{"seed": 659307, "ai_seat": 1, "clash": 16, "lethal_avail": 0, "lethal_taken": 0, "missed": [], "winner": 0, "turns": 16}
+{"seed": 659308, "ai_seat": 0, "clash": 11, "lethal_avail": 1, "lethal_taken": 1, "missed": [], "winner": 0, "turns": 11}
+{"seed": 659309, "ai_seat": 1, "clash": 10, "lethal_avail": 1, "lethal_taken": 1, "missed": [], "winner": 1, "turns": 10}
+{"seed": 659310, "ai_seat": 0, "clash": 11, "lethal_avail": 1, "lethal_taken": 1, "missed": [], "winner": 0, "turns": 11}
+{"seed": 659311, "ai_seat": 1, "clash": 7, "lethal_avail": 1, "lethal_taken": 1, "missed": [], "winner": 1, "turns": 7}
+{"seed": 659312, "ai_seat": 0, "clash": 11, "lethal_avail": 1, "lethal_taken": 1, "missed": [], "winner": 0, "turns": 11}
+{"seed": 659313, "ai_seat": 1, "clash": 20, "lethal_avail": 1, "lethal_taken": 1, "missed": [], "winner": 1, "turns": 20}
+{"seed": 659314, "ai_seat": 0, "clash": 12, "lethal_avail": 1, "lethal_taken": 1, "missed": [], "winner": 0, "turns": 12}
+{"seed": 659315, "ai_seat": 1, "clash": 8, "lethal_avail": 1, "lethal_taken": 1, "missed": [], "winner": 1, "turns": 8}
+{"seed": 659316, "ai_seat": 0, "clash": 12, "lethal_avail": 1, "lethal_taken": 1, "missed": [], "winner": 0, "turns": 13}
+{"seed": 659317, "ai_seat": 1, "clash": 7, "lethal_avail": 1, "lethal_taken": 1, "missed": [], "winner": 1, "turns": 7}
+{"seed": 659318, "ai_seat": 0, "clash": 7, "lethal_avail": 1, "lethal_taken": 1, "missed": [], "winner": 0, "turns": 7}
+{"seed": 659319, "ai_seat": 1, "clash": 10, "lethal_avail": 1, "lethal_taken": 1, "missed": [], "winner": 1, "turns": 10}
+{"seed": 659320, "ai_seat": 0, "clash": 11, "lethal_avail": 1, "lethal_taken": 1, "missed": [], "winner": 0, "turns": 11}
+{"seed": 659321, "ai_seat": 1, "clash": 13, "lethal_avail": 2, "lethal_taken": 1, "missed": [[11, "ババン・回避反撃(B0)", "opp:燃える闘志(R1)", "lethal:旋風(R2)", "life me7/opp16 conc7"]], "winner": 1, "turns": 13}
+{"seed": 659322, "ai_seat": 0, "clash": 13, "lethal_avail": 1, "lethal_taken": 1, "missed": [], "winner": 0, "turns": 13}
+{"seed": 659323, "ai_seat": 1, "clash": 11, "lethal_avail": 0, "lethal_taken": 0, "missed": [], "winner": 0, "turns": 11}
+{"seed": 659324, "ai_seat": 0, "clash": 13, "lethal_avail": 1, "lethal_taken": 1, "missed": [], "winner": 0, "turns": 13}
+{"seed": 659325, "ai_seat": 1, "clash": 11, "lethal_avail": 1, "lethal_taken": 1, "missed": [], "winner": 1, "turns": 11}
+{"seed": 659326, "ai_seat": 0, "clash": 14, "lethal_avail": 2, "lethal_taken": 1, "missed": [[12, "スキャン(G0)", "opp:音の形・通常攻撃(R0)", "lethal:旋風(R2),羽の刃・回避(B0),羽の刃・回避(B0)", "life me9/opp2 conc2"]], "winner": 0, "turns": 14}
+{"seed": 659327, "ai_seat": 1, "clash": 13, "lethal_avail": 0, "lethal_taken": 0, "missed": [], "winner": 0, "turns": 13}
+{"seed": 659328, "ai_seat": 0, "clash": 6, "lethal_avail": 1, "lethal_taken": 1, "missed": [], "winner": 0, "turns": 6}
+{"seed": 659329, "ai_seat": 1, "clash": 16, "lethal_avail": 0, "lethal_taken": 0, "missed": [], "winner": 0, "turns": 16}
+{"seed": 659330, "ai_seat": 0, "clash": 10, "lethal_avail": 1, "lethal_taken": 1, "missed": [], "winner": 0, "turns": 10}
+{"seed": 659331, "ai_seat": 1, "clash": 16, "lethal_avail": 2, "lethal_taken": 1, "missed": [[8, "鉤縄(G1)", "opp:燃える闘志(R1)", "lethal:燃える烈火(R3),燃える烈火(R3)", "life me18/opp18 conc7"]], "winner": 1, "turns": 16}
+{"seed": 659332, "ai_seat": 0, "clash": 9, "lethal_avail": 1, "lethal_taken": 1, "missed": [], "winner": 0, "turns": 9}
+{"seed": 659333, "ai_seat": 1, "clash": 10, "lethal_avail": 1, "lethal_taken": 1, "missed": [], "winner": 1, "turns": 10}
+{"seed": 659334, "ai_seat": 0, "clash": 9, "lethal_avail": 0, "lethal_taken": 0, "missed": [], "winner": 0, "turns": 9}
+{"seed": 659335, "ai_seat": 1, "clash": 12, "lethal_avail": 0, "lethal_taken": 0, "missed": [], "winner": 0, "turns": 12}
+{"seed": 659336, "ai_seat": 0, "clash": 11, "lethal_avail": 2, "lethal_taken": 1, "missed": [[10, "鉤縄(G1)", "opp:pass", "lethal:ババン・通常攻撃(R0),燃える烈火(R3),燃える闘志(R1)", "life me10/opp10 conc4"]], "winner": 0, "turns": 11}
+{"seed": 659337, "ai_seat": 1, "clash": 10, "lethal_avail": 1, "lethal_taken": 1, "missed": [], "winner": 1, "turns": 10}
+{"seed": 659338, "ai_seat": 0, "clash": 12, "lethal_avail": 1, "lethal_taken": 1, "missed": [], "winner": 0, "turns": 12}
+{"seed": 659339, "ai_seat": 1, "clash": 10, "lethal_avail": 1, "lethal_taken": 1, "missed": [], "winner": 1, "turns": 10}

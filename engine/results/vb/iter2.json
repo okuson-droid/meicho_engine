@@ -1,0 +1,103 @@
+{
+ "deck": "SD001",
+ "iter": 2,
+ "seed0": 394000,
+ "null": false,
+ "new": "反復3 の計画探索（地平+1ターン・葉=V（drl_sd001_vb2.json）／相手モデル=π₀（drl_sd001_s1.json・根だけ））",
+ "old": "反復2 の計画探索（地平+1ターン・葉=V（drl_sd001_vb1.json）／相手モデル=π₀（drl_sd001_s1.json・根だけ））",
+ "n": 1200,
+ "anchor_n": 600,
+ "runs": [
+  {
+   "name": "1. 門番: 新 vs 前の版",
+   "seed0": 394000,
+   "wins": 635,
+   "decided": 1200,
+   "games": 1200,
+   "p": 0.5291666666666667,
+   "ci": 0.02824198960505176,
+   "lo": 0.5009246770616149,
+   "hi": 0.5574086562717184,
+   "rate": 1.7121614536952474,
+   "passes_gate": true,
+   "border": true
+  },
+  {
+   "name": "2. 錨: vs 素planner",
+   "seed0": 395300,
+   "new_p": 0.5883333333333334,
+   "old_p": 0.58,
+   "paired": true
+  },
+  {
+   "name": "2. 錨: vs H",
+   "seed0": 396000,
+   "new_p": 0.9016666666666666,
+   "old_p": 0.9016666666666666,
+   "paired": true
+  },
+  {
+   "name": "2. 錨: vs 貪欲",
+   "seed0": 396700,
+   "new_p": 0.855,
+   "old_p": 0.8183333333333334,
+   "paired": true
+  }
+ ],
+ "anchors": [
+  {
+   "pairs": 600,
+   "new_p": 0.5883333333333334,
+   "old_p": 0.58,
+   "diff": 0.008333333333333333,
+   "ci": 0.05321766637912214,
+   "new_only": 135,
+   "old_only": 130,
+   "clearly_worse": false,
+   "opponent": "素planner",
+   "seed0": 395300
+  },
+  {
+   "pairs": 600,
+   "new_p": 0.9016666666666666,
+   "old_p": 0.9016666666666666,
+   "diff": 0.0,
+   "ci": 0.03236533248400551,
+   "new_only": 49,
+   "old_only": 49,
+   "clearly_worse": false,
+   "opponent": "H",
+   "seed0": 396000
+  },
+  {
+   "pairs": 600,
+   "new_p": 0.855,
+   "old_p": 0.8183333333333334,
+   "diff": 0.03666666666666667,
+   "ci": 0.03912266532255019,
+   "new_only": 83,
+   "old_only": 61,
+   "clearly_worse": false,
+   "opponent": "貪欲",
+   "seed0": 396700
+  }
+ ],
+ "canary": {
+  "前の版": {
+   "games": 200,
+   "reached": 107,
+   "never": 93,
+   "mean_turn": 6.08411214953271,
+   "mean_extra_draws": 4.05607476635514,
+   "total_extra_draws_per_game": 2.17
+  },
+  "新しい版": {
+   "games": 200,
+   "reached": 130,
+   "never": 70,
+   "mean_turn": 4.8,
+   "mean_extra_draws": 4.630769230769231,
+   "total_extra_draws_per_game": 3.01
+  }
+ }
+}

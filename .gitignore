@@ -11,8 +11,9 @@ cards/
 
 # ---- 大物・中間生成物 ----
 Claude outputs/
-engine/results/*/
-!engine/results/human_games/
+engine/results/**/*.bin
+engine/results/**/*.bak.json
+engine/results/models/s2v_id_ens3.json
 engine/rust/target/
 engine/rust/dist/
 engine/_shim/

@@ -1,0 +1,1235 @@
+{
+ "_comment": "D-065 便 4・輪 2 の反復 4' の記録（2026-09-06）。**この 1 本があれば .bin は捨ててよい。**各塊の regenerate をその順に打てば同じ記録が作り直せる（取り直しの乱数は案 C で分離済みなので再現する）。",
+ "deck": "SD001",
+ "loop": 2,
+ "iter": 4,
+ "tau": 0.01,
+ "agent": "輪2 反復4 の計画探索（地平+1・葉=V_3・相手モデル=π₀・選択フェイズも探索 solo4・代打ち=π 小・取り直し 4）",
+ "band": "480000..489849（下見 480000..480199／valid 480200..481099／自己対戦 481100..487099／対H 487100..488099／対貪欲 488100..489099／δ 489100..489849）",
+ "totals": {
+  "valid": 900,
+  "train_selfplay": 6000,
+  "train_league_H": 1000,
+  "train_league_greedy": 1000,
+  "train_delta": 750
+ },
+ "n_total": 9650,
+ "n_blocks": 59,
+ "blocks": [
+  {
+   "kind": "valid",
+   "prefix": "results/drl/vc4_valid_0",
+   "seed0": 480200,
+   "n": 150,
+   "record": "both",
+   "format": "MCDR v3",
+   "regenerate": "python3 experiments/drl_record.py --deck SD001 --vb 4 --loop 2 --record both --tau 0.01 --seed0 480200 --n 150 --out results/drl/vc4_valid_0 --workers 2",
+   "delta_blocks": null
+  },
+  {
+   "kind": "valid",
+   "prefix": "results/drl/vc4_valid_1",
+   "seed0": 480350,
+   "n": 150,
+   "record": "both",
+   "format": "MCDR v3",
+   "regenerate": "python3 experiments/drl_record.py --deck SD001 --vb 4 --loop 2 --record both --tau 0.01 --seed0 480350 --n 150 --out results/drl/vc4_valid_1 --workers 2",
+   "delta_blocks": null
+  },
+  {
+   "kind": "valid",
+   "prefix": "results/drl/vc4_valid_2",
+   "seed0": 480500,
+   "n": 150,
+   "record": "both",
+   "format": "MCDR v3",
+   "regenerate": "python3 experiments/drl_record.py --deck SD001 --vb 4 --loop 2 --record both --tau 0.01 --seed0 480500 --n 150 --out results/drl/vc4_valid_2 --workers 2",
+   "delta_blocks": null
+  },
+  {
+   "kind": "valid",
+   "prefix": "results/drl/vc4_valid_3",
+   "seed0": 480650,
+   "n": 150,
+   "record": "both",
+   "format": "MCDR v3",
+   "regenerate": "python3 experiments/drl_record.py --deck SD001 --vb 4 --loop 2 --record both --tau 0.01 --seed0 480650 --n 150 --out results/drl/vc4_valid_3 --workers 2",
+   "delta_blocks": null
+  },
+  {
+   "kind": "valid",
+   "prefix": "results/drl/vc4_valid_4",
+   "seed0": 480800,
+   "n": 150,
+   "record": "both",
+   "format": "MCDR v3",
+   "regenerate": "python3 experiments/drl_record.py --deck SD001 --vb 4 --loop 2 --record both --tau 0.01 --seed0 480800 --n 150 --out results/drl/vc4_valid_4 --workers 2",
+   "delta_blocks": null
+  },
+  {
+   "kind": "valid",
+   "prefix": "results/drl/vc4_valid_5",
+   "seed0": 480950,
+   "n": 150,
+   "record": "both",
+   "format": "MCDR v3",
+   "regenerate": "python3 experiments/drl_record.py --deck SD001 --vb 4 --loop 2 --record both --tau 0.01 --seed0 480950 --n 150 --out results/drl/vc4_valid_5 --workers 2",
+   "delta_blocks": null
+  },
+  {
+   "kind": "train_selfplay",
+   "prefix": "results/drl/vc4_train_sp_00",
+   "seed0": 481100,
+   "n": 150,
+   "record": "both",
+   "format": "MCDR v3",
+   "regenerate": "python3 experiments/drl_record.py --deck SD001 --vb 4 --loop 2 --record both --tau 0.01 --seed0 481100 --n 150 --out results/drl/vc4_train_sp_00 --workers 2",
+   "delta_blocks": null
+  },
+  {
+   "kind": "train_selfplay",
+   "prefix": "results/drl/vc4_train_sp_01",
+   "seed0": 481250,
+   "n": 150,
+   "record": "both",
+   "format": "MCDR v3",
+   "regenerate": "python3 experiments/drl_record.py --deck SD001 --vb 4 --loop 2 --record both --tau 0.01 --seed0 481250 --n 150 --out results/drl/vc4_train_sp_01 --workers 2",
+   "delta_blocks": null
+  },
+  {
+   "kind": "train_selfplay",
+   "prefix": "results/drl/vc4_train_sp_02",
+   "seed0": 481400,
+   "n": 150,
+   "record": "both",
+   "format": "MCDR v3",
+   "regenerate": "python3 experiments/drl_record.py --deck SD001 --vb 4 --loop 2 --record both --tau 0.01 --seed0 481400 --n 150 --out results/drl/vc4_train_sp_02 --workers 2",
+   "delta_blocks": null
+  },
+  {
+   "kind": "train_selfplay",
+   "prefix": "results/drl/vc4_train_sp_03",
+   "seed0": 481550,
+   "n": 150,
+   "record": "both",
+   "format": "MCDR v3",
+   "regenerate": "python3 experiments/drl_record.py --deck SD001 --vb 4 --loop 2 --record both --tau 0.01 --seed0 481550 --n 150 --out results/drl/vc4_train_sp_03 --workers 2",
+   "delta_blocks": null
+  },
+  {
+   "kind": "train_selfplay",
+   "prefix": "results/drl/vc4_train_sp_04",
+   "seed0": 481700,
+   "n": 150,
+   "record": "both",
+   "format": "MCDR v3",
+   "regenerate": "python3 experiments/drl_record.py --deck SD001 --vb 4 --loop 2 --record both --tau 0.01 --seed0 481700 --n 150 --out results/drl/vc4_train_sp_04 --workers 2",
+   "delta_blocks": null
+  },
+  {
+   "kind": "train_selfplay",
+   "prefix": "results/drl/vc4_train_sp_05",
+   "seed0": 481850,
+   "n": 150,
+   "record": "both",
+   "format": "MCDR v3",
+   "regenerate": "python3 experiments/drl_record.py --deck SD001 --vb 4 --loop 2 --record both --tau 0.01 --seed0 481850 --n 150 --out results/drl/vc4_train_sp_05 --workers 2",
+   "delta_blocks": null
+  },
+  {
+   "kind": "train_selfplay",
+   "prefix": "results/drl/vc4_train_sp_06",
+   "seed0": 482000,
+   "n": 150,
+   "record": "both",
+   "format": "MCDR v3",
+   "regenerate": "python3 experiments/drl_record.py --deck SD001 --vb 4 --loop 2 --record both --tau 0.01 --seed0 482000 --n 150 --out results/drl/vc4_train_sp_06 --workers 2",
+   "delta_blocks": null
+  },
+  {
+   "kind": "train_selfplay",
+   "prefix": "results/drl/vc4_train_sp_07",
+   "seed0": 482150,
+   "n": 150,
+   "record": "both",
+   "format": "MCDR v3",
+   "regenerate": "python3 experiments/drl_record.py --deck SD001 --vb 4 --loop 2 --record both --tau 0.01 --seed0 482150 --n 150 --out results/drl/vc4_train_sp_07 --workers 2",
+   "delta_blocks": null
+  },
+  {
+   "kind": "train_selfplay",
+   "prefix": "results/drl/vc4_train_sp_08",
+   "seed0": 482300,
+   "n": 150,
+   "record": "both",
+   "format": "MCDR v3",
+   "regenerate": "python3 experiments/drl_record.py --deck SD001 --vb 4 --loop 2 --record both --tau 0.01 --seed0 482300 --n 150 --out results/drl/vc4_train_sp_08 --workers 2",
+   "delta_blocks": null
+  },
+  {
+   "kind": "train_selfplay",
+   "prefix": "results/drl/vc4_train_sp_09",
+   "seed0": 482450,
+   "n": 150,
+   "record": "both",
+   "format": "MCDR v3",
+   "regenerate": "python3 experiments/drl_record.py --deck SD001 --vb 4 --loop 2 --record both --tau 0.01 --seed0 482450 --n 150 --out results/drl/vc4_train_sp_09 --workers 2",
+   "delta_blocks": null
+  },
+  {
+   "kind": "train_selfplay",
+   "prefix": "results/drl/vc4_train_sp_10",
+   "seed0": 482600,
+   "n": 150,
+   "record": "both",
+   "format": "MCDR v3",
+   "regenerate": "python3 experiments/drl_record.py --deck SD001 --vb 4 --loop 2 --record both --tau 0.01 --seed0 482600 --n 150 --out results/drl/vc4_train_sp_10 --workers 2",
+   "delta_blocks": null
+  },
+  {
+   "kind": "train_selfplay",
+   "prefix": "results/drl/vc4_train_sp_11",
+   "seed0": 482750,
+   "n": 150,
+   "record": "both",
+   "format": "MCDR v3",
+   "regenerate": "python3 experiments/drl_record.py --deck SD001 --vb 4 --loop 2 --record both --tau 0.01 --seed0 482750 --n 150 --out results/drl/vc4_train_sp_11 --workers 2",
+   "delta_blocks": null
+  },
+  {
+   "kind": "train_selfplay",
+   "prefix": "results/drl/vc4_train_sp_12",
+   "seed0": 482900,
+   "n": 150,
+   "record": "both",
+   "format": "MCDR v3",
+   "regenerate": "python3 experiments/drl_record.py --deck SD001 --vb 4 --loop 2 --record both --tau 0.01 --seed0 482900 --n 150 --out results/drl/vc4_train_sp_12 --workers 2",
+   "delta_blocks": null
+  },
+  {
+   "kind": "train_selfplay",
+   "prefix": "results/drl/vc4_train_sp_13",
+   "seed0": 483050,
+   "n": 150,
+   "record": "both",
+   "format": "MCDR v3",
+   "regenerate": "python3 experiments/drl_record.py --deck SD001 --vb 4 --loop 2 --record both --tau 0.01 --seed0 483050 --n 150 --out results/drl/vc4_train_sp_13 --workers 2",
+   "delta_blocks": null
+  },
+  {
+   "kind": "train_selfplay",
+   "prefix": "results/drl/vc4_train_sp_14",
+   "seed0": 483200,
+   "n": 150,
+   "record": "both",
+   "format": "MCDR v3",
+   "regenerate": "python3 experiments/drl_record.py --deck SD001 --vb 4 --loop 2 --record both --tau 0.01 --seed0 483200 --n 150 --out results/drl/vc4_train_sp_14 --workers 2",
+   "delta_blocks": null
+  },
+  {
+   "kind": "train_selfplay",
+   "prefix": "results/drl/vc4_train_sp_15",
+   "seed0": 483350,
+   "n": 150,
+   "record": "both",
+   "format": "MCDR v3",
+   "regenerate": "python3 experiments/drl_record.py --deck SD001 --vb 4 --loop 2 --record both --tau 0.01 --seed0 483350 --n 150 --out results/drl/vc4_train_sp_15 --workers 2",
+   "delta_blocks": null
+  },
+  {
+   "kind": "train_selfplay",
+   "prefix": "results/drl/vc4_train_sp_16",
+   "seed0": 483500,
+   "n": 150,
+   "record": "both",
+   "format": "MCDR v3",
+   "regenerate": "python3 experiments/drl_record.py --deck SD001 --vb 4 --loop 2 --record both --tau 0.01 --seed0 483500 --n 150 --out results/drl/vc4_train_sp_16 --workers 2",
+   "delta_blocks": null
+  },
+  {
+   "kind": "train_selfplay",
+   "prefix": "results/drl/vc4_train_sp_17",
+   "seed0": 483650,
+   "n": 150,
+   "record": "both",
+   "format": "MCDR v3",
+   "regenerate": "python3 experiments/drl_record.py --deck SD001 --vb 4 --loop 2 --record both --tau 0.01 --seed0 483650 --n 150 --out results/drl/vc4_train_sp_17 --workers 2",
+   "delta_blocks": null
+  },
+  {
+   "kind": "train_selfplay",
+   "prefix": "results/drl/vc4_train_sp_18",
+   "seed0": 483800,
+   "n": 150,
+   "record": "both",
+   "format": "MCDR v3",
+   "regenerate": "python3 experiments/drl_record.py --deck SD001 --vb 4 --loop 2 --record both --tau 0.01 --seed0 483800 --n 150 --out results/drl/vc4_train_sp_18 --workers 2",
+   "delta_blocks": null
+  },
+  {
+   "kind": "train_selfplay",
+   "prefix": "results/drl/vc4_train_sp_19",
+   "seed0": 483950,
+   "n": 150,
+   "record": "both",
+   "format": "MCDR v3",
+   "regenerate": "python3 experiments/drl_record.py --deck SD001 --vb 4 --loop 2 --record both --tau 0.01 --seed0 483950 --n 150 --out results/drl/vc4_train_sp_19 --workers 2",
+   "delta_blocks": null
+  },
+  {
+   "kind": "train_selfplay",
+   "prefix": "results/drl/vc4_train_sp_20",
+   "seed0": 484100,
+   "n": 150,
+   "record": "both",
+   "format": "MCDR v3",
+   "regenerate": "python3 experiments/drl_record.py --deck SD001 --vb 4 --loop 2 --record both --tau 0.01 --seed0 484100 --n 150 --out results/drl/vc4_train_sp_20 --workers 2",
+   "delta_blocks": null
+  },
+  {
+   "kind": "train_selfplay",
+   "prefix": "results/drl/vc4_train_sp_21",
+   "seed0": 484250,
+   "n": 150,
+   "record": "both",
+   "format": "MCDR v3",
+   "regenerate": "python3 experiments/drl_record.py --deck SD001 --vb 4 --loop 2 --record both --tau 0.01 --seed0 484250 --n 150 --out results/drl/vc4_train_sp_21 --workers 2",
+   "delta_blocks": null
+  },
+  {
+   "kind": "train_selfplay",
+   "prefix": "results/drl/vc4_train_sp_22",
+   "seed0": 484400,
+   "n": 150,
+   "record": "both",
+   "format": "MCDR v3",
+   "regenerate": "python3 experiments/drl_record.py --deck SD001 --vb 4 --loop 2 --record both --tau 0.01 --seed0 484400 --n 150 --out results/drl/vc4_train_sp_22 --workers 2",
+   "delta_blocks": null
+  },
+  {
+   "kind": "train_selfplay",
+   "prefix": "results/drl/vc4_train_sp_23",
+   "seed0": 484550,
+   "n": 150,
+   "record": "both",
+   "format": "MCDR v3",
+   "regenerate": "python3 experiments/drl_record.py --deck SD001 --vb 4 --loop 2 --record both --tau 0.01 --seed0 484550 --n 150 --out results/drl/vc4_train_sp_23 --workers 2",
+   "delta_blocks": null
+  },
+  {
+   "kind": "train_selfplay",
+   "prefix": "results/drl/vc4_train_sp_24",
+   "seed0": 484700,
+   "n": 150,
+   "record": "both",
+   "format": "MCDR v3",
+   "regenerate": "python3 experiments/drl_record.py --deck SD001 --vb 4 --loop 2 --record both --tau 0.01 --seed0 484700 --n 150 --out results/drl/vc4_train_sp_24 --workers 2",
+   "delta_blocks": null
+  },
+  {
+   "kind": "train_selfplay",
+   "prefix": "results/drl/vc4_train_sp_25",
+   "seed0": 484850,
+   "n": 150,
+   "record": "both",
+   "format": "MCDR v3",
+   "regenerate": "python3 experiments/drl_record.py --deck SD001 --vb 4 --loop 2 --record both --tau 0.01 --seed0 484850 --n 150 --out results/drl/vc4_train_sp_25 --workers 2",
+   "delta_blocks": null
+  },
+  {
+   "kind": "train_selfplay",
+   "prefix": "results/drl/vc4_train_sp_26",
+   "seed0": 485000,
+   "n": 150,
+   "record": "both",
+   "format": "MCDR v3",
+   "regenerate": "python3 experiments/drl_record.py --deck SD001 --vb 4 --loop 2 --record both --tau 0.01 --seed0 485000 --n 150 --out results/drl/vc4_train_sp_26 --workers 2",
+   "delta_blocks": null
+  },
+  {
+   "kind": "train_selfplay",
+   "prefix": "results/drl/vc4_train_sp_27",
+   "seed0": 485150,
+   "n": 150,
+   "record": "both",
+   "format": "MCDR v3",
+   "regenerate": "python3 experiments/drl_record.py --deck SD001 --vb 4 --loop 2 --record both --tau 0.01 --seed0 485150 --n 150 --out results/drl/vc4_train_sp_27 --workers 2",
+   "delta_blocks": null
+  },
+  {
+   "kind": "train_selfplay",
+   "prefix": "results/drl/vc4_train_sp_28",
+   "seed0": 485300,
+   "n": 150,
+   "record": "both",
+   "format": "MCDR v3",
+   "regenerate": "python3 experiments/drl_record.py --deck SD001 --vb 4 --loop 2 --record both --tau 0.01 --seed0 485300 --n 150 --out results/drl/vc4_train_sp_28 --workers 2",
+   "delta_blocks": null
+  },
+  {
+   "kind": "train_selfplay",
+   "prefix": "results/drl/vc4_train_sp_29",
+   "seed0": 485450,
+   "n": 150,
+   "record": "both",
+   "format": "MCDR v3",
+   "regenerate": "python3 experiments/drl_record.py --deck SD001 --vb 4 --loop 2 --record both --tau 0.01 --seed0 485450 --n 150 --out results/drl/vc4_train_sp_29 --workers 2",
+   "delta_blocks": null
+  },
+  {
+   "kind": "train_selfplay",
+   "prefix": "results/drl/vc4_train_sp_30",
+   "seed0": 485600,
+   "n": 150,
+   "record": "both",
+   "format": "MCDR v3",
+   "regenerate": "python3 experiments/drl_record.py --deck SD001 --vb 4 --loop 2 --record both --tau 0.01 --seed0 485600 --n 150 --out results/drl/vc4_train_sp_30 --workers 2",
+   "delta_blocks": null
+  },
+  {
+   "kind": "train_selfplay",
+   "prefix": "results/drl/vc4_train_sp_31",
+   "seed0": 485750,
+   "n": 150,
+   "record": "both",
+   "format": "MCDR v3",
+   "regenerate": "python3 experiments/drl_record.py --deck SD001 --vb 4 --loop 2 --record both --tau 0.01 --seed0 485750 --n 150 --out results/drl/vc4_train_sp_31 --workers 2",
+   "delta_blocks": null
+  },
+  {
+   "kind": "train_selfplay",
+   "prefix": "results/drl/vc4_train_sp_32",
+   "seed0": 485900,
+   "n": 150,
+   "record": "both",
+   "format": "MCDR v3",
+   "regenerate": "python3 experiments/drl_record.py --deck SD001 --vb 4 --loop 2 --record both --tau 0.01 --seed0 485900 --n 150 --out results/drl/vc4_train_sp_32 --workers 2",
+   "delta_blocks": null
+  },
+  {
+   "kind": "train_selfplay",
+   "prefix": "results/drl/vc4_train_sp_33",
+   "seed0": 486050,
+   "n": 150,
+   "record": "both",
+   "format": "MCDR v3",
+   "regenerate": "python3 experiments/drl_record.py --deck SD001 --vb 4 --loop 2 --record both --tau 0.01 --seed0 486050 --n 150 --out results/drl/vc4_train_sp_33 --workers 2",
+   "delta_blocks": null
+  },
+  {
+   "kind": "train_selfplay",
+   "prefix": "results/drl/vc4_train_sp_34",
+   "seed0": 486200,
+   "n": 150,
+   "record": "both",
+   "format": "MCDR v3",
+   "regenerate": "python3 experiments/drl_record.py --deck SD001 --vb 4 --loop 2 --record both --tau 0.01 --seed0 486200 --n 150 --out results/drl/vc4_train_sp_34 --workers 2",
+   "delta_blocks": null
+  },
+  {
+   "kind": "train_selfplay",
+   "prefix": "results/drl/vc4_train_sp_35",
+   "seed0": 486350,
+   "n": 150,
+   "record": "both",
+   "format": "MCDR v3",
+   "regenerate": "python3 experiments/drl_record.py --deck SD001 --vb 4 --loop 2 --record both --tau 0.01 --seed0 486350 --n 150 --out results/drl/vc4_train_sp_35 --workers 2",
+   "delta_blocks": null
+  },
+  {
+   "kind": "train_selfplay",
+   "prefix": "results/drl/vc4_train_sp_36",
+   "seed0": 486500,
+   "n": 150,
+   "record": "both",
+   "format": "MCDR v3",
+   "regenerate": "python3 experiments/drl_record.py --deck SD001 --vb 4 --loop 2 --record both --tau 0.01 --seed0 486500 --n 150 --out results/drl/vc4_train_sp_36 --workers 2",
+   "delta_blocks": null
+  },
+  {
+   "kind": "train_selfplay",
+   "prefix": "results/drl/vc4_train_sp_37",
+   "seed0": 486650,
+   "n": 150,
+   "record": "both",
+   "format": "MCDR v3",
+   "regenerate": "python3 experiments/drl_record.py --deck SD001 --vb 4 --loop 2 --record both --tau 0.01 --seed0 486650 --n 150 --out results/drl/vc4_train_sp_37 --workers 2",
+   "delta_blocks": null
+  },
+  {
+   "kind": "train_selfplay",
+   "prefix": "results/drl/vc4_train_sp_38",
+   "seed0": 486800,
+   "n": 150,
+   "record": "both",
+   "format": "MCDR v3",
+   "regenerate": "python3 experiments/drl_record.py --deck SD001 --vb 4 --loop 2 --record both --tau 0.01 --seed0 486800 --n 150 --out results/drl/vc4_train_sp_38 --workers 2",
+   "delta_blocks": null
+  },
+  {
+   "kind": "train_selfplay",
+   "prefix": "results/drl/vc4_train_sp_39",
+   "seed0": 486950,
+   "n": 150,
+   "record": "both",
+   "format": "MCDR v3",
+   "regenerate": "python3 experiments/drl_record.py --deck SD001 --vb 4 --loop 2 --record both --tau 0.01 --seed0 486950 --n 150 --out results/drl/vc4_train_sp_39 --workers 2",
+   "delta_blocks": null
+  },
+  {
+   "kind": "train_league_H",
+   "prefix": "results/drl/vc4_train_h_0",
+   "seed0": 487100,
+   "n": 250,
+   "record": "a",
+   "format": "MCDR v3",
+   "regenerate": "python3 experiments/drl_record.py --deck SD001 --vb 4 --loop 2 --spec-b heuristic --record a --tau 0.01 --seed0 487100 --n 250 --out results/drl/vc4_train_h_0 --workers 2",
+   "delta_blocks": null
+  },
+  {
+   "kind": "train_league_H",
+   "prefix": "results/drl/vc4_train_h_1",
+   "seed0": 487350,
+   "n": 250,
+   "record": "a",
+   "format": "MCDR v3",
+   "regenerate": "python3 experiments/drl_record.py --deck SD001 --vb 4 --loop 2 --spec-b heuristic --record a --tau 0.01 --seed0 487350 --n 250 --out results/drl/vc4_train_h_1 --workers 2",
+   "delta_blocks": null
+  },
+  {
+   "kind": "train_league_H",
+   "prefix": "results/drl/vc4_train_h_2",
+   "seed0": 487600,
+   "n": 250,
+   "record": "a",
+   "format": "MCDR v3",
+   "regenerate": "python3 experiments/drl_record.py --deck SD001 --vb 4 --loop 2 --spec-b heuristic --record a --tau 0.01 --seed0 487600 --n 250 --out results/drl/vc4_train_h_2 --workers 2",
+   "delta_blocks": null
+  },
+  {
+   "kind": "train_league_H",
+   "prefix": "results/drl/vc4_train_h_3",
+   "seed0": 487850,
+   "n": 250,
+   "record": "a",
+   "format": "MCDR v3",
+   "regenerate": "python3 experiments/drl_record.py --deck SD001 --vb 4 --loop 2 --spec-b heuristic --record a --tau 0.01 --seed0 487850 --n 250 --out results/drl/vc4_train_h_3 --workers 2",
+   "delta_blocks": null
+  },
+  {
+   "kind": "train_league_greedy",
+   "prefix": "results/drl/vc4_train_g_0",
+   "seed0": 488100,
+   "n": 250,
+   "record": "a",
+   "format": "MCDR v3",
+   "regenerate": "python3 experiments/drl_record.py --deck SD001 --vb 4 --loop 2 --spec-b greedy --record a --tau 0.01 --seed0 488100 --n 250 --out results/drl/vc4_train_g_0 --workers 2",
+   "delta_blocks": null
+  },
+  {
+   "kind": "train_league_greedy",
+   "prefix": "results/drl/vc4_train_g_1",
+   "seed0": 488350,
+   "n": 250,
+   "record": "a",
+   "format": "MCDR v3",
+   "regenerate": "python3 experiments/drl_record.py --deck SD001 --vb 4 --loop 2 --spec-b greedy --record a --tau 0.01 --seed0 488350 --n 250 --out results/drl/vc4_train_g_1 --workers 2",
+   "delta_blocks": null
+  },
+  {
+   "kind": "train_league_greedy",
+   "prefix": "results/drl/vc4_train_g_2",
+   "seed0": 488600,
+   "n": 250,
+   "record": "a",
+   "format": "MCDR v3",
+   "regenerate": "python3 experiments/drl_record.py --deck SD001 --vb 4 --loop 2 --spec-b greedy --record a --tau 0.01 --seed0 488600 --n 250 --out results/drl/vc4_train_g_2 --workers 2",
+   "delta_blocks": null
+  },
+  {
+   "kind": "train_league_greedy",
+   "prefix": "results/drl/vc4_train_g_3",
+   "seed0": 488850,
+   "n": 250,
+   "record": "a",
+   "format": "MCDR v3",
+   "regenerate": "python3 experiments/drl_record.py --deck SD001 --vb 4 --loop 2 --spec-b greedy --record a --tau 0.01 --seed0 488850 --n 250 --out results/drl/vc4_train_g_3 --workers 2",
+   "delta_blocks": null
+  },
+  {
+   "kind": "train_delta",
+   "prefix": "results/drl/vc4_train_d_0",
+   "seed0": 489100,
+   "n": 150,
+   "record": "a",
+   "format": "MCDR v3",
+   "regenerate": "python3 experiments/drl_record.py --deck SD001 --vb 4 --loop 2 --delta-gens A --record a --tau 0.01 --seed0 489100 --n 150 --out results/drl/vc4_train_d_0 --workers 2",
+   "delta_blocks": [
+    {
+     "i": 0,
+     "delta": {
+      "kind": "rush_chara",
+      "name": "漂泊者（女）",
+      "goal": 2,
+      "from_turn": 1
+     },
+     "label": "漂泊者（女） を 1 ターン目から急いで Lv2 に",
+     "seed0": 489100,
+     "n": 19,
+     "files": [
+      "results/drl/vc4_train_d_0.g0.0",
+      "results/drl/vc4_train_d_0.g0.1"
+     ]
+    },
+    {
+     "i": 1,
+     "delta": {
+      "kind": "rush_chara",
+      "name": "漂泊者（女）",
+      "goal": 2,
+      "from_turn": 4
+     },
+     "label": "漂泊者（女） を 4 ターン目から急いで Lv2 に",
+     "seed0": 489119,
+     "n": 19,
+     "files": [
+      "results/drl/vc4_train_d_0.g1.0",
+      "results/drl/vc4_train_d_0.g1.1"
+     ]
+    },
+    {
+     "i": 2,
+     "delta": {
+      "kind": "rush_chara",
+      "name": "漂泊者（女）",
+      "goal": 2,
+      "from_turn": 7
+     },
+     "label": "漂泊者（女） を 7 ターン目から急いで Lv2 に",
+     "seed0": 489138,
+     "n": 19,
+     "files": [
+      "results/drl/vc4_train_d_0.g2.0",
+      "results/drl/vc4_train_d_0.g2.1"
+     ]
+    },
+    {
+     "i": 3,
+     "delta": {
+      "kind": "fix_leader",
+      "name": "漂泊者（女）"
+     },
+     "label": "リーダーを 漂泊者（女） に固定",
+     "seed0": 489157,
+     "n": 19,
+     "files": [
+      "results/drl/vc4_train_d_0.g3.0",
+      "results/drl/vc4_train_d_0.g3.1"
+     ]
+    },
+    {
+     "i": 4,
+     "delta": {
+      "kind": "rush_chara",
+      "name": "熾霞",
+      "goal": 2,
+      "from_turn": 1
+     },
+     "label": "熾霞 を 1 ターン目から急いで Lv2 に",
+     "seed0": 489176,
+     "n": 19,
+     "files": [
+      "results/drl/vc4_train_d_0.g4.0",
+      "results/drl/vc4_train_d_0.g4.1"
+     ]
+    },
+    {
+     "i": 5,
+     "delta": {
+      "kind": "rush_chara",
+      "name": "熾霞",
+      "goal": 2,
+      "from_turn": 4
+     },
+     "label": "熾霞 を 4 ターン目から急いで Lv2 に",
+     "seed0": 489195,
+     "n": 19,
+     "files": [
+      "results/drl/vc4_train_d_0.g5.0",
+      "results/drl/vc4_train_d_0.g5.1"
+     ]
+    },
+    {
+     "i": 6,
+     "delta": {
+      "kind": "rush_chara",
+      "name": "熾霞",
+      "goal": 2,
+      "from_turn": 7
+     },
+     "label": "熾霞 を 7 ターン目から急いで Lv2 に",
+     "seed0": 489214,
+     "n": 18,
+     "files": [
+      "results/drl/vc4_train_d_0.g6.0",
+      "results/drl/vc4_train_d_0.g6.1"
+     ]
+    },
+    {
+     "i": 7,
+     "delta": {
+      "kind": "fix_leader",
+      "name": "熾霞"
+     },
+     "label": "リーダーを 熾霞 に固定",
+     "seed0": 489232,
+     "n": 18,
+     "files": [
+      "results/drl/vc4_train_d_0.g7.0",
+      "results/drl/vc4_train_d_0.g7.1"
+     ]
+    }
+   ]
+  },
+  {
+   "kind": "train_delta",
+   "prefix": "results/drl/vc4_train_d_1",
+   "seed0": 489250,
+   "n": 150,
+   "record": "a",
+   "format": "MCDR v3",
+   "regenerate": "python3 experiments/drl_record.py --deck SD001 --vb 4 --loop 2 --delta-gens A --record a --tau 0.01 --seed0 489250 --n 150 --out results/drl/vc4_train_d_1 --workers 2",
+   "delta_blocks": [
+    {
+     "i": 0,
+     "delta": {
+      "kind": "rush_chara",
+      "name": "漂泊者（女）",
+      "goal": 2,
+      "from_turn": 1
+     },
+     "label": "漂泊者（女） を 1 ターン目から急いで Lv2 に",
+     "seed0": 489250,
+     "n": 19,
+     "files": [
+      "results/drl/vc4_train_d_1.g0.0",
+      "results/drl/vc4_train_d_1.g0.1"
+     ]
+    },
+    {
+     "i": 1,
+     "delta": {
+      "kind": "rush_chara",
+      "name": "漂泊者（女）",
+      "goal": 2,
+      "from_turn": 4
+     },
+     "label": "漂泊者（女） を 4 ターン目から急いで Lv2 に",
+     "seed0": 489269,
+     "n": 19,
+     "files": [
+      "results/drl/vc4_train_d_1.g1.0",
+      "results/drl/vc4_train_d_1.g1.1"
+     ]
+    },
+    {
+     "i": 2,
+     "delta": {
+      "kind": "rush_chara",
+      "name": "漂泊者（女）",
+      "goal": 2,
+      "from_turn": 7
+     },
+     "label": "漂泊者（女） を 7 ターン目から急いで Lv2 に",
+     "seed0": 489288,
+     "n": 19,
+     "files": [
+      "results/drl/vc4_train_d_1.g2.0",
+      "results/drl/vc4_train_d_1.g2.1"
+     ]
+    },
+    {
+     "i": 3,
+     "delta": {
+      "kind": "fix_leader",
+      "name": "漂泊者（女）"
+     },
+     "label": "リーダーを 漂泊者（女） に固定",
+     "seed0": 489307,
+     "n": 19,
+     "files": [
+      "results/drl/vc4_train_d_1.g3.0",
+      "results/drl/vc4_train_d_1.g3.1"
+     ]
+    },
+    {
+     "i": 4,
+     "delta": {
+      "kind": "rush_chara",
+      "name": "熾霞",
+      "goal": 2,
+      "from_turn": 1
+     },
+     "label": "熾霞 を 1 ターン目から急いで Lv2 に",
+     "seed0": 489326,
+     "n": 19,
+     "files": [
+      "results/drl/vc4_train_d_1.g4.0",
+      "results/drl/vc4_train_d_1.g4.1"
+     ]
+    },
+    {
+     "i": 5,
+     "delta": {
+      "kind": "rush_chara",
+      "name": "熾霞",
+      "goal": 2,
+      "from_turn": 4
+     },
+     "label": "熾霞 を 4 ターン目から急いで Lv2 に",
+     "seed0": 489345,
+     "n": 19,
+     "files": [
+      "results/drl/vc4_train_d_1.g5.0",
+      "results/drl/vc4_train_d_1.g5.1"
+     ]
+    },
+    {
+     "i": 6,
+     "delta": {
+      "kind": "rush_chara",
+      "name": "熾霞",
+      "goal": 2,
+      "from_turn": 7
+     },
+     "label": "熾霞 を 7 ターン目から急いで Lv2 に",
+     "seed0": 489364,
+     "n": 18,
+     "files": [
+      "results/drl/vc4_train_d_1.g6.0",
+      "results/drl/vc4_train_d_1.g6.1"
+     ]
+    },
+    {
+     "i": 7,
+     "delta": {
+      "kind": "fix_leader",
+      "name": "熾霞"
+     },
+     "label": "リーダーを 熾霞 に固定",
+     "seed0": 489382,
+     "n": 18,
+     "files": [
+      "results/drl/vc4_train_d_1.g7.0",
+      "results/drl/vc4_train_d_1.g7.1"
+     ]
+    }
+   ]
+  },
+  {
+   "kind": "train_delta",
+   "prefix": "results/drl/vc4_train_d_2",
+   "seed0": 489400,
+   "n": 150,
+   "record": "a",
+   "format": "MCDR v3",
+   "regenerate": "python3 experiments/drl_record.py --deck SD001 --vb 4 --loop 2 --delta-gens A --record a --tau 0.01 --seed0 489400 --n 150 --out results/drl/vc4_train_d_2 --workers 2",
+   "delta_blocks": [
+    {
+     "i": 0,
+     "delta": {
+      "kind": "rush_chara",
+      "name": "漂泊者（女）",
+      "goal": 2,
+      "from_turn": 1
+     },
+     "label": "漂泊者（女） を 1 ターン目から急いで Lv2 に",
+     "seed0": 489400,
+     "n": 19,
+     "files": [
+      "results/drl/vc4_train_d_2.g0.0",
+      "results/drl/vc4_train_d_2.g0.1"
+     ]
+    },
+    {
+     "i": 1,
+     "delta": {
+      "kind": "rush_chara",
+      "name": "漂泊者（女）",
+      "goal": 2,
+      "from_turn": 4
+     },
+     "label": "漂泊者（女） を 4 ターン目から急いで Lv2 に",
+     "seed0": 489419,
+     "n": 19,
+     "files": [
+      "results/drl/vc4_train_d_2.g1.0",
+      "results/drl/vc4_train_d_2.g1.1"
+     ]
+    },
+    {
+     "i": 2,
+     "delta": {
+      "kind": "rush_chara",
+      "name": "漂泊者（女）",
+      "goal": 2,
+      "from_turn": 7
+     },
+     "label": "漂泊者（女） を 7 ターン目から急いで Lv2 に",
+     "seed0": 489438,
+     "n": 19,
+     "files": [
+      "results/drl/vc4_train_d_2.g2.0",
+      "results/drl/vc4_train_d_2.g2.1"
+     ]
+    },
+    {
+     "i": 3,
+     "delta": {
+      "kind": "fix_leader",
+      "name": "漂泊者（女）"
+     },
+     "label": "リーダーを 漂泊者（女） に固定",
+     "seed0": 489457,
+     "n": 19,
+     "files": [
+      "results/drl/vc4_train_d_2.g3.0",
+      "results/drl/vc4_train_d_2.g3.1"
+     ]
+    },
+    {
+     "i": 4,
+     "delta": {
+      "kind": "rush_chara",
+      "name": "熾霞",
+      "goal": 2,
+      "from_turn": 1
+     },
+     "label": "熾霞 を 1 ターン目から急いで Lv2 に",
+     "seed0": 489476,
+     "n": 19,
+     "files": [
+      "results/drl/vc4_train_d_2.g4.0",
+      "results/drl/vc4_train_d_2.g4.1"
+     ]
+    },
+    {
+     "i": 5,
+     "delta": {
+      "kind": "rush_chara",
+      "name": "熾霞",
+      "goal": 2,
+      "from_turn": 4
+     },
+     "label": "熾霞 を 4 ターン目から急いで Lv2 に",
+     "seed0": 489495,
+     "n": 19,
+     "files": [
+      "results/drl/vc4_train_d_2.g5.0",
+      "results/drl/vc4_train_d_2.g5.1"
+     ]
+    },
+    {
+     "i": 6,
+     "delta": {
+      "kind": "rush_chara",
+      "name": "熾霞",
+      "goal": 2,
+      "from_turn": 7
+     },
+     "label": "熾霞 を 7 ターン目から急いで Lv2 に",
+     "seed0": 489514,
+     "n": 18,
+     "files": [
+      "results/drl/vc4_train_d_2.g6.0",
+      "results/drl/vc4_train_d_2.g6.1"
+     ]
+    },
+    {
+     "i": 7,
+     "delta": {
+      "kind": "fix_leader",
+      "name": "熾霞"
+     },
+     "label": "リーダーを 熾霞 に固定",
+     "seed0": 489532,
+     "n": 18,
+     "files": [
+      "results/drl/vc4_train_d_2.g7.0",
+      "results/drl/vc4_train_d_2.g7.1"
+     ]
+    }
+   ]
+  },
+  {
+   "kind": "train_delta",
+   "prefix": "results/drl/vc4_train_d_3",
+   "seed0": 489550,
+   "n": 150,
+   "record": "a",
+   "format": "MCDR v3",
+   "regenerate": "python3 experiments/drl_record.py --deck SD001 --vb 4 --loop 2 --delta-gens A --record a --tau 0.01 --seed0 489550 --n 150 --out results/drl/vc4_train_d_3 --workers 2",
+   "delta_blocks": [
+    {
+     "i": 0,
+     "delta": {
+      "kind": "rush_chara",
+      "name": "漂泊者（女）",
+      "goal": 2,
+      "from_turn": 1
+     },
+     "label": "漂泊者（女） を 1 ターン目から急いで Lv2 に",
+     "seed0": 489550,
+     "n": 19,
+     "files": [
+      "results/drl/vc4_train_d_3.g0.0",
+      "results/drl/vc4_train_d_3.g0.1"
+     ]
+    },
+    {
+     "i": 1,
+     "delta": {
+      "kind": "rush_chara",
+      "name": "漂泊者（女）",
+      "goal": 2,
+      "from_turn": 4
+     },
+     "label": "漂泊者（女） を 4 ターン目から急いで Lv2 に",
+     "seed0": 489569,
+     "n": 19,
+     "files": [
+      "results/drl/vc4_train_d_3.g1.0",
+      "results/drl/vc4_train_d_3.g1.1"
+     ]
+    },
+    {
+     "i": 2,
+     "delta": {
+      "kind": "rush_chara",
+      "name": "漂泊者（女）",
+      "goal": 2,
+      "from_turn": 7
+     },
+     "label": "漂泊者（女） を 7 ターン目から急いで Lv2 に",
+     "seed0": 489588,
+     "n": 19,
+     "files": [
+      "results/drl/vc4_train_d_3.g2.0",
+      "results/drl/vc4_train_d_3.g2.1"
+     ]
+    },
+    {
+     "i": 3,
+     "delta": {
+      "kind": "fix_leader",
+      "name": "漂泊者（女）"
+     },
+     "label": "リーダーを 漂泊者（女） に固定",
+     "seed0": 489607,
+     "n": 19,
+     "files": [
+      "results/drl/vc4_train_d_3.g3.0",
+      "results/drl/vc4_train_d_3.g3.1"
+     ]
+    },
+    {
+     "i": 4,
+     "delta": {
+      "kind": "rush_chara",
+      "name": "熾霞",
+      "goal": 2,
+      "from_turn": 1
+     },
+     "label": "熾霞 を 1 ターン目から急いで Lv2 に",
+     "seed0": 489626,
+     "n": 19,
+     "files": [
+      "results/drl/vc4_train_d_3.g4.0",
+      "results/drl/vc4_train_d_3.g4.1"
+     ]
+    },
+    {
+     "i": 5,
+     "delta": {
+      "kind": "rush_chara",
+      "name": "熾霞",
+      "goal": 2,
+      "from_turn": 4
+     },
+     "label": "熾霞 を 4 ターン目から急いで Lv2 に",
+     "seed0": 489645,
+     "n": 19,
+     "files": [
+      "results/drl/vc4_train_d_3.g5.0",
+      "results/drl/vc4_train_d_3.g5.1"
+     ]
+    },
+    {
+     "i": 6,
+     "delta": {
+      "kind": "rush_chara",
+      "name": "熾霞",
+      "goal": 2,
+      "from_turn": 7
+     },
+     "label": "熾霞 を 7 ターン目から急いで Lv2 に",
+     "seed0": 489664,
+     "n": 18,
+     "files": [
+      "results/drl/vc4_train_d_3.g6.0",
+      "results/drl/vc4_train_d_3.g6.1"
+     ]
+    },
+    {
+     "i": 7,
+     "delta": {
+      "kind": "fix_leader",
+      "name": "熾霞"
+     },
+     "label": "リーダーを 熾霞 に固定",
+     "seed0": 489682,
+     "n": 18,
+     "files": [
+      "results/drl/vc4_train_d_3.g7.0",
+      "results/drl/vc4_train_d_3.g7.1"
+     ]
+    }
+   ]
+  },
+  {
+   "kind": "train_delta",
+   "prefix": "results/drl/vc4_train_d_4",
+   "seed0": 489700,
+   "n": 150,
+   "record": "a",
+   "format": "MCDR v3",
+   "regenerate": "python3 experiments/drl_record.py --deck SD001 --vb 4 --loop 2 --delta-gens A --record a --tau 0.01 --seed0 489700 --n 150 --out results/drl/vc4_train_d_4 --workers 2",
+   "delta_blocks": [
+    {
+     "i": 0,
+     "delta": {
+      "kind": "rush_chara",
+      "name": "漂泊者（女）",
+      "goal": 2,
+      "from_turn": 1
+     },
+     "label": "漂泊者（女） を 1 ターン目から急いで Lv2 に",
+     "seed0": 489700,
+     "n": 19,
+     "files": [
+      "results/drl/vc4_train_d_4.g0.0",
+      "results/drl/vc4_train_d_4.g0.1"
+     ]
+    },
+    {
+     "i": 1,
+     "delta": {
+      "kind": "rush_chara",
+      "name": "漂泊者（女）",
+      "goal": 2,
+      "from_turn": 4
+     },
+     "label": "漂泊者（女） を 4 ターン目から急いで Lv2 に",
+     "seed0": 489719,
+     "n": 19,
+     "files": [
+      "results/drl/vc4_train_d_4.g1.0",
+      "results/drl/vc4_train_d_4.g1.1"
+     ]
+    },
+    {
+     "i": 2,
+     "delta": {
+      "kind": "rush_chara",
+      "name": "漂泊者（女）",
+      "goal": 2,
+      "from_turn": 7
+     },
+     "label": "漂泊者（女） を 7 ターン目から急いで Lv2 に",
+     "seed0": 489738,
+     "n": 19,
+     "files": [
+      "results/drl/vc4_train_d_4.g2.0",
+      "results/drl/vc4_train_d_4.g2.1"
+     ]
+    },
+    {
+     "i": 3,
+     "delta": {
+      "kind": "fix_leader",
+      "name": "漂泊者（女）"
+     },
+     "label": "リーダーを 漂泊者（女） に固定",
+     "seed0": 489757,
+     "n": 19,
+     "files": [
+      "results/drl/vc4_train_d_4.g3.0",
+      "results/drl/vc4_train_d_4.g3.1"
+     ]
+    },
+    {
+     "i": 4,
+     "delta": {
+      "kind": "rush_chara",
+      "name": "熾霞",
+      "goal": 2,
+      "from_turn": 1
+     },
+     "label": "熾霞 を 1 ターン目から急いで Lv2 に",
+     "seed0": 489776,
+     "n": 19,
+     "files": [
+      "results/drl/vc4_train_d_4.g4.0",
+      "results/drl/vc4_train_d_4.g4.1"
+     ]
+    },
+    {
+     "i": 5,
+     "delta": {
+      "kind": "rush_chara",
+      "name": "熾霞",
+      "goal": 2,
+      "from_turn": 4
+     },
+     "label": "熾霞 を 4 ターン目から急いで Lv2 に",
+     "seed0": 489795,
+     "n": 19,
+     "files": [
+      "results/drl/vc4_train_d_4.g5.0",
+      "results/drl/vc4_train_d_4.g5.1"
+     ]
+    },
+    {
+     "i": 6,
+     "delta": {
+      "kind": "rush_chara",
+      "name": "熾霞",
+      "goal": 2,
+      "from_turn": 7
+     },
+     "label": "熾霞 を 7 ターン目から急いで Lv2 に",
+     "seed0": 489814,
+     "n": 18,
+     "files": [
+      "results/drl/vc4_train_d_4.g6.0",
+      "results/drl/vc4_train_d_4.g6.1"
+     ]
+    },
+    {
+     "i": 7,
+     "delta": {
+      "kind": "fix_leader",
+      "name": "熾霞"
+     },
+     "label": "リーダーを 熾霞 に固定",
+     "seed0": 489832,
+     "n": 18,
+     "files": [
+      "results/drl/vc4_train_d_4.g7.0",
+      "results/drl/vc4_train_d_4.g7.1"
+     ]
+    }
+   ]
+  }
+ ]
+}

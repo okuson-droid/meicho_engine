@@ -1,0 +1,14 @@
+{
+ "made_by": "experiments/regen_m5m1_pimc.py",
+ "decision": "D-115",
+ "seeds": [
+  673600,
+  673601
+ ],
+ "rows": 206,
+ "engine": "python",
+ "rules": "v0.18",
+ "searcher": "tests/test_lit_c.py::_pre_bin_c_kwargs()",
+ "sha256": "2d33ff33d02c1ba997ba1f82f9b7eff01ead7097b2bd6e148a4ba46ad3756af5",
+ "note": "元の記録 m5m1_pimc.jsonl（便 M）は残す。これは検査の基準の作り直しである"
+}

@@ -1,0 +1,4 @@
+reserve_rekka            0.485 ±0.040 (n=600)  下端 0.445  172s  (seeds 600000..600599)
+forbid_rekka_in_clash    0.475 ±0.040 (n=600)  下端 0.435  176s  (seeds 600600..601199)
+reserve_rekka_soumei     0.435 ±0.040 (n=600)  下端 0.395  190s  (seeds 601200..601799)
+reserve_big_reds         0.393 ±0.039 (n=600)  下端 0.354  242s  (seeds 601800..602399)

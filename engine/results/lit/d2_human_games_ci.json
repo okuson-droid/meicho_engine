@@ -1,0 +1,170 @@
+{
+ "base_dir": "/home/claude/work/meicho_engine_v0.1/engine/results",
+ "games_total": 8,
+ "overall": {
+  "n": 8,
+  "wins_ai": 3,
+  "losses_ai": 5,
+  "p": 0.375,
+  "wilson": [
+   0.13684175946152105,
+   0.6942621454161981
+  ],
+  "cp": [
+   0.0852334141372525,
+   0.7551367836334482
+  ],
+  "excluded": {
+   "draw": 0,
+   "aborted": 0,
+   "error": 0,
+   "resign": 0,
+   "unfinished": 0
+  },
+  "excluded_total": 0
+ },
+ "by_opponent": {
+  "planner": {
+   "n": 1,
+   "wins_ai": 0,
+   "losses_ai": 1,
+   "p": 0.0,
+   "wilson": [
+    0.0,
+    0.7934567085261071
+   ],
+   "cp": [
+    0.0,
+    0.975
+   ],
+   "excluded": {
+    "draw": 0,
+    "aborted": 0,
+    "error": 0,
+    "resign": 0,
+    "unfinished": 0
+   },
+   "excluded_total": 0
+  },
+  "planner_pi": {
+   "n": 1,
+   "wins_ai": 0,
+   "losses_ai": 1,
+   "p": 0.0,
+   "wilson": [
+    0.0,
+    0.7934567085261071
+   ],
+   "cp": [
+    0.0,
+    0.975
+   ],
+   "excluded": {
+    "draw": 0,
+    "aborted": 0,
+    "error": 0,
+    "resign": 0,
+    "unfinished": 0
+   },
+   "excluded_total": 0
+  },
+  "planner_vb3": {
+   "n": 2,
+   "wins_ai": 0,
+   "losses_ai": 2,
+   "p": 0.0,
+   "wilson": [
+    0.0,
+    0.6576280471103807
+   ],
+   "cp": [
+    0.0,
+    0.841886116991581
+   ],
+   "excluded": {
+    "draw": 0,
+    "aborted": 0,
+    "error": 0,
+    "resign": 0,
+    "unfinished": 0
+   },
+   "excluded_total": 0
+  },
+  "planner_vc4cps": {
+   "n": 3,
+   "wins_ai": 2,
+   "losses_ai": 1,
+   "p": 0.6666666666666666,
+   "wilson": [
+    0.20765495512648796,
+    0.9385096847238394
+   ],
+   "cp": [
+    0.09429932405024632,
+    0.9915962413403874
+   ],
+   "excluded": {
+    "draw": 0,
+    "aborted": 0,
+    "error": 0,
+    "resign": 0,
+    "unfinished": 0
+   },
+   "excluded_total": 0
+  },
+  "planner_vc4cps_lu50": {
+   "n": 1,
+   "wins_ai": 1,
+   "losses_ai": 0,
+   "p": 1.0,
+   "wilson": [
+    0.2065432914738929,
+    1.0
+   ],
+   "cp": [
+    0.025,
+    1.0
+   ],
+   "excluded": {
+    "draw": 0,
+    "aborted": 0,
+    "error": 0,
+    "resign": 0,
+    "unfinished": 0
+   },
+   "excluded_total": 0
+  }
+ },
+ "by_deck": {
+  "SD001": {
+   "n": 8,
+   "wins_ai": 3,
+   "losses_ai": 5,
+   "p": 0.375,
+   "wilson": [
+    0.13684175946152105,
+    0.6942621454161981
+   ],
+   "cp": [
+    0.0852334141372525,
+    0.7551367836334482
+   ],
+   "excluded": {
+    "draw": 0,
+    "aborted": 0,
+    "error": 0,
+    "resign": 0,
+    "unfinished": 0
+   },
+   "excluded_total": 0
+  }
+ },
+ "opponents": [
+  "planner",
+  "planner_pi",
+  "planner_vb3",
+  "planner_vc4cps",
+  "planner_vc4cps_lu50"
+ ],
+ "mixed_opponents": true
+}

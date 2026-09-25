@@ -1,0 +1,29 @@
+{
+ "what": "g1 評価 200 局（champion 同士・SD001 同型・rs.series_digest）",
+ "champion": "計画探索＋地平+1ターン／葉=V（drl_sd001_vc4.json）／相手モデル=π（drl_sd001_s1.json・根だけ）／代打ち=π（pi_small64_e10.json・代打ちだけ）／選択フェイズも探索（決定化 4 本）",
+ "seed0": 823200,
+ "n": 200,
+ "workers": 2,
+ "seconds": 1115.914662741,
+ "games_per_sec": 0.17922517435942978,
+ "sec_per_game_per_worker": 11.159146627410001,
+ "mean_turns": 10.7,
+ "mean_steps": 89.03,
+ "steps_per_sec": 15.956417273220033,
+ "aborted": 0,
+ "recheck_n": 20,
+ "recheck_seconds": 102.03422618500008,
+ "digest_recheck_identical": true,
+ "machine": {
+  "platform": "Linux-6.18.44-fc-v37-x86_64-with-glibc2.39",
+  "cpu": "Intel(R) Xeon(R) Processor @ 2.10GHz",
+  "cores": 2,
+  "python": "3.11.15",
+  "encoding_info": [
+   5,
+   1825,
+   317
+  ],
+  "rules_version": "v0.18"
+ }
+}

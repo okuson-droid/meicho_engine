@@ -1,0 +1,167 @@
+{
+ "tool": "gate_sprt.py",
+ "mode": "fixed",
+ "deck": "SD001",
+ "base_diff": null,
+ "challenger_diff": {},
+ "seed0": 668400,
+ "workers": 2,
+ "expect": null,
+ "params": {
+  "alpha": 0.025,
+  "beta": 0.1,
+  "p0": 0.5,
+  "p1": 0.55,
+  "max_games": 2400,
+  "A": 3.58351893845611,
+  "B": -2.2772672850097555,
+  "chunk_pairs": 20,
+  "pair_scores": [
+   0.0,
+   0.25,
+   0.5,
+   0.75,
+   1.0
+  ],
+  "epsilon": 0.001
+ },
+ "provenance": {
+  "base": {
+   "label": null,
+   "kwargs": {
+    "kind": "planner",
+    "extra_turns": 1,
+    "value_net": "drl_sd001_vc4.json",
+    "opp_policy_net": "drl_sd001_s1.json",
+    "opp_policy_root_only": true,
+    "choice_phases": true,
+    "solo_samples": 4,
+    "policy_net": "pi_small64_e10.json",
+    "policy_scope": "proxy"
+   },
+   "models": {
+    "value_net": {
+     "file": "drl_sd001_vc4.json",
+     "sha256": "f050f22ee0a38993677a85f14d8e605e625450084c31a31e620ced54e19a58cd",
+     "bytes": 5848050
+    },
+    "opp_policy_net": {
+     "file": "drl_sd001_s1.json",
+     "sha256": "84b9b3df71cfbbcad283feae7929fb1920f8182820d23760e94b0fe1898ffe32",
+     "bytes": 5860264
+    },
+    "policy_net": {
+     "file": "pi_small64_e10.json",
+     "sha256": "88ea7e0f170e2059aa9d382f6ec31f6e8a0f37d47425ad91bcd07a1e60674dbe",
+     "bytes": 1059704
+    }
+   },
+   "engine": "rust",
+   "rust_features": [
+    "d065_bin1",
+    "d065_reeval_isolated_rng",
+    "lethal_uniform"
+   ],
+   "band": [
+    668400,
+    669599
+   ],
+   "rules_version": "v0.11",
+   "engine_version": "v0.1",
+   "written_at": "2026-09-09T09:15:30+09:00",
+   "extra": {
+    "role": "base",
+    "host": "workenv-2",
+    "workers": 2
+   }
+  },
+  "challenger": {
+   "label": null,
+   "kwargs": {
+    "kind": "planner",
+    "extra_turns": 1,
+    "value_net": "drl_sd001_vc4.json",
+    "opp_policy_net": "drl_sd001_s1.json",
+    "opp_policy_root_only": true,
+    "choice_phases": true,
+    "solo_samples": 4,
+    "policy_net": "pi_small64_e10.json",
+    "policy_scope": "proxy"
+   },
+   "models": {
+    "value_net": {
+     "file": "drl_sd001_vc4.json",
+     "sha256": "f050f22ee0a38993677a85f14d8e605e625450084c31a31e620ced54e19a58cd",
+     "bytes": 5848050
+    },
+    "opp_policy_net": {
+     "file": "drl_sd001_s1.json",
+     "sha256": "84b9b3df71cfbbcad283feae7929fb1920f8182820d23760e94b0fe1898ffe32",
+     "bytes": 5860264
+    },
+    "policy_net": {
+     "file": "pi_small64_e10.json",
+     "sha256": "88ea7e0f170e2059aa9d382f6ec31f6e8a0f37d47425ad91bcd07a1e60674dbe",
+     "bytes": 1059704
+    }
+   },
+   "engine": "rust",
+   "rust_features": [
+    "d065_bin1",
+    "d065_reeval_isolated_rng",
+    "lethal_uniform"
+   ],
+   "band": [
+    668400,
+    669599
+   ],
+   "rules_version": "v0.11",
+   "engine_version": "v0.1",
+   "written_at": "2026-09-09T09:15:30+09:00",
+   "extra": {
+    "role": "challenger",
+    "host": "workenv-2",
+    "workers": 2
+   }
+  }
+ },
+ "base_spec": {
+  "kind": "planner",
+  "extra_turns": 1,
+  "value_net": "drl_sd001_vc4.json",
+  "opp_policy_net": "drl_sd001_s1.json",
+  "opp_policy_root_only": true,
+  "choice_phases": true,
+  "solo_samples": 4,
+  "policy_net": "pi_small64_e10.json",
+  "policy_scope": "proxy"
+ },
+ "challenger_spec": {
+  "kind": "planner",
+  "extra_turns": 1,
+  "value_net": "drl_sd001_vc4.json",
+  "opp_policy_net": "drl_sd001_s1.json",
+  "opp_policy_root_only": true,
+  "choice_phases": true,
+  "solo_samples": 4,
+  "policy_net": "pi_small64_e10.json",
+  "policy_scope": "proxy"
+ },
+ "when": "2026-09-09T09:15:30+09:00",
+ "platform": "Linux-6.18.44-fc-v24-x86_64-with-glibc2.39",
+ "games": 1200,
+ "winrate": {
+  "wins": 617.0,
+  "decided": 1200,
+  "p": 0.5141666666666667,
+  "ci": 0.02827880555324992,
+  "lo": 0.48588786111341675,
+  "hi": 0.5424454722199166
+ },
+ "wilson": [
+  0.4858877739719669,
+  0.5423551443654622
+ ],
+ "sec": 1437.9,
+ "rate": 0.8345519177606269
+}

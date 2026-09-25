@@ -1,0 +1,91 @@
+{
+ "agg": {
+  "games": 300,
+  "n": 300,
+  "wins": 144,
+  "p": 0.48,
+  "ci": 0.05653504399927535,
+  "wilson": [
+   0.4240757908015887,
+   0.5364299463983206
+  ],
+  "turns_mean": 10.143333333333333,
+  "lo": 0.42346495600072465,
+  "hi": 0.5365350439992753,
+  "elo": -13.904842503684788,
+  "branch": null,
+  "seat0": {
+   "n": 150,
+   "wins": 72,
+   "p": 0.48,
+   "ci": 0.07995262597313486
+  },
+  "seat1": {
+   "n": 150,
+   "wins": 72,
+   "p": 0.48,
+   "ci": 0.07995262597313486
+  }
+ },
+ "n_wanted": 300,
+ "seed0": 672000,
+ "rows_file": "m4_control_py.jsonl",
+ "peek": false,
+ "opponent": "champion",
+ "label": "champion 対 champion",
+ "is_ceiling": false,
+ "definitions": {
+  "peek_scope": "相手の手札だけ（山札順は従来どおり混ぜる。§0.3 (i)）",
+  "elo": "Δ = 400·log10(p/(1−p))（§0.3 (ii)）",
+  "branch": "点推定で判定。区間が閾値をまたぐときは境界と併記",
+  "seat": "偶数シードでカンニング版が席 0"
+ },
+ "provenance": {
+  "label": "champion:planner_vc4cps",
+  "kwargs": {
+   "extra_turns": 1,
+   "value_net": "drl_sd001_vc4.json",
+   "opp_policy_net": "drl_sd001_s1.json",
+   "opp_policy_root_only": true,
+   "choice_phases": true,
+   "solo_samples": 4,
+   "policy_net": "pi_small64_e10.json",
+   "policy_scope": "proxy"
+  },
+  "models": {
+   "value_net": {
+    "file": "drl_sd001_vc4.json",
+    "sha256": "f050f22ee0a38993677a85f14d8e605e625450084c31a31e620ced54e19a58cd",
+    "bytes": 5848050
+   },
+   "opp_policy_net": {
+    "file": "drl_sd001_s1.json",
+    "sha256": "84b9b3df71cfbbcad283feae7929fb1920f8182820d23760e94b0fe1898ffe32",
+    "bytes": 5860264
+   },
+   "policy_net": {
+    "file": "pi_small64_e10.json",
+    "sha256": "88ea7e0f170e2059aa9d382f6ec31f6e8a0f37d47425ad91bcd07a1e60674dbe",
+    "bytes": 1059704
+   }
+  },
+  "engine": "python",
+  "rust_features": null,
+  "band": [
+   672000,
+   672299
+  ],
+  "rules_version": "v0.11",
+  "engine_version": "v0.1",
+  "written_at": "2026-09-10T09:47:32+09:00",
+  "extra": {
+   "tool": "peek_planner",
+   "M": "M4",
+   "peek": false,
+   "opponent": "champion",
+   "host": "workenv-2",
+   "workers": 2,
+   "note": "測定専用。champion 候補にしない・学習の相手にしない（D-026）"
+  }
+ }
+}

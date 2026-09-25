@@ -1,0 +1,27 @@
+{
+ "deck": "SD001",
+ "iter": 4,
+ "loop": 2,
+ "seed0": 630000,
+ "new": "輪2 反復5 の計画探索（地平+1ターン・葉=V（drl_sd001_vc4.json）／相手モデル=π₀（drl_sd001_s1.json・根だけ）・選択フェイズも探索（solo 4 本）・代打ち=π（pi_small64_e10.json））　※葉を drl_sd001_vc4b.json に差し替え",
+ "old": "輪2 反復4 の計画探索（地平+1ターン・葉=V（drl_sd001_vb3.json）／相手モデル=π₀（drl_sd001_s1.json・根だけ）・選択フェイズも探索（solo 4 本）・代打ち=π（pi_small64_e10.json））　※葉を drl_sd001_vc4.json に差し替え",
+ "new_net": "results/models/drl_sd001_vc4b.json",
+ "old_net": "results/models/drl_sd001_vc4.json",
+ "n": 1200,
+ "note": "D-067 案 B の判定。門番のみ（錨は --skip-anchors、カナリアは案 B が明確に劣ったので測っていない）。",
+ "runs": [
+  {
+   "name": "1. 門番: 新 vs 前の版",
+   "seed0": 630000,
+   "wins": 558,
+   "decided": 1200,
+   "games": 1200,
+   "p": 0.465,
+   "ci": 0.02822076717596458,
+   "lo": 0.43677923282403547,
+   "hi": 0.4932207671759646,
+   "passes_gate": false,
+   "clearly_worse": true
+  }
+ ]
+}

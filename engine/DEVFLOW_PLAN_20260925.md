@@ -1,9 +1,8 @@
 # 開発の流れの組み替え — Cowork と Claude Code の使い分け（計画と手順・2026-09-25）
 
 書き手: クロエ（別端末のチャット・エンジンの持ち場の文書として `engine/` 直下に置く）。
-位置づけ: **マスターの裁定待ちの提案書**である。台帳（`TASKS.md`・`decisions.md`・`LANES.md`・`CLAUDE.md`）は
-裁定が出るまで触らない（同日にエンジンの持ち場のチャットが動いていた形跡があり、D-番号の衝突を避ける）。
-裁定のあとに §9 のとおり台帳へ落とす。
+位置づけ: 2026-09-25 にマスターが裁定した**開発の流れの正本**（裁定の内容は §0.1）。台帳への反映は §9。
+改訂 2（2026-09-25 夜）: 段 1・段 4 が完了。マスターの裁定で §0.1 を確定し、段 2 を「いつか」に格下げ、§6.1 のネットの置き場を確定した。
 
 準拠版: rules_draft v0.18 ／ engine v0.1 ／ 符号化 v6 ／ champion `planner_vc4cps_kheb_b75`（指紋 `f4b80b25c35cfa77`）。
 **この文書はエンジンの打ち方・Rust・符号化に一切触れない。**変えるのは「ファイルの受け渡し方」と「どの機械で何を回すか」だけである。
@@ -17,22 +16,33 @@
 (b) 5 点セットで書いた再ビルドの依頼をマスターが手で打つ作業、(c) D-番号の衝突と控え（WRITELOG）の照合、の 3 つで、
 どれも「ファイルを人が運んでいる」ことから来ている。git を受け渡しの単位にすると 3 つとも構造で消える。
 
-役割分担（提案）:
+### 0.1 マスターの裁定（2026-09-25）— これが決まり
 
-- **Cowork（このクロエ）**: 設計判断・報告書・引継ぎ書・decisions の追記・デッキ構築・アプリの文書・進行盤。読んで考えて書く仕事。
-- **Claude Code（PC 版）**: エンジンの実装・検査・**Rust の再ビルドと指紋の確認**・短い測定。**5 点セットの依頼文を引退させる**のが役目。
-- **Claude Code（クラウド版）**: 1 時間を超える測定・ラダー・門番。4 コア 2.8GHz・15GiB で、Cowork の作業環境（2 コア 2.1GHz・7GiB）の 2.5 倍前後、マスターの PC と同等以上と見込む。**Kaggle 登録の代わりになるかを 1 便で試す。**
+- **ファイルの追加・更新は GitHub 一か所**（`okuson-droid/meicho_engine` の `main`）。**GitHub が唯一の正本**。PC のフォルダは作業ツリーであり、正本ではない（`LANES.md` §10・`GITHUB_SETUP.md` §7 の「正本は PC」はここで覆る）。
+- **push するのは Claude Code**（PC 版）。マスターが GitHub Desktop で押すのは例外（Claude Code が使えないとき）。
+- **PC で生まれるファイル**（対人局の記録 `results/human_games/`・カードの手動スクショ・ネットの移行の出力・配布版の検査結果）**も PC の Claude Code が commit して push する**。PC は「pull するだけ」ではなく「PC 生まれのものを push する働き手の一人」。
+- **Cowork（クロエ）の文書は接続フォルダに書く**（＝作業ツリーに「未 commit の変更」として現れる）。それを PC の Claude Code が commit・push する。Claude Code の文書作成が足りないときだけ Cowork が書く、という分担でよい。プロジェクトナレッジ経由は Claude Code が読めないので使わない。
+- **クラウドの Claude Code はブランチに push する。** `main` への merge は PC の Claude Code かマスター。
+- **`cards/` は除外のまま**（公式素材。触る作業はほとんど無い）。**`results/` は上げる**——ただし `.bak.json`（移行前の原本・約 230 MB）・`.bin`（記録本体）・`s2v_id_ens3.json`（部品 3 本から決定的に作り直せる）は除く。上がるのは約 200 MB、1 ファイル最大 14 MB。
+- **リポジトリは Public のまま**（条件: 秘密の値を書かない／`cards/` の除外を動かさない／本名を含む Windows の経路は段 2 のあとに置き換える）。2026-09-25 に写しを grep して、秘密の値は入っていないことを確かめた（署名の秘密鍵はリポジトリの外・公開鍵だけ・合言葉やトークンの実値なし）。Public の実利: Actions の無料枠が無制限（Private は月 2,000 分・Windows は 2 倍で数える）。
+- **読むのは GitHub から**（clone のほうが接続フォルダ経由の 50 ファイルずつより速く、Rust まで建てて検査を回せる）。接続フォルダは「書く口」「資材（`cards/`）と未 push の状態を見る口」として残す。
 
-進める順序（**前の段が済むまで次に入らない**。いま動いている便は現行の運用のまま続けてよい）:
+### 0.2 役割分担
 
-1. **段 1** 未 commit の 9 日分を commit・push する（GitHub Desktop・30 分）
-2. **段 2** リポジトリを OneDrive の外へ移す（robocopy・30 分＋Cowork の接続フォルダの付け替え）
-3. **段 3** PC に Claude Code を入れ、**最初の仕事として再ビルドを 1 回やらせる**（1 時間）
-4. **段 4** GitHub Actions を 2 本置く（検査／Windows の wheel）— ファイルは本書と一緒に置いた。push すれば動く
-5. **段 5** クラウドセッションで測定を 1 便試す（ネットの置き場を先に決める・§5）
-6. **段 6** 進行盤（アーティファクト）— 段 5 のあとに設計だけ出す（§6）
+- **Cowork（このクロエ）**: 設計判断・報告書・引継ぎ書・decisions の追記・デッキ構築・アプリの文書・進行盤。読んで考えて書く仕事。**読みは GitHub から、書きは接続フォルダへ。**
+- **Claude Code（PC 版）**: エンジンの実装・検査・**Rust の再ビルドと指紋の確認**・短い測定・**commit と push の役**（Cowork の文書と PC 生まれの記録を含む）。**5 点セットの依頼文を引退させる**のが役目。
+- **Claude Code（クラウド版）**: 1 時間を超える測定・ラダー・門番。4 コア 2.8GHz・15GiB で、Cowork の作業環境（2 コア 2.1GHz・7GiB）の 2.5 倍前後、マスターの PC と同等以上と見込む。**Kaggle 登録の代わりになるかを 1 便で試す。**結果はブランチに push する。
 
-判断が要る点は §8 にまとめた（推しつき・提案はすべて推しを採用の方針 D-069 に従う）。
+### 0.3 進める順序（**前の段が済むまで次に入らない**。いま動いている便は現行の運用のまま続けてよい）
+
+1. ~~**段 1** 未 commit の 9 日分を commit・push する~~ → **2026-09-25 に完了**
+2. **段 4** GitHub Actions を 2 本置く → **2026-09-25 に完了**（`Tests` は資材の無い 46 件を名指しの一覧で説明して緑・`Windows wheel` は緑）
+3. **段 3** PC に Claude Code を入れ、**最初の仕事として再ビルドを 1 回やらせる**（1 時間）。**次はここ**
+4. **段 5** クラウドセッションで測定を 1 便試す（§6。ネットの置き場は §6.1 で確定した。先に `.gitignore` の 3 行と host 名の 1 行を入れる）
+5. **段 6** 進行盤（アーティファクト）— 段 5 のあとに設計だけ出す（§7）
+6. **段 2** リポジトリを OneDrive の外へ移す — **「いつか」に格下げ**（§3）。GitHub が正本になったので必須ではなくなった。残る理由は「OneDrive と git がぶつかる事故を避ける」と「本名を含む経路を文書から消す」の 2 つ
+
+§8 は裁定の記録（決まったこと）と、残っている判断 2 件。
 
 ---
 
@@ -89,10 +99,10 @@ GitHub Desktop（コマンドは打たない）。対象は `C:\Users\奥村優�
 
 ---
 
-## 3. 段 2 — リポジトリを OneDrive の外へ移す
+## 3. 段 2 — リポジトリを OneDrive の外へ移す（**「いつか」・マスター裁定 2026-09-25**）
 
-**なぜ今か**: 書き戻しが「written でも載らない」事故（D-113・LANES §5）と、日本語を含む長い経路で道具が転ぶ問題（cp932・D-082 追記 1）は、どちらも置き場所が原因である。
-移設先は **`C:\dev\meicho_engine_v0.1`**（ASCII だけ・短い）。**正本が PC のフォルダであることは変えない**（LANES §10）。OneDrive の古いフォルダは消さず、名前を変えて凍結する。
+**位置づけ**: GitHub が正本になった（§0.1）ので、移設は必須ではなくなった。**やる価値が残る理由は 2 つ**——(1) OneDrive が `.git` の小さいファイルを掴んで git が止まる事故（`Permission denied` / `unable to index file`）は、Claude Code が PC で commit するようになると頻度が上がる。当面は「Claude Code が commit する前に OneDrive を一時停止する」運用で避ける。(2) 本名を含む Windows の経路（`C:\Users\…`）が引継ぎ書・依頼書に 20 ファイルほど入っていて、Public のリポジトリに見えている。移設して経路を `C:\dev\…` に置き換えると、副作用としてこれが消える。
+移設先は **`C:\dev\meicho_engine_v0.1`**（ASCII だけ・短い）。OneDrive の古いフォルダは消さず、名前を変えて凍結する。**やるときは段 3 のあと**（Claude Code に経路の置き換えをさせられる）。
 
 ### どこで
 コマンドプロンプト（`cmd`）。**PowerShell ではない**（`PS C:\` と出ていたら別の窓を開く）。
@@ -181,10 +191,12 @@ https://git-scm.com/downloads/win からインストーラを実行し、選択�
        古い経路「C:\Users\奥村優斗\OneDrive\ドキュメント\eclipse_workフォルダ\meicho_engine_v0.1」を
        「C:\dev\meicho_engine_v0.1」に置き換える。改行コードは元のまま（TASKS.md・decisions.md は CRLF・CLAUDE.md は LF）。
        decisions.md は触らない。
-    終わったら git status の一覧を見せて止まる。commit はしない。
+    3. .gitignore の「engine/results/*/」と「!engine/results/human_games/」の 2 行を消し、代わりに
+       engine/ci/gitignore_additions.txt の 3 行を同じ場所に入れる。git status で engine/results/ の下が
+       約 200 MB・.bak.json と .bin が 1 つも含まれないことを確かめる（git status --short | findstr /i "bak.json .bin" が空）。
+    終わったら git status の一覧を見せて止まる。commit と push は、マスターが一覧を見て「よい」と言ってから行う。
 
-**(5) 終わったら**（クロエの推し: 最初のうちは commit はマスターが GitHub Desktop で押す）
-GitHub Desktop の `Changes` を見て、変わったファイルが「置き換えた台帳 5 種＋`engine/CC_PC_RUN_20260925.md`」だけであることを確かめ、`Commit to main` → `Push origin`。
+**(5) 終わったら**: Claude Code が見せた `git status` の一覧が「置き換えた台帳 5 種＋`engine/CC_PC_RUN_20260925.md`＋`.gitignore`＋`engine/results/` の下」だけであることを確かめ、「commit して push して」と返す（§0.1: push は Claude Code の役）。要約は「段 3: PC の Claude Code の初仕事（再ビルド確認・経路の置き換え・results/ を git に）」でよい。
 
 ### 成功したらどう見えるか
 - (1): `2.x.xxx (Claude Code)` のような版が出る。
@@ -247,19 +259,18 @@ GitHub Desktop の `Changes` を見て、変わったファイルが「置き換
 **前提**: クラウドセッションは **GitHub のリポジトリを clone して始まる**（`main` の最新）。手元の未 push の変更は見えない。
 結果は **ブランチに commit して push しないと消える**（容器は使い捨て・しばらく放置すると回収される・裏で走らせていた仕事は復元されない）。
 
-### 6.1 先に決めること: ネットの置き場（判断 §8-1）
-champion を立てるには `engine/results/models/` の現行ネット（`drl_*.json` 12 本 約 80 MB＋`s2v_*_s?.json` 6 本 約 84 MB）が要るが、`.gitignore` の `engine/results/*/` で GitHub に無い。
-**クロエの推し（案 A）**: `.gitignore` に次の 3 行を足して、**現行のネットだけ**を main のリポジトリで管理する。
+### 6.1 ネットの置き場（**確定・マスター裁定 2026-09-25**）
+champion を立てるには `engine/results/models/` の現行ネットが要るが、`.gitignore` の `engine/results/*/` で GitHub に無い。
+**裁定: `results/` を main のリポジトリで管理する。**除くのは `.bak.json`・`.bin`・`s2v_id_ens3.json` の 3 種。`.gitignore` の `engine/results/*/` の行を次の 4 行に置き換える（`engine/ci/gitignore_additions.txt` に同じものを置いた）:
 
-    !engine/results/models/
-    engine/results/models/*.bak.json
+    engine/results/**/*.bin
+    engine/results/**/*.bak.json
     engine/results/models/s2v_id_ens3.json
 
-理由: ネットは我々の成果物で公式素材を含まない／リポジトリは private／1 本 7〜14 MB で GitHub の上限（1 ファイル 100 MB）に収まる／
-`.bak.json`（移行前の原本・約 200 MB）と `ens3`（39 MB・部品 3 本から決定的に作り直せる）は除く。
-ネットは移行や再学習のたびに差し替わるので履歴は太る（1 回 80〜170 MB）が、年に数回なら問題にならない。
-**代案 B**: 別の private リポジトリ `meicho_assets` に置き、クラウドの環境の setup script で clone する（main を軽く保てるが、置き場が 2 つになり控えの照合が増える）。
-**代案 C**: セッションのたびに zip を手で上げる（Cowork でこれまでやってきた方法・人手が要るので目的に反する）。
+（3 行目までが除外。既存の `engine/results/*/` と `!engine/results/human_games/` の 2 行は**消す**。）
+理由: ネットも記録も我々の成果物で公式素材を含まない／1 本 7〜14 MB で GitHub の上限（1 ファイル 100 MB）に収まる／上がるのは約 200 MB。
+ネットは移行や再学習のたびに差し替わるので履歴は 80〜170 MB ずつ太る。年に数回なら問題にならない。太りすぎたら LFS に移す。
+**これは段 3 の Claude Code の最初の仕事に足す**（§4 の (4) の 3 件目）。push のあと `Tests` の Summary の「一覧にあるのに通った検査」に名前が並ぶはずなので、その分を `engine/ci/missing_assets_allowlist.txt` から消す。
 
 ### 6.2 host の名前（エンジンの持ち場の 1 行・打ち方には関わらない）
 `experiments/provenance.py` の `HOSTS` は知らない名前を拒否する。クラウドセッションの機械を **`cc-cloud-4`**（Claude Code のクラウド・4 コア）として足す。
@@ -307,28 +318,24 @@ champion を立てるには `engine/results/models/` の現行ネット（`drl_*
 
 ---
 
-## 8. 判断が要る点（推しつき）
+## 8. 裁定の記録と、残っている判断
 
-1. **ネットの置き場**（§6.1）: 案 A（main で現行ネットだけ管理）／案 B（別リポジトリ）／案 C（手上げ）。**推し A**。
-2. **移設先の経路**（§3）: `C:\dev\meicho_engine_v0.1`。別の場所がよければそこに読み替える（**ASCII だけ・空白なし**が条件）。**推し `C:\dev`**。
-3. **`stage1b-encoding-v5` ブランチと `stage1b-rust.yml`**: Codex の作業の名残。**推し: 段 1 のあとに消す**（段階1B は D-089/D-091 で閉じており、ブランチの中身は main に merge 済み——`logs/HEAD` の最後の pull が ort strategy の merge）。消す前に GitHub の画面で「This branch is N commits behind main」で ahead が 0 であることを見る。
-4. **段 3 以後の commit を誰が押すか**: 最初のうちは**マスターが GitHub Desktop で押す**（`Changes` の一覧を目で見る工程を残す）。段 5 のあと、Claude Code に「ブランチに commit・push まで」を許す。**推し: 段階的に**。
-5. **Cowork の書き戻しの作法（LANES §5）をどうするか**: 段 2 で OneDrive の外に出れば「written でも載らない」事故は消える見込みだが、**再ステージしてバイト比較する決まりは段 5 まで残す**（消えたことを 5 回以上の書き戻しで確かめてから緩める）。**推し: 残す**。
-6. **GITHUB_SETUP §7「リポジトリは正本ではない」**: 段 2 のあとも **正本は PC のフォルダ**のまま（LANES §10）。ただし「GitHub は貼るための置き場」から「クラウドの起点」に役目が増えるので、§7 を「正本は PC・GitHub は写し・push 忘れはクラウドの起点が古くなる」に書き換える。**推し: 書き換える**。
+**2026-09-25 に決まったこと**（§0.1 の裏づけ）: (1) ネットの置き場＝`results/` を main で管理（`.bak.json`・`.bin`・`ens3` を除く）／(2) 正本は GitHub・push は Claude Code・PC 生まれのものも Claude Code が push／(3) Cowork の文書は接続フォルダに書き、Claude Code が commit／(4) Public のまま（条件つき）／(5) 段 2（移設）は「いつか」／(6) Cowork の書き戻しのバイト比較は、OneDrive にある間は残す。
 
----
+**残っている判断 2 件**（推しつき・急がない）:
 
-## 9. 裁定のあとに台帳へ落とすこと（クロエがやる・エンジンの持ち場の 1 チャットで）
+1. **Codex の名残 `stage1b-encoding-v5` ブランチと `.github/workflows/stage1b-rust.yml`**: **推し: 消す**（段階1B は D-089/D-091 で閉じており、ブランチの中身は main に merge 済み——`logs/HEAD` の最後の pull が ort strategy の merge）。消す前に GitHub の画面で ahead が 0 であることを見る。段 3 の Claude Code にやらせてよい。
+2. **`GITHUB_SETUP.md` §7「リポジトリは正本ではない」と `LANES.md` §10「正本が PC のフォルダであることは変えない」**: §0.1 で覆ったので書き換える。**推し: §9 の台帳反映と同時に**。
 
-- `engine/decisions.md` に D-番号を 1 つ（本書の採用と §8 の裁定。末尾の番号は書く直前に PC で見る）。
-- `TASKS.md` Active の「監査の採用 2 件の実行（D-126）」の (5) を、本書の段 1〜6 に置き換える（段ごとに `[ ]`）。
-- `LANES.md` §10 を「見直した（本書）」に更新し、§5 の書き戻しの作法に「段 5 まで残す」を明記。
-- `CLAUDE.md` の罠の節に「push を忘れるとクラウドの起点が古い」を 1 行足す。
-- `GITHUB_SETUP.md` §7 を §8-6 のとおり書き換える。
+## 9. 台帳へ落とすこと（クロエがやる・エンジンの持ち場の 1 チャットで・PC の `decisions.md` の末尾を見てから）
+
+- `engine/decisions.md` に D-番号を 1 つ（§0.1 の裁定 6 件と、段 1・段 4 の完了）。
+- `TASKS.md` Active の「監査の採用 2 件の実行（D-126）」の (5) を、本書の段 3 → 5 → 6 → 2 に置き換える（段ごとに `[ ]`・段 1 と段 4 は `[x]`）。
+- `LANES.md` §10 を「見直した（本書）」に、§5 を「正本は GitHub。書き戻しのバイト比較は OneDrive にある間は残す」に。「正本が PC のフォルダ」の文は消す。
+- `CLAUDE.md` の冒頭「正本は PC のこのフォルダである」を「正本は GitHub の main。PC は作業ツリー」に。罠の節に「push を忘れるとクラウドの起点が古い」を 1 行。
+- `GITHUB_SETUP.md` §7 を「正本は GitHub・PC は作業ツリー・push は Claude Code」に書き換える。
 - `experiments/provenance.py` の `HOSTS` に `cc-cloud-4`（§6.2・検査があれば同時に）。
-- `.gitignore` に §6.1 の 3 行（案 A のとき）。
-
----
+- `.gitignore` の書き換え（§6.1）——これは段 3 の Claude Code がやる。
 
 ## 10. この文書で言えないこと
 

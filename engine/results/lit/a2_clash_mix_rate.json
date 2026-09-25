@@ -1,0 +1,136 @@
+{
+ "agg": {
+  "n": 1000,
+  "n_positions": 167,
+  "mix_rate_ai": {
+   "k": 389,
+   "p": 0.389,
+   "ci95": [
+    0.35926265929215356,
+    0.4195869121940253
+   ]
+  },
+  "mix_rate_opp": {
+   "k": 356,
+   "p": 0.356,
+   "ci95": [
+    0.326925514171364,
+    0.3861766326215165
+   ]
+  },
+  "not_converged": {
+   "k": 0,
+   "p": 0.0,
+   "ci95": [
+    0.0,
+    0.0038268985863905225
+   ]
+  },
+  "spread_mean": 0.2024144905790637,
+  "spread_median": 0.14244995103454872,
+  "gain_mean": 0.007291515390014829,
+  "gain_median": -1.4303095230427942e-07,
+  "agree_with_argmax": {
+   "k": 786,
+   "n": 1000,
+   "p": 0.786
+  },
+  "positions_all_pure": {
+   "k": 47,
+   "n": 167,
+   "p": 0.281437125748503
+  },
+  "mix_rate_by_gain": {
+   "0.0": {
+    "k": 296,
+    "p": 0.296,
+    "ci95": [
+     0.26853048540606317,
+     0.32503088921718415
+    ]
+   },
+   "0.005": {
+    "k": 165,
+    "p": 0.165,
+    "ci95": [
+     0.14328430451009733,
+     0.1892797175427844
+    ]
+   },
+   "0.01": {
+    "k": 111,
+    "p": 0.111,
+    "ci95": [
+     0.09299890611775587,
+     0.131978420982456
+    ]
+   },
+   "0.02": {
+    "k": 75,
+    "p": 0.075,
+    "ci95": [
+     0.0602515618187045,
+     0.09300130197972745
+    ]
+   },
+   "0.05": {
+    "k": 32,
+    "p": 0.032,
+    "ci95": [
+     0.02275696612786701,
+     0.04482501094899452
+    ]
+   }
+  }
+ },
+ "n_wanted": 1000,
+ "seed0": 709600,
+ "seed_last": 709999,
+ "rows_file": "a2_clash_mix_rate.jsonl",
+ "provenance": {
+  "label": "champion:planner_vc4cps_kheb",
+  "kwargs": {
+   "extra_turns": 1,
+   "value_net": "drl_sd001_vc4.json",
+   "opp_policy_net": "drl_sd001_s1.json",
+   "opp_policy_root_only": true,
+   "choice_phases": true,
+   "solo_samples": 4,
+   "policy_net": "pi_small64_e10.json",
+   "policy_scope": "proxy",
+   "known_hand": true,
+   "endgame_enum": 64,
+   "draw_buckets": 1
+  },
+  "models": {
+   "value_net": {
+    "file": "drl_sd001_vc4.json",
+    "sha256": "f050f22ee0a38993677a85f14d8e605e625450084c31a31e620ced54e19a58cd",
+    "bytes": 5848050
+   },
+   "opp_policy_net": {
+    "file": "drl_sd001_s1.json",
+    "sha256": "84b9b3df71cfbbcad283feae7929fb1920f8182820d23760e94b0fe1898ffe32",
+    "bytes": 5860264
+   },
+   "policy_net": {
+    "file": "pi_small64_e10.json",
+    "sha256": "88ea7e0f170e2059aa9d382f6ec31f6e8a0f37d47425ad91bcd07a1e60674dbe",
+    "bytes": 1059704
+   }
+  },
+  "engine": "python",
+  "rust_features": null,
+  "band": [
+   709600,
+   709999
+  ],
+  "rules_version": "v0.11",
+  "engine_version": "v0.1",
+  "written_at": "2026-09-12T05:58:25+09:00",
+  "extra": {
+   "tool": "clash_mix_rate",
+   "M": "M2"
+  }
+ }
+}

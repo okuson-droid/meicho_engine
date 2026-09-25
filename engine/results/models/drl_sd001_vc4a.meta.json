@@ -1,0 +1,520 @@
+{
+ "train": "results/drl/vc4_train_d_0,results/drl/vc4_train_d_1,results/drl/vc4_train_d_2,results/drl/vc4_train_d_3,results/drl/vc4_train_d_4,results/drl/vc4_train_g_0,results/drl/vc4_train_g_1,results/drl/vc4_train_g_2,results/drl/vc4_train_g_3,results/drl/vc4_train_h_0,results/drl/vc4_train_h_1,results/drl/vc4_train_h_2,results/drl/vc4_train_h_3,results/drl/vc4_train_sp_00,results/drl/vc4_train_sp_01,results/drl/vc4_train_sp_02,results/drl/vc4_train_sp_03,results/drl/vc4_train_sp_04,results/drl/vc4_train_sp_05,results/drl/vc4_train_sp_06,results/drl/vc4_train_sp_07,results/drl/vc4_train_sp_08,results/drl/vc4_train_sp_09,results/drl/vc4_train_sp_10,results/drl/vc4_train_sp_11,results/drl/vc4_train_sp_12,results/drl/vc4_train_sp_13,results/drl/vc4_train_sp_14,results/drl/vc4_train_sp_15,results/drl/vc4_train_sp_16,results/drl/vc4_train_sp_17,results/drl/vc4_train_sp_18,results/drl/vc4_train_sp_19,results/drl/vc4_train_sp_20,results/drl/vc4_train_sp_21,results/drl/vc4_train_sp_22,results/drl/vc4_train_sp_23,results/drl/vc4_train_sp_24,results/drl/vc4_train_sp_25,results/drl/vc4_train_sp_26,results/drl/vc4_train_sp_27,results/drl/vc4_train_sp_28,results/drl/vc4_train_sp_29,results/drl/vc4_train_sp_30,results/drl/vc4_train_sp_31,results/drl/vc4_train_sp_32,results/drl/vc4_train_sp_33,results/drl/vc4_train_sp_34,results/drl/vc4_train_sp_35,results/drl/vc4_train_sp_36,results/drl/vc4_train_sp_37,results/drl/vc4_train_sp_38,results/drl/vc4_train_sp_39",
+ "valid": "results/drl/vc4_valid_0,results/drl/vc4_valid_1,results/drl/vc4_valid_2,results/drl/vc4_valid_3,results/drl/vc4_valid_4,results/drl/vc4_valid_5",
+ "epochs": 6,
+ "hidden": 256,
+ "depth": 2,
+ "phead": 128,
+ "lr": 0.001,
+ "bs": 1024,
+ "seed": 0,
+ "lam": 0.7,
+ "init": "results/models/drl_sd001_vb3.json",
+ "n_train": 782655,
+ "n_valid": 94664,
+ "chance_acc_valid": 0.2530097579714394,
+ "log": [
+  {
+   "epoch": 1,
+   "train_loss": 1.672242979547146,
+   "valid": {
+    "n": 94664,
+    "v_logloss": 0.6548220723839712,
+    "v_acc": 0.5994992816699062,
+    "t_logloss": 0.6713223705164408,
+    "p_logloss": 0.9941105568166175,
+    "p_acc": 0.5969323079523366,
+    "p_acc_by_phase": {
+     "setup": [
+      1.0,
+      1800
+     ],
+     "mulligan": [
+      0.9961111111111111,
+      1800
+     ],
+     "action": [
+      0.5314040256629127,
+      36317
+     ],
+     "clash": [
+      0.5715187415032045,
+      20596
+     ],
+     "choice": [
+      0.6411304449375219,
+      25689
+     ],
+     "rush": [
+      0.6593738211995473,
+      7953
+     ],
+     "discard": [
+      0.25736738703339884,
+      509
+     ]
+    }
+   },
+   "sec": 98.20027327537537
+  },
+  {
+   "epoch": 2,
+   "train_loss": 1.613917042939008,
+   "valid": {
+    "n": 94664,
+    "v_logloss": 0.6491287732420513,
+    "v_acc": 0.6092495563255304,
+    "t_logloss": 0.6670925143927016,
+    "p_logloss": 0.9802114505553441,
+    "p_acc": 0.6022247105552269,
+    "p_acc_by_phase": {
+     "setup": [
+      1.0,
+      1800
+     ],
+     "mulligan": [
+      0.9961111111111111,
+      1800
+     ],
+     "action": [
+      0.5340749511248176,
+      36317
+     ],
+     "clash": [
+      0.5813750242765585,
+      20596
+     ],
+     "choice": [
+      0.6465802483553272,
+      25689
+     ],
+     "rush": [
+      0.6665409279517164,
+      7953
+     ],
+     "discard": [
+      0.26522593320235754,
+      509
+     ]
+    }
+   },
+   "sec": 109.96102833747864
+  },
+  {
+   "epoch": 3,
+   "train_loss": 1.5932785169004966,
+   "valid": {
+    "n": 94664,
+    "v_logloss": 0.6512620500848106,
+    "v_acc": 0.6057318516014536,
+    "t_logloss": 0.6688186215455741,
+    "p_logloss": 0.9716227849055896,
+    "p_acc": 0.6053832502324009,
+    "p_acc_by_phase": {
+     "setup": [
+      1.0,
+      1800
+     ],
+     "mulligan": [
+      0.9961111111111111,
+      1800
+     ],
+     "action": [
+      0.5383704601150976,
+      36317
+     ],
+     "clash": [
+      0.584822295591377,
+      20596
+     ],
+     "choice": [
+      0.6481762622133987,
+      25689
+     ],
+     "rush": [
+      0.6710675216899283,
+      7953
+     ],
+     "discard": [
+      0.2554027504911591,
+      509
+     ]
+    }
+   },
+   "sec": 108.40378642082214
+  },
+  {
+   "epoch": 4,
+   "train_loss": 1.5760643211917975,
+   "valid": {
+    "n": 94664,
+    "v_logloss": 0.6483994919722031,
+    "v_acc": 0.610400997211189,
+    "t_logloss": 0.6668017518033766,
+    "p_logloss": 0.9659624311694891,
+    "p_acc": 0.6077495140708189,
+    "p_acc_by_phase": {
+     "setup": [
+      1.0,
+      1800
+     ],
+     "mulligan": [
+      0.9961111111111111,
+      1800
+     ],
+     "action": [
+      0.5401327202136741,
+      36317
+     ],
+     "clash": [
+      0.5890464167799573,
+      20596
+     ],
+     "choice": [
+      0.6503951107477909,
+      25689
+     ],
+     "rush": [
+      0.6727021249842826,
+      7953
+     ],
+     "discard": [
+      0.26129666011787817,
+      509
+     ]
+    }
+   },
+   "sec": 101.80446076393127
+  },
+  {
+   "epoch": 5,
+   "train_loss": 1.561323130103732,
+   "valid": {
+    "n": 94664,
+    "v_logloss": 0.6495775786778394,
+    "v_acc": 0.6086051719766754,
+    "t_logloss": 0.667404934971691,
+    "p_logloss": 0.9635626835542187,
+    "p_acc": 0.6088375728893771,
+    "p_acc_by_phase": {
+     "setup": [
+      1.0,
+      1800
+     ],
+     "mulligan": [
+      0.9961111111111111,
+      1800
+     ],
+     "action": [
+      0.5398573670732715,
+      36317
+     ],
+     "clash": [
+      0.5879296950864246,
+      20596
+     ],
+     "choice": [
+      0.6542489003075246,
+      25689
+     ],
+     "rush": [
+      0.6771029800075443,
+      7953
+     ],
+     "discard": [
+      0.26522593320235754,
+      509
+     ]
+    }
+   },
+   "sec": 108.95903205871582
+  },
+  {
+   "epoch": 6,
+   "train_loss": 1.5512028797820765,
+   "valid": {
+    "n": 94664,
+    "v_logloss": 0.6492301065984446,
+    "v_acc": 0.608425589453224,
+    "t_logloss": 0.6671605277401974,
+    "p_logloss": 0.9625449185841668,
+    "p_acc": 0.610136905264937,
+    "p_acc_by_phase": {
+     "setup": [
+      1.0,
+      1800
+     ],
+     "mulligan": [
+      0.9961111111111111,
+      1800
+     ],
+     "action": [
+      0.54183990968417,
+      36317
+     ],
+     "clash": [
+      0.5901145853563798,
+      20596
+     ],
+     "choice": [
+      0.6541321188057145,
+      25689
+     ],
+     "rush": [
+      0.678863322016849,
+      7953
+     ],
+     "discard": [
+      0.2554027504911591,
+      509
+     ]
+    }
+   },
+   "sec": 115.41236996650696
+  }
+ ],
+ "select": "best_v",
+ "selected_epoch": 4,
+ "calibration": {
+  "a": 3.9772377014160156,
+  "b": -2.7383289337158203,
+  "c": 0.8345654010772705,
+  "n": 753055,
+  "scale": "bulk",
+  "sentinel_frac": 0.0,
+  "spread": 0.21379977464675903,
+  "logloss": 0.6120479132793214,
+  "base": 0.6833994468756115,
+  "useful": true,
+  "by": "phase_turn",
+  "overall": {
+   "a": 3.9772377014160156,
+   "b": -2.7383289337158203,
+   "c": 0.8345654010772705,
+   "n": 753055,
+   "scale": "bulk",
+   "sentinel_frac": 0.0,
+   "spread": 0.18683767318725586,
+   "logloss": 0.6447503566741943,
+   "base": 0.6833994468756115,
+   "useful": true
+  },
+  "strata": {
+   "5": {
+    "a": 3.0680649280548096,
+    "b": -2.227609157562256,
+    "c": 0.8798109352588654,
+    "n": 257830,
+    "scale": "bulk",
+    "sentinel_frac": 0.0,
+    "spread": 0.13816231489181519,
+    "logloss": 0.6680751442909241,
+    "base": 0.6929193075190889,
+    "useful": true,
+    "name": "action/自分のターン"
+   },
+   "6": {
+    "a": 3.278956413269043,
+    "b": -2.64625883102417,
+    "c": 0.7748870491981508,
+    "n": 73772,
+    "scale": "bulk",
+    "sentinel_frac": 0.0,
+    "spread": 0.15236344933509827,
+    "logloss": 0.6665075421333313,
+    "base": 0.6930582215451544,
+    "useful": true,
+    "name": "clash/相手のターン"
+   },
+   "7": {
+    "a": 3.663459062576294,
+    "b": -2.7939512729644775,
+    "c": 0.7962844967842102,
+    "n": 72833,
+    "scale": "bulk",
+    "sentinel_frac": 0.0,
+    "spread": 0.1692335605621338,
+    "logloss": 0.6612167358398438,
+    "base": 0.6922695229777477,
+    "useful": true,
+    "name": "clash/自分のターン"
+   },
+   "8": {
+    "a": 4.223376274108887,
+    "b": -3.3463194370269775,
+    "c": 0.7558124899864196,
+    "n": 37200,
+    "scale": "bulk",
+    "sentinel_frac": 0.0,
+    "spread": 0.17596903443336487,
+    "logloss": 0.6551326513290405,
+    "base": 0.6921536138004929,
+    "useful": true,
+    "name": "choice/相手のターン"
+   },
+   "9": {
+    "a": 3.331878423690796,
+    "b": -2.5974156856536865,
+    "c": 0.7357711553573608,
+    "n": 144813,
+    "scale": "bulk",
+    "sentinel_frac": 0.0,
+    "spread": 0.16117951273918152,
+    "logloss": 0.6660478711128235,
+    "base": 0.6927891252191205,
+    "useful": true,
+    "name": "choice/自分のターン"
+   },
+   "10": {
+    "a": 5.726704120635986,
+    "b": -4.038520336151123,
+    "c": 0.8595149517059326,
+    "n": 18171,
+    "scale": "bulk",
+    "sentinel_frac": 0.0,
+    "spread": 0.2546430826187134,
+    "logloss": 0.6211967468261719,
+    "base": 0.6824507145053735,
+    "useful": true,
+    "name": "rush/相手のターン"
+   },
+   "11": {
+    "a": 7.048609733581543,
+    "b": -4.342916011810303,
+    "c": 1.0,
+    "n": 37984,
+    "scale": "bulk",
+    "sentinel_frac": 0.0,
+    "spread": 0.325857549905777,
+    "logloss": 0.5580027103424072,
+    "base": 0.6728876469960622,
+    "useful": true,
+    "name": "rush/自分のターン"
+   },
+   "13": {
+    "a": 4.2012457847595215,
+    "b": -3.5628325939178467,
+    "c": 0.7768006563186646,
+    "n": 3632,
+    "scale": "bulk",
+    "sentinel_frac": 0.0,
+    "spread": 0.14133647084236145,
+    "logloss": 0.6710687875747681,
+    "base": 0.6924866060154484,
+    "useful": true,
+    "name": "discard/自分のターン"
+   },
+   "21": {
+    "a": 4.607512474060059,
+    "b": -1.2780964374542236,
+    "c": 0.9486702084541321,
+    "n": 42191,
+    "scale": "bulk",
+    "sentinel_frac": 0.0,
+    "spread": 0.09912025928497314,
+    "logloss": 0.34802690148353577,
+    "base": 0.3752511380714515,
+    "useful": true,
+    "name": "リーグ・action/自分のターン"
+   },
+   "22": {
+    "a": 5.096563339233398,
+    "b": -2.020127296447754,
+    "c": 0.848506498336792,
+    "n": 11653,
+    "scale": "bulk",
+    "sentinel_frac": 0.0,
+    "spread": 0.10826188325881958,
+    "logloss": 0.35614776611328125,
+    "base": 0.39207434363144733,
+    "useful": true,
+    "name": "リーグ・clash/相手のターン"
+   },
+   "23": {
+    "a": 5.548552989959717,
+    "b": -2.035090923309326,
+    "c": 0.9120545625686646,
+    "n": 11895,
+    "scale": "bulk",
+    "sentinel_frac": 0.0,
+    "spread": 0.11144620180130005,
+    "logloss": 0.3298856317996979,
+    "base": 0.3650111153283063,
+    "useful": true,
+    "name": "リーグ・clash/自分のターン"
+   },
+   "24": {
+    "a": 5.701042652130127,
+    "b": -2.3828628063201904,
+    "c": 0.8513535261154175,
+    "n": 6671,
+    "scale": "bulk",
+    "sentinel_frac": 0.0,
+    "spread": 0.09421557188034058,
+    "logloss": 0.31773948669433594,
+    "base": 0.3515595137920498,
+    "useful": true,
+    "name": "リーグ・choice/相手のターン"
+   },
+   "25": {
+    "a": 4.993597984313965,
+    "b": -1.7564760446548462,
+    "c": 0.8405485033988952,
+    "n": 24013,
+    "scale": "bulk",
+    "sentinel_frac": 0.0,
+    "spread": 0.10245054960250854,
+    "logloss": 0.3346621096134186,
+    "base": 0.36396405165585727,
+    "useful": true,
+    "name": "リーグ・choice/自分のターン"
+   },
+   "26": {
+    "a": 7.192175388336182,
+    "b": -2.810600757598877,
+    "c": 1.0,
+    "n": 2732,
+    "scale": "bulk",
+    "sentinel_frac": 0.0,
+    "spread": 0.10612040758132935,
+    "logloss": 0.2928240895271301,
+    "base": 0.332893932803091,
+    "useful": true,
+    "name": "リーグ・rush/相手のターン"
+   },
+   "27": {
+    "a": 7.313889026641846,
+    "b": -2.6586997509002686,
+    "c": 1.0,
+    "n": 6853,
+    "scale": "bulk",
+    "sentinel_frac": 0.0,
+    "spread": 0.09625416994094849,
+    "logloss": 0.22021466493606567,
+    "base": 0.26123101214362576,
+    "useful": true,
+    "name": "リーグ・rush/自分のターン"
+   }
+  },
+  "fallback": [
+   {
+    "key": 29,
+    "name": "リーグ・discard/自分のターン",
+    "n": 812
+   }
+  ],
+  "logloss_overall": 0.6447503566741943
+ },
+ "league_mode": "stratify",
+ "league_seeds": "487100-489099",
+ "n_league_train": 110820,
+ "n_v_train": 782655,
+ "vtarget": "fresh",
+ "calib_scale": "bulk",
+ "calib_by": "phase_turn",
+ "distil_from": null,
+ "n_fresh_used": 753055,
+ "wd": 0.0,
+ "wv": 1.0,
+ "wp": 1.0
+}

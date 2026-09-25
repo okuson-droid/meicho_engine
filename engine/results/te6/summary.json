@@ -1,0 +1,69 @@
+{
+ "te": "TE-6",
+ "deck": "SD02",
+ "mode": "mirror",
+ "seeds": "715000..715599",
+ "engine": "Python (arena.series_detail)",
+ "rules": "v0.18",
+ "result": {
+  "mcts160__vs__H": {
+   "n": 600,
+   "excluded": 0,
+   "wins": 517,
+   "p": 0.8617,
+   "ci95": 0.0276,
+   "lo": 0.834,
+   "hi": 0.8893,
+   "a_first": [
+    264,
+    300
+   ],
+   "a_second": [
+    253,
+    300
+   ]
+  },
+  "planner_lh__vs__H": {
+   "n": 600,
+   "excluded": 0,
+   "wins": 499,
+   "p": 0.8317,
+   "ci95": 0.0299,
+   "lo": 0.8017,
+   "hi": 0.8616,
+   "a_first": [
+    247,
+    300
+   ],
+   "a_second": [
+    252,
+    300
+   ]
+  },
+  "planner_lh__vs__mcts160": {
+   "n": 600,
+   "excluded": 0,
+   "wins": 308,
+   "p": 0.5133,
+   "ci95": 0.04,
+   "lo": 0.4733,
+   "hi": 0.5533,
+   "a_first": [
+    158,
+    300
+   ],
+   "a_second": [
+    150,
+    300
+   ]
+  }
+ },
+ "paired_vsH_mcts160_minus_planner_lh": {
+  "n": 600,
+  "diff": 0.03,
+  "ci95": 0.0381,
+  "mcts_only": 77,
+  "planner_only": 59,
+  "same": 464
+ }
+}

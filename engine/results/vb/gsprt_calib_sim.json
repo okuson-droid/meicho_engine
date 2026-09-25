@@ -1,0 +1,290 @@
+{
+ "tool": "gate_sprt_calibration.py",
+ "params": {
+  "alpha": 0.025,
+  "beta": 0.1,
+  "p0": 0.5,
+  "p1": 0.55,
+  "max_games": 2400,
+  "A": 3.58351893845611,
+  "B": -2.2772672850097555,
+  "chunk_pairs": 20,
+  "pair_scores": [
+   0.0,
+   0.25,
+   0.5,
+   0.75,
+   1.0
+  ],
+  "epsilon": 0.001
+ },
+ "when": "2026-09-09T11:18:30+09:00",
+ "platform": "Linux-6.18.44-fc-v24-x86_64-with-glibc2.39",
+ "shape_file": "gsprt_calib_shape.json",
+ "shape_counts": [
+  71,
+  0,
+  152,
+  0,
+  77
+ ],
+ "runs": 30000,
+ "results": {
+  "null_symmetrised": {
+   "runs": 30000,
+   "seed": 0,
+   "q": [
+    0.24666666666666665,
+    0.0,
+    0.5066666666666667,
+    0.0,
+    0.24666666666666665
+   ],
+   "mean_of_q": 0.5,
+   "rates": {
+    "pass": 0.0182,
+    "fail": 0.9784666666666667,
+    "cap": 0.0033333333333333335
+   },
+   "counts": {
+    "pass": 546,
+    "fail": 29354,
+    "cap": 100
+   },
+   "games_mean": 505.67466666666667,
+   "games_median": 400,
+   "games_p90": 1000,
+   "games_max": 2400,
+   "xs": [
+    0.0,
+    0.25,
+    0.5,
+    0.75,
+    1.0
+   ],
+   "games_mean_pass": 677.0695970695971,
+   "games_mean_fail": 496.0332493016284,
+   "games_mean_cap": 2400.0
+  },
+  "null_tilted": {
+   "runs": 30000,
+   "seed": 0,
+   "q": [
+    0.2466178921522085,
+    0.00020413365161624445,
+    0.50636,
+    0.00019603043631709195,
+    0.24662194375985813
+   ],
+   "mean_of_q": 0.5,
+   "rates": {
+    "pass": 0.0181,
+    "fail": 0.9784333333333334,
+    "cap": 0.0034666666666666665
+   },
+   "counts": {
+    "pass": 543,
+    "fail": 29353,
+    "cap": 104
+   },
+   "games_mean": 506.048,
+   "games_median": 400,
+   "games_p90": 1000,
+   "games_max": 2400,
+   "xs": [
+    0.0,
+    0.25,
+    0.5,
+    0.75,
+    1.0
+   ],
+   "games_mean_pass": 681.3259668508288,
+   "games_mean_fail": 496.0951180458556,
+   "games_mean_cap": 2400.0
+  },
+  "alt_symmetrised_tilted": {
+   "runs": 30000,
+   "seed": 0,
+   "q": [
+    0.20166123410483716,
+    0.00017831593585575955,
+    0.4963012356894258,
+    0.000217644394232124,
+    0.3016415698756491
+   ],
+   "mean_of_q": 0.55,
+   "rates": {
+    "pass": 0.9232666666666667,
+    "fail": 0.0701,
+    "cap": 0.006633333333333333
+   },
+   "counts": {
+    "pass": 27698,
+    "fail": 2103,
+    "cap": 199
+   },
+   "games_mean": 705.0386666666667,
+   "games_median": 600,
+   "games_p90": 1280,
+   "games_max": 2400,
+   "xs": [
+    0.0,
+    0.25,
+    0.5,
+    0.75,
+    1.0
+   ],
+   "games_mean_pass": 708.3731677377428,
+   "games_mean_fail": 500.7322872087494,
+   "games_mean_cap": 2400.0
+  },
+  "alt_tilted": {
+   "runs": 30000,
+   "seed": 0,
+   "q": [
+    0.20068616041587473,
+    0.00018220022481579484,
+    0.498247412202444,
+    0.000213933257165559,
+    0.3006702938996999
+   ],
+   "mean_of_q": 0.55,
+   "rates": {
+    "pass": 0.9239333333333334,
+    "fail": 0.0694,
+    "cap": 0.006666666666666667
+   },
+   "counts": {
+    "pass": 27718,
+    "fail": 2082,
+    "cap": 200
+   },
+   "games_mean": 704.1,
+   "games_median": 600,
+   "games_p90": 1280,
+   "games_max": 2400,
+   "xs": [
+    0.0,
+    0.25,
+    0.5,
+    0.75,
+    1.0
+   ],
+   "games_mean_pass": 705.7031531856555,
+   "games_mean_fail": 519.8463016330452,
+   "games_mean_cap": 2400.0
+  },
+  "observed": {
+   "runs": 30000,
+   "seed": 0,
+   "q": [
+    0.23666666666666666,
+    0.0,
+    0.5066666666666667,
+    0.0,
+    0.25666666666666665
+   ],
+   "mean_of_q": 0.51,
+   "rates": {
+    "pass": 0.07243333333333334,
+    "fail": 0.9057666666666667,
+    "cap": 0.0218
+   },
+   "counts": {
+    "pass": 2173,
+    "fail": 27173,
+    "cap": 654
+   },
+   "games_mean": 695.8493333333333,
+   "games_median": 520,
+   "games_p90": 1480,
+   "games_max": 2400,
+   "xs": [
+    0.0,
+    0.25,
+    0.5,
+    0.75,
+    1.0
+   ],
+   "games_mean_pass": 869.0842153704556,
+   "games_mean_fail": 640.980384940934,
+   "games_mean_cap": 2400.0
+  }
+ },
+ "sweep": [
+  {
+   "split": 0.4,
+   "alpha": 0.018,
+   "beta": 0.0722,
+   "cap_null": 0.00905,
+   "cap_alt": 0.0182,
+   "games_mean_null": 604.708,
+   "games_mean_alt": 835.186,
+   "runs": 20000
+  },
+  {
+   "split": 0.45,
+   "alpha": 0.01825,
+   "beta": 0.07335,
+   "cap_null": 0.0059,
+   "cap_alt": 0.01205,
+   "games_mean_null": 557.734,
+   "games_mean_alt": 775.514,
+   "runs": 20000
+  },
+  {
+   "split": 0.5,
+   "alpha": 0.0181,
+   "beta": 0.07105,
+   "cap_null": 0.0038,
+   "cap_alt": 0.00675,
+   "games_mean_null": 510.908,
+   "games_mean_alt": 717.218,
+   "runs": 20000
+  },
+  {
+   "split": 0.55,
+   "alpha": 0.01795,
+   "beta": 0.0685,
+   "cap_null": 0.00225,
+   "cap_alt": 0.00445,
+   "games_mean_null": 463.81,
+   "games_mean_alt": 657.354,
+   "runs": 20000
+  },
+  {
+   "split": 0.6,
+   "alpha": 0.0172,
+   "beta": 0.06655,
+   "cap_null": 0.00115,
+   "cap_alt": 0.002,
+   "games_mean_null": 422.676,
+   "games_mean_alt": 594.9,
+   "runs": 20000
+  },
+  {
+   "split": 0.65,
+   "alpha": 0.01705,
+   "beta": 0.06585,
+   "cap_null": 0.0007,
+   "cap_alt": 0.00095,
+   "games_mean_null": 378.204,
+   "games_mean_alt": 530.04,
+   "runs": 20000
+  },
+  {
+   "split": 0.7,
+   "alpha": 0.0182,
+   "beta": 0.06385,
+   "cap_null": 0.0001,
+   "cap_alt": 0.00045,
+   "games_mean_null": 331.08,
+   "games_mean_alt": 467.592,
+   "runs": 20000
+  }
+ ],
+ "alpha_actual": 0.0182,
+ "beta_actual": 0.0701,
+ "alpha_ok": true,
+ "beta_ok": true
+}

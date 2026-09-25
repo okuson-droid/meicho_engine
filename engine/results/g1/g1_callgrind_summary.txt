@@ -1,0 +1,126 @@
+===== eval（inclusive 上位・命令数）
+==1196== I   refs:      69,752,582,474
+98,259,169,604 (140.9%)  engine/rust/src/agents.rs:meicho_rs::agents::Planner::search'2 
+69,271,919,982 (99.31%)  engine/rust/src/lib.rs:meicho_rs::series_digest 
+68,733,597,501 (98.54%)  engine/rust/src/lib.rs:meicho_rs::run_series 
+68,732,742,715 (98.54%)  engine/rust/src/lib.rs:meicho_rs::AnyAgent::act 
+68,732,738,953 (98.54%)  engine/rust/src/agents.rs:meicho_rs::agents::Planner::act
+68,727,709,358 (98.53%)  engine/rust/src/agents.rs:meicho_rs::agents::Planner::act 
+57,192,638,722 (81.99%)  engine/rust/src/net.rs:meicho_rs::net::Dense::forward 
+52,176,275,554 (74.80%)  engine/rust/src/agents.rs:meicho_rs::agents::Greedy::policy_pick 
+51,971,451,756 (74.51%)  engine/rust/src/agents.rs:meicho_rs::agents::Greedy::step_proxy 
+48,683,820,713 (69.80%)  engine/rust/src/agents.rs:meicho_rs::agents::Planner::search 
+46,497,822,552 (66.66%)  engine/rust/src/agents.rs:meicho_rs::agents::Planner::value_after_turn 
+28,466,966,696 (40.81%)  engine/rust/src/net.rs:meicho_rs::net::Net::trunk
+20,036,704,443 (28.73%)  engine/rust/src/agents.rs:meicho_rs::agents::Greedy::act 
+17,538,037,512 (25.14%)  engine/rust/src/agents.rs:meicho_rs::agents::Greedy::clash_totals 
+16,992,068,057 (24.36%)  engine/rust/src/agents.rs:meicho_rs::agents::Greedy::score_clash 
+15,919,881,343 (22.82%)  engine/rust/src/agents.rs:meicho_rs::agents::Greedy::eval 
+15,008,555,712 (21.52%)  /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/core/src/internal_macros.rs:meicho_rs::net::Dense::forward
+14,812,038,678 (21.24%)  engine/rust/src/net.rs:meicho_rs::agents::Greedy::eval
+14,802,248,064 (21.22%)  engine/rust/src/net.rs:meicho_rs::net::Net::trunk 
+14,142,727,658 (20.28%)  engine/rust/src/net.rs:meicho_rs::net::Net::policy_scores
+14,013,465,661 (20.09%)  engine/rust/src/net.rs:meicho_rs::net::Net::policy_scores 
+12,001,707,425 (17.21%)  engine/rust/src/agents.rs:meicho_rs::agents::Greedy::settle 
+11,510,589,684 (16.50%)  /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/core/src/iter/adapters/zip.rs:meicho_rs::net::Dense::forward
+11,334,856,124 (16.25%)  /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/core/src/slice/sort/stable/quicksort.rs:core::slice::sort::stable::quicksort::quicksort'2 
+11,260,230,184 (16.14%)  /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/core/src/ops/arith.rs:meicho_rs::net::Dense::forward
+10,064,407,278 (14.43%)  engine/rust/src/encode.rs:meicho_rs::encode::encode_state
+ 7,899,902,904 (11.33%)  /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/core/src/slice/sort/stable/mod.rs:core::slice::sort::stable::driftsort_main 
+ 7,894,792,204 (11.32%)  /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/core/src/slice/sort/stable/drift.rs:core::slice::sort::stable::drift::sort 
+ 7,825,654,096 (11.22%)  /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/core/src/slice/sort/stable/quicksort.rs:core::slice::sort::stable::quicksort::quicksort 
+ 4,931,389,396 ( 7.07%)  engine/rust/src/encode.rs:meicho_rs::encode::encode_state 
+ 4,864,267,362 ( 6.97%)  engine/rust/src/encode.rs:meicho_rs::encode::obs_dim 
+ 3,949,348,782 ( 5.66%)  /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/core/src/slice/sort/stable/mod.rs:meicho_rs::encode::obs_dim
+ 3,949,283,673 ( 5.66%)  /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/core/src/slice/sort/stable/mod.rs:meicho_rs::encode::encode_state
+ 2,387,414,419 ( 3.42%)  engine/rust/src/agents.rs:meicho_rs::agents::Greedy::solo 
+ 2,379,602,372 ( 3.41%)  engine/rust/src/agents.rs:meicho_rs::agents::Greedy::score_solo 
+ 1,723,992,422 ( 2.47%)  /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/core/src/slice/sort/shared/smallsort.rs:core::slice::sort::shared::smallsort::bidirectional_merge 
+ 1,061,358,484 ( 1.52%)  /root/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde_core-1.0.229/src/de/mod.rs:<core::marker::PhantomData<T> as serde_core::de::DeserializeSeed>::deserialize'2 
+   744,365,181 ( 1.07%)  /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/core/src/slice/sort/shared/smallsort.rs:core::slice::sort::shared::smallsort::sort4_stable 
+   603,794,712 ( 0.87%)  /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/alloc/src/raw_vec/mod.rs:alloc::raw_vec::RawVecInner<A>::finish_grow 
+   576,528,840 ( 0.83%)  /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/alloc/src/raw_vec/mod.rs:alloc::raw_vec::RawVecInner<A>::reserve::do_reserve_and_handle 
+===== record（inclusive 上位・命令数）
+==1195== I   refs:      62,001,672,139
+93,046,940,884 (150.1%)  engine/rust/src/agents.rs:meicho_rs::agents::Planner::search'2 
+60,981,882,729 (98.36%)  /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/std/src/sys/thread/unix.rs:<std::sys::thread::unix::Thread>::new::thread_start 
+60,981,880,663 (98.36%)  /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/core/src/ops/function.rs:core::ops::function::FnOnce::call_once{{vtable.shim}} 
+60,981,880,602 (98.36%)  /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/std/src/sys/backtrace.rs:std::sys::backtrace::__rust_begin_short_backtrace 
+60,965,292,710 (98.33%)  engine/rust/src/lib.rs:meicho_rs::AnyAgent::act 
+60,965,289,872 (98.33%)  engine/rust/src/agents.rs:meicho_rs::agents::Planner::act
+60,958,981,124 (98.32%)  engine/rust/src/agents.rs:meicho_rs::agents::Planner::act 
+50,777,289,977 (81.90%)  engine/rust/src/net.rs:meicho_rs::net::Dense::forward 
+47,554,326,871 (76.70%)  engine/rust/src/agents.rs:meicho_rs::agents::Greedy::policy_pick 
+47,442,462,051 (76.52%)  engine/rust/src/agents.rs:meicho_rs::agents::Greedy::step_proxy 
+45,277,250,237 (73.03%)  engine/rust/src/agents.rs:meicho_rs::agents::Planner::search 
+42,935,037,739 (69.25%)  engine/rust/src/agents.rs:meicho_rs::agents::Planner::value_after_turn 
+25,536,806,185 (41.19%)  engine/rust/src/net.rs:meicho_rs::net::Net::trunk
+15,676,324,040 (25.28%)  engine/rust/src/agents.rs:meicho_rs::agents::Greedy::act 
+13,761,609,199 (22.20%)  engine/rust/src/agents.rs:meicho_rs::agents::Greedy::clash_totals 
+13,458,647,463 (21.71%)  engine/rust/src/net.rs:meicho_rs::net::Net::policy_scores
+13,356,471,707 (21.54%)  engine/rust/src/agents.rs:meicho_rs::agents::Greedy::score_clash 
+13,344,993,112 (21.52%)  engine/rust/src/net.rs:meicho_rs::net::Net::policy_scores 
+13,319,625,152 (21.48%)  /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/core/src/internal_macros.rs:meicho_rs::net::Dense::forward
+12,871,308,179 (20.76%)  engine/rust/src/agents.rs:meicho_rs::agents::Greedy::eval 
+11,977,062,311 (19.32%)  engine/rust/src/net.rs:meicho_rs::agents::Greedy::eval
+11,969,099,280 (19.30%)  engine/rust/src/net.rs:meicho_rs::net::Net::trunk 
+10,222,013,172 (16.49%)  /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/core/src/iter/adapters/zip.rs:meicho_rs::net::Dense::forward
+ 9,993,230,504 (16.12%)  /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/core/src/ops/arith.rs:meicho_rs::net::Dense::forward
+ 9,989,938,176 (16.11%)  /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/core/src/slice/sort/stable/quicksort.rs:core::slice::sort::stable::quicksort::quicksort'2 
+ 9,874,644,586 (15.93%)  engine/rust/src/agents.rs:meicho_rs::agents::Greedy::settle 
+ 8,935,959,850 (14.41%)  engine/rust/src/encode.rs:meicho_rs::encode::encode_state
+ 7,038,269,099 (11.35%)  /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/core/src/slice/sort/stable/mod.rs:core::slice::sort::stable::driftsort_main 
+ 7,033,716,839 (11.34%)  /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/core/src/slice/sort/stable/drift.rs:core::slice::sort::stable::drift::sort 
+ 6,972,050,962 (11.24%)  /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/core/src/slice/sort/stable/quicksort.rs:core::slice::sort::stable::quicksort::quicksort 
+ 4,379,955,860 ( 7.06%)  engine/rust/src/encode.rs:meicho_rs::encode::encode_state 
+ 4,321,044,834 ( 6.97%)  engine/rust/src/encode.rs:meicho_rs::encode::obs_dim 
+ 3,518,647,826 ( 5.68%)  /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/core/src/slice/sort/stable/mod.rs:meicho_rs::encode::obs_dim
+ 3,518,531,308 ( 5.67%)  /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/core/src/slice/sort/stable/mod.rs:meicho_rs::encode::encode_state
+ 1,831,125,339 ( 2.95%)  engine/rust/src/agents.rs:meicho_rs::agents::Greedy::solo 
+ 1,826,325,936 ( 2.95%)  engine/rust/src/agents.rs:meicho_rs::agents::Greedy::score_solo 
+ 1,515,889,039 ( 2.44%)  /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/core/src/slice/sort/shared/smallsort.rs:core::slice::sort::shared::smallsort::bidirectional_merge 
+ 1,061,550,548 ( 1.71%)  /root/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde_core-1.0.229/src/de/mod.rs:<core::marker::PhantomData<T> as serde_core::de::DeserializeSeed>::deserialize'2 
+   655,931,826 ( 1.06%)  /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/core/src/slice/sort/shared/smallsort.rs:core::slice::sort::shared::smallsort::sort4_stable 
+   538,420,530 ( 0.87%)  engine/rust/src/lib.rs:meicho_rs::series_record 
+===== netfree（inclusive 上位・命令数）
+==1615== I   refs:      1,045,206,323
+  880,855,477 (84.28%)  engine/rust/src/agents.rs:meicho_rs::agents::Planner::search'2 
+  527,057,997 (50.43%)  engine/rust/src/lib.rs:meicho_rs::series_digest 
+  526,894,738 (50.41%)  engine/rust/src/lib.rs:meicho_rs::run_series 
+  526,041,599 (50.33%)  engine/rust/src/lib.rs:meicho_rs::AnyAgent::act 
+  526,037,771 (50.33%)  engine/rust/src/agents.rs:meicho_rs::agents::Planner::act
+  518,104,239 (49.57%)  engine/rust/src/agents.rs:meicho_rs::agents::Planner::act 
+  453,724,132 (43.41%)  engine/rust/src/agents.rs:meicho_rs::agents::Planner::search 
+  360,308,097 (34.47%)  engine/rust/src/agents.rs:meicho_rs::agents::Greedy::step_proxy 
+  344,895,768 (33.00%)  engine/rust/src/agents.rs:meicho_rs::agents::Planner::value_after_turn 
+  219,415,078 (20.99%)  engine/rust/src/engine.rs:meicho_rs::engine::apply_owned
+  125,980,376 (12.05%)  engine/rust/src/agents.rs:meicho_rs::agents::Heuristic::act 
+   83,025,770 ( 7.94%)  engine/rust/src/agents.rs:meicho_rs::agents::Greedy::opp_act 
+   68,352,381 ( 6.54%)  engine/rust/src/engine.rs:meicho_rs::engine::apply_inner 
+   65,609,117 ( 6.28%)  /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/alloc/src/raw_vec/mod.rs:alloc::raw_vec::RawVecInner<A>::finish_grow 
+   57,353,675 ( 5.49%)  engine/rust/src/agents.rs:meicho_rs::agents::Greedy::act 
+   54,378,629 ( 5.20%)  /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/alloc/src/raw_vec/mod.rs:alloc::raw_vec::RawVec<T,A>::grow_one 
+   50,717,642 ( 4.85%)  engine/rust/src/engine.rs:meicho_rs::engine::apply
+   50,689,634 ( 4.85%)  engine/rust/src/engine.rs:meicho_rs::engine::apply 
+   44,096,686 ( 4.22%)  /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/std/src/sys/alloc/unix.rs:meicho_rs::engine::apply_owned
+   42,497,448 ( 4.07%)  engine/rust/src/engine.rs:meicho_rs::engine::legal_actions
+   40,791,340 ( 3.90%)  engine/rust/src/agents.rs:meicho_rs::agents::Greedy::settle 
+   33,261,233 ( 3.18%)  engine/rust/src/state.rs:<meicho_rs::state::GameState as core::clone::Clone>::clone
+   30,093,123 ( 2.88%)  engine/rust/src/engine.rs:meicho_rs::engine::apply_owned 
+   29,866,299 ( 2.86%)  engine/rust/src/agents.rs:meicho_rs::agents::Greedy::clash_totals 
+   27,567,539 ( 2.64%)  engine/rust/src/engine.rs:meicho_rs::engine::step_effect 
+   27,247,983 ( 2.61%)  engine/rust/src/agents.rs:meicho_rs::agents::Greedy::solo 
+   26,317,424 ( 2.52%)  /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/core/src/ptr/mod.rs:core::ptr::drop_in_place<meicho_rs::state::GameState> 
+   25,672,834 ( 2.46%)  engine/rust/src/engine.rs:meicho_rs::engine::active_skill_refs 
+   23,820,502 ( 2.28%)  engine/rust/src/agents.rs:meicho_rs::agents::Greedy::score_clash 
+   21,874,540 ( 2.09%)  /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/core/src/ptr/mod.rs:core::ptr::drop_in_place<meicho_rs::state::PlayerState> 
+   21,288,432 ( 2.04%)  engine/rust/src/engine.rs:meicho_rs::engine::queue_fire 
+   21,227,248 ( 2.03%)  /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/std/src/sys/alloc/unix.rs:core::ptr::drop_in_place<meicho_rs::state::PlayerState>
+   19,546,483 ( 1.87%)  engine/rust/src/agents.rs:meicho_rs::agents::Greedy::score_solo 
+   19,343,888 ( 1.85%)  /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/alloc/src/vec/mod.rs:<alloc::vec::Vec<T,A> as core::clone::Clone>::clone 
+   19,057,681 ( 1.82%)  /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/std/src/sys/alloc/unix.rs:meicho_rs::agents::Heuristic::act
+   17,929,912 ( 1.72%)  /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/alloc/src/raw_vec/mod.rs:alloc::raw_vec::RawVecInner<A>::reserve::do_reserve_and_handle 
+   17,674,871 ( 1.69%)  engine/rust/src/engine.rs:meicho_rs::engine::note_card_use 
+   17,367,531 ( 1.66%)  /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/alloc/src/vec/mod.rs:meicho_rs::engine::apply_inner
+   16,565,768 ( 1.58%)  /rustc/59807616e1fa2540724bfbac14d7976d7e4a3860/library/core/src/array/mod.rs:core::array::try_from_trusted_iterator 
+   15,976,857 ( 1.53%)  engine/rust/src/agents.rs:meicho_rs::agents::Greedy::worlds 

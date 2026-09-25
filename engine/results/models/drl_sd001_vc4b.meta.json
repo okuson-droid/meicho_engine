@@ -1,0 +1,423 @@
+{
+ "train": "results/drl/vc4_train_d_0,results/drl/vc4_train_d_1,results/drl/vc4_train_d_2,results/drl/vc4_train_d_3,results/drl/vc4_train_d_4,results/drl/vc4_train_g_0,results/drl/vc4_train_g_1,results/drl/vc4_train_g_2,results/drl/vc4_train_g_3,results/drl/vc4_train_h_0,results/drl/vc4_train_h_1,results/drl/vc4_train_h_2,results/drl/vc4_train_h_3,results/drl/vc4_train_sp_00,results/drl/vc4_train_sp_01,results/drl/vc4_train_sp_02,results/drl/vc4_train_sp_03,results/drl/vc4_train_sp_04,results/drl/vc4_train_sp_05,results/drl/vc4_train_sp_06,results/drl/vc4_train_sp_07,results/drl/vc4_train_sp_08,results/drl/vc4_train_sp_09,results/drl/vc4_train_sp_10,results/drl/vc4_train_sp_11,results/drl/vc4_train_sp_12,results/drl/vc4_train_sp_13,results/drl/vc4_train_sp_14,results/drl/vc4_train_sp_15,results/drl/vc4_train_sp_16,results/drl/vc4_train_sp_17,results/drl/vc4_train_sp_18,results/drl/vc4_train_sp_19,results/drl/vc4_train_sp_20,results/drl/vc4_train_sp_21,results/drl/vc4_train_sp_22,results/drl/vc4_train_sp_23,results/drl/vc4_train_sp_24,results/drl/vc4_train_sp_25,results/drl/vc4_train_sp_26,results/drl/vc4_train_sp_27,results/drl/vc4_train_sp_28,results/drl/vc4_train_sp_29,results/drl/vc4_train_sp_30,results/drl/vc4_train_sp_31,results/drl/vc4_train_sp_32,results/drl/vc4_train_sp_33,results/drl/vc4_train_sp_34,results/drl/vc4_train_sp_35,results/drl/vc4_train_sp_36,results/drl/vc4_train_sp_37,results/drl/vc4_train_sp_38,results/drl/vc4_train_sp_39",
+ "valid": "results/drl/vc4_valid_0,results/drl/vc4_valid_1,results/drl/vc4_valid_2,results/drl/vc4_valid_3,results/drl/vc4_valid_4,results/drl/vc4_valid_5",
+ "epochs": 6,
+ "hidden": 256,
+ "depth": 2,
+ "phead": 128,
+ "lr": 0.001,
+ "bs": 1024,
+ "seed": 0,
+ "lam": 0.7,
+ "init": "results/models/drl_sd001_vb3.json",
+ "n_train": 782655,
+ "n_valid": 94664,
+ "chance_acc_valid": 0.2530097579714394,
+ "log": [
+  {
+   "epoch": 1,
+   "train_loss": 1.7027875416367075,
+   "valid": {
+    "n": 94664,
+    "v_logloss": 0.6496722958733281,
+    "v_acc": 0.6079924786613707,
+    "t_logloss": 0.6644328173867327,
+    "p_logloss": 0.9940473417412506,
+    "p_acc": 0.5966470886503845,
+    "p_acc_by_phase": {
+     "setup": [
+      1.0,
+      1800
+     ],
+     "mulligan": [
+      0.9961111111111111,
+      1800
+     ],
+     "action": [
+      0.5309359253242283,
+      36317
+     ],
+     "clash": [
+      0.5699650417556807,
+      20596
+     ],
+     "choice": [
+      0.642259332788353,
+      25689
+     ],
+     "rush": [
+      0.6593738211995473,
+      7953
+     ],
+     "discard": [
+      0.24361493123772102,
+      509
+     ]
+    }
+   },
+   "sec": 100.95956945419312
+  },
+  {
+   "epoch": 2,
+   "train_loss": 1.647394354602607,
+   "valid": {
+    "n": 94664,
+    "v_logloss": 0.6501375848116843,
+    "v_acc": 0.6061227076819066,
+    "t_logloss": 0.6640971669036135,
+    "p_logloss": 0.9798633762740993,
+    "p_acc": 0.6020556917096256,
+    "p_acc_by_phase": {
+     "setup": [
+      1.0,
+      1800
+     ],
+     "mulligan": [
+      0.9961111111111111,
+      1800
+     ],
+     "action": [
+      0.5346256574056227,
+      36317
+     ],
+     "clash": [
+      0.5783161778986211,
+      20596
+     ],
+     "choice": [
+      0.6478259177079684,
+      25689
+     ],
+     "rush": [
+      0.6654092795171633,
+      7953
+     ],
+     "discard": [
+      0.2730844793713163,
+      509
+     ]
+    }
+   },
+   "sec": 111.87911128997803
+  },
+  {
+   "epoch": 3,
+   "train_loss": 1.6277078211370355,
+   "valid": {
+    "n": 94664,
+    "v_logloss": 0.6467585045034279,
+    "v_acc": 0.6108974900701428,
+    "t_logloss": 0.6635063640124134,
+    "p_logloss": 0.9716959566212885,
+    "p_acc": 0.6052776134539001,
+    "p_acc_by_phase": {
+     "setup": [
+      1.0,
+      1800
+     ],
+     "mulligan": [
+      0.9961111111111111,
+      1800
+     ],
+     "action": [
+      0.5367458765867225,
+      36317
+     ],
+     "clash": [
+      0.5840939988347252,
+      20596
+     ],
+     "choice": [
+      0.6507065280859512,
+      25689
+     ],
+     "rush": [
+      0.670187350685276,
+      7953
+     ],
+     "discard": [
+      0.26719056974459726,
+      509
+     ]
+    }
+   },
+   "sec": 96.97838425636292
+  },
+  {
+   "epoch": 4,
+   "train_loss": 1.6111805516038813,
+   "valid": {
+    "n": 94664,
+    "v_logloss": 0.6472588091582465,
+    "v_acc": 0.6097883038958843,
+    "t_logloss": 0.6638617330599665,
+    "p_logloss": 0.9657163001835563,
+    "p_acc": 0.6075171131581172,
+    "p_acc_by_phase": {
+     "setup": [
+      1.0,
+      1800
+     ],
+     "mulligan": [
+      0.9961111111111111,
+      1800
+     ],
+     "action": [
+      0.538838560453782,
+      36317
+     ],
+     "clash": [
+      0.5878811419693144,
+      20596
+     ],
+     "choice": [
+      0.6516407801004321,
+      25689
+     ],
+     "rush": [
+      0.6737080347038853,
+      7953
+     ],
+     "discard": [
+      0.27897838899803534,
+      509
+     ]
+    }
+   },
+   "sec": 102.80036973953247
+  },
+  {
+   "epoch": 5,
+   "train_loss": 1.5967930589038524,
+   "valid": {
+    "n": 94664,
+    "v_logloss": 0.6474055658780661,
+    "v_acc": 0.6088270092115271,
+    "t_logloss": 0.6635621792262881,
+    "p_logloss": 0.9634581680059292,
+    "p_acc": 0.6088270092115271,
+    "p_acc_by_phase": {
+     "setup": [
+      1.0,
+      1800
+     ],
+     "mulligan": [
+      0.9961111111111111,
+      1800
+     ],
+     "action": [
+      0.5413993446595259,
+      36317
+     ],
+     "clash": [
+      0.5867644202757817,
+      20596
+     ],
+     "choice": [
+      0.6529253766203433,
+      25689
+     ],
+     "rush": [
+      0.6772287187224947,
+      7953
+     ],
+     "discard": [
+      0.26522593320235754,
+      509
+     ]
+    }
+   },
+   "sec": 117.66377401351929
+  },
+  {
+   "epoch": 6,
+   "train_loss": 1.5868048749826738,
+   "valid": {
+    "n": 94664,
+    "v_logloss": 0.6473576801925139,
+    "v_acc": 0.6090594101242288,
+    "t_logloss": 0.6634954044545461,
+    "p_logloss": 0.9619901730123078,
+    "p_acc": 0.6092918110369306,
+    "p_acc_by_phase": {
+     "setup": [
+      1.0,
+      1800
+     ],
+     "mulligan": [
+      0.9961111111111111,
+      1800
+     ],
+     "action": [
+      0.5410689208910427,
+      36317
+     ],
+     "clash": [
+      0.5884637793746359,
+      20596
+     ],
+     "choice": [
+      0.653664992798474,
+      25689
+     ],
+     "rush": [
+      0.676222809002892,
+      7953
+     ],
+     "discard": [
+      0.28487229862475444,
+      509
+     ]
+    }
+   },
+   "sec": 117.95728182792664
+  }
+ ],
+ "select": "best_v",
+ "selected_epoch": 3,
+ "calibration": {
+  "a": 3.4895262718200684,
+  "b": -2.624037504196167,
+  "c": 0.8108335018157959,
+  "n": 646235,
+  "scale": "bulk",
+  "sentinel_frac": 0.0,
+  "spread": 0.16035103797912598,
+  "logloss": 0.6581528383794434,
+  "base": 0.692485340279698,
+  "useful": true,
+  "by": "phase_turn",
+  "overall": {
+   "a": 3.4895262718200684,
+   "b": -2.624037504196167,
+   "c": 0.8108335018157959,
+   "n": 646235,
+   "scale": "bulk",
+   "sentinel_frac": 0.0,
+   "spread": 0.16304275393486023,
+   "logloss": 0.6626009941101074,
+   "base": 0.692485340279698,
+   "useful": true
+  },
+  "strata": {
+   "5": {
+    "a": 3.0680649280548096,
+    "b": -2.227609157562256,
+    "c": 0.8798109352588654,
+    "n": 257830,
+    "scale": "bulk",
+    "sentinel_frac": 0.0,
+    "spread": 0.13816231489181519,
+    "logloss": 0.6680751442909241,
+    "base": 0.6929193075190889,
+    "useful": true,
+    "name": "action/自分のターン"
+   },
+   "6": {
+    "a": 3.278956413269043,
+    "b": -2.64625883102417,
+    "c": 0.7748870491981508,
+    "n": 73772,
+    "scale": "bulk",
+    "sentinel_frac": 0.0,
+    "spread": 0.15236344933509827,
+    "logloss": 0.6665075421333313,
+    "base": 0.6930582215451544,
+    "useful": true,
+    "name": "clash/相手のターン"
+   },
+   "7": {
+    "a": 3.663459062576294,
+    "b": -2.7939512729644775,
+    "c": 0.7962844967842102,
+    "n": 72833,
+    "scale": "bulk",
+    "sentinel_frac": 0.0,
+    "spread": 0.1692335605621338,
+    "logloss": 0.6612167358398438,
+    "base": 0.6922695229777477,
+    "useful": true,
+    "name": "clash/自分のターン"
+   },
+   "8": {
+    "a": 4.223376274108887,
+    "b": -3.3463194370269775,
+    "c": 0.7558124899864196,
+    "n": 37200,
+    "scale": "bulk",
+    "sentinel_frac": 0.0,
+    "spread": 0.17596903443336487,
+    "logloss": 0.6551326513290405,
+    "base": 0.6921536138004929,
+    "useful": true,
+    "name": "choice/相手のターン"
+   },
+   "9": {
+    "a": 3.331878423690796,
+    "b": -2.5974156856536865,
+    "c": 0.7357711553573608,
+    "n": 144813,
+    "scale": "bulk",
+    "sentinel_frac": 0.0,
+    "spread": 0.16117951273918152,
+    "logloss": 0.6660478711128235,
+    "base": 0.6927891252191205,
+    "useful": true,
+    "name": "choice/自分のターン"
+   },
+   "10": {
+    "a": 5.726704120635986,
+    "b": -4.038520336151123,
+    "c": 0.8595149517059326,
+    "n": 18171,
+    "scale": "bulk",
+    "sentinel_frac": 0.0,
+    "spread": 0.2546430826187134,
+    "logloss": 0.6211967468261719,
+    "base": 0.6824507145053735,
+    "useful": true,
+    "name": "rush/相手のターン"
+   },
+   "11": {
+    "a": 7.048609733581543,
+    "b": -4.342916011810303,
+    "c": 1.0,
+    "n": 37984,
+    "scale": "bulk",
+    "sentinel_frac": 0.0,
+    "spread": 0.325857549905777,
+    "logloss": 0.5580027103424072,
+    "base": 0.6728876469960622,
+    "useful": true,
+    "name": "rush/自分のターン"
+   },
+   "13": {
+    "a": 4.2012457847595215,
+    "b": -3.5628325939178467,
+    "c": 0.7768006563186646,
+    "n": 3632,
+    "scale": "bulk",
+    "sentinel_frac": 0.0,
+    "spread": 0.14133647084236145,
+    "logloss": 0.6710687875747681,
+    "base": 0.6924866060154484,
+    "useful": true,
+    "name": "discard/自分のターン"
+   }
+  },
+  "fallback": [],
+  "logloss_overall": 0.6626009941101074
+ },
+ "league_mode": "drop",
+ "league_seeds": "487100-489099",
+ "n_league_train": 110820,
+ "n_v_train": 671835,
+ "vtarget": "fresh",
+ "calib_scale": "bulk",
+ "calib_by": "phase_turn",
+ "distil_from": null,
+ "n_fresh_used": 753055,
+ "wd": 0.0,
+ "wv": 1.0,
+ "wp": 1.0
+}

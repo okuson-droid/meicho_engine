@@ -1,0 +1,4 @@
+uniform vs champion(Python) n=400 seed0=604000: 0.512 ±0.049 (n=400)  下端 0.464  387s
+mix vs champion(Python) n=400 seed0=604400: 0.495 ±0.049 (n=400)  下端 0.446  394s
+soft2 vs champion(Python) n=400 seed0=604800: 0.525 ±0.049 (n=400)  下端 0.476  380s
+nash vs champion(Python) n=400 seed0=605200: 0.470 ±0.049 (n=400)  下端 0.421  443s

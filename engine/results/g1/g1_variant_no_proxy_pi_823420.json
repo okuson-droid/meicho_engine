@@ -1,0 +1,25 @@
+{
+ "variant": "no_proxy_pi",
+ "why": "champion から代打ち π（`policy_net`）だけを外す——内訳で最大だった π の推論の重さを時計で確かめる",
+ "seed0": 823420,
+ "n": 10,
+ "workers": 2,
+ "seconds": 13.187036101999638,
+ "games_per_sec": 0.758320514378787,
+ "sec_per_game_per_worker": 2.6374072203999277,
+ "mean_turns": 10.0,
+ "mean_steps": 85.6,
+ "steps_per_sec": 64.91223603082418,
+ "machine": {
+  "platform": "Linux-6.18.44-fc-v37-x86_64-with-glibc2.39",
+  "cpu": "Intel(R) Xeon(R) Processor @ 2.10GHz",
+  "cores": 2,
+  "python": "3.11.15",
+  "encoding_info": [
+   5,
+   1825,
+   317
+  ],
+  "rules_version": "v0.18"
+ }
+}

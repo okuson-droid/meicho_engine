@@ -1,0 +1,224 @@
+{
+ "deck": "SD001",
+ "n_games": 100,
+ "seed0": 470000,
+ "solo_samples": 4,
+ "champion": {
+  "extra_turns": 1,
+  "value_net": "drl_sd001_vb3.json",
+  "opp_policy_net": "drl_sd001_s1.json",
+  "opp_policy_root_only": true
+ },
+ "decisions_total": 5177,
+ "decisions_choice": 1575,
+ "choice_share": 0.3042302491790612,
+ "differ_total": 542,
+ "differ_ratio": 0.3441269841269841,
+ "rows": [
+  {
+   "kind": "discard/levelup",
+   "n": 625,
+   "differ": 415,
+   "ratio": 0.664
+  },
+  {
+   "kind": "use_optional",
+   "n": 426,
+   "differ": 19,
+   "ratio": 0.04460093896713615
+  },
+  {
+   "kind": "reveal_count",
+   "n": 307,
+   "differ": 10,
+   "ratio": 0.03257328990228013
+  },
+  {
+   "kind": "turn_end_discard",
+   "n": 81,
+   "differ": 62,
+   "ratio": 0.7654320987654321
+  },
+  {
+   "kind": "switch_back",
+   "n": 77,
+   "differ": 16,
+   "ratio": 0.2077922077922078
+  },
+  {
+   "kind": "discard_for_effect",
+   "n": 27,
+   "differ": 15,
+   "ratio": 0.5555555555555556
+  },
+  {
+   "kind": "order",
+   "n": 21,
+   "differ": 0,
+   "ratio": 0.0
+  },
+  {
+   "kind": "pay_or_damage",
+   "n": 11,
+   "differ": 5,
+   "ratio": 0.45454545454545453
+  }
+ ],
+ "examples": [
+  {
+   "seed": 470000,
+   "turn": 5,
+   "kind": "discard/levelup",
+   "h": {
+    "type": "discard",
+    "hand": 3
+   },
+   "v": {
+    "type": "discard",
+    "hand": 4
+   }
+  },
+  {
+   "seed": 470000,
+   "turn": 5,
+   "kind": "discard/levelup",
+   "h": {
+    "type": "discard",
+    "hand": 0
+   },
+   "v": {
+    "type": "discard",
+    "hand": 3
+   }
+  },
+  {
+   "seed": 470000,
+   "turn": 9,
+   "kind": "discard/levelup",
+   "h": {
+    "type": "discard",
+    "hand": 6
+   },
+   "v": {
+    "type": "discard",
+    "hand": 5
+   }
+  },
+  {
+   "seed": 470001,
+   "turn": 2,
+   "kind": "discard/levelup",
+   "h": {
+    "type": "discard",
+    "hand": 0
+   },
+   "v": {
+    "type": "discard",
+    "hand": 5
+   }
+  },
+  {
+   "seed": 470001,
+   "turn": 4,
+   "kind": "discard/levelup",
+   "h": {
+    "type": "discard",
+    "hand": 2
+   },
+   "v": {
+    "type": "discard",
+    "hand": 1
+   }
+  },
+  {
+   "seed": 470001,
+   "turn": 8,
+   "kind": "discard/levelup",
+   "h": {
+    "type": "discard",
+    "hand": 3
+   },
+   "v": {
+    "type": "discard",
+    "hand": 0
+   }
+  },
+  {
+   "seed": 470001,
+   "turn": 8,
+   "kind": "discard/levelup",
+   "h": {
+    "type": "discard",
+    "hand": 3
+   },
+   "v": {
+    "type": "discard",
+    "hand": 0
+   }
+  },
+  {
+   "seed": 470002,
+   "turn": 1,
+   "kind": "discard/levelup",
+   "h": {
+    "type": "discard",
+    "hand": 0
+   },
+   "v": {
+    "type": "discard",
+    "hand": 2
+   }
+  },
+  {
+   "seed": 470002,
+   "turn": 3,
+   "kind": "discard/levelup",
+   "h": {
+    "type": "discard",
+    "hand": 8
+   },
+   "v": {
+    "type": "discard",
+    "hand": 6
+   }
+  },
+  {
+   "seed": 470002,
+   "turn": 3,
+   "kind": "discard/levelup",
+   "h": {
+    "type": "discard",
+    "hand": 3
+   },
+   "v": {
+    "type": "discard",
+    "hand": 6
+   }
+  },
+  {
+   "seed": 470002,
+   "turn": 3,
+   "kind": "turn_end_discard",
+   "h": {
+    "type": "discard",
+    "hand": 6
+   },
+   "v": {
+    "type": "discard",
+    "hand": 5
+   }
+  },
+  {
+   "seed": 470002,
+   "turn": 5,
+   "kind": "use_optional",
+   "h": {
+    "type": "use"
+   },
+   "v": {
+    "type": "skip"
+   }
+  }
+ ],
+ "sec": 62.20733904838562
+}

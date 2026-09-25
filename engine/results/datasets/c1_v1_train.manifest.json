@@ -1,0 +1,182 @@
+{
+  "dataset": "c1_v1",
+  "split": "train",
+  "def_hash": "b383ca62d669ae72",
+  "definition": {
+    "name": "c1_v1",
+    "version": 2,
+    "description": "C-1 学習データ生成の定義（planner 中心。champion が実際に到達する局面に密度を寄せる）。v2 = 本番規模。",
+    "deck": "SD001",
+    "mode": "mirror",
+    "sample": "turn_start",
+    "splits": {
+      "train": {
+        "seed_band": 90000,
+        "scale": 1.0
+      },
+      "valid": {
+        "seed_band": 100000,
+        "scale": 0.25
+      }
+    },
+    "agents": {
+      "planner": {
+        "factory": "planner"
+      },
+      "H": {
+        "factory": "heuristic"
+      },
+      "greedy": {
+        "factory": "greedy"
+      },
+      "X1": {
+        "factory": "heuristic",
+        "kwargs": {
+          "params": {
+            "concerto_target": 3,
+            "levelup_min_hand": 4
+          }
+        }
+      },
+      "X2": {
+        "factory": "heuristic",
+        "kwargs": {
+          "params": {
+            "own_color_weight": 3.0,
+            "scarce_penalty": 0.7,
+            "switch_min_gain": 1
+          }
+        }
+      },
+      "X3": {
+        "factory": "heuristic",
+        "kwargs": {
+          "params": {
+            "counter_weight": 6.0,
+            "own_color_weight": 1.5
+          }
+        }
+      }
+    },
+    "matchups": [
+      {
+        "a": "planner",
+        "b": "planner",
+        "games": 480
+      },
+      {
+        "a": "planner",
+        "b": "H",
+        "games": 240
+      },
+      {
+        "a": "planner",
+        "b": "greedy",
+        "games": 240
+      },
+      {
+        "a": "planner",
+        "b": "X1",
+        "games": 120
+      },
+      {
+        "a": "planner",
+        "b": "X2",
+        "games": 120
+      },
+      {
+        "a": "planner",
+        "b": "X3",
+        "games": 120
+      }
+    ]
+  },
+  "seed_band": 90000,
+  "assignment": [
+    {
+      "a": "planner",
+      "b": "planner",
+      "games": 480,
+      "seed0": 90000
+    },
+    {
+      "a": "planner",
+      "b": "H",
+      "games": 240,
+      "seed0": 90480
+    },
+    {
+      "a": "planner",
+      "b": "greedy",
+      "games": 240,
+      "seed0": 90720
+    },
+    {
+      "a": "planner",
+      "b": "X1",
+      "games": 120,
+      "seed0": 90960
+    },
+    {
+      "a": "planner",
+      "b": "X2",
+      "games": 120,
+      "seed0": 91080
+    },
+    {
+      "a": "planner",
+      "b": "X3",
+      "games": 120,
+      "seed0": 91200
+    }
+  ],
+  "rules_version": "v0.10",
+  "engine_version": "v0.1",
+  "games": 1320,
+  "aborted": 0,
+  "draws": 0,
+  "rows": 33738,
+  "rows_per_matchup": {
+    "planner_vs_planner": 12394,
+    "planner_vs_H": 6038,
+    "planner_vs_greedy": 6452,
+    "planner_vs_X1": 2844,
+    "planner_vs_X2": 2976,
+    "planner_vs_X3": 3034
+  },
+  "win_rate_a": {
+    "planner_vs_H": {
+      "wins": 207,
+      "n": 240,
+      "p": 0.8625
+    },
+    "planner_vs_X1": {
+      "wins": 105,
+      "n": 120,
+      "p": 0.875
+    },
+    "planner_vs_X2": {
+      "wins": 112,
+      "n": 120,
+      "p": 0.9333333333333333
+    },
+    "planner_vs_X3": {
+      "wins": 110,
+      "n": 120,
+      "p": 0.9166666666666666
+    },
+    "planner_vs_greedy": {
+      "wins": 173,
+      "n": 240,
+      "p": 0.7208333333333333
+    },
+    "planner_vs_planner": {
+      "wins": 251,
+      "n": 480,
+      "p": 0.5229166666666667
+    }
+  },
+  "seconds": 468.8,
+  "bytes": 1750372,
+  "path": "results/datasets/c1_v1_train.jsonl.gz"
+}

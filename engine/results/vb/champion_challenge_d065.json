@@ -1,0 +1,119 @@
+{
+ "deck": "SD001",
+ "challenger_diff": {
+  "choice_phases": true,
+  "solo_samples": 4,
+  "policy_net": "drl_sd001_vb3.json",
+  "policy_scope": "proxy"
+ },
+ "seed0": 550000,
+ "champion": "計画探索＋地平+1ターン／葉=V（drl_sd001_vb3.json）／相手モデル=π（drl_sd001_s1.json・根だけ）",
+ "challenger": "現 champion ＋ {'choice_phases': True, 'solo_samples': 4, 'policy_net': 'drl_sd001_vb3.json', 'policy_scope': 'proxy'}",
+ "audit": {
+  "checked": 80,
+  "violations": 0,
+  "examples": []
+ },
+ "digest_6": [
+  752568508592414125,
+  386796929586385930,
+  873798268153738011,
+  14243315054876815817,
+  12395476383199023944,
+  6544055947420828213
+ ],
+ "digest_hash": "074dbf160350650a",
+ "encoding": {
+  "version": 3,
+  "obs_dim": 596,
+  "act_dim": 111
+ },
+ "gate_457500": {
+  "cand": "a15",
+  "diff": {
+   "choice_phases": true,
+   "solo_samples": 4,
+   "policy_net": "drl_sd001_vb3.json",
+   "policy_scope": "proxy"
+  },
+  "seed0": 457500,
+  "n_gate": 1200,
+  "n_anchor": 300,
+  "sec": 14802.052021741867,
+  "gate": {
+   "played": 1200,
+   "decided": 1200,
+   "wins": 758,
+   "p": 0.6316666666666667,
+   "ci": 0.027291659219676676,
+   "lo": 0.60437500744699,
+   "hi": 0.6589583258863434
+  },
+  "anchors": {
+   "H": {
+    "pairs": 300,
+    "played": 300,
+    "new_p": 0.9133333333333333,
+    "old_p": 0.92,
+    "diff": -0.006666666666666667,
+    "ci": 0.038151721210051365,
+    "new_only": 16,
+    "old_only": 18,
+    "clearly_worse": false
+   },
+   "貪欲": {
+    "pairs": 300,
+    "played": 300,
+    "new_p": 0.8966666666666666,
+    "old_p": 0.89,
+    "diff": 0.006666666666666667,
+    "ci": 0.04533359302174946,
+    "new_only": 25,
+    "old_only": 23,
+    "clearly_worse": false
+   },
+   "素planner": {
+    "pairs": 300,
+    "played": 300,
+    "new_p": 0.6566666666666666,
+    "old_p": 0.6233333333333333,
+    "diff": 0.03333333333333333,
+    "ci": 0.07038238183653649,
+    "new_only": 63,
+    "old_only": 53,
+    "clearly_worse": false
+   }
+  }
+ },
+ "control_551300": {
+  "cand": "null",
+  "diff": {},
+  "seed0": 551300,
+  "n_gate": 1200,
+  "n_anchor": 0,
+  "sec": 317.71835231781006,
+  "gate": {
+   "played": 1200,
+   "decided": 1200,
+   "wins": 615,
+   "p": 0.5125,
+   "ci": 0.02828132113250723,
+   "lo": 0.4842186788674927,
+   "hi": 0.5407813211325072
+  },
+  "anchors": {
+   "H": {
+    "pairs": 0,
+    "played": 0
+   },
+   "貪欲": {
+    "pairs": 0,
+    "played": 0
+   },
+   "素planner": {
+    "pairs": 0,
+    "played": 0
+   }
+  }
+ }
+}

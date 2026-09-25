@@ -1,0 +1,50 @@
+{
+ "reason": "§7.3 の割り振り規則は最終評価を「単独グループ」から取る作りだが、この候補集合（環境デッキ 24 種・D-128）には 単独グループが 1 つも無く、規則のままでは最終評価が 0 件になる。候補を見たあとに閾値や規則を動かさないため、規則は変えずにグループ単位で手割りした（マスター裁定 2026-09-24・案 A）。取り方は決定的: 最終評価＝ショアキーパー系（2 枚）のグループのうち最遠点の並びの前 2 つ、調整＝漂泊者系（4 枚）のうち並びの前 1 つ、学習＝残り全部。24 個すべてを使うので学習は当初案の 12 でなく 16 になる。",
+ "sizes": {
+  "train": 16,
+  "tune": 4,
+  "final": 4
+ },
+ "groups_used": {
+  "final": [
+   6,
+   5
+  ],
+  "tune": [
+   3
+  ],
+  "train": [
+   1,
+   0,
+   2,
+   7,
+   4
+  ]
+ },
+ "split": {
+  "ENV_SANGE_RF_ANKO": "train",
+  "ENV_SANGE_RF_CHIXIA": "train",
+  "ENV_SANGE_RF_JINSHI": "train",
+  "ENV_SANGE_RF_TSUBAKI": "tune",
+  "ENV_SANGE_RM_ANKO": "train",
+  "ENV_SANGE_RM_CHIXIA": "train",
+  "ENV_SANGE_RM_JINSHI": "train",
+  "ENV_SANGE_RM_TSUBAKI": "tune",
+  "ENV_SANGE_SK_ANKO": "train",
+  "ENV_SANGE_SK_CHIXIA": "final",
+  "ENV_SANGE_SK_JINSHI": "final",
+  "ENV_SANGE_SK_TSUBAKI": "train",
+  "ENV_YANG_RF_ANKO": "train",
+  "ENV_YANG_RF_CHIXIA": "train",
+  "ENV_YANG_RF_JINSHI": "train",
+  "ENV_YANG_RF_TSUBAKI": "tune",
+  "ENV_YANG_RM_ANKO": "train",
+  "ENV_YANG_RM_CHIXIA": "train",
+  "ENV_YANG_RM_JINSHI": "train",
+  "ENV_YANG_RM_TSUBAKI": "tune",
+  "ENV_YANG_SK_ANKO": "train",
+  "ENV_YANG_SK_CHIXIA": "final",
+  "ENV_YANG_SK_JINSHI": "final",
+  "ENV_YANG_SK_TSUBAKI": "train"
+ }
+}

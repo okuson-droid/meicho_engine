@@ -1,0 +1,97 @@
+{
+ "bin": "K",
+ "note": "便 K（BP01 のカードデータ投入）の報告に載せる数字。`experiments/verify_report.py K` がこの値を実物から組み立て直して突き合わせる。測定ではなく**構造の事実**なので、勝率のような区間は付かない。 2026-09-12: 未掲載だった 3 番号が公式に載ったので取得して正本に入れた（`cards/OFFICIAL_FETCH_20260912.md`）。数値・色・タグは実値になり、`unlisted_slots` は空。`BP01-057` と `BP01-062` の効果はまだ入っていない（T-K-10 が xfail(strict) で見張っている）。",
+ "as_of": "2026-09-12",
+ "rules_version": "v0.12",
+ "encoding_version": 4,
+ "registry": {
+  "action": 78,
+  "chara": 45,
+  "total": 123
+ },
+ "dims": {
+  "NA": 78,
+  "NC": 45,
+  "OBS_DIM": 1313,
+  "ACT_DIM": 226
+ },
+ "reconcile": {
+  "problems": 0,
+  "unregistered": 0
+ },
+ "ledger": {
+  "numbers": 68,
+  "with_skills": 64,
+  "vanilla": 4
+ },
+ "unverified_skills": 62,
+ "unlisted_slots": [],
+ "digests_n500": {
+  "heuristic/SD001": "0f82ad144da17046",
+  "heuristic/SD02": "6533aa9f94a17d9c",
+  "random/SD001": "4e717f406dd5a14f",
+  "random/SD02": "9aab544e73bfb9d8"
+ },
+ "smoke": {
+  "K_smoke_ANKO": {
+   "seed0": 706000,
+   "python": {
+    "games": 1000,
+    "aborted": 0,
+    "draws": 0,
+    "mean_turns": 23.2,
+    "sec": 4.2
+   },
+   "rust": {
+    "games": 1000,
+    "aborted": 0,
+    "draws": 0,
+    "mean_turns": 23.2,
+    "sec": 0.1
+   }
+  },
+  "K_smoke_SANGE": {
+   "seed0": 707000,
+   "python": {
+    "games": 1000,
+    "aborted": 0,
+    "draws": 1,
+    "mean_turns": 32.45,
+    "sec": 6.8
+   },
+   "rust": {
+    "games": 1000,
+    "aborted": 0,
+    "draws": 1,
+    "mean_turns": 32.45,
+    "sec": 0.1
+   }
+  },
+  "K_smoke_TSUBAKI": {
+   "seed0": 708000,
+   "python": {
+    "games": 1000,
+    "aborted": 0,
+    "draws": 0,
+    "mean_turns": 25.95,
+    "sec": 4.0
+   },
+   "rust": {
+    "games": 1000,
+    "aborted": 0,
+    "draws": 0,
+    "mean_turns": 25.95,
+    "sec": 0.1
+   }
+  }
+ },
+ "tests": {
+  "passed": 426,
+  "skipped": 21,
+  "failed": 0,
+  "command": "python3 -m pytest -q --ignore=tests/test_rust_agents.py --ignore=tests/test_card_images.py --ignore=tests/test_dist.py",
+  "note": "作業環境（Linux・torch 無し・カード画像無し・`experiments/measure_horizon.py` と配布版の材料がこの作業用の写しに無い）。除外した 3 つは環境の欠けが理由で、便 K の変更とは関係がない。skip 21 件の内訳は torch が無い 19 件と対人の記録が無い 2 件。画像の検査はマスターの PC（65 番号の画像がある状態）で別建てに確認すること。 xfail 1 件は T-K-10（BP01-057 / BP01-062 の効果が未実装）。",
+  "xfailed": 1
+ },
+ "seed_band": "706000..708999（便 K 段 K-5 のスモーク専用・`experiments/seed_bands.json` に登録）"
+}

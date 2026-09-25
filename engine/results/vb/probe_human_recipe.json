@@ -1,0 +1,96 @@
+{
+ "deck": "SD001",
+ "n": 600,
+ "champion": {
+  "extra_turns": 1,
+  "value_net": "drl_sd001_vb3.json",
+  "opp_policy_net": "drl_sd001_s1.json",
+  "opp_policy_root_only": true
+ },
+ "runs": [
+  {
+   "name": "reserve_rekka",
+   "deltas": [
+    {
+     "kind": "reserve",
+     "card": "燃える烈火"
+    }
+   ],
+   "seed0": 600000,
+   "n": 600,
+   "wins": 291,
+   "decided": 600,
+   "p": 0.485,
+   "ci": 0.039990324663181545,
+   "lo": 0.44500967533681846,
+   "hi": 0.5249903246631815,
+   "sec": 172.18332767486572
+  },
+  {
+   "name": "forbid_rekka_in_clash",
+   "deltas": [
+    {
+     "kind": "forbid_in_clash",
+     "card": "燃える烈火"
+    }
+   ],
+   "seed0": 600600,
+   "n": 600,
+   "wins": 285,
+   "decided": 600,
+   "p": 0.475,
+   "ci": 0.03995829075423522,
+   "lo": 0.43504170924576474,
+   "hi": 0.5149582907542352,
+   "sec": 175.84639048576355
+  },
+  {
+   "name": "reserve_rekka_soumei",
+   "deltas": [
+    {
+     "kind": "reserve",
+     "card": "燃える烈火"
+    },
+    {
+     "kind": "reserve",
+     "card": "奏鳴"
+    }
+   ],
+   "seed0": 601200,
+   "n": 600,
+   "wins": 261,
+   "decided": 600,
+   "p": 0.435,
+   "ci": 0.03966882151009782,
+   "lo": 0.3953311784899022,
+   "hi": 0.4746688215100978,
+   "sec": 190.10113382339478
+  },
+  {
+   "name": "reserve_big_reds",
+   "deltas": [
+    {
+     "kind": "reserve",
+     "card": "燃える烈火"
+    },
+    {
+     "kind": "reserve",
+     "card": "奏鳴"
+    },
+    {
+     "kind": "reserve",
+     "card": "旋風"
+    }
+   ],
+   "seed0": 601800,
+   "n": 600,
+   "wins": 236,
+   "decided": 600,
+   "p": 0.3933333333333333,
+   "ci": 0.039087319531379325,
+   "lo": 0.354246013801954,
+   "hi": 0.43242065286471265,
+   "sec": 242.06643342971802
+  }
+ ]
+}

@@ -1,0 +1,104 @@
+{
+ "deck": "SD001",
+ "iter": 4,
+ "seed0": 402000,
+ "null": false,
+ "new": "反復5 の計画探索（地平+1ターン・葉=V（drl_sd001_vb4.json）／相手モデル=π₀（drl_sd001_s1.json・根だけ））　※葉を drl_sd001_vb4w.json に差し替え",
+ "new_net": "results/models/drl_sd001_vb4w.json",
+ "old": "反復4 の計画探索（地平+1ターン・葉=V（drl_sd001_vb3.json）／相手モデル=π₀（drl_sd001_s1.json・根だけ））",
+ "n": 1200,
+ "anchor_n": 600,
+ "runs": [
+  {
+   "name": "1. 門番: 新 vs 前の版",
+   "seed0": 402000,
+   "wins": 580,
+   "decided": 1200,
+   "games": 1200,
+   "p": 0.48333333333333334,
+   "ci": 0.028274442064770686,
+   "lo": 0.45505889126856264,
+   "hi": 0.511607775398104,
+   "rate": 1.889231977980881,
+   "passes_gate": false,
+   "border": false
+  },
+  {
+   "name": "2. 錨: vs 素planner",
+   "seed0": 403300,
+   "new_p": 0.64,
+   "old_p": 0.62,
+   "paired": true
+  },
+  {
+   "name": "2. 錨: vs H",
+   "seed0": 404000,
+   "new_p": 0.9266666666666666,
+   "old_p": 0.9216666666666666,
+   "paired": true
+  },
+  {
+   "name": "2. 錨: vs 貪欲",
+   "seed0": 404700,
+   "new_p": 0.865,
+   "old_p": 0.8783333333333333,
+   "paired": true
+  }
+ ],
+ "anchors": [
+  {
+   "pairs": 600,
+   "new_p": 0.64,
+   "old_p": 0.62,
+   "diff": 0.02,
+   "ci": 0.05409436549594106,
+   "new_only": 143,
+   "old_only": 131,
+   "clearly_worse": false,
+   "opponent": "素planner",
+   "seed0": 403300
+  },
+  {
+   "pairs": 600,
+   "new_p": 0.9266666666666666,
+   "old_p": 0.9216666666666666,
+   "diff": 0.005,
+   "ci": 0.029421806047870865,
+   "new_only": 42,
+   "old_only": 39,
+   "clearly_worse": false,
+   "opponent": "H",
+   "seed0": 404000
+  },
+  {
+   "pairs": 600,
+   "new_p": 0.865,
+   "old_p": 0.8783333333333333,
+   "diff": -0.013333333333333334,
+   "ci": 0.03579847715232485,
+   "new_only": 56,
+   "old_only": 64,
+   "clearly_worse": false,
+   "opponent": "貪欲",
+   "seed0": 404700
+  }
+ ],
+ "canary": {
+  "前の版": {
+   "games": 200,
+   "reached": 185,
+   "never": 15,
+   "mean_turn": 3.8756756756756756,
+   "mean_extra_draws": 4.924324324324324,
+   "total_extra_draws_per_game": 4.555
+  },
+  "新しい版": {
+   "games": 200,
+   "reached": 175,
+   "never": 25,
+   "mean_turn": 4.314285714285714,
+   "mean_extra_draws": 4.502857142857143,
+   "total_extra_draws_per_game": 3.94
+  }
+ }
+}

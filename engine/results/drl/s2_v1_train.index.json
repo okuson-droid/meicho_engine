@@ -1,0 +1,299 @@
+{
+ "tool": "experiments/make_s2_schedule.py --merge",
+ "decision": "D-131",
+ "encoding_version": 6,
+ "rules_version": "v0.18",
+ "format": "MCDR v3",
+ "parts": [
+  {
+   "path": "s2_v1_train.p0.manifest.json",
+   "schedule_name": "s2_v1_train.p0of5",
+   "schedule_sha256": "9dbee5c643344ea2b6543459f1614025c2df88fc4a54dd199a507bf78b4fb374",
+   "blocks": 8,
+   "games": 2000,
+   "seconds": 176.68230438232422
+  },
+  {
+   "path": "s2_v1_train.p1.manifest.json",
+   "schedule_name": "s2_v1_train.p1of5",
+   "schedule_sha256": "d975350c992e5420097f905a6367fbfd92a606827d9624e0c0bc58ee7d63455e",
+   "blocks": 9,
+   "games": 2034,
+   "seconds": 180.0910677909851
+  },
+  {
+   "path": "s2_v1_train.p2.manifest.json",
+   "schedule_name": "s2_v1_train.p2of5",
+   "schedule_sha256": "613ca1ccb287d034eee3c71c41a53d58c13d8a8bdc873a515d7c1fd424e0189b",
+   "blocks": 60,
+   "games": 2040,
+   "seconds": 184.3258717060089
+  },
+  {
+   "path": "s2_v1_train.p3.manifest.json",
+   "schedule_name": "s2_v1_train.p3of5",
+   "schedule_sha256": "1d5ae63e6f6e192defa7052cc8af346294d14a5abdb387f99f6f6a8e1161d7de",
+   "blocks": 59,
+   "games": 2006,
+   "seconds": 187.53745532035828
+  },
+  {
+   "path": "s2_v1_train.p4.manifest.json",
+   "schedule_name": "s2_v1_train.p4of5",
+   "schedule_sha256": "143f458613a0fe3852ebd32c018a5baab8445e9b22c777700882edab60174b6a",
+   "blocks": 48,
+   "games": 2016,
+   "seconds": 123.87414717674255
+  }
+ ],
+ "games": 10096,
+ "decisions_recorded": 1017982,
+ "decks": {
+  "env/ENV_SANGE_RF_ANKO": {
+   "sha256": "737fbaa9fc989a2bc4f35d1bbbb51aefa4fff7c5a1f2b63ca0de8b281fe11d9a",
+   "chara_trio": [
+    "アンコ",
+    "散華",
+    "漂泊者（女）"
+   ],
+   "lineage": "ENV_SANGE_RF_ANKO",
+   "group": 0,
+   "split": "train",
+   "games": 886,
+   "seat_games": 1262,
+   "seat_games_teacher": 1136,
+   "decisions_recorded": 59498
+  },
+  "env/ENV_SANGE_RF_CHIXIA": {
+   "sha256": "bf924151ec03c644ed3debbf6b965d1942219ca6f7fc5f81fdcb5dba22255b6a",
+   "chara_trio": [
+    "散華",
+    "漂泊者（女）",
+    "熾霞"
+   ],
+   "lineage": "ENV_SANGE_RF_CHIXIA",
+   "group": 1,
+   "split": "train",
+   "games": 886,
+   "seat_games": 1262,
+   "seat_games_teacher": 1136,
+   "decisions_recorded": 61416
+  },
+  "env/ENV_SANGE_RF_JINSHI": {
+   "sha256": "71e0aaa930f96a4630bf2b29f19c012b8b6c3580ccba0098a6cdf18a552c0c30",
+   "chara_trio": [
+    "今汐",
+    "散華",
+    "漂泊者（女）"
+   ],
+   "lineage": "ENV_SANGE_RF_JINSHI",
+   "group": 2,
+   "split": "train",
+   "games": 886,
+   "seat_games": 1262,
+   "seat_games_teacher": 1136,
+   "decisions_recorded": 63899
+  },
+  "env/ENV_SANGE_RM_ANKO": {
+   "sha256": "5161de4c376db067d4dd8888eae6aca78317b5a6cb2331844d99ad3a6bf2d3e3",
+   "chara_trio": [
+    "アンコ",
+    "散華",
+    "漂泊者（男）"
+   ],
+   "lineage": "ENV_SANGE_RF_ANKO",
+   "group": 0,
+   "split": "train",
+   "games": 886,
+   "seat_games": 1262,
+   "seat_games_teacher": 1136,
+   "decisions_recorded": 56701
+  },
+  "env/ENV_SANGE_RM_CHIXIA": {
+   "sha256": "7638452132acc478a9e4c4a453537a0852162e1c6908fdf6761b66c3e36a5f67",
+   "chara_trio": [
+    "散華",
+    "漂泊者（男）",
+    "熾霞"
+   ],
+   "lineage": "ENV_SANGE_RF_CHIXIA",
+   "group": 1,
+   "split": "train",
+   "games": 886,
+   "seat_games": 1262,
+   "seat_games_teacher": 1136,
+   "decisions_recorded": 59101
+  },
+  "env/ENV_SANGE_RM_JINSHI": {
+   "sha256": "7961f9f10bdf8a8aaf49072530ffb1c76834ac4444c3ae129664d4d7dd59122f",
+   "chara_trio": [
+    "今汐",
+    "散華",
+    "漂泊者（男）"
+   ],
+   "lineage": "ENV_SANGE_RF_JINSHI",
+   "group": 2,
+   "split": "train",
+   "games": 886,
+   "seat_games": 1262,
+   "seat_games_teacher": 1136,
+   "decisions_recorded": 61225
+  },
+  "env/ENV_SANGE_SK_ANKO": {
+   "sha256": "c51bbfc09f790f25585ae65cd4df13d16503c2c9ddcf74520defed81366fd780",
+   "chara_trio": [
+    "アンコ",
+    "ショアキーパー",
+    "散華"
+   ],
+   "lineage": "ENV_SANGE_SK_ANKO",
+   "group": 4,
+   "split": "train",
+   "games": 886,
+   "seat_games": 1262,
+   "seat_games_teacher": 1136,
+   "decisions_recorded": 71514
+  },
+  "env/ENV_SANGE_SK_TSUBAKI": {
+   "sha256": "1c3f788e03cd23076796e92d5a919b3ec2899b40bb07305126ec1a4b65bc01fd",
+   "chara_trio": [
+    "ショアキーパー",
+    "ツバキ",
+    "散華"
+   ],
+   "lineage": "ENV_SANGE_SK_TSUBAKI",
+   "group": 7,
+   "split": "train",
+   "games": 886,
+   "seat_games": 1262,
+   "seat_games_teacher": 1136,
+   "decisions_recorded": 82543
+  },
+  "env/ENV_YANG_RF_ANKO": {
+   "sha256": "8a5fcbb8523fc5e4e73633e8974ee42bce0b445e946aab66d7df5dfdc22dac11",
+   "chara_trio": [
+    "アンコ",
+    "漂泊者（女）",
+    "秧秧"
+   ],
+   "lineage": "ENV_SANGE_RF_ANKO",
+   "group": 0,
+   "split": "train",
+   "games": 886,
+   "seat_games": 1262,
+   "seat_games_teacher": 1136,
+   "decisions_recorded": 56674
+  },
+  "env/ENV_YANG_RF_CHIXIA": {
+   "sha256": "cf4be6ec5d2928883aea735efe63661b583a814bcc6e28c8524b424a8ddd0e81",
+   "chara_trio": [
+    "漂泊者（女）",
+    "熾霞",
+    "秧秧"
+   ],
+   "lineage": "ENV_SANGE_RF_CHIXIA",
+   "group": 1,
+   "split": "train",
+   "games": 886,
+   "seat_games": 1262,
+   "seat_games_teacher": 1136,
+   "decisions_recorded": 62482
+  },
+  "env/ENV_YANG_RF_JINSHI": {
+   "sha256": "b4a040973303a776d2a690684fe44cb49b57a448551b7deb192fd416ebcdbed3",
+   "chara_trio": [
+    "今汐",
+    "漂泊者（女）",
+    "秧秧"
+   ],
+   "lineage": "ENV_SANGE_RF_JINSHI",
+   "group": 2,
+   "split": "train",
+   "games": 886,
+   "seat_games": 1262,
+   "seat_games_teacher": 1136,
+   "decisions_recorded": 60660
+  },
+  "env/ENV_YANG_RM_ANKO": {
+   "sha256": "e5d39214f27b93109ec32322a684372148b407592bd70c0a051aa3af0f3a0df6",
+   "chara_trio": [
+    "アンコ",
+    "漂泊者（男）",
+    "秧秧"
+   ],
+   "lineage": "ENV_SANGE_RF_ANKO",
+   "group": 0,
+   "split": "train",
+   "games": 886,
+   "seat_games": 1262,
+   "seat_games_teacher": 1136,
+   "decisions_recorded": 55128
+  },
+  "env/ENV_YANG_RM_CHIXIA": {
+   "sha256": "43f7c219aeb320e919b04c7e46dc530f6b94e099e8dcdfea47f79a97f35df001",
+   "chara_trio": [
+    "漂泊者（男）",
+    "熾霞",
+    "秧秧"
+   ],
+   "lineage": "ENV_SANGE_RF_CHIXIA",
+   "group": 1,
+   "split": "train",
+   "games": 886,
+   "seat_games": 1262,
+   "seat_games_teacher": 1136,
+   "decisions_recorded": 58061
+  },
+  "env/ENV_YANG_RM_JINSHI": {
+   "sha256": "26e4b5e9f30401793e61af28da1a59c97068c3acdf0df27e04f1fdaff314fd17",
+   "chara_trio": [
+    "今汐",
+    "漂泊者（男）",
+    "秧秧"
+   ],
+   "lineage": "ENV_SANGE_RF_JINSHI",
+   "group": 2,
+   "split": "train",
+   "games": 886,
+   "seat_games": 1262,
+   "seat_games_teacher": 1136,
+   "decisions_recorded": 58010
+  },
+  "env/ENV_YANG_SK_ANKO": {
+   "sha256": "8be3f8f5f9ffd4bdef6b4efde774877fa8b130ef803b7806a18a90c8fd8be4d0",
+   "chara_trio": [
+    "アンコ",
+    "ショアキーパー",
+    "秧秧"
+   ],
+   "lineage": "ENV_SANGE_SK_ANKO",
+   "group": 4,
+   "split": "train",
+   "games": 886,
+   "seat_games": 1262,
+   "seat_games_teacher": 1136,
+   "decisions_recorded": 70020
+  },
+  "env/ENV_YANG_SK_TSUBAKI": {
+   "sha256": "d28f75879d8e2afcc9433a9482a7a8669d1a432bf53f2d90b02df415a9f6f621",
+   "chara_trio": [
+    "ショアキーパー",
+    "ツバキ",
+    "秧秧"
+   ],
+   "lineage": "ENV_SANGE_SK_TSUBAKI",
+   "group": 7,
+   "split": "train",
+   "games": 886,
+   "seat_games": 1262,
+   "seat_games_teacher": 1136,
+   "decisions_recorded": 81050
+  }
+ },
+ "games_by_opponent": {
+  "teacher": 8080,
+  "heuristic": 672,
+  "greedy": 672,
+  "planner": 672
+ }
+}

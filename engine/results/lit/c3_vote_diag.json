@@ -1,0 +1,198 @@
+{
+ "agg": {
+  "games": 20,
+  "plan_decisions": 714,
+  "enumerated": 85,
+  "enum_rate": 0.11904761904761904,
+  "worlds": {
+   "n": 85,
+   "mean": 9.105882352941176,
+   "median": 11
+  },
+  "C": {
+   "n": 85,
+   "mean": 0.8329565409159563,
+   "median": 0.967741935483871
+  },
+  "conf_pass": 0.8705882352941177,
+  "differs": 0.18823529411764706,
+  "changed": 0.11764705882352941
+ },
+ "knobs": {
+  "known_hand": true,
+  "endgame_enum": 64
+ },
+ "seed0": 692700,
+ "n": 20,
+ "rows_file": "c3_vote_diag.jsonl",
+ "sec": 78.2,
+ "games": [
+  {
+   "seed": 692700,
+   "T": 10,
+   "steps": 77,
+   "aborted": false
+  },
+  {
+   "seed": 692701,
+   "T": 9,
+   "steps": 72,
+   "aborted": false
+  },
+  {
+   "seed": 692702,
+   "T": 11,
+   "steps": 90,
+   "aborted": false
+  },
+  {
+   "seed": 692703,
+   "T": 14,
+   "steps": 103,
+   "aborted": false
+  },
+  {
+   "seed": 692704,
+   "T": 15,
+   "steps": 102,
+   "aborted": false
+  },
+  {
+   "seed": 692705,
+   "T": 13,
+   "steps": 94,
+   "aborted": false
+  },
+  {
+   "seed": 692706,
+   "T": 16,
+   "steps": 108,
+   "aborted": false
+  },
+  {
+   "seed": 692707,
+   "T": 10,
+   "steps": 76,
+   "aborted": false
+  },
+  {
+   "seed": 692708,
+   "T": 7,
+   "steps": 55,
+   "aborted": false
+  },
+  {
+   "seed": 692709,
+   "T": 9,
+   "steps": 77,
+   "aborted": false
+  },
+  {
+   "seed": 692710,
+   "T": 12,
+   "steps": 81,
+   "aborted": false
+  },
+  {
+   "seed": 692711,
+   "T": 10,
+   "steps": 69,
+   "aborted": false
+  },
+  {
+   "seed": 692712,
+   "T": 12,
+   "steps": 87,
+   "aborted": false
+  },
+  {
+   "seed": 692713,
+   "T": 15,
+   "steps": 104,
+   "aborted": false
+  },
+  {
+   "seed": 692714,
+   "T": 12,
+   "steps": 82,
+   "aborted": false
+  },
+  {
+   "seed": 692715,
+   "T": 14,
+   "steps": 89,
+   "aborted": false
+  },
+  {
+   "seed": 692716,
+   "T": 5,
+   "steps": 35,
+   "aborted": false
+  },
+  {
+   "seed": 692717,
+   "T": 14,
+   "steps": 100,
+   "aborted": false
+  },
+  {
+   "seed": 692718,
+   "T": 12,
+   "steps": 90,
+   "aborted": false
+  },
+  {
+   "seed": 692719,
+   "T": 6,
+   "steps": 51,
+   "aborted": false
+  }
+ ],
+ "provenance": {
+  "label": null,
+  "kwargs": {
+   "extra_turns": 1,
+   "value_net": "drl_sd001_vc4.json",
+   "opp_policy_net": "drl_sd001_s1.json",
+   "opp_policy_root_only": true,
+   "choice_phases": true,
+   "solo_samples": 4,
+   "policy_net": "pi_small64_e10.json",
+   "policy_scope": "proxy",
+   "known_hand": true,
+   "endgame_enum": 64
+  },
+  "models": {
+   "value_net": {
+    "file": "drl_sd001_vc4.json",
+    "sha256": "f050f22ee0a38993677a85f14d8e605e625450084c31a31e620ced54e19a58cd",
+    "bytes": 5848050
+   },
+   "opp_policy_net": {
+    "file": "drl_sd001_s1.json",
+    "sha256": "84b9b3df71cfbbcad283feae7929fb1920f8182820d23760e94b0fe1898ffe32",
+    "bytes": 5860264
+   },
+   "policy_net": {
+    "file": "pi_small64_e10.json",
+    "sha256": "88ea7e0f170e2059aa9d382f6ec31f6e8a0f37d47425ad91bcd07a1e60674dbe",
+    "bytes": 1059704
+   }
+  },
+  "engine": "python",
+  "rust_features": null,
+  "band": [
+   692700,
+   692719
+  ],
+  "rules_version": "v0.11",
+  "engine_version": "v0.1",
+  "written_at": "2026-09-10T21:51:00+09:00",
+  "extra": {
+   "tool": "diag_endgame",
+   "host": "cowork-2",
+   "workers": 2,
+   "note": "診断。打ち方は段 C-3 の候補そのもの"
+  }
+ }
+}

@@ -1,0 +1,103 @@
+{
+ "deck": "SD001",
+ "iter": 3,
+ "seed0": 398000,
+ "null": false,
+ "new": "反復4 の計画探索（地平+1ターン・葉=V（drl_sd001_vb3.json）／相手モデル=π₀（drl_sd001_s1.json・根だけ））",
+ "old": "反復3 の計画探索（地平+1ターン・葉=V（drl_sd001_vb2.json）／相手モデル=π₀（drl_sd001_s1.json・根だけ））",
+ "n": 1200,
+ "anchor_n": 600,
+ "runs": [
+  {
+   "name": "1. 門番: 新 vs 前の版",
+   "seed0": 398000,
+   "wins": 656,
+   "decided": 1200,
+   "games": 1200,
+   "p": 0.5466666666666666,
+   "ci": 0.028166674293227105,
+   "lo": 0.5184999923734396,
+   "hi": 0.5748333409598937,
+   "rate": 1.7430978762602118,
+   "passes_gate": true,
+   "border": false
+  },
+  {
+   "name": "2. 錨: vs 素planner",
+   "seed0": 399300,
+   "new_p": 0.65,
+   "old_p": 0.63,
+   "paired": true
+  },
+  {
+   "name": "2. 錨: vs H",
+   "seed0": 400000,
+   "new_p": 0.935,
+   "old_p": 0.865,
+   "paired": true
+  },
+  {
+   "name": "2. 錨: vs 貪欲",
+   "seed0": 400700,
+   "new_p": 0.86,
+   "old_p": 0.84,
+   "paired": true
+  }
+ ],
+ "anchors": [
+  {
+   "pairs": 600,
+   "new_p": 0.65,
+   "old_p": 0.63,
+   "diff": 0.02,
+   "ci": 0.053298114136490785,
+   "new_only": 139,
+   "old_only": 127,
+   "clearly_worse": false,
+   "opponent": "素planner",
+   "seed0": 399300
+  },
+  {
+   "pairs": 600,
+   "new_p": 0.935,
+   "old_p": 0.865,
+   "diff": 0.07,
+   "ci": 0.031539046472915146,
+   "new_only": 69,
+   "old_only": 27,
+   "clearly_worse": false,
+   "opponent": "H",
+   "seed0": 400000
+  },
+  {
+   "pairs": 600,
+   "new_p": 0.86,
+   "old_p": 0.84,
+   "diff": 0.02,
+   "ci": 0.03865079942315514,
+   "new_only": 76,
+   "old_only": 64,
+   "clearly_worse": false,
+   "opponent": "貪欲",
+   "seed0": 400700
+  }
+ ],
+ "canary": {
+  "前の版": {
+   "games": 200,
+   "reached": 132,
+   "never": 68,
+   "mean_turn": 4.984848484848484,
+   "mean_extra_draws": 4.666666666666667,
+   "total_extra_draws_per_game": 3.08
+  },
+  "新しい版": {
+   "games": 200,
+   "reached": 179,
+   "never": 21,
+   "mean_turn": 3.9720670391061454,
+   "mean_extra_draws": 4.787709497206704,
+   "total_extra_draws_per_game": 4.285
+  }
+ }
+}

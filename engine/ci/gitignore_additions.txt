@@ -1,0 +1,6 @@
+# DEVFLOW_PLAN_20260925.md §6.1（マスター裁定 2026-09-25）
+# .gitignore の「engine/results/*/」と「!engine/results/human_games/」の 2 行を消し、代わりに次の 3 行を入れる。
+# results/ はネットも記録も上げる。除くのは (1) 記録本体 .bin (2) 移行前の原本 .bak.json (3) 部品 3 本から作り直せる ens3 だけ。
+engine/results/**/*.bin
+engine/results/**/*.bak.json
+engine/results/models/s2v_id_ens3.json

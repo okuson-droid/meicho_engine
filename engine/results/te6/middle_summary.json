@@ -1,0 +1,105 @@
+{
+ "deck": "SD02",
+ "mode": "mirror",
+ "seeds": "720000..720599",
+ "engine": "Python",
+ "rules": "v0.18",
+ "rule": "中段の資格 = 対 H 下端 > 0.5 かつ 対 planner_lh 上端 < 0.5。両方なら余白の大きいほう",
+ "result": {
+  "greedy__vs__H": {
+   "n": 600,
+   "excluded": 0,
+   "wins": 348,
+   "p": 0.58,
+   "ci95": 0.0395,
+   "lo": 0.5405,
+   "hi": 0.6195,
+   "a_first": [
+    180,
+    300
+   ],
+   "a_second": [
+    168,
+    300
+   ]
+  },
+  "greedy__vs__planner_lh": {
+   "n": 600,
+   "excluded": 0,
+   "wins": 148,
+   "p": 0.2467,
+   "ci95": 0.0345,
+   "lo": 0.2122,
+   "hi": 0.2812,
+   "a_first": [
+    80,
+    300
+   ],
+   "a_second": [
+    68,
+    300
+   ]
+  },
+  "planner__vs__H": {
+   "n": 600,
+   "excluded": 0,
+   "wins": 493,
+   "p": 0.8217,
+   "ci95": 0.0306,
+   "lo": 0.791,
+   "hi": 0.8523,
+   "a_first": [
+    244,
+    300
+   ],
+   "a_second": [
+    249,
+    300
+   ]
+  },
+  "planner__vs__greedy": {
+   "n": 600,
+   "excluded": 0,
+   "wins": 456,
+   "p": 0.76,
+   "ci95": 0.0342,
+   "lo": 0.7258,
+   "hi": 0.7942,
+   "a_first": [
+    231,
+    300
+   ],
+   "a_second": [
+    225,
+    300
+   ]
+  },
+  "planner__vs__planner_lh": {
+   "n": 600,
+   "excluded": 0,
+   "wins": 323,
+   "p": 0.5383,
+   "ci95": 0.0399,
+   "lo": 0.4984,
+   "hi": 0.5782,
+   "a_first": [
+    165,
+    300
+   ],
+   "a_second": [
+    158,
+    300
+   ]
+  }
+ },
+ "selection": {
+  "planner": {
+   "qualified": false,
+   "margin": -0.0782
+  },
+  "greedy": {
+   "qualified": true,
+   "margin": 0.0405
+  }
+ }
+}

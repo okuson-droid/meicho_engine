@@ -1,0 +1,201 @@
+{
+ "tool": "gate_sprt.py",
+ "mode": "gsprt",
+ "deck": "SD001",
+ "base_diff": null,
+ "challenger_diff": {
+  "known_hand": true,
+  "endgame_enum": 64
+ },
+ "seed0": 690000,
+ "workers": 2,
+ "expect": null,
+ "params": {
+  "alpha": 0.025,
+  "beta": 0.1,
+  "p0": 0.5,
+  "p1": 0.55,
+  "max_games": 2400,
+  "A": 3.58351893845611,
+  "B": -2.2772672850097555,
+  "chunk_pairs": 20,
+  "pair_scores": [
+   0.0,
+   0.25,
+   0.5,
+   0.75,
+   1.0
+  ],
+  "epsilon": 0.001
+ },
+ "provenance": {
+  "base": {
+   "label": null,
+   "kwargs": {
+    "kind": "planner",
+    "extra_turns": 1,
+    "value_net": "drl_sd001_vc4.json",
+    "opp_policy_net": "drl_sd001_s1.json",
+    "opp_policy_root_only": true,
+    "choice_phases": true,
+    "solo_samples": 4,
+    "policy_net": "pi_small64_e10.json",
+    "policy_scope": "proxy"
+   },
+   "models": {
+    "value_net": {
+     "file": "drl_sd001_vc4.json",
+     "sha256": "f050f22ee0a38993677a85f14d8e605e625450084c31a31e620ced54e19a58cd",
+     "bytes": 5848050
+    },
+    "opp_policy_net": {
+     "file": "drl_sd001_s1.json",
+     "sha256": "84b9b3df71cfbbcad283feae7929fb1920f8182820d23760e94b0fe1898ffe32",
+     "bytes": 5860264
+    },
+    "policy_net": {
+     "file": "pi_small64_e10.json",
+     "sha256": "88ea7e0f170e2059aa9d382f6ec31f6e8a0f37d47425ad91bcd07a1e60674dbe",
+     "bytes": 1059704
+    }
+   },
+   "engine": "rust",
+   "rust_features": [
+    "d065_bin1",
+    "d065_reeval_isolated_rng",
+    "endgame_enum",
+    "known_hand",
+    "lethal_uniform",
+    "world_weight"
+   ],
+   "band": [
+    690000,
+    691199
+   ],
+   "rules_version": "v0.11",
+   "engine_version": "v0.1",
+   "written_at": "2026-09-10T21:24:19+09:00",
+   "extra": {
+    "role": "base",
+    "host": "cowork-2",
+    "workers": 2
+   }
+  },
+  "challenger": {
+   "label": null,
+   "kwargs": {
+    "kind": "planner",
+    "extra_turns": 1,
+    "value_net": "drl_sd001_vc4.json",
+    "opp_policy_net": "drl_sd001_s1.json",
+    "opp_policy_root_only": true,
+    "choice_phases": true,
+    "solo_samples": 4,
+    "policy_net": "pi_small64_e10.json",
+    "policy_scope": "proxy",
+    "known_hand": true,
+    "endgame_enum": 64
+   },
+   "models": {
+    "value_net": {
+     "file": "drl_sd001_vc4.json",
+     "sha256": "f050f22ee0a38993677a85f14d8e605e625450084c31a31e620ced54e19a58cd",
+     "bytes": 5848050
+    },
+    "opp_policy_net": {
+     "file": "drl_sd001_s1.json",
+     "sha256": "84b9b3df71cfbbcad283feae7929fb1920f8182820d23760e94b0fe1898ffe32",
+     "bytes": 5860264
+    },
+    "policy_net": {
+     "file": "pi_small64_e10.json",
+     "sha256": "88ea7e0f170e2059aa9d382f6ec31f6e8a0f37d47425ad91bcd07a1e60674dbe",
+     "bytes": 1059704
+    }
+   },
+   "engine": "rust",
+   "rust_features": [
+    "d065_bin1",
+    "d065_reeval_isolated_rng",
+    "endgame_enum",
+    "known_hand",
+    "lethal_uniform",
+    "world_weight"
+   ],
+   "band": [
+    690000,
+    691199
+   ],
+   "rules_version": "v0.11",
+   "engine_version": "v0.1",
+   "written_at": "2026-09-10T21:24:19+09:00",
+   "extra": {
+    "role": "challenger",
+    "host": "cowork-2",
+    "workers": 2
+   }
+  }
+ },
+ "base_spec": {
+  "kind": "planner",
+  "extra_turns": 1,
+  "value_net": "drl_sd001_vc4.json",
+  "opp_policy_net": "drl_sd001_s1.json",
+  "opp_policy_root_only": true,
+  "choice_phases": true,
+  "solo_samples": 4,
+  "policy_net": "pi_small64_e10.json",
+  "policy_scope": "proxy"
+ },
+ "challenger_spec": {
+  "kind": "planner",
+  "extra_turns": 1,
+  "value_net": "drl_sd001_vc4.json",
+  "opp_policy_net": "drl_sd001_s1.json",
+  "opp_policy_root_only": true,
+  "choice_phases": true,
+  "solo_samples": 4,
+  "policy_net": "pi_small64_e10.json",
+  "policy_scope": "proxy",
+  "known_hand": true,
+  "endgame_enum": 64
+ },
+ "when": "2026-09-10T21:24:19+09:00",
+ "platform": "Linux-6.18.44-fc-v24-x86_64-with-glibc2.39",
+ "verdict": "pass",
+ "llr": 3.647224304698563,
+ "counts": [
+  90,
+  0,
+  357,
+  0,
+  133
+ ],
+ "pairs": 580,
+ "games": 1160,
+ "mean_score": 0.5370689655172414,
+ "paired": {
+  "delta": 0.03706896551724138,
+  "se": 0.012781086609319281,
+  "n_win2": 133,
+  "n_loss2": 90,
+  "mcnemar_z": 2.8794929797844278
+ },
+ "undecided_games": 0,
+ "winrate": {
+  "wins": 623.0,
+  "decided": 1160,
+  "p": 0.5370689655172414,
+  "ci": 0.02869460519285334,
+  "lo": 0.508374360324388,
+  "hi": 0.5657635707100948
+ },
+ "wilson": [
+  0.5082991386641641,
+  0.5655940784196728
+ ],
+ "sec": 1425.5,
+ "rate": 0.8137480883949042,
+ "digest_hash": "187788b96ad1a01d",
+ "expect_matched": true
+}

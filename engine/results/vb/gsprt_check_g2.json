@@ -1,0 +1,190 @@
+{
+ "tool": "gate_sprt.py",
+ "mode": "gsprt",
+ "deck": "SD001",
+ "base_diff": {
+  "value_net": "drl_sd001_vb3.json"
+ },
+ "challenger_diff": {},
+ "seed0": 667200,
+ "workers": 2,
+ "expect": "pass",
+ "params": {
+  "alpha": 0.025,
+  "beta": 0.1,
+  "p0": 0.5,
+  "p1": 0.55,
+  "max_games": 2400,
+  "A": 3.58351893845611,
+  "B": -2.2772672850097555,
+  "chunk_pairs": 20,
+  "pair_scores": [
+   0.0,
+   0.25,
+   0.5,
+   0.75,
+   1.0
+  ],
+  "epsilon": 0.001
+ },
+ "provenance": {
+  "base": {
+   "label": null,
+   "kwargs": {
+    "kind": "planner",
+    "extra_turns": 1,
+    "value_net": "drl_sd001_vb3.json",
+    "opp_policy_net": "drl_sd001_s1.json",
+    "opp_policy_root_only": true,
+    "choice_phases": true,
+    "solo_samples": 4,
+    "policy_net": "pi_small64_e10.json",
+    "policy_scope": "proxy"
+   },
+   "models": {
+    "value_net": {
+     "file": "drl_sd001_vb3.json",
+     "sha256": "0aea419396c6d977e03446b2df41a387331dd25ff5d66d76088b825e81e0f8ec",
+     "bytes": 5854630
+    },
+    "opp_policy_net": {
+     "file": "drl_sd001_s1.json",
+     "sha256": "84b9b3df71cfbbcad283feae7929fb1920f8182820d23760e94b0fe1898ffe32",
+     "bytes": 5860264
+    },
+    "policy_net": {
+     "file": "pi_small64_e10.json",
+     "sha256": "88ea7e0f170e2059aa9d382f6ec31f6e8a0f37d47425ad91bcd07a1e60674dbe",
+     "bytes": 1059704
+    }
+   },
+   "engine": "rust",
+   "rust_features": [
+    "d065_bin1",
+    "d065_reeval_isolated_rng",
+    "lethal_uniform"
+   ],
+   "band": [
+    667200,
+    668399
+   ],
+   "rules_version": "v0.11",
+   "engine_version": "v0.1",
+   "written_at": "2026-09-09T06:21:16+09:00",
+   "extra": {
+    "role": "base",
+    "host": "workenv-2",
+    "workers": 2
+   }
+  },
+  "challenger": {
+   "label": null,
+   "kwargs": {
+    "kind": "planner",
+    "extra_turns": 1,
+    "value_net": "drl_sd001_vc4.json",
+    "opp_policy_net": "drl_sd001_s1.json",
+    "opp_policy_root_only": true,
+    "choice_phases": true,
+    "solo_samples": 4,
+    "policy_net": "pi_small64_e10.json",
+    "policy_scope": "proxy"
+   },
+   "models": {
+    "value_net": {
+     "file": "drl_sd001_vc4.json",
+     "sha256": "f050f22ee0a38993677a85f14d8e605e625450084c31a31e620ced54e19a58cd",
+     "bytes": 5848050
+    },
+    "opp_policy_net": {
+     "file": "drl_sd001_s1.json",
+     "sha256": "84b9b3df71cfbbcad283feae7929fb1920f8182820d23760e94b0fe1898ffe32",
+     "bytes": 5860264
+    },
+    "policy_net": {
+     "file": "pi_small64_e10.json",
+     "sha256": "88ea7e0f170e2059aa9d382f6ec31f6e8a0f37d47425ad91bcd07a1e60674dbe",
+     "bytes": 1059704
+    }
+   },
+   "engine": "rust",
+   "rust_features": [
+    "d065_bin1",
+    "d065_reeval_isolated_rng",
+    "lethal_uniform"
+   ],
+   "band": [
+    667200,
+    668399
+   ],
+   "rules_version": "v0.11",
+   "engine_version": "v0.1",
+   "written_at": "2026-09-09T06:21:16+09:00",
+   "extra": {
+    "role": "challenger",
+    "host": "workenv-2",
+    "workers": 2
+   }
+  }
+ },
+ "base_spec": {
+  "kind": "planner",
+  "extra_turns": 1,
+  "value_net": "drl_sd001_vb3.json",
+  "opp_policy_net": "drl_sd001_s1.json",
+  "opp_policy_root_only": true,
+  "choice_phases": true,
+  "solo_samples": 4,
+  "policy_net": "pi_small64_e10.json",
+  "policy_scope": "proxy"
+ },
+ "challenger_spec": {
+  "kind": "planner",
+  "extra_turns": 1,
+  "value_net": "drl_sd001_vc4.json",
+  "opp_policy_net": "drl_sd001_s1.json",
+  "opp_policy_root_only": true,
+  "choice_phases": true,
+  "solo_samples": 4,
+  "policy_net": "pi_small64_e10.json",
+  "policy_scope": "proxy"
+ },
+ "when": "2026-09-09T06:21:16+09:00",
+ "platform": "Linux-6.18.44-fc-v24-x86_64-with-glibc2.39",
+ "verdict": "pass",
+ "llr": 4.740500493345693,
+ "counts": [
+  2,
+  0,
+  32,
+  0,
+  26
+ ],
+ "pairs": 60,
+ "games": 120,
+ "mean_score": 0.7,
+ "paired": {
+  "delta": 0.2,
+  "se": 0.03574601764921202,
+  "n_win2": 26,
+  "n_loss2": 2,
+  "mcnemar_z": 4.535573676110727
+ },
+ "undecided_games": 0,
+ "winrate": {
+  "wins": 84.0,
+  "decided": 120,
+  "p": 0.7,
+  "ci": 0.08199268260033941,
+  "lo": 0.6180073173996605,
+  "hi": 0.7819926826003394
+ },
+ "wilson": [
+  0.6128469049643513,
+  0.7747449866132768
+ ],
+ "sec": 338.1,
+ "rate": 0.35489967698579855,
+ "digest_hash": "733c7b537fbf3795",
+ "expect_matched": true
+}

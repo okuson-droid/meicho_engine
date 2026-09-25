@@ -1,0 +1,187 @@
+{
+ "deck": "SD001",
+ "vb": null,
+ "challenger_diff": {
+  "value_net": "drl_sd001_vc4.json"
+ },
+ "n": 1200,
+ "seed0": 660000,
+ "workers": 2,
+ "provenance": {
+  "champion": {
+   "label": null,
+   "kwargs": {
+    "kind": "planner",
+    "extra_turns": 1,
+    "value_net": "drl_sd001_vb3.json",
+    "opp_policy_net": "drl_sd001_s1.json",
+    "opp_policy_root_only": true,
+    "choice_phases": true,
+    "solo_samples": 4,
+    "policy_net": "pi_small64_e10.json",
+    "policy_scope": "proxy"
+   },
+   "models": {
+    "value_net": {
+     "file": "drl_sd001_vb3.json",
+     "sha256": "0aea419396c6d977e03446b2df41a387331dd25ff5d66d76088b825e81e0f8ec",
+     "bytes": 5854630
+    },
+    "opp_policy_net": {
+     "file": "drl_sd001_s1.json",
+     "sha256": "84b9b3df71cfbbcad283feae7929fb1920f8182820d23760e94b0fe1898ffe32",
+     "bytes": 5860264
+    },
+    "policy_net": {
+     "file": "pi_small64_e10.json",
+     "sha256": "88ea7e0f170e2059aa9d382f6ec31f6e8a0f37d47425ad91bcd07a1e60674dbe",
+     "bytes": 1059704
+    }
+   },
+   "engine": "rust",
+   "rust_features": [
+    "d065_bin1",
+    "d065_reeval_isolated_rng",
+    "lethal_uniform"
+   ],
+   "band": [
+    660000,
+    661199
+   ],
+   "rules_version": "v0.11",
+   "engine_version": "v0.1",
+   "written_at": "2026-09-08T10:36:24+09:00",
+   "extra": {
+    "role": "champion",
+    "host": "workenv-2",
+    "workers": 2
+   }
+  },
+  "challenger": {
+   "label": null,
+   "kwargs": {
+    "kind": "planner",
+    "extra_turns": 1,
+    "value_net": "drl_sd001_vc4.json",
+    "opp_policy_net": "drl_sd001_s1.json",
+    "opp_policy_root_only": true,
+    "choice_phases": true,
+    "solo_samples": 4,
+    "policy_net": "pi_small64_e10.json",
+    "policy_scope": "proxy"
+   },
+   "models": {
+    "value_net": {
+     "file": "drl_sd001_vc4.json",
+     "sha256": "f050f22ee0a38993677a85f14d8e605e625450084c31a31e620ced54e19a58cd",
+     "bytes": 5848050
+    },
+    "opp_policy_net": {
+     "file": "drl_sd001_s1.json",
+     "sha256": "84b9b3df71cfbbcad283feae7929fb1920f8182820d23760e94b0fe1898ffe32",
+     "bytes": 5860264
+    },
+    "policy_net": {
+     "file": "pi_small64_e10.json",
+     "sha256": "88ea7e0f170e2059aa9d382f6ec31f6e8a0f37d47425ad91bcd07a1e60674dbe",
+     "bytes": 1059704
+    }
+   },
+   "engine": "rust",
+   "rust_features": [
+    "d065_bin1",
+    "d065_reeval_isolated_rng",
+    "lethal_uniform"
+   ],
+   "band": [
+    660000,
+    661199
+   ],
+   "rules_version": "v0.11",
+   "engine_version": "v0.1",
+   "written_at": "2026-09-08T10:36:24+09:00",
+   "extra": {
+    "role": "challenger",
+    "host": "workenv-2",
+    "workers": 2
+   }
+  }
+ },
+ "champion": "計画探索＋地平+1ターン／葉=V（drl_sd001_vb3.json）／相手モデル=π（drl_sd001_s1.json・根だけ）／代打ち=π（pi_small64_e10.json・代打ちだけ）／選択フェイズも探索（決定化 4 本）",
+ "challenger": "現 champion ＋ {'value_net': 'drl_sd001_vc4.json'}",
+ "champion_spec": {
+  "kind": "planner",
+  "extra_turns": 1,
+  "value_net": "drl_sd001_vb3.json",
+  "opp_policy_net": "drl_sd001_s1.json",
+  "opp_policy_root_only": true,
+  "choice_phases": true,
+  "solo_samples": 4,
+  "policy_net": "pi_small64_e10.json",
+  "policy_scope": "proxy"
+ },
+ "challenger_spec": {
+  "kind": "planner",
+  "extra_turns": 1,
+  "value_net": "drl_sd001_vc4.json",
+  "opp_policy_net": "drl_sd001_s1.json",
+  "opp_policy_root_only": true,
+  "choice_phases": true,
+  "solo_samples": 4,
+  "policy_net": "pi_small64_e10.json",
+  "policy_scope": "proxy"
+ },
+ "when": "2026-09-08T11:11:36+09:00",
+ "platform": "Linux-6.18.44-fc-v24-x86_64-with-glibc2.39",
+ "runs": [
+  {
+   "name": "挑戦者 vs 現champion",
+   "seed0": 660000,
+   "n": 1200,
+   "wins": 683,
+   "decided": 1200,
+   "p": 0.5691666666666667,
+   "ci": 0.028018173847357372,
+   "lo": 0.5411484928193093,
+   "hi": 0.5971848405140241,
+   "rate": 0.9694918994527117,
+   "sec": 1237.8,
+   "passes": true,
+   "border": false
+  },
+  {
+   "name": "現champion vs 現champion",
+   "seed0": 661300,
+   "n": 1200,
+   "wins": 602,
+   "decided": 1200,
+   "p": 0.5016666666666667,
+   "ci": 0.028290006022281804,
+   "lo": 0.4733766606443849,
+   "hi": 0.5299566726889485,
+   "rate": 0.9283909871282583,
+   "sec": 1292.6
+  }
+ ],
+ "plumbing_ok": true,
+ "audit": {
+  "checked": 120,
+  "violations": 0,
+  "examples": []
+ },
+ "digest_6": [
+  9288713273495745433,
+  2475578606875664981,
+  13911137301730098760,
+  9383784001604127211,
+  13878149247529750768,
+  2721848547465008223
+ ],
+ "digest_hash": "058f7aa858a74611",
+ "encoding": {
+  "version": 3,
+  "obs_dim": 596,
+  "act_dim": 111
+ },
+ "verdict_1_3_4": true
+}

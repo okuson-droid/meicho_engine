@@ -1,0 +1,23 @@
+{
+ "deck": "SD001",
+ "cand": "wide_clash",
+ "diff": {
+  "samples": 12
+ },
+ "n": 600,
+ "seed0": 436500,
+ "wins": 319,
+ "decided": 600,
+ "p": 0.5316666666666666,
+ "ci": 0.039928012908418256,
+ "lo": 0.4917386537582484,
+ "hi": 0.5715946795750849,
+ "sec": 206.4109137058258,
+ "rate": 2.9068230416106404,
+ "champion": {
+  "extra_turns": 1,
+  "value_net": "drl_sd001_vb3.json",
+  "opp_policy_net": "drl_sd001_s1.json",
+  "opp_policy_root_only": true
+ }
+}

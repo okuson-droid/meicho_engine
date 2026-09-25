@@ -1,0 +1,3068 @@
+{
+ "version": "playprof-1",
+ "decks": [
+  "env/ENV_SANGE_RF_ANKO",
+  "env/ENV_SANGE_RF_CHIXIA",
+  "env/ENV_SANGE_RF_JINSHI",
+  "env/ENV_SANGE_RF_TSUBAKI",
+  "env/ENV_SANGE_RM_ANKO",
+  "env/ENV_SANGE_RM_CHIXIA",
+  "env/ENV_SANGE_RM_JINSHI",
+  "env/ENV_SANGE_RM_TSUBAKI",
+  "env/ENV_SANGE_SK_ANKO",
+  "env/ENV_SANGE_SK_CHIXIA",
+  "env/ENV_SANGE_SK_JINSHI",
+  "env/ENV_SANGE_SK_TSUBAKI",
+  "env/ENV_YANG_RF_ANKO",
+  "env/ENV_YANG_RF_CHIXIA",
+  "env/ENV_YANG_RF_JINSHI",
+  "env/ENV_YANG_RF_TSUBAKI",
+  "env/ENV_YANG_RM_ANKO",
+  "env/ENV_YANG_RM_CHIXIA",
+  "env/ENV_YANG_RM_JINSHI",
+  "env/ENV_YANG_RM_TSUBAKI",
+  "env/ENV_YANG_SK_ANKO",
+  "env/ENV_YANG_SK_CHIXIA",
+  "env/ENV_YANG_SK_JINSHI",
+  "env/ENV_YANG_SK_TSUBAKI"
+ ],
+ "group": {
+  "env/ENV_SANGE_RF_ANKO": 0,
+  "env/ENV_SANGE_RF_CHIXIA": 1,
+  "env/ENV_SANGE_RF_JINSHI": 2,
+  "env/ENV_SANGE_RF_TSUBAKI": 3,
+  "env/ENV_SANGE_RM_ANKO": 0,
+  "env/ENV_SANGE_RM_CHIXIA": 1,
+  "env/ENV_SANGE_RM_JINSHI": 2,
+  "env/ENV_SANGE_RM_TSUBAKI": 3,
+  "env/ENV_SANGE_SK_ANKO": 4,
+  "env/ENV_SANGE_SK_CHIXIA": 5,
+  "env/ENV_SANGE_SK_JINSHI": 6,
+  "env/ENV_SANGE_SK_TSUBAKI": 7,
+  "env/ENV_YANG_RF_ANKO": 0,
+  "env/ENV_YANG_RF_CHIXIA": 1,
+  "env/ENV_YANG_RF_JINSHI": 2,
+  "env/ENV_YANG_RF_TSUBAKI": 3,
+  "env/ENV_YANG_RM_ANKO": 0,
+  "env/ENV_YANG_RM_CHIXIA": 1,
+  "env/ENV_YANG_RM_JINSHI": 2,
+  "env/ENV_YANG_RM_TSUBAKI": 3,
+  "env/ENV_YANG_SK_ANKO": 4,
+  "env/ENV_YANG_SK_CHIXIA": 5,
+  "env/ENV_YANG_SK_JINSHI": 6,
+  "env/ENV_YANG_SK_TSUBAKI": 7
+ },
+ "split": {
+  "env/ENV_SANGE_RF_ANKO": "train",
+  "env/ENV_SANGE_RF_CHIXIA": "train",
+  "env/ENV_SANGE_RF_JINSHI": "train",
+  "env/ENV_SANGE_RF_TSUBAKI": "tune",
+  "env/ENV_SANGE_RM_ANKO": "train",
+  "env/ENV_SANGE_RM_CHIXIA": "train",
+  "env/ENV_SANGE_RM_JINSHI": "train",
+  "env/ENV_SANGE_RM_TSUBAKI": "tune",
+  "env/ENV_SANGE_SK_ANKO": "train",
+  "env/ENV_SANGE_SK_CHIXIA": "final",
+  "env/ENV_SANGE_SK_JINSHI": "final",
+  "env/ENV_SANGE_SK_TSUBAKI": "train",
+  "env/ENV_YANG_RF_ANKO": "train",
+  "env/ENV_YANG_RF_CHIXIA": "train",
+  "env/ENV_YANG_RF_JINSHI": "train",
+  "env/ENV_YANG_RF_TSUBAKI": "tune",
+  "env/ENV_YANG_RM_ANKO": "train",
+  "env/ENV_YANG_RM_CHIXIA": "train",
+  "env/ENV_YANG_RM_JINSHI": "train",
+  "env/ENV_YANG_RM_TSUBAKI": "tune",
+  "env/ENV_YANG_SK_ANKO": "train",
+  "env/ENV_YANG_SK_CHIXIA": "final",
+  "env/ENV_YANG_SK_JINSHI": "final",
+  "env/ENV_YANG_SK_TSUBAKI": "train"
+ },
+ "profile": {
+  "env/ENV_SANGE_RF_ANKO": {
+   "act": [
+    0.1463874553394204,
+    0.12882096069868995,
+    0.13090512107979357,
+    0.16057959507741168,
+    0.0009924573243350536,
+    0.2295553791186979,
+    0.051806272330289796,
+    0.15095275903136166
+   ],
+   "color": [
+    0.5361003026372676,
+    0.1828793774319066,
+    0.28102031993082577
+   ],
+   "cost": [
+    0.7955036748811067,
+    0.17207090358841332,
+    0.0324254215304799,
+    0.0
+   ],
+   "win": [
+    0.89,
+    0.78,
+    0.56
+   ],
+   "tempo": [
+    1.024,
+    0.39466666666666667,
+    0.3953333333333333
+   ]
+  },
+  "env/ENV_SANGE_RF_CHIXIA": {
+   "act": [
+    0.16193293885601578,
+    0.13954635108481261,
+    0.13451676528599604,
+    0.17317554240631164,
+    0.0046351084812623275,
+    0.24151873767258383,
+    0.052465483234714005,
+    0.09220907297830375
+   ],
+   "color": [
+    0.49285422621478153,
+    0.20375663536137198,
+    0.30338913842384646
+   ],
+   "cost": [
+    0.9138423846467946,
+    0.011433238056349531,
+    0.07472437729685585,
+    0.0
+   ],
+   "win": [
+    0.82,
+    0.68,
+    0.42
+   ],
+   "tempo": [
+    1.1403333333333334,
+    0.3546666666666667,
+    0.3963333333333333
+   ]
+  },
+  "env/ENV_SANGE_RF_JINSHI": {
+   "act": [
+    0.16559839280589306,
+    0.13297617908734335,
+    0.14254281067636085,
+    0.17698268439682388,
+    0.004209317899167703,
+    0.24538410025829904,
+    0.04658949583851526,
+    0.08571701903759686
+   ],
+   "color": [
+    0.4502923976608187,
+    0.23430799220272905,
+    0.31539961013645224
+   ],
+   "cost": [
+    0.9134502923976608,
+    0.018323586744639377,
+    0.0682261208576998,
+    0.0
+   ],
+   "win": [
+    0.88,
+    0.65,
+    0.47
+   ],
+   "tempo": [
+    1.2026666666666668,
+    0.3546666666666667,
+    0.39866666666666667
+   ]
+  },
+  "env/ENV_SANGE_RF_TSUBAKI": {
+   "act": [
+    0.14699155524278676,
+    0.13212526389866291,
+    0.1349401829697396,
+    0.16247361013370865,
+    0.0016713581984517945,
+    0.2232582688247713,
+    0.06324771287825474,
+    0.1352920478536242
+   ],
+   "color": [
+    0.4732072498029945,
+    0.21670606776989756,
+    0.31008668242710796
+   ],
+   "cost": [
+    0.9026792750197006,
+    0.055161544523246654,
+    0.042159180457052796,
+    0.0
+   ],
+   "win": [
+    0.85,
+    0.74,
+    0.37
+   ],
+   "tempo": [
+    1.1853333333333333,
+    0.46699999999999997,
+    0.39066666666666666
+   ]
+  },
+  "env/ENV_SANGE_RM_ANKO": {
+   "act": [
+    0.14648318042813455,
+    0.12833843017329255,
+    0.12629969418960243,
+    0.16075433231396535,
+    0.0017329255861365954,
+    0.22680937818552496,
+    0.056778797145769624,
+    0.1528032619775739
+   ],
+   "color": [
+    0.5397752808988764,
+    0.181123595505618,
+    0.2791011235955056
+   ],
+   "cost": [
+    0.8062921348314607,
+    0.19370786516853933,
+    0.0,
+    0.0
+   ],
+   "win": [
+    0.77,
+    0.8,
+    0.57
+   ],
+   "tempo": [
+    1.0093333333333334,
+    0.37533333333333335,
+    0.3963333333333333
+   ]
+  },
+  "env/ENV_SANGE_RM_CHIXIA": {
+   "act": [
+    0.1597973979541166,
+    0.13417419803356836,
+    0.13308173602145199,
+    0.17161585063064852,
+    0.00377395967822028,
+    0.24054027212235574,
+    0.048068328533121464,
+    0.10894825702651703
+   ],
+   "color": [
+    0.47068538398018167,
+    0.21635012386457472,
+    0.3129644921552436
+   ],
+   "cost": [
+    0.9314616019818331,
+    0.032617671345995046,
+    0.035920726672171756,
+    0.0
+   ],
+   "win": [
+    0.84,
+    0.68,
+    0.43
+   ],
+   "tempo": [
+    1.119,
+    0.36033333333333334,
+    0.392
+   ]
+  },
+  "env/ENV_SANGE_RM_JINSHI": {
+   "act": [
+    0.16207892204042348,
+    0.13734359961501444,
+    0.1426371511068335,
+    0.175553416746872,
+    0.006159769008662175,
+    0.2410009624639076,
+    0.04427333974975938,
+    0.09095283926852743
+   ],
+   "color": [
+    0.4353035143769968,
+    0.24281150159744408,
+    0.3218849840255591
+   ],
+   "cost": [
+    0.9293130990415336,
+    0.03354632587859425,
+    0.0371405750798722,
+    0.0
+   ],
+   "win": [
+    0.8,
+    0.7,
+    0.46
+   ],
+   "tempo": [
+    1.1986666666666665,
+    0.357,
+    0.37733333333333335
+   ]
+  },
+  "env/ENV_SANGE_RM_TSUBAKI": {
+   "act": [
+    0.14532309082693176,
+    0.12788070492544057,
+    0.13212833258020787,
+    0.16086760054225033,
+    0.001536375960234975,
+    0.23181201988251243,
+    0.05241753276095797,
+    0.14803434252146408
+   ],
+   "color": [
+    0.4635477582846004,
+    0.22962962962962963,
+    0.30682261208577
+   ],
+   "cost": [
+    0.9208576998050683,
+    0.07914230019493178,
+    0.0,
+    0.0
+   ],
+   "win": [
+    0.85,
+    0.76,
+    0.45
+   ],
+   "tempo": [
+    1.139,
+    0.44766666666666666,
+    0.41233333333333333
+   ]
+  },
+  "env/ENV_SANGE_SK_ANKO": {
+   "act": [
+    0.1465777209174815,
+    0.13085991044503337,
+    0.1359773371104816,
+    0.16229553138992964,
+    0.0015535045234396417,
+    0.227268573517317,
+    0.05464680617746505,
+    0.14082061591885223
+   ],
+   "color": [
+    0.5066344993968637,
+    0.1696823482106956,
+    0.32368315239244067
+   ],
+   "cost": [
+    0.8307197426618416,
+    0.16928025733815844,
+    0.0,
+    0.0
+   ],
+   "win": [
+    0.82,
+    0.69,
+    0.6
+   ],
+   "tempo": [
+    1.1356666666666668,
+    0.42733333333333334,
+    0.42233333333333334
+   ]
+  },
+  "env/ENV_SANGE_SK_CHIXIA": {
+   "act": [
+    0.15777425603099138,
+    0.14016552209896108,
+    0.13717203733051594,
+    0.17309385455185772,
+    0.0036978341257263604,
+    0.23393203028702236,
+    0.05317837647473147,
+    0.1009860891001937
+   ],
+   "color": [
+    0.4177643959352653,
+    0.20436582611968385,
+    0.37786977794505083
+   ],
+   "cost": [
+    0.9442980805419646,
+    0.015430937147158449,
+    0.04027098231087693,
+    0.0
+   ],
+   "win": [
+    0.81,
+    0.62,
+    0.42
+   ],
+   "tempo": [
+    1.2786666666666666,
+    0.40700000000000003,
+    0.43566666666666665
+   ]
+  },
+  "env/ENV_SANGE_SK_JINSHI": {
+   "act": [
+    0.1612932195779075,
+    0.13147732375392907,
+    0.1460260440053884,
+    0.1736865738661877,
+    0.004310731926358329,
+    0.2359227660529861,
+    0.051010327795240236,
+    0.0962730130220027
+   ],
+   "color": [
+    0.4137799771602588,
+    0.22649409973353635,
+    0.35972592310620477
+   ],
+   "cost": [
+    0.9573658165207461,
+    0.01218119527978683,
+    0.03045298819946707,
+    0.0
+   ],
+   "win": [
+    0.82,
+    0.62,
+    0.39
+   ],
+   "tempo": [
+    1.2693333333333334,
+    0.389,
+    0.438
+   ]
+  },
+  "env/ENV_SANGE_SK_TSUBAKI": {
+   "act": [
+    0.14963198394111743,
+    0.12554366008698561,
+    0.14168618266978922,
+    0.1679491468718635,
+    0.0015055202408832385,
+    0.22507527601204416,
+    0.06498829039812647,
+    0.12361993977919036
+   ],
+   "color": [
+    0.4738015607580825,
+    0.17354143441099962,
+    0.3526570048309179
+   ],
+   "cost": [
+    0.9293942772203642,
+    0.07060572277963582,
+    0.0,
+    0.0
+   ],
+   "win": [
+    0.74,
+    0.54,
+    0.36
+   ],
+   "tempo": [
+    1.296,
+    0.4843333333333334,
+    0.4096666666666667
+   ]
+  },
+  "env/ENV_YANG_RF_ANKO": {
+   "act": [
+    0.140929392758719,
+    0.13114130951249645,
+    0.12363394469257816,
+    0.1556590325952675,
+    0.0009502993442934524,
+    0.2386201653520859,
+    0.04114796160790649,
+    0.16791789413665303
+   ],
+   "color": [
+    0.4655515730784548,
+    0.26045400238948624,
+    0.27399442453205897
+   ],
+   "cost": [
+    0.8100358422939068,
+    0.16049382716049382,
+    0.029470330545599364,
+    0.0
+   ],
+   "win": [
+    0.93,
+    0.8,
+    0.73
+   ],
+   "tempo": [
+    1.0336666666666665,
+    0.368,
+    0.3933333333333333
+   ]
+  },
+  "env/ENV_YANG_RF_CHIXIA": {
+   "act": [
+    0.15699626865671643,
+    0.12332089552238806,
+    0.1296641791044776,
+    0.17033582089552238,
+    0.0014925373134328358,
+    0.2608208955223881,
+    0.04272388059701492,
+    0.1146455223880597
+   ],
+   "color": [
+    0.4084406294706724,
+    0.26716738197424894,
+    0.32439198855507867
+   ],
+   "cost": [
+    0.919170243204578,
+    0.012875536480686695,
+    0.06795422031473533,
+    0.0
+   ],
+   "win": [
+    0.88,
+    0.81,
+    0.67
+   ],
+   "tempo": [
+    1.162,
+    0.33533333333333337,
+    0.41
+   ]
+  },
+  "env/ENV_YANG_RF_JINSHI": {
+   "act": [
+    0.1543064369900272,
+    0.13354487760652764,
+    0.1312783318223028,
+    0.17008159564823208,
+    0.0027198549410698096,
+    0.25775158658204894,
+    0.03844061650045331,
+    0.11187669990933817
+   ],
+   "color": [
+    0.3658107632782272,
+    0.2905381639113612,
+    0.3436510728104115
+   ],
+   "cost": [
+    0.923320436158987,
+    0.014069644741470278,
+    0.06260991909954274,
+    0.0
+   ],
+   "win": [
+    0.91,
+    0.82,
+    0.58
+   ],
+   "tempo": [
+    1.2073333333333334,
+    0.36933333333333335,
+    0.403
+   ]
+  },
+  "env/ENV_YANG_RF_TSUBAKI": {
+   "act": [
+    0.14513242662848963,
+    0.12133142448103078,
+    0.13314244810307801,
+    0.15918038654259126,
+    0.0007158196134574087,
+    0.24194702934860415,
+    0.04769148174659986,
+    0.15085898353614888
+   ],
+   "color": [
+    0.39718934911242604,
+    0.28587278106508873,
+    0.31693786982248523
+   ],
+   "cost": [
+    0.9079142011834319,
+    0.053994082840236685,
+    0.03809171597633136,
+    0.0
+   ],
+   "win": [
+    0.88,
+    0.77,
+    0.57
+   ],
+   "tempo": [
+    1.129,
+    0.42833333333333334,
+    0.394
+   ]
+  },
+  "env/ENV_YANG_RM_ANKO": {
+   "act": [
+    0.1440031692581955,
+    0.12855303555511538,
+    0.1275626423690205,
+    0.1548974943052392,
+    0.0010894325047043677,
+    0.24096266217688422,
+    0.0403090026740616,
+    0.16262256115677926
+   ],
+   "color": [
+    0.45540484997944924,
+    0.279901356350185,
+    0.26469379367036583
+   ],
+   "cost": [
+    0.8273736128236745,
+    0.17262638717632553,
+    0.0,
+    0.0
+   ],
+   "win": [
+    0.9,
+    0.85,
+    0.56
+   ],
+   "tempo": [
+    0.9953333333333333,
+    0.36233333333333334,
+    0.386
+   ]
+  },
+  "env/ENV_YANG_RM_CHIXIA": {
+   "act": [
+    0.15494186046511627,
+    0.12354651162790697,
+    0.12926356589147286,
+    0.16812015503875968,
+    0.002131782945736434,
+    0.25813953488372093,
+    0.038565891472868215,
+    0.1252906976744186
+   ],
+   "color": [
+    0.41103603603603606,
+    0.27702702702702703,
+    0.3119369369369369
+   ],
+   "cost": [
+    0.9440690690690691,
+    0.028153153153153154,
+    0.027777777777777776,
+    0.0
+   ],
+   "win": [
+    0.94,
+    0.8,
+    0.62
+   ],
+   "tempo": [
+    1.1076666666666666,
+    0.30433333333333334,
+    0.39066666666666666
+   ]
+  },
+  "env/ENV_YANG_RM_JINSHI": {
+   "act": [
+    0.15189994271529503,
+    0.129558907771625,
+    0.1310864999045255,
+    0.16555279740309337,
+    0.0024823372159633377,
+    0.2562535802940615,
+    0.035325568073324425,
+    0.1278403666221119
+   ],
+   "color": [
+    0.3435171385991058,
+    0.3364381520119225,
+    0.32004470938897167
+   ],
+   "cost": [
+    0.9396423248882265,
+    0.03204172876304024,
+    0.028315946348733235,
+    0.0
+   ],
+   "win": [
+    0.91,
+    0.76,
+    0.61
+   ],
+   "tempo": [
+    1.1066666666666667,
+    0.33399999999999996,
+    0.37266666666666665
+   ]
+  },
+  "env/ENV_YANG_RM_TSUBAKI": {
+   "act": [
+    0.14205216759065709,
+    0.11869490139052985,
+    0.1307825138598564,
+    0.1584113423611742,
+    0.0007270744342452058,
+    0.2493865309461056,
+    0.04253385440334454,
+    0.15741161501408707
+   ],
+   "color": [
+    0.4001457725947522,
+    0.30685131195335275,
+    0.29300291545189505
+   ],
+   "cost": [
+    0.9307580174927114,
+    0.06924198250728864,
+    0.0,
+    0.0
+   ],
+   "win": [
+    0.88,
+    0.79,
+    0.53
+   ],
+   "tempo": [
+    1.1086666666666667,
+    0.40599999999999997,
+    0.392
+   ]
+  },
+  "env/ENV_YANG_SK_ANKO": {
+   "act": [
+    0.14258895047380654,
+    0.12390488110137672,
+    0.13418558912926873,
+    0.15733953155730376,
+    0.0011621669944573575,
+    0.23305918111925622,
+    0.04791703915608797,
+    0.1598426604684427
+   ],
+   "color": [
+    0.4503260452627541,
+    0.2274645186037591,
+    0.3222094361334868
+   ],
+   "cost": [
+    0.8392788645953203,
+    0.16072113540467972,
+    0.0,
+    0.0
+   ],
+   "win": [
+    0.9,
+    0.79,
+    0.6
+   ],
+   "tempo": [
+    1.1179999999999999,
+    0.41633333333333333,
+    0.4166666666666667
+   ]
+  },
+  "env/ENV_YANG_SK_CHIXIA": {
+   "act": [
+    0.1588705562170437,
+    0.13242047967341383,
+    0.1357373703010716,
+    0.17094744004082327,
+    0.0034019391052900155,
+    0.25140329988093213,
+    0.04788229290695697,
+    0.09933662187446844
+   ],
+   "color": [
+    0.34776725304465494,
+    0.2692828146143437,
+    0.38294993234100133
+   ],
+   "cost": [
+    0.9482408660351827,
+    0.013193504736129905,
+    0.03856562922868741,
+    0.0
+   ],
+   "win": [
+    0.84,
+    0.62,
+    0.46
+   ],
+   "tempo": [
+    1.3143333333333334,
+    0.38866666666666666,
+    0.45666666666666667
+   ]
+  },
+  "env/ENV_YANG_SK_JINSHI": {
+   "act": [
+    0.1583159359777314,
+    0.1305671537926235,
+    0.14248434237995825,
+    0.17066805845511482,
+    0.004262352122477384,
+    0.24382393876130828,
+    0.04540709812108559,
+    0.10447112038970077
+   ],
+   "color": [
+    0.3531930074919729,
+    0.2629325722440243,
+    0.38387442026400287
+   ],
+   "cost": [
+    0.948269711023903,
+    0.01712450945415626,
+    0.03460577952194078,
+    0.0
+   ],
+   "win": [
+    0.81,
+    0.79,
+    0.41
+   ],
+   "tempo": [
+    1.2833333333333334,
+    0.4043333333333333,
+    0.44400000000000006
+   ]
+  },
+  "env/ENV_YANG_SK_TSUBAKI": {
+   "act": [
+    0.14599867724867724,
+    0.1261574074074074,
+    0.1396329365079365,
+    0.16575727513227514,
+    0.0013227513227513227,
+    0.23445767195767195,
+    0.059854497354497355,
+    0.12681878306878308
+   ],
+   "color": [
+    0.4033850493653032,
+    0.22425952045133993,
+    0.3723554301833568
+   ],
+   "cost": [
+    0.9421720733427362,
+    0.05782792665726375,
+    0.0,
+    0.0
+   ],
+   "win": [
+    0.73,
+    0.63,
+    0.4
+   ],
+   "tempo": [
+    1.2946666666666666,
+    0.45099999999999996,
+    0.421
+   ]
+  }
+ },
+ "features_kept": [
+  0,
+  1,
+  2,
+  3,
+  4,
+  5,
+  6,
+  7,
+  8,
+  9,
+  10,
+  11,
+  12,
+  13,
+  15,
+  16,
+  17,
+  18,
+  19,
+  20
+ ],
+ "within_median": 0.882996912675007,
+ "half_split_median": 0.6486572156581776,
+ "half_split": [
+  {
+   "deck": "env/ENV_SANGE_RF_ANKO",
+   "d": 0.44315781110404084
+  },
+  {
+   "deck": "env/ENV_SANGE_RF_CHIXIA",
+   "d": 0.6473855093783054
+  },
+  {
+   "deck": "env/ENV_SANGE_RF_JINSHI",
+   "d": 0.8058945711648334
+  },
+  {
+   "deck": "env/ENV_SANGE_RF_TSUBAKI",
+   "d": 0.6426809553228205
+  },
+  {
+   "deck": "env/ENV_SANGE_RM_ANKO",
+   "d": 0.650765087217366
+  },
+  {
+   "deck": "env/ENV_SANGE_RM_CHIXIA",
+   "d": 0.4630989531974182
+  },
+  {
+   "deck": "env/ENV_SANGE_RM_JINSHI",
+   "d": 1.1513953279304099
+  },
+  {
+   "deck": "env/ENV_SANGE_RM_TSUBAKI",
+   "d": 0.39158716058146015
+  },
+  {
+   "deck": "env/ENV_SANGE_SK_ANKO",
+   "d": 0.807849137463108
+  },
+  {
+   "deck": "env/ENV_SANGE_SK_CHIXIA",
+   "d": 0.9232595576539532
+  },
+  {
+   "deck": "env/ENV_SANGE_SK_JINSHI",
+   "d": 0.71165026165046
+  },
+  {
+   "deck": "env/ENV_SANGE_SK_TSUBAKI",
+   "d": 1.0574310569854384
+  },
+  {
+   "deck": "env/ENV_YANG_RF_ANKO",
+   "d": 0.6499289219380497
+  },
+  {
+   "deck": "env/ENV_YANG_RF_CHIXIA",
+   "d": 0.5225961317935521
+  },
+  {
+   "deck": "env/ENV_YANG_RF_JINSHI",
+   "d": 0.4699100993187849
+  },
+  {
+   "deck": "env/ENV_YANG_RF_TSUBAKI",
+   "d": 0.8553662280864278
+  },
+  {
+   "deck": "env/ENV_YANG_RM_ANKO",
+   "d": 0.6051347851152917
+  },
+  {
+   "deck": "env/ENV_YANG_RM_CHIXIA",
+   "d": 0.6185103319272224
+  },
+  {
+   "deck": "env/ENV_YANG_RM_JINSHI",
+   "d": 0.8427294864921961
+  },
+  {
+   "deck": "env/ENV_YANG_RM_TSUBAKI",
+   "d": 0.6628817471386244
+  },
+  {
+   "deck": "env/ENV_YANG_SK_ANKO",
+   "d": 0.5466868854647671
+  },
+  {
+   "deck": "env/ENV_YANG_SK_CHIXIA",
+   "d": 0.5873390301333127
+  },
+  {
+   "deck": "env/ENV_YANG_SK_JINSHI",
+   "d": 0.5823354345441154
+  },
+  {
+   "deck": "env/ENV_YANG_SK_TSUBAKI",
+   "d": 0.6635552732675499
+  }
+ ],
+ "flagged": [
+  {
+   "pair": [
+    "env/ENV_SANGE_SK_CHIXIA",
+    "env/ENV_SANGE_SK_JINSHI"
+   ],
+   "d": 0.5852006557741221
+  },
+  {
+   "pair": [
+    "env/ENV_YANG_RM_CHIXIA",
+    "env/ENV_YANG_RM_JINSHI"
+   ],
+   "d": 0.6042191263822035
+  },
+  {
+   "pair": [
+    "env/ENV_YANG_SK_CHIXIA",
+    "env/ENV_YANG_SK_JINSHI"
+   ],
+   "d": 0.640243546801575
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_RF_CHIXIA",
+    "env/ENV_SANGE_RF_JINSHI"
+   ],
+   "d": 0.6486711290220154
+  },
+  {
+   "pair": [
+    "env/ENV_YANG_RF_CHIXIA",
+    "env/ENV_YANG_RF_JINSHI"
+   ],
+   "d": 0.6493033042659202
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_RF_JINSHI",
+    "env/ENV_SANGE_RM_CHIXIA"
+   ],
+   "d": 0.6872015724874483
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_RM_CHIXIA",
+    "env/ENV_SANGE_RM_JINSHI"
+   ],
+   "d": 0.7024716303680065
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_RM_TSUBAKI",
+    "env/ENV_YANG_SK_ANKO"
+   ],
+   "d": 0.7114616384868372
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_SK_JINSHI",
+    "env/ENV_YANG_SK_CHIXIA"
+   ],
+   "d": 0.7444570263898187
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_RF_CHIXIA",
+    "env/ENV_SANGE_RM_JINSHI"
+   ],
+   "d": 0.7473921325604348
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_RF_ANKO",
+    "env/ENV_YANG_SK_ANKO"
+   ],
+   "d": 0.7903184434817985
+  },
+  {
+   "pair": [
+    "env/ENV_YANG_RF_JINSHI",
+    "env/ENV_YANG_RM_CHIXIA"
+   ],
+   "d": 0.7911801072565916
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_RF_ANKO",
+    "env/ENV_SANGE_SK_ANKO"
+   ],
+   "d": 0.792258279567046
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_RM_TSUBAKI",
+    "env/ENV_SANGE_SK_ANKO"
+   ],
+   "d": 0.8059375084609725
+  },
+  {
+   "pair": [
+    "env/ENV_YANG_RF_TSUBAKI",
+    "env/ENV_YANG_SK_ANKO"
+   ],
+   "d": 0.8077860080141647
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_RM_ANKO",
+    "env/ENV_SANGE_SK_ANKO"
+   ],
+   "d": 0.8291617633978781
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_SK_CHIXIA",
+    "env/ENV_YANG_SK_JINSHI"
+   ],
+   "d": 0.8478513722738343
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_RF_JINSHI",
+    "env/ENV_SANGE_SK_JINSHI"
+   ],
+   "d": 0.8514970992494774
+  },
+  {
+   "pair": [
+    "env/ENV_YANG_RM_ANKO",
+    "env/ENV_YANG_SK_ANKO"
+   ],
+   "d": 0.8535034485132351
+  }
+ ],
+ "within": [
+  {
+   "pair": [
+    "env/ENV_SANGE_RF_ANKO",
+    "env/ENV_SANGE_RM_ANKO"
+   ],
+   "d": 0.6501886838285796
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_RF_ANKO",
+    "env/ENV_YANG_RF_ANKO"
+   ],
+   "d": 0.8689613486143118
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_RF_ANKO",
+    "env/ENV_YANG_RM_ANKO"
+   ],
+   "d": 0.9024905305813414
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_RF_CHIXIA",
+    "env/ENV_SANGE_RM_CHIXIA"
+   ],
+   "d": 0.5400769487421105
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_RF_CHIXIA",
+    "env/ENV_YANG_RF_CHIXIA"
+   ],
+   "d": 1.355659313116665
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_RF_CHIXIA",
+    "env/ENV_YANG_RM_CHIXIA"
+   ],
+   "d": 1.4804426904332226
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_RF_JINSHI",
+    "env/ENV_SANGE_RM_JINSHI"
+   ],
+   "d": 0.6536821505338576
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_RF_JINSHI",
+    "env/ENV_YANG_RF_JINSHI"
+   ],
+   "d": 1.0748365071085784
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_RF_JINSHI",
+    "env/ENV_YANG_RM_JINSHI"
+   ],
+   "d": 1.3802101879128352
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_RF_TSUBAKI",
+    "env/ENV_SANGE_RM_TSUBAKI"
+   ],
+   "d": 0.6958938175339757
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_RF_TSUBAKI",
+    "env/ENV_YANG_RF_TSUBAKI"
+   ],
+   "d": 1.068777396096391
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_RF_TSUBAKI",
+    "env/ENV_YANG_RM_TSUBAKI"
+   ],
+   "d": 1.3816399301096791
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_RM_ANKO",
+    "env/ENV_YANG_RF_ANKO"
+   ],
+   "d": 1.1385326387692338
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_RM_ANKO",
+    "env/ENV_YANG_RM_ANKO"
+   ],
+   "d": 1.053825985982515
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_RM_CHIXIA",
+    "env/ENV_YANG_RF_CHIXIA"
+   ],
+   "d": 1.1446638375418692
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_RM_CHIXIA",
+    "env/ENV_YANG_RM_CHIXIA"
+   ],
+   "d": 1.1235432793506805
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_RM_JINSHI",
+    "env/ENV_YANG_RF_JINSHI"
+   ],
+   "d": 1.21042057861939
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_RM_JINSHI",
+    "env/ENV_YANG_RM_JINSHI"
+   ],
+   "d": 1.3829895528918004
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_RM_TSUBAKI",
+    "env/ENV_YANG_RF_TSUBAKI"
+   ],
+   "d": 0.7762612043654751
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_RM_TSUBAKI",
+    "env/ENV_YANG_RM_TSUBAKI"
+   ],
+   "d": 0.8970324767357021
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_SK_ANKO",
+    "env/ENV_YANG_SK_ANKO"
+   ],
+   "d": 0.7469075883401667
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_SK_CHIXIA",
+    "env/ENV_YANG_SK_CHIXIA"
+   ],
+   "d": 0.7521472943950697
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_SK_JINSHI",
+    "env/ENV_YANG_SK_JINSHI"
+   ],
+   "d": 0.6816926969316788
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_SK_TSUBAKI",
+    "env/ENV_YANG_SK_TSUBAKI"
+   ],
+   "d": 0.6168584776594728
+  },
+  {
+   "pair": [
+    "env/ENV_YANG_RF_ANKO",
+    "env/ENV_YANG_RM_ANKO"
+   ],
+   "d": 0.5869220799954945
+  },
+  {
+   "pair": [
+    "env/ENV_YANG_RF_CHIXIA",
+    "env/ENV_YANG_RM_CHIXIA"
+   ],
+   "d": 0.6084129985731007
+  },
+  {
+   "pair": [
+    "env/ENV_YANG_RF_JINSHI",
+    "env/ENV_YANG_RM_JINSHI"
+   ],
+   "d": 0.7217663492774052
+  },
+  {
+   "pair": [
+    "env/ENV_YANG_RF_TSUBAKI",
+    "env/ENV_YANG_RM_TSUBAKI"
+   ],
+   "d": 0.5349578395112722
+  }
+ ],
+ "cross": [
+  {
+   "pair": [
+    "env/ENV_SANGE_RF_ANKO",
+    "env/ENV_SANGE_RF_CHIXIA"
+   ],
+   "d": 1.5718073336808134
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_RF_ANKO",
+    "env/ENV_SANGE_RF_JINSHI"
+   ],
+   "d": 1.7141993400939606
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_RF_ANKO",
+    "env/ENV_SANGE_RF_TSUBAKI"
+   ],
+   "d": 1.1224899307330045
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_RF_ANKO",
+    "env/ENV_SANGE_RM_CHIXIA"
+   ],
+   "d": 1.3376949874826567
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_RF_ANKO",
+    "env/ENV_SANGE_RM_JINSHI"
+   ],
+   "d": 1.8054617256672523
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_RF_ANKO",
+    "env/ENV_SANGE_RM_TSUBAKI"
+   ],
+   "d": 0.9868352555971786
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_RF_ANKO",
+    "env/ENV_SANGE_SK_ANKO"
+   ],
+   "d": 0.792258279567046
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_RF_ANKO",
+    "env/ENV_SANGE_SK_CHIXIA"
+   ],
+   "d": 1.8314330871883842
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_RF_ANKO",
+    "env/ENV_SANGE_SK_JINSHI"
+   ],
+   "d": 1.919291374649565
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_RF_ANKO",
+    "env/ENV_SANGE_SK_TSUBAKI"
+   ],
+   "d": 1.7437346043651742
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_RF_ANKO",
+    "env/ENV_YANG_RF_CHIXIA"
+   ],
+   "d": 1.5686249550742142
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_RF_ANKO",
+    "env/ENV_YANG_RF_JINSHI"
+   ],
+   "d": 1.6836420725328956
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_RF_ANKO",
+    "env/ENV_YANG_RF_TSUBAKI"
+   ],
+   "d": 1.180486382569778
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_RF_ANKO",
+    "env/ENV_YANG_RM_CHIXIA"
+   ],
+   "d": 1.5293119272137807
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_RF_ANKO",
+    "env/ENV_YANG_RM_JINSHI"
+   ],
+   "d": 1.7056961702472855
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_RF_ANKO",
+    "env/ENV_YANG_RM_TSUBAKI"
+   ],
+   "d": 1.352981114385274
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_RF_ANKO",
+    "env/ENV_YANG_SK_ANKO"
+   ],
+   "d": 0.7903184434817985
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_RF_ANKO",
+    "env/ENV_YANG_SK_CHIXIA"
+   ],
+   "d": 2.038377620411888
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_RF_ANKO",
+    "env/ENV_YANG_SK_JINSHI"
+   ],
+   "d": 1.966751405208359
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_RF_ANKO",
+    "env/ENV_YANG_SK_TSUBAKI"
+   ],
+   "d": 1.7259949780219763
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_RF_CHIXIA",
+    "env/ENV_SANGE_RF_JINSHI"
+   ],
+   "d": 0.6486711290220154
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_RF_CHIXIA",
+    "env/ENV_SANGE_RF_TSUBAKI"
+   ],
+   "d": 1.2501442403860623
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_RF_CHIXIA",
+    "env/ENV_SANGE_RM_ANKO"
+   ],
+   "d": 1.7071388039718238
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_RF_CHIXIA",
+    "env/ENV_SANGE_RM_JINSHI"
+   ],
+   "d": 0.7473921325604348
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_RF_CHIXIA",
+    "env/ENV_SANGE_RM_TSUBAKI"
+   ],
+   "d": 1.4478288559899335
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_RF_CHIXIA",
+    "env/ENV_SANGE_SK_ANKO"
+   ],
+   "d": 1.5369688465990246
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_RF_CHIXIA",
+    "env/ENV_SANGE_SK_CHIXIA"
+   ],
+   "d": 0.9673598016619791
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_RF_CHIXIA",
+    "env/ENV_SANGE_SK_JINSHI"
+   ],
+   "d": 1.084794654825671
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_RF_CHIXIA",
+    "env/ENV_SANGE_SK_TSUBAKI"
+   ],
+   "d": 1.645934634641491
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_RF_CHIXIA",
+    "env/ENV_YANG_RF_ANKO"
+   ],
+   "d": 1.9033658374953908
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_RF_CHIXIA",
+    "env/ENV_YANG_RF_JINSHI"
+   ],
+   "d": 1.2487138138503031
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_RF_CHIXIA",
+    "env/ENV_YANG_RF_TSUBAKI"
+   ],
+   "d": 1.6100995972483414
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_RF_CHIXIA",
+    "env/ENV_YANG_RM_ANKO"
+   ],
+   "d": 1.8870107242730738
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_RF_CHIXIA",
+    "env/ENV_YANG_RM_JINSHI"
+   ],
+   "d": 1.560201872261406
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_RF_CHIXIA",
+    "env/ENV_YANG_RM_TSUBAKI"
+   ],
+   "d": 1.865776676254191
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_RF_CHIXIA",
+    "env/ENV_YANG_SK_ANKO"
+   ],
+   "d": 1.792642057559668
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_RF_CHIXIA",
+    "env/ENV_YANG_SK_CHIXIA"
+   ],
+   "d": 1.3311507810376022
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_RF_CHIXIA",
+    "env/ENV_YANG_SK_JINSHI"
+   ],
+   "d": 1.321900133968938
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_RF_CHIXIA",
+    "env/ENV_YANG_SK_TSUBAKI"
+   ],
+   "d": 1.6037814274342144
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_RF_JINSHI",
+    "env/ENV_SANGE_RF_TSUBAKI"
+   ],
+   "d": 1.418986246684004
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_RF_JINSHI",
+    "env/ENV_SANGE_RM_ANKO"
+   ],
+   "d": 1.9444515805201545
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_RF_JINSHI",
+    "env/ENV_SANGE_RM_CHIXIA"
+   ],
+   "d": 0.6872015724874483
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_RF_JINSHI",
+    "env/ENV_SANGE_RM_TSUBAKI"
+   ],
+   "d": 1.5241998083961987
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_RF_JINSHI",
+    "env/ENV_SANGE_SK_ANKO"
+   ],
+   "d": 1.6269940136893264
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_RF_JINSHI",
+    "env/ENV_SANGE_SK_CHIXIA"
+   ],
+   "d": 0.9978950021486078
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_RF_JINSHI",
+    "env/ENV_SANGE_SK_JINSHI"
+   ],
+   "d": 0.8514970992494774
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_RF_JINSHI",
+    "env/ENV_SANGE_SK_TSUBAKI"
+   ],
+   "d": 1.6666627464477115
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_RF_JINSHI",
+    "env/ENV_YANG_RF_ANKO"
+   ],
+   "d": 1.9757521082198646
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_RF_JINSHI",
+    "env/ENV_YANG_RF_CHIXIA"
+   ],
+   "d": 1.1802507389096863
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_RF_JINSHI",
+    "env/ENV_YANG_RF_TSUBAKI"
+   ],
+   "d": 1.5202433564576492
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_RF_JINSHI",
+    "env/ENV_YANG_RM_ANKO"
+   ],
+   "d": 1.9426548621959583
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_RF_JINSHI",
+    "env/ENV_YANG_RM_CHIXIA"
+   ],
+   "d": 1.3004589928379473
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_RF_JINSHI",
+    "env/ENV_YANG_RM_TSUBAKI"
+   ],
+   "d": 1.7746202482922246
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_RF_JINSHI",
+    "env/ENV_YANG_SK_ANKO"
+   ],
+   "d": 1.7624057351131273
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_RF_JINSHI",
+    "env/ENV_YANG_SK_CHIXIA"
+   ],
+   "d": 1.1162300627559119
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_RF_JINSHI",
+    "env/ENV_YANG_SK_JINSHI"
+   ],
+   "d": 1.1129503523328435
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_RF_JINSHI",
+    "env/ENV_YANG_SK_TSUBAKI"
+   ],
+   "d": 1.5804406497922276
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_RF_TSUBAKI",
+    "env/ENV_SANGE_RM_ANKO"
+   ],
+   "d": 1.2969166284729736
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_RF_TSUBAKI",
+    "env/ENV_SANGE_RM_CHIXIA"
+   ],
+   "d": 1.0687179395009863
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_RF_TSUBAKI",
+    "env/ENV_SANGE_RM_JINSHI"
+   ],
+   "d": 1.455110617089701
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_RF_TSUBAKI",
+    "env/ENV_SANGE_SK_ANKO"
+   ],
+   "d": 1.027558852000644
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_RF_TSUBAKI",
+    "env/ENV_SANGE_SK_CHIXIA"
+   ],
+   "d": 1.236212808365391
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_RF_TSUBAKI",
+    "env/ENV_SANGE_SK_JINSHI"
+   ],
+   "d": 1.3635175771294024
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_RF_TSUBAKI",
+    "env/ENV_SANGE_SK_TSUBAKI"
+   ],
+   "d": 1.0659127624262166
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_RF_TSUBAKI",
+    "env/ENV_YANG_RF_ANKO"
+   ],
+   "d": 1.584878198313204
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_RF_TSUBAKI",
+    "env/ENV_YANG_RF_CHIXIA"
+   ],
+   "d": 1.6105346789805342
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_RF_TSUBAKI",
+    "env/ENV_YANG_RF_JINSHI"
+   ],
+   "d": 1.5225859472801164
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_RF_TSUBAKI",
+    "env/ENV_YANG_RM_ANKO"
+   ],
+   "d": 1.5168110385840832
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_RF_TSUBAKI",
+    "env/ENV_YANG_RM_CHIXIA"
+   ],
+   "d": 1.6636401142064845
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_RF_TSUBAKI",
+    "env/ENV_YANG_RM_JINSHI"
+   ],
+   "d": 1.6879063327843309
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_RF_TSUBAKI",
+    "env/ENV_YANG_SK_ANKO"
+   ],
+   "d": 1.1652058929094493
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_RF_TSUBAKI",
+    "env/ENV_YANG_SK_CHIXIA"
+   ],
+   "d": 1.577558656005626
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_RF_TSUBAKI",
+    "env/ENV_YANG_SK_JINSHI"
+   ],
+   "d": 1.458778111875214
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_RF_TSUBAKI",
+    "env/ENV_YANG_SK_TSUBAKI"
+   ],
+   "d": 1.0697917819100562
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_RM_ANKO",
+    "env/ENV_SANGE_RM_CHIXIA"
+   ],
+   "d": 1.4523957559462763
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_RM_ANKO",
+    "env/ENV_SANGE_RM_JINSHI"
+   ],
+   "d": 1.8824925039912457
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_RM_ANKO",
+    "env/ENV_SANGE_RM_TSUBAKI"
+   ],
+   "d": 1.0755531080829872
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_RM_ANKO",
+    "env/ENV_SANGE_SK_ANKO"
+   ],
+   "d": 0.8291617633978781
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_RM_ANKO",
+    "env/ENV_SANGE_SK_CHIXIA"
+   ],
+   "d": 1.923711826353195
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_RM_ANKO",
+    "env/ENV_SANGE_SK_JINSHI"
+   ],
+   "d": 2.027070359013188
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_RM_ANKO",
+    "env/ENV_SANGE_SK_TSUBAKI"
+   ],
+   "d": 1.7177718413716232
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_RM_ANKO",
+    "env/ENV_YANG_RF_CHIXIA"
+   ],
+   "d": 1.7798341032619729
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_RM_ANKO",
+    "env/ENV_YANG_RF_JINSHI"
+   ],
+   "d": 1.928085168274865
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_RM_ANKO",
+    "env/ENV_YANG_RF_TSUBAKI"
+   ],
+   "d": 1.4178515554979232
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_RM_ANKO",
+    "env/ENV_YANG_RM_CHIXIA"
+   ],
+   "d": 1.7332426202429456
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_RM_ANKO",
+    "env/ENV_YANG_RM_JINSHI"
+   ],
+   "d": 1.8898942769423872
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_RM_ANKO",
+    "env/ENV_YANG_RM_TSUBAKI"
+   ],
+   "d": 1.4844304625263505
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_RM_ANKO",
+    "env/ENV_YANG_SK_ANKO"
+   ],
+   "d": 1.0061749729968912
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_RM_ANKO",
+    "env/ENV_YANG_SK_CHIXIA"
+   ],
+   "d": 2.160534110373383
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_RM_ANKO",
+    "env/ENV_YANG_SK_JINSHI"
+   ],
+   "d": 2.0667557364423104
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_RM_ANKO",
+    "env/ENV_YANG_SK_TSUBAKI"
+   ],
+   "d": 1.6867753263911873
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_RM_CHIXIA",
+    "env/ENV_SANGE_RM_JINSHI"
+   ],
+   "d": 0.7024716303680065
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_RM_CHIXIA",
+    "env/ENV_SANGE_RM_TSUBAKI"
+   ],
+   "d": 1.06595250076607
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_RM_CHIXIA",
+    "env/ENV_SANGE_SK_ANKO"
+   ],
+   "d": 1.2694951455579035
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_RM_CHIXIA",
+    "env/ENV_SANGE_SK_CHIXIA"
+   ],
+   "d": 0.9267576233783187
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_RM_CHIXIA",
+    "env/ENV_SANGE_SK_JINSHI"
+   ],
+   "d": 0.9673995471602185
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_RM_CHIXIA",
+    "env/ENV_SANGE_SK_TSUBAKI"
+   ],
+   "d": 1.433627596672877
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_RM_CHIXIA",
+    "env/ENV_YANG_RF_ANKO"
+   ],
+   "d": 1.6232885257672942
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_RM_CHIXIA",
+    "env/ENV_YANG_RF_JINSHI"
+   ],
+   "d": 1.0598056039701536
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_RM_CHIXIA",
+    "env/ENV_YANG_RF_TSUBAKI"
+   ],
+   "d": 1.2552714182169467
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_RM_CHIXIA",
+    "env/ENV_YANG_RM_ANKO"
+   ],
+   "d": 1.5343167126047437
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_RM_CHIXIA",
+    "env/ENV_YANG_RM_JINSHI"
+   ],
+   "d": 1.219639847401952
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_RM_CHIXIA",
+    "env/ENV_YANG_RM_TSUBAKI"
+   ],
+   "d": 1.4375922575892977
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_RM_CHIXIA",
+    "env/ENV_YANG_SK_ANKO"
+   ],
+   "d": 1.426337570982017
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_RM_CHIXIA",
+    "env/ENV_YANG_SK_CHIXIA"
+   ],
+   "d": 1.1832133970734624
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_RM_CHIXIA",
+    "env/ENV_YANG_SK_JINSHI"
+   ],
+   "d": 1.1578426846782786
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_RM_CHIXIA",
+    "env/ENV_YANG_SK_TSUBAKI"
+   ],
+   "d": 1.3298079216123087
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_RM_JINSHI",
+    "env/ENV_SANGE_RM_TSUBAKI"
+   ],
+   "d": 1.5191056784000303
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_RM_JINSHI",
+    "env/ENV_SANGE_SK_ANKO"
+   ],
+   "d": 1.6414870613970902
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_RM_JINSHI",
+    "env/ENV_SANGE_SK_CHIXIA"
+   ],
+   "d": 1.033547242798258
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_RM_JINSHI",
+    "env/ENV_SANGE_SK_JINSHI"
+   ],
+   "d": 0.936665679002513
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_RM_JINSHI",
+    "env/ENV_SANGE_SK_TSUBAKI"
+   ],
+   "d": 1.6610813415442078
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_RM_JINSHI",
+    "env/ENV_YANG_RF_ANKO"
+   ],
+   "d": 2.0328197113860473
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_RM_JINSHI",
+    "env/ENV_YANG_RF_CHIXIA"
+   ],
+   "d": 1.4379604364869485
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_RM_JINSHI",
+    "env/ENV_YANG_RF_TSUBAKI"
+   ],
+   "d": 1.6236632782976124
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_RM_JINSHI",
+    "env/ENV_YANG_RM_ANKO"
+   ],
+   "d": 1.9236732362808435
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_RM_JINSHI",
+    "env/ENV_YANG_RM_CHIXIA"
+   ],
+   "d": 1.4416633152217528
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_RM_JINSHI",
+    "env/ENV_YANG_RM_TSUBAKI"
+   ],
+   "d": 1.8014860769187488
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_RM_JINSHI",
+    "env/ENV_YANG_SK_ANKO"
+   ],
+   "d": 1.8120032238542858
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_RM_JINSHI",
+    "env/ENV_YANG_SK_CHIXIA"
+   ],
+   "d": 1.273634520520907
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_RM_JINSHI",
+    "env/ENV_YANG_SK_JINSHI"
+   ],
+   "d": 1.10469945525886
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_RM_JINSHI",
+    "env/ENV_YANG_SK_TSUBAKI"
+   ],
+   "d": 1.537173474340235
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_RM_TSUBAKI",
+    "env/ENV_SANGE_SK_ANKO"
+   ],
+   "d": 0.8059375084609725
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_RM_TSUBAKI",
+    "env/ENV_SANGE_SK_CHIXIA"
+   ],
+   "d": 1.3397481557732853
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_RM_TSUBAKI",
+    "env/ENV_SANGE_SK_JINSHI"
+   ],
+   "d": 1.3894693602547747
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_RM_TSUBAKI",
+    "env/ENV_SANGE_SK_TSUBAKI"
+   ],
+   "d": 1.1850552698413355
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_RM_TSUBAKI",
+    "env/ENV_YANG_RF_ANKO"
+   ],
+   "d": 1.2657405853881574
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_RM_TSUBAKI",
+    "env/ENV_YANG_RF_CHIXIA"
+   ],
+   "d": 1.4093256264945673
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_RM_TSUBAKI",
+    "env/ENV_YANG_RF_JINSHI"
+   ],
+   "d": 1.3859317164862466
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_RM_TSUBAKI",
+    "env/ENV_YANG_RM_ANKO"
+   ],
+   "d": 1.1151755088999635
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_RM_TSUBAKI",
+    "env/ENV_YANG_RM_CHIXIA"
+   ],
+   "d": 1.3468600445011008
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_RM_TSUBAKI",
+    "env/ENV_YANG_RM_JINSHI"
+   ],
+   "d": 1.4200598442039913
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_RM_TSUBAKI",
+    "env/ENV_YANG_SK_ANKO"
+   ],
+   "d": 0.7114616384868372
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_RM_TSUBAKI",
+    "env/ENV_YANG_SK_CHIXIA"
+   ],
+   "d": 1.475122121444269
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_RM_TSUBAKI",
+    "env/ENV_YANG_SK_JINSHI"
+   ],
+   "d": 1.3689920700834173
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_RM_TSUBAKI",
+    "env/ENV_YANG_SK_TSUBAKI"
+   ],
+   "d": 1.0032768192301214
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_SK_ANKO",
+    "env/ENV_SANGE_SK_CHIXIA"
+   ],
+   "d": 1.4159029084859631
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_SK_ANKO",
+    "env/ENV_SANGE_SK_JINSHI"
+   ],
+   "d": 1.5209168352080857
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_SK_ANKO",
+    "env/ENV_SANGE_SK_TSUBAKI"
+   ],
+   "d": 1.2047171450212206
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_SK_ANKO",
+    "env/ENV_YANG_RF_ANKO"
+   ],
+   "d": 1.2931987313363633
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_SK_ANKO",
+    "env/ENV_YANG_RF_CHIXIA"
+   ],
+   "d": 1.6538242078368506
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_SK_ANKO",
+    "env/ENV_YANG_RF_JINSHI"
+   ],
+   "d": 1.7025350946855302
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_SK_ANKO",
+    "env/ENV_YANG_RF_TSUBAKI"
+   ],
+   "d": 1.2402577623161473
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_SK_ANKO",
+    "env/ENV_YANG_RM_ANKO"
+   ],
+   "d": 1.3066381724504013
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_SK_ANKO",
+    "env/ENV_YANG_RM_CHIXIA"
+   ],
+   "d": 1.6808095637833218
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_SK_ANKO",
+    "env/ENV_YANG_RM_JINSHI"
+   ],
+   "d": 1.7989314760516093
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_SK_ANKO",
+    "env/ENV_YANG_RM_TSUBAKI"
+   ],
+   "d": 1.4382963098896004
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_SK_ANKO",
+    "env/ENV_YANG_SK_CHIXIA"
+   ],
+   "d": 1.6754647777677703
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_SK_ANKO",
+    "env/ENV_YANG_SK_JINSHI"
+   ],
+   "d": 1.6318466094165585
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_SK_ANKO",
+    "env/ENV_YANG_SK_TSUBAKI"
+   ],
+   "d": 1.194593108268596
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_SK_CHIXIA",
+    "env/ENV_SANGE_SK_JINSHI"
+   ],
+   "d": 0.5852006557741221
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_SK_CHIXIA",
+    "env/ENV_SANGE_SK_TSUBAKI"
+   ],
+   "d": 1.219514836728755
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_SK_CHIXIA",
+    "env/ENV_YANG_RF_ANKO"
+   ],
+   "d": 2.1218103509623174
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_SK_CHIXIA",
+    "env/ENV_YANG_RF_CHIXIA"
+   ],
+   "d": 1.5531018822522515
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_SK_CHIXIA",
+    "env/ENV_YANG_RF_JINSHI"
+   ],
+   "d": 1.3260722134805183
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_SK_CHIXIA",
+    "env/ENV_YANG_RF_TSUBAKI"
+   ],
+   "d": 1.6094901771994796
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_SK_CHIXIA",
+    "env/ENV_YANG_RM_ANKO"
+   ],
+   "d": 2.1165601736339608
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_SK_CHIXIA",
+    "env/ENV_YANG_RM_CHIXIA"
+   ],
+   "d": 1.710193452203628
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_SK_CHIXIA",
+    "env/ENV_YANG_RM_JINSHI"
+   ],
+   "d": 1.7123896011928754
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_SK_CHIXIA",
+    "env/ENV_YANG_RM_TSUBAKI"
+   ],
+   "d": 1.8880585732972752
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_SK_CHIXIA",
+    "env/ENV_YANG_SK_ANKO"
+   ],
+   "d": 1.7144822831354436
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_SK_CHIXIA",
+    "env/ENV_YANG_SK_JINSHI"
+   ],
+   "d": 0.8478513722738343
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_SK_CHIXIA",
+    "env/ENV_YANG_SK_TSUBAKI"
+   ],
+   "d": 1.0658341258248993
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_SK_JINSHI",
+    "env/ENV_SANGE_SK_TSUBAKI"
+   ],
+   "d": 1.2190932976255218
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_SK_JINSHI",
+    "env/ENV_YANG_RF_ANKO"
+   ],
+   "d": 2.234932413323407
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_SK_JINSHI",
+    "env/ENV_YANG_RF_CHIXIA"
+   ],
+   "d": 1.5230853455332523
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_SK_JINSHI",
+    "env/ENV_YANG_RF_JINSHI"
+   ],
+   "d": 1.3780292256959157
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_SK_JINSHI",
+    "env/ENV_YANG_RF_TSUBAKI"
+   ],
+   "d": 1.5857804608597752
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_SK_JINSHI",
+    "env/ENV_YANG_RM_ANKO"
+   ],
+   "d": 2.1456421424544763
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_SK_JINSHI",
+    "env/ENV_YANG_RM_CHIXIA"
+   ],
+   "d": 1.6353886909376827
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_SK_JINSHI",
+    "env/ENV_YANG_RM_JINSHI"
+   ],
+   "d": 1.6746877441416297
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_SK_JINSHI",
+    "env/ENV_YANG_RM_TSUBAKI"
+   ],
+   "d": 1.8146343383709678
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_SK_JINSHI",
+    "env/ENV_YANG_SK_ANKO"
+   ],
+   "d": 1.727672125418797
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_SK_JINSHI",
+    "env/ENV_YANG_SK_CHIXIA"
+   ],
+   "d": 0.7444570263898187
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_SK_JINSHI",
+    "env/ENV_YANG_SK_TSUBAKI"
+   ],
+   "d": 1.068497576622843
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_SK_TSUBAKI",
+    "env/ENV_YANG_RF_ANKO"
+   ],
+   "d": 2.2493929282898404
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_SK_TSUBAKI",
+    "env/ENV_YANG_RF_CHIXIA"
+   ],
+   "d": 2.030032178917488
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_SK_TSUBAKI",
+    "env/ENV_YANG_RF_JINSHI"
+   ],
+   "d": 2.0245166282822535
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_SK_TSUBAKI",
+    "env/ENV_YANG_RF_TSUBAKI"
+   ],
+   "d": 1.602313839165227
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_SK_TSUBAKI",
+    "env/ENV_YANG_RM_ANKO"
+   ],
+   "d": 2.1548887496354596
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_SK_TSUBAKI",
+    "env/ENV_YANG_RM_CHIXIA"
+   ],
+   "d": 2.1192936476853337
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_SK_TSUBAKI",
+    "env/ENV_YANG_RM_JINSHI"
+   ],
+   "d": 2.1635601494623615
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_SK_TSUBAKI",
+    "env/ENV_YANG_RM_TSUBAKI"
+   ],
+   "d": 1.8173731896689003
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_SK_TSUBAKI",
+    "env/ENV_YANG_SK_ANKO"
+   ],
+   "d": 1.594291299192609
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_SK_TSUBAKI",
+    "env/ENV_YANG_SK_CHIXIA"
+   ],
+   "d": 1.5524908270610713
+  },
+  {
+   "pair": [
+    "env/ENV_SANGE_SK_TSUBAKI",
+    "env/ENV_YANG_SK_JINSHI"
+   ],
+   "d": 1.5307941929275584
+  },
+  {
+   "pair": [
+    "env/ENV_YANG_RF_ANKO",
+    "env/ENV_YANG_RF_CHIXIA"
+   ],
+   "d": 1.4588103206365874
+  },
+  {
+   "pair": [
+    "env/ENV_YANG_RF_ANKO",
+    "env/ENV_YANG_RF_JINSHI"
+   ],
+   "d": 1.5279274026178793
+  },
+  {
+   "pair": [
+    "env/ENV_YANG_RF_ANKO",
+    "env/ENV_YANG_RF_TSUBAKI"
+   ],
+   "d": 1.1186494211588278
+  },
+  {
+   "pair": [
+    "env/ENV_YANG_RF_ANKO",
+    "env/ENV_YANG_RM_CHIXIA"
+   ],
+   "d": 1.3253716760530343
+  },
+  {
+   "pair": [
+    "env/ENV_YANG_RF_ANKO",
+    "env/ENV_YANG_RM_JINSHI"
+   ],
+   "d": 1.3804385537125743
+  },
+  {
+   "pair": [
+    "env/ENV_YANG_RF_ANKO",
+    "env/ENV_YANG_RM_TSUBAKI"
+   ],
+   "d": 1.1633439590656194
+  },
+  {
+   "pair": [
+    "env/ENV_YANG_RF_ANKO",
+    "env/ENV_YANG_SK_ANKO"
+   ],
+   "d": 0.9104465997939682
+  },
+  {
+   "pair": [
+    "env/ENV_YANG_RF_ANKO",
+    "env/ENV_YANG_SK_CHIXIA"
+   ],
+   "d": 2.125818712545467
+  },
+  {
+   "pair": [
+    "env/ENV_YANG_RF_ANKO",
+    "env/ENV_YANG_SK_JINSHI"
+   ],
+   "d": 2.12763635127352
+  },
+  {
+   "pair": [
+    "env/ENV_YANG_RF_ANKO",
+    "env/ENV_YANG_SK_TSUBAKI"
+   ],
+   "d": 2.0497147621852116
+  },
+  {
+   "pair": [
+    "env/ENV_YANG_RF_CHIXIA",
+    "env/ENV_YANG_RF_JINSHI"
+   ],
+   "d": 0.6493033042659202
+  },
+  {
+   "pair": [
+    "env/ENV_YANG_RF_CHIXIA",
+    "env/ENV_YANG_RF_TSUBAKI"
+   ],
+   "d": 1.0173730904206484
+  },
+  {
+   "pair": [
+    "env/ENV_YANG_RF_CHIXIA",
+    "env/ENV_YANG_RM_ANKO"
+   ],
+   "d": 1.5084282513166996
+  },
+  {
+   "pair": [
+    "env/ENV_YANG_RF_CHIXIA",
+    "env/ENV_YANG_RM_JINSHI"
+   ],
+   "d": 0.8942456732468984
+  },
+  {
+   "pair": [
+    "env/ENV_YANG_RF_CHIXIA",
+    "env/ENV_YANG_RM_TSUBAKI"
+   ],
+   "d": 1.2033352161729007
+  },
+  {
+   "pair": [
+    "env/ENV_YANG_RF_CHIXIA",
+    "env/ENV_YANG_SK_ANKO"
+   ],
+   "d": 1.4308044979748404
+  },
+  {
+   "pair": [
+    "env/ENV_YANG_RF_CHIXIA",
+    "env/ENV_YANG_SK_CHIXIA"
+   ],
+   "d": 1.2896943266316612
+  },
+  {
+   "pair": [
+    "env/ENV_YANG_RF_CHIXIA",
+    "env/ENV_YANG_SK_JINSHI"
+   ],
+   "d": 1.325972018417793
+  },
+  {
+   "pair": [
+    "env/ENV_YANG_RF_CHIXIA",
+    "env/ENV_YANG_SK_TSUBAKI"
+   ],
+   "d": 1.7069373007227358
+  },
+  {
+   "pair": [
+    "env/ENV_YANG_RF_JINSHI",
+    "env/ENV_YANG_RF_TSUBAKI"
+   ],
+   "d": 1.0866176664069862
+  },
+  {
+   "pair": [
+    "env/ENV_YANG_RF_JINSHI",
+    "env/ENV_YANG_RM_ANKO"
+   ],
+   "d": 1.5474348532550954
+  },
+  {
+   "pair": [
+    "env/ENV_YANG_RF_JINSHI",
+    "env/ENV_YANG_RM_CHIXIA"
+   ],
+   "d": 0.7911801072565916
+  },
+  {
+   "pair": [
+    "env/ENV_YANG_RF_JINSHI",
+    "env/ENV_YANG_RM_TSUBAKI"
+   ],
+   "d": 1.2875232773134255
+  },
+  {
+   "pair": [
+    "env/ENV_YANG_RF_JINSHI",
+    "env/ENV_YANG_SK_ANKO"
+   ],
+   "d": 1.4896627347330702
+  },
+  {
+   "pair": [
+    "env/ENV_YANG_RF_JINSHI",
+    "env/ENV_YANG_SK_CHIXIA"
+   ],
+   "d": 1.0888935533938093
+  },
+  {
+   "pair": [
+    "env/ENV_YANG_RF_JINSHI",
+    "env/ENV_YANG_SK_JINSHI"
+   ],
+   "d": 1.0787632047731708
+  },
+  {
+   "pair": [
+    "env/ENV_YANG_RF_JINSHI",
+    "env/ENV_YANG_SK_TSUBAKI"
+   ],
+   "d": 1.6630906256398947
+  },
+  {
+   "pair": [
+    "env/ENV_YANG_RF_TSUBAKI",
+    "env/ENV_YANG_RM_ANKO"
+   ],
+   "d": 1.0590669792569891
+  },
+  {
+   "pair": [
+    "env/ENV_YANG_RF_TSUBAKI",
+    "env/ENV_YANG_RM_CHIXIA"
+   ],
+   "d": 1.0154236582897707
+  },
+  {
+   "pair": [
+    "env/ENV_YANG_RF_TSUBAKI",
+    "env/ENV_YANG_RM_JINSHI"
+   ],
+   "d": 1.0076938046884358
+  },
+  {
+   "pair": [
+    "env/ENV_YANG_RF_TSUBAKI",
+    "env/ENV_YANG_SK_ANKO"
+   ],
+   "d": 0.8077860080141647
+  },
+  {
+   "pair": [
+    "env/ENV_YANG_RF_TSUBAKI",
+    "env/ENV_YANG_SK_CHIXIA"
+   ],
+   "d": 1.4919468356595087
+  },
+  {
+   "pair": [
+    "env/ENV_YANG_RF_TSUBAKI",
+    "env/ENV_YANG_SK_JINSHI"
+   ],
+   "d": 1.4199709213310696
+  },
+  {
+   "pair": [
+    "env/ENV_YANG_RF_TSUBAKI",
+    "env/ENV_YANG_SK_TSUBAKI"
+   ],
+   "d": 1.2942712231685385
+  },
+  {
+   "pair": [
+    "env/ENV_YANG_RM_ANKO",
+    "env/ENV_YANG_RM_CHIXIA"
+   ],
+   "d": 1.2605885853295118
+  },
+  {
+   "pair": [
+    "env/ENV_YANG_RM_ANKO",
+    "env/ENV_YANG_RM_JINSHI"
+   ],
+   "d": 1.2923263235879137
+  },
+  {
+   "pair": [
+    "env/ENV_YANG_RM_ANKO",
+    "env/ENV_YANG_RM_TSUBAKI"
+   ],
+   "d": 0.9309832267523861
+  },
+  {
+   "pair": [
+    "env/ENV_YANG_RM_ANKO",
+    "env/ENV_YANG_SK_ANKO"
+   ],
+   "d": 0.8535034485132351
+  },
+  {
+   "pair": [
+    "env/ENV_YANG_RM_ANKO",
+    "env/ENV_YANG_SK_CHIXIA"
+   ],
+   "d": 2.105687702719524
+  },
+  {
+   "pair": [
+    "env/ENV_YANG_RM_ANKO",
+    "env/ENV_YANG_SK_JINSHI"
+   ],
+   "d": 2.01662318458697
+  },
+  {
+   "pair": [
+    "env/ENV_YANG_RM_ANKO",
+    "env/ENV_YANG_SK_TSUBAKI"
+   ],
+   "d": 1.9342563304695841
+  },
+  {
+   "pair": [
+    "env/ENV_YANG_RM_CHIXIA",
+    "env/ENV_YANG_RM_JINSHI"
+   ],
+   "d": 0.6042191263822035
+  },
+  {
+   "pair": [
+    "env/ENV_YANG_RM_CHIXIA",
+    "env/ENV_YANG_RM_TSUBAKI"
+   ],
+   "d": 0.993337378089924
+  },
+  {
+   "pair": [
+    "env/ENV_YANG_RM_CHIXIA",
+    "env/ENV_YANG_SK_ANKO"
+   ],
+   "d": 1.3477415142630023
+  },
+  {
+   "pair": [
+    "env/ENV_YANG_RM_CHIXIA",
+    "env/ENV_YANG_SK_CHIXIA"
+   ],
+   "d": 1.4821942386904212
+  },
+  {
+   "pair": [
+    "env/ENV_YANG_RM_CHIXIA",
+    "env/ENV_YANG_SK_JINSHI"
+   ],
+   "d": 1.4876119664559968
+  },
+  {
+   "pair": [
+    "env/ENV_YANG_RM_CHIXIA",
+    "env/ENV_YANG_SK_TSUBAKI"
+   ],
+   "d": 1.8120504178529537
+  },
+  {
+   "pair": [
+    "env/ENV_YANG_RM_JINSHI",
+    "env/ENV_YANG_RM_TSUBAKI"
+   ],
+   "d": 0.9986680706726577
+  },
+  {
+   "pair": [
+    "env/ENV_YANG_RM_JINSHI",
+    "env/ENV_YANG_SK_ANKO"
+   ],
+   "d": 1.4579334372627948
+  },
+  {
+   "pair": [
+    "env/ENV_YANG_RM_JINSHI",
+    "env/ENV_YANG_SK_CHIXIA"
+   ],
+   "d": 1.466901136915164
+  },
+  {
+   "pair": [
+    "env/ENV_YANG_RM_JINSHI",
+    "env/ENV_YANG_SK_JINSHI"
+   ],
+   "d": 1.4652821502142048
+  },
+  {
+   "pair": [
+    "env/ENV_YANG_RM_JINSHI",
+    "env/ENV_YANG_SK_TSUBAKI"
+   ],
+   "d": 1.7991501922915898
+  },
+  {
+   "pair": [
+    "env/ENV_YANG_RM_TSUBAKI",
+    "env/ENV_YANG_SK_ANKO"
+   ],
+   "d": 0.9157002239489104
+  },
+  {
+   "pair": [
+    "env/ENV_YANG_RM_TSUBAKI",
+    "env/ENV_YANG_SK_CHIXIA"
+   ],
+   "d": 1.7039333145334745
+  },
+  {
+   "pair": [
+    "env/ENV_YANG_RM_TSUBAKI",
+    "env/ENV_YANG_SK_JINSHI"
+   ],
+   "d": 1.6303332237400483
+  },
+  {
+   "pair": [
+    "env/ENV_YANG_RM_TSUBAKI",
+    "env/ENV_YANG_SK_TSUBAKI"
+   ],
+   "d": 1.4855284674050993
+  },
+  {
+   "pair": [
+    "env/ENV_YANG_SK_ANKO",
+    "env/ENV_YANG_SK_CHIXIA"
+   ],
+   "d": 1.7263031250740066
+  },
+  {
+   "pair": [
+    "env/ENV_YANG_SK_ANKO",
+    "env/ENV_YANG_SK_JINSHI"
+   ],
+   "d": 1.6326971569008506
+  },
+  {
+   "pair": [
+    "env/ENV_YANG_SK_ANKO",
+    "env/ENV_YANG_SK_TSUBAKI"
+   ],
+   "d": 1.3904776590098569
+  },
+  {
+   "pair": [
+    "env/ENV_YANG_SK_CHIXIA",
+    "env/ENV_YANG_SK_JINSHI"
+   ],
+   "d": 0.640243546801575
+  },
+  {
+   "pair": [
+    "env/ENV_YANG_SK_CHIXIA",
+    "env/ENV_YANG_SK_TSUBAKI"
+   ],
+   "d": 1.1917254929190821
+  },
+  {
+   "pair": [
+    "env/ENV_YANG_SK_JINSHI",
+    "env/ENV_YANG_SK_TSUBAKI"
+   ],
+   "d": 1.1429142772617076
+  }
+ ]
+}
