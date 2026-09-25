@@ -22,9 +22,9 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v6
         with:
           python-version: "3.11"
           cache: pip
@@ -34,9 +34,9 @@ jobs:
       - name: Build and install the Rust extension (meicho_rs)
         run: python -m pip install pytest numpy ./engine/rust
 
+      # encoding_info() は load_cards() の前に呼ぶと RuntimeError（CLAUDE.md）。ここでは札だけ見る。
       - name: Show what was built
-        working-directory: engine
-        run: python -c "import meicho_rs; print(sorted(meicho_rs.features())); print(meicho_rs.encoding_info())"
+        run: python -c "import meicho_rs; print(sorted(meicho_rs.features()))"
 
       - name: Run the default test set (slow tests skipped, D-125)
         working-directory: engine
@@ -86,7 +86,7 @@ jobs:
 
       - name: Keep the raw output
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: pytest-output
           path: |

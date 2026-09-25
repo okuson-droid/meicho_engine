@@ -6,6 +6,7 @@ name: Windows wheel
 #   pip install --force-reinstall --no-deps meicho_rs-0.1.0-cp311-cp311-win_amd64.whl
 #   python scripts\check_champion_fingerprint.py   ← どこで作った wheel でも指紋の確認は必ずする
 # 毎手一致（Python↔Rust）の検査は資材が要るので、ここでは回さない（PC の --pc の組・D-125）。
+# encoding_info() は load_cards() の前に呼ぶと RuntimeError なので、ここでは features() の札だけ見る。
 
 on:
   push:
@@ -24,9 +25,9 @@ jobs:
     runs-on: windows-latest
     timeout-minutes: 30
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v6
         with:
           python-version: "3.11"
 
@@ -41,7 +42,7 @@ jobs:
         shell: cmd
         run: |
           for %%f in (engine\rust\dist\*.whl) do pip install --force-reinstall --no-deps "%%f"
-          python -c "import meicho_rs; print(sorted(meicho_rs.features())); print(meicho_rs.encoding_info())"
+          python -c "import meicho_rs; print(sorted(meicho_rs.features()))"
 
       - name: Record sha256 of the wheel
         shell: pwsh
@@ -52,7 +53,7 @@ jobs:
           }
           Get-Content engine/rust/dist/SHA256SUMS.txt | Out-File -Append $env:GITHUB_STEP_SUMMARY
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v6
         with:
           name: meicho_rs-win_amd64
           path: |
