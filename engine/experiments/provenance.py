@@ -54,7 +54,8 @@ MODEL_KEYS = ("value_net", "opp_policy_net", "policy_net")
 ENGINES = ("rust", "python")
 # 測定を回した機械の名前として認める値（D-072 判断 6・D-076 判断 5）。
 # `cowork-2` は 2026-09-10（便 C・D-077）に足した「クラウドの作業機」である。
-HOSTS = ("workenv-2", "cowork-2", "kaggle-cpu-4", "gcp-c3d-16")
+# `cc-cloud-4` は Claude Code のクラウドセッション・4 コア 2.8GHz・15GiB・2026-09-27。
+HOSTS = ("workenv-2", "cowork-2", "kaggle-cpu-4", "gcp-c3d-16", "cc-cloud-4")
 
 
 def sha256_of(path: str) -> str:
@@ -147,7 +148,8 @@ def host_name() -> str:
 
     認める値は `HOSTS`——`workenv-2`（マスターの PC の作業環境・既定）／
     **`cowork-2`（クラウドの作業機。2026-09-10・D-076 判断 5 で追加）**／
-    `kaggle-cpu-4`（D-072 の裏実行）／`gcp-c3d-16`（有料 VM）。
+    `kaggle-cpu-4`（D-072 の裏実行）／`gcp-c3d-16`（有料 VM）／
+    `cc-cloud-4`（Claude Code のクラウドセッション・2026-09-27）。
     環境変数 `MEICHO_HOST` で渡す。
 
     **由来に入れるのは、どの機械で取った記録かを後から見分けるためだけ**で、

@@ -82,3 +82,4 @@
 - **★違うデッキ同士の対局で `rs.series` 系を使うときは `opp_from_seat=True`**（D-123）。奇数シードで A/B の席が入れ替わるがデッキは席に固定なので、既定（False）では**半分の局で相手デッキ表が誤る**。段階2 の教材は `experiments/record_mix.py`（常に True）で作る
 - **★`hand_known` と `hand_known_scan` は別物**（D-122）。`hand_known` は統一した確かな既知（汎用 AI・画面・監査が読む）、`hand_known_scan` は旧来のスキャン・B-9 のぶんで**現 champion と符号化 v5 だけが読む**。champion の既知を検査するときは `hand_known_scan` を見る
 - **日本語 Windows の cp932 で道具が落ちることがある**（`π₀` の `₀` は cp932 で書けない・D-082 追記 1）
+- **CRLF のファイル（TASKS.md・decisions.md・WRITELOG_ENGINE.md）は sed で触らない。**改行が LF に化ける（2026-09-27 に起きた）。Edit か、CRLF を保つ道具で直す
