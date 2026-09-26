@@ -2,6 +2,7 @@
 
 書き手: クロエ（別端末のチャット・エンジンの持ち場の文書として `engine/` 直下に置く）。
 位置づけ: 2026-09-25 にマスターが裁定した**開発の流れの正本**（裁定の内容は §0.1）。台帳への反映は §9。
+改訂 3（2026-09-26）: 段 3 完了・台帳への反映は `engine/DEVFLOW_LEDGER_DRAFT_20260926.md`（別チャットが動いていたので番号を振らずに置いた）。
 改訂 2（2026-09-25 夜）: 段 1・段 4 が完了。マスターの裁定で §0.1 を確定し、段 2 を「いつか」に格下げ、§6.1 のネットの置き場を確定した。
 
 準拠版: rules_draft v0.18 ／ engine v0.1 ／ 符号化 v6 ／ champion `planner_vc4cps_kheb_b75`（指紋 `f4b80b25c35cfa77`）。
@@ -37,8 +38,8 @@
 
 1. ~~**段 1** 未 commit の 9 日分を commit・push する~~ → **2026-09-25 に完了**
 2. **段 4** GitHub Actions を 2 本置く → **2026-09-25 に完了**（`Tests` は資材の無い 46 件を名指しの一覧で説明して緑・`Windows wheel` は緑）
-3. **段 3** PC に Claude Code を入れ、**最初の仕事として再ビルドを 1 回やらせる**（1 時間）。**次はここ**
-4. **段 5** クラウドセッションで測定を 1 便試す（§6。ネットの置き場は §6.1 で確定した。先に `.gitignore` の 3 行と host 名の 1 行を入れる）
+3. ~~**段 3** PC に Claude Code を入れ、最初の仕事として再ビルドを 1 回やらせる~~ → **2026-09-26 に完了**（指紋 `f4b80b25c35cfa77` 一致・`--pc` の組 335 通過・1 skip・失敗 0・再ビルド 656 秒・`results/` を git に・報告 `engine/CC_PC_RUN_20260925.md`）。**5 点セットの依頼文は引退**
+4. **段 5** クラウドセッションで測定を 1 便試す。**次はここ**（§6。ネットの置き場は §6.1 で確定した。先に `.gitignore` の 3 行と host 名の 1 行を入れる）
 5. **段 6** 進行盤（アーティファクト）— 段 5 のあとに設計だけ出す（§7）
 6. **段 2** リポジトリを OneDrive の外へ移す — **「いつか」に格下げ**（§3）。GitHub が正本になったので必須ではなくなった。残る理由は「OneDrive と git がぶつかる事故を避ける」と「本名を含む経路を文書から消す」の 2 つ
 
@@ -193,7 +194,8 @@ https://git-scm.com/downloads/win からインストーラを実行し、選択�
        decisions.md は触らない。
     3. .gitignore の「engine/results/*/」と「!engine/results/human_games/」の 2 行を消し、代わりに
        engine/ci/gitignore_additions.txt の 3 行を同じ場所に入れる。git status で engine/results/ の下が
-       約 200 MB・.bak.json と .bin が 1 つも含まれないことを確かめる（git status --short | findstr /i "bak.json .bin" が空）。
+       約 200 MB・.bak.json と .bin が 1 つも含まれないことを確かめる（git status --short | findstr /i /r "\.bak\.json$ \.bin$" が空。
+       部分一致だと .bin.manifest.json に当たるので末尾一致で見る）。
     終わったら git status の一覧を見せて止まる。commit と push は、マスターが一覧を見て「よい」と言ってから行う。
 
 **(5) 終わったら**: Claude Code が見せた `git status` の一覧が「置き換えた台帳 5 種＋`engine/CC_PC_RUN_20260925.md`＋`.gitignore`＋`engine/results/` の下」だけであることを確かめ、「commit して push して」と返す（§0.1: push は Claude Code の役）。要約は「段 3: PC の Claude Code の初仕事（再ビルド確認・経路の置き換え・results/ を git に）」でよい。
