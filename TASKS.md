@@ -15,7 +15,16 @@
 - [ ] **★マスター: 段階3（汎用 V の反復）の設計書の裁定（D-135）** - 設計書 `engine/GENERALIST_STAGE3_DESIGN.md`。判断が要る点は §10 の 7 件（推しつき）: 計算資源（推し Claude Code のクラウド版・`DEVFLOW_PLAN_20260925.md` 段 1 を先に＝TE-13 の直しを GitHub へ）／記録の温度（推し D-064 の規則で反復ごとに下見）／選択の評価の規模（推し 16 ブロック × 300 局）／学習の窓（推し 直近 1 反復＝D-131 は段階3 で使わない）／PT-6 の置き場と形（推し 反復 2 で A/B・51 ビン HL-Gauss）／PT-5（推し 反復 2 のあとに相談）／最終評価の主比較（推し V_sel − V_0）。**事前の確認は済**: 束ねた V（V_0）は V 1 本 3 本の平均より +0.057 [+0.036, +0.078]（調整デッキ・各 2,400 局）＝教師の葉は束ねた V のまま（D-135）
 - [x] **~~デッキ類似度の道具 `experiments/deck_similarity.py` の実装（D-126・設計書 `engine/DECK_SIMILARITY_DESIGN.md` §13）~~ → 2026-09-24 に完了（D-127・D-128）。** 順序は守った（検査 → 道具 → 錨 → 閾値の裁定 → 候補を読む）。現行は **decksim-3**（検査 22 件）、閾値は `results/decksim/thresholds.json`（`th-1-provisional`・**変更の見込み高**）。候補（環境デッキ 24 種）で回した結果は `results/decksim/env_v1.json` / `.md`。**§7.3 の割り振り規則は単独グループが無い候補集合で最終評価を作れないことが分かり、規則は変えずに手割りの口（`--split-override`）を足した**（D-128 §5・§6）。残りは設計書 §12「打ち方の近さ」を段階2 の記録の段で 1 回見ること
 
-- [ ] **監査の採用 2 件の実行（D-126）** - (1) 計画書 `GENERALIST_AI_REVIEW_D086.md` §1 に「マスター対 AI の直接対局」を副次の受け入れ基準として書き足す（置き場は段階4・便 F の位置づけは裁定待ちと明記）／(5) `webapp/` の引退の条件と日付・リポジトリを OneDrive の外へ移す日・PC 側の Claude Code（device_bash）を試す——日付と手順はマスターと決める
+- [ ] **監査の採用 2 件の実行（D-126）** - (1) 計画書 `GENERALIST_AI_REVIEW_D086.md` §1 に「マスター対 AI の直接対局」を副次の受け入れ基準として書き足す（置き場は段階4・便 F の位置づけは裁定待ちと明記）（(5) は下の「開発の流れの組み替え」に移した・D-136）
+- [ ] **開発の流れの組み替え（D-136・正本 `engine/DEVFLOW_PLAN_20260925.md`）** - GitHub が正本・push は Claude Code・`results/` は git に（§0.1）。
+  - [x] 段 1 未 commit 分の commit・push（2026-09-25）
+  - [x] 段 4 GitHub Actions 2 本（`Tests`・`Windows wheel`・資材の一覧 `engine/ci/missing_assets_allowlist.txt`）（2026-09-25）
+  - [x] 段 3 PC に Claude Code・初仕事（指紋一致・`--pc` 335 通過・`results/` を git に）（2026-09-26）
+  - [x] 段 2 OneDrive の外（`C:\dev\meicho_engine_v0.1`）へ——PC の Claude Code が robocopy（2026-09-27・commit ba0bfc0 一致）。書き戻しのバイト比較は `C:\dev` で 5 回以上一致するまで残す
+  - [ ] 段 5 クラウドセッションで測定を 1 便試す（D-132 追記 4 と同じシードの再現・§6）。**前に `provenance.py` の `HOSTS` に `cc-cloud-4`**
+  - [ ] 段 6 進行盤（アーティファクト）の設計（§7・段 5 のあと）
+  - [ ] `webapp/` の引退の条件と日付（D-126 の (5) の残り・未定）
+  - [x] 下書き `engine/DEVFLOW_LEDGER_DRAFT_20260926.md` を消す（PC の Claude Code・D-136 で台帳に落とし済み・2026-09-27 に消した）
 
 - [ ] **オンライン対戦アプリ（アプリの持ち場）** - 台帳は `engine/app/TASKS_APP.md`、決定は `engine/app/DECISIONS_APP.md`（APP-番号）、エンジンへの頼みごとは `engine/app/TO_ENGINE.md`。決まりは `LANES.md`
 - [ ] **送り箱 TE-12 を受けた（知らせ・2026-09-21）** - 新アプリの公開の道具（`app/release/publish.py`）が `scripts/make_dist.py` の `ALLOW`・`_matches_allow`・`champion_models()`・`verify(out_dir, binary_ok=)`・`warnings(out_dir)` を import している。**これらの名前や引数を変えるときは `engine/TO_APP.md` で知らせる**（`_matches_allow` を公開の名前にしてほしいという希望つき・急がない）

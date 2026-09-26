@@ -9783,3 +9783,36 @@ Rust を変えたので PC の wheel は直す前のままである。依頼は 
 コードを変えていないので全検査は回していない。触ったのは `seed_bands.json` の文だけで、帯を読む検査（`tests/test_eval_s2_repr.py`・`test_s2_schedule.py`・`test_ensemble_v.py`）と `test_record_mix_1cb.py` を回した: **4 ファイル 39 件通過・失敗 0・skip 0**。
 
 次に使える D-番号は **D-136**。
+
+
+## D-136 開発の流れの組み替え — GitHub を正本に・push は Claude Code・results/ を git に（2026-09-25〜27・マスター裁定）
+
+**出どころ**: 別端末のチャット（開発の流れの組み替え）が書いた下書き `engine/DEVFLOW_LEDGER_DRAFT_20260926.md` を、エンジンの持ち場のこのチャットが台帳に落とした（2026-09-27・マスターが知らせを転送）。正本は `engine/DEVFLOW_PLAN_20260925.md`（§0.1 が裁定・§9 が反映先）。
+
+### 1. 何を決めたか（正本 §0.1）
+
+1. **ファイルの追加・更新は GitHub 一か所**（`okuson-droid/meicho_engine` の `main`）。**GitHub が唯一の正本。**PC のフォルダは作業ツリーであり正本ではない。2026-09-15 の「正本は PC のフォルダ」の裁定（D-番号なし・`CLAUDE.md` 冒頭・`GITHUB_SETUP.md` §7・`LANES.md` §10 の当該文）を覆す
+2. **push するのは Claude Code（PC 版）。**マスターが GitHub Desktop で押すのは Claude Code が使えないときの例外
+3. **PC で生まれるファイル**（対人局の記録・カードの手動スクショ・ネットの移行の出力・配布版の検査結果）**も PC の Claude Code が commit して push する**
+4. **Cowork（クロエ）の文書は接続フォルダ（作業ツリー）に書き、PC の Claude Code が commit・push する。**プロジェクトナレッジ経由は Claude Code が読めないので使わない。読みは GitHub からでよい
+5. **クラウドの Claude Code はブランチに push する。**`main` への merge は PC の Claude Code かマスター
+6. **`cards/` は除外のまま**（公式素材）。**`results/` は git に上げる。**除くのは `.bak.json`・`.bin`・`s2v_id_ens3.json` の 3 種（`.gitignore` を置き換え済み・2026-09-26）
+7. **リポジトリは Public のまま**（条件: 秘密の値を書かない／`cards/` の除外を動かさない／本名を含む Windows の経路は移設のあとに置き換える）。2026-09-25 に秘密の値が無いことを grep で確かめた
+8. **OneDrive の外への移設（D-126 の (5)）**: 行き先は `C:\dev\meicho_engine_v0.1`、実行は PC の Claude Code
+9. **Cowork の書き戻しのバイト比較（`LANES.md` §5・D-113）は、`C:\dev` で 5 回以上の書き戻しが全部一致するまで残す**
+
+### 2. やったこと
+
+- 段 1（2026-09-25）: 9 月 16 日以降の未 commit 9 日分（D-089〜D-133）を commit・push した
+- 段 4（2026-09-25）: GitHub Actions を 2 本置いた（`Tests`・`Windows wheel`）。資材が無くて落ちる検査は `engine/ci/missing_assets_allowlist.txt` に名指しで持ち、説明できない失敗があるときだけ赤にする（一覧は `results/` を上げたあと 9 件）
+- 段 3（2026-09-26）: PC に Claude Code を入れ、`REBUILD_REQUEST_20260922b.md` の (1)(3)(4) を回した。**指紋 `f4b80b25c35cfa77` 一致・`--pc` の組 335 通過・1 skip・失敗 0**（再ビルド 656 秒・報告 `engine/CC_PC_RUN_20260925.md`）。**以後の再ビルド・検査は Claude Code への貼りつけ文にする**（REPORTING_RULES §2.6 は変えない）
+- **段 2（2026-09-27）: 完了。**PC の Claude Code が robocopy で `C:\dev\meicho_engine_v0.1` に写した（2,314 ファイル・FAILED 0・再解析ポイント 0・commit ba0bfc0 一致・fsck 正常・ネット 77 本と画像 323 枚が両側で一致）。Documents 側は `meicho_engine_v0.1_OLD_20260927` に改名して凍結。Cowork の接続フォルダに `C:\dev\meicho_engine_v0.1` を足した
+- 気づき: 確認コマンドは末尾一致で書く（`findstr /i "bak.json .bin"` は `.bin.manifest.json` にも当たる）
+
+### 3. 次・残っている判断
+
+- 次: 段 5（クラウドセッションで D-132 追記 4 と同じシードの再現を 1 便・前に `experiments/provenance.py` の `HOSTS` に `cc-cloud-4`）。段 6（進行盤）は段 5 のあと
+- 残っている判断（急がない・推しつき）: Codex の名残 `stage1b-encoding-v5` ブランチと `stage1b-rust.yml` を消す（推し: 消す・ahead 0 を見てから）
+- 下書き `engine/DEVFLOW_LEDGER_DRAFT_20260926.md` はこの項で役目を終えた。Cowork からは消せないので、PC の Claude Code が消す
+
+次に使える D-番号は **D-137**。
