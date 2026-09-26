@@ -2,6 +2,7 @@
 
 書き手: クロエ（別端末のチャット・エンジンの持ち場の文書として `engine/` 直下に置く）。
 位置づけ: 2026-09-25 にマスターが裁定した**開発の流れの正本**（裁定の内容は §0.1）。台帳への反映は §9。
+改訂 6（2026-09-27）: **段 2 完了。**PC の Claude Code が robocopy で C:\dev\meicho_engine_v0.1 に写した（2,314 ファイル・FAILED 0・再解析ポイント 0・commit ba0bfc0 一致・fsck 正常・ネット 77 本と画像 323 枚が両側で一致）。以後の作業ツリーは C:\dev\meicho_engine_v0.1。Documents 側は meicho_engine_v0.1_OLD_20260927 に改名して凍結。
 改訂 5（2026-09-26）: **改訂 4 の「段 2 は済んだ」は誤りだった。**`Documents` 側のリポジトリは 2,750 件のファイルが OneDrive のクラウドファイルの印（再解析ポイント 0x9000201A・`.git` の中の 729 件を含む）を持っていた＝まだ OneDrive の同期の根の下にある（PC の Claude Code が数えて見つけた）。**段 2 を今やる**——行き先は `C:\dev\meicho_engine_v0.1`、実行は PC の Claude Code（§3）。
 改訂 4（2026-09-26）: リポジトリの実体が `C:\Users\奥村優斗\Documents\eclipse_workフォルダ\meicho_engine_v0.1` に移っていた（マスターが OneDrive のバックアップ設定を変えた）。Cowork の接続フォルダを付け替えた。
 改訂 3（2026-09-26）: 段 3 完了・台帳への反映は `engine/DEVFLOW_LEDGER_DRAFT_20260926.md`（別チャットが動いていたので番号を振らずに置いた）。

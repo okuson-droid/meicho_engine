@@ -19,7 +19,7 @@ PC のネット 12 本を新しい版に移し、Rust を作り直し、**PC で
 
 ## 1. どこで
 
-    C:\Users\奥村優斗\OneDrive\ドキュメント\eclipse_workフォルダ\meicho_engine_v0.1\engine
+    C:\dev\meicho_engine_v0.1\engine
 
 ## 2. 何を打つか（上から 1 行ずつ）
 
@@ -27,7 +27,7 @@ PC のネット 12 本を新しい版に移し、Rust を作り直し、**PC で
 
 **(1) 書き戻したファイルが載っていることを確かめる**（検索語は ASCII だけ・D-101）。
 
-    cd C:\Users\奥村優斗\OneDrive\ドキュメント\eclipse_workフォルダ\meicho_engine_v0.1\engine
+    cd C:\dev\meicho_engine_v0.1\engine
     set PYTHONPATH=%CD%
     findstr /c:"ENCODING_VERSION = 6" meicho\encode.py
     findstr /c:"ENCODING_VERSION: i64 = 6" rust\src\encode.rs

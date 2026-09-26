@@ -16,13 +16,13 @@ D-117（送り箱 TE-3・TE-4）で、rules の版を `meicho/version.py` の 1 
 
 ## 1. どこで
 
-    C:\Users\奥村優斗\OneDrive\ドキュメント\eclipse_workフォルダ\meicho_engine_v0.1\engine
+    C:\dev\meicho_engine_v0.1\engine
 
 ## 2. 何を打つか
 
 **(1) 先に、書き戻したファイルが載っていることを確かめる**（検索語は ASCII だけ・D-101）。
 
-    cd C:\Users\奥村優斗\OneDrive\ドキュメント\eclipse_workフォルダ\meicho_engine_v0.1\engine
+    cd C:\dev\meicho_engine_v0.1\engine
     set PYTHONPATH=%CD%
     findstr /c:"v0.18" meicho\version.py
     findstr /c:"from meicho.version import" webapp\record.py experiments\provenance.py experiments\ladder.py

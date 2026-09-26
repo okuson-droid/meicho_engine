@@ -86,7 +86,7 @@ champion は **`planner_vc4cps_kheb_b75`** のまま（交代していない・�
 
 ## 7. 再開に必要な外部資源
 
-- **PC のフォルダ**（`C:\Users\奥村優斗\OneDrive\ドキュメント\eclipse_workフォルダ\meicho_engine_v0.1`）への接続。`device_bash` は無い前提で動くこと
+- **PC のフォルダ**（`C:\dev\meicho_engine_v0.1`）への接続。`device_bash` は無い前提で動くこと
 - **揮発するもの（次のチャットには残っていない）**: 作業環境の engine 一式（§6-2 の手順で作り直す）・Linux 版の `meicho_rs` wheel（`rust/` で `maturin build --release --out dist`・約 45 秒）・torch・**D-131 の記録本体 .bin**（manifest の `regenerate` 行から作り直す・約 17 分。ただし §2 の判断しだいで取り直しになる）・アンサンブル `s2v_id_ens3.json`（約 39 MB・部品 3 本から `python3 experiments/ensemble_net.py --out results/models/s2v_id_ens3.json results/models/s2v_id_s0.json results/models/s2v_id_s1.json results/models/s2v_id_s2.json` で作り直す・sha 先頭 `2d4504e2125bc244`）
 - **PC に残したもの**: このチャットで書き戻した 13 ファイル（D-134 の直し・検査・rules v0.19・台帳・依頼書・控え。すべてバイト比較済み）。前のチャットのネット `results/models/s2v_{id,pf}_s{0,1,2}.json` と `.meta.json`・結果 `results/drl/s2_*`・`results/decksim/*`
 - 作業環境は 2 コア。段階3 の反復（約 10,000 局 × 最大 3 反復・葉が 3〜4 倍重い）は作業環境だと長いので、Kaggle を使うかを設計で決める

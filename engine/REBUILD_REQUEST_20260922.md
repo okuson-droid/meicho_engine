@@ -19,13 +19,13 @@
 
 ## 1. どこで
 
-    C:\Users\奥村優斗\OneDrive\ドキュメント\eclipse_workフォルダ\meicho_engine_v0.1\engine
+    C:\dev\meicho_engine_v0.1\engine
 
 ## 2. 何を打つか（上から 1 行ずつ）
 
 **(1) 先に、書き戻したファイルが載っていることを確かめる**（検索語は ASCII だけ・D-101）。
 
-    cd C:\Users\奥村優斗\OneDrive\ドキュメント\eclipse_workフォルダ\meicho_engine_v0.1\engine
+    cd C:\dev\meicho_engine_v0.1\engine
     set PYTHONPATH=%CD%
     findstr /c:"fn seat_agents" rust\src\lib.rs
     findstr /c:"known_opp_hand" rust\src\state.rs

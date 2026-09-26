@@ -15,7 +15,7 @@ PC の Rust の部品（wheel）を作り直し、指紋と、足した検査を
 
 ## 1. どこで
 
-    C:\Users\奥村優斗\OneDrive\ドキュメント\eclipse_workフォルダ\meicho_engine_v0.1\engine
+    C:\dev\meicho_engine_v0.1\engine
 
 ## 2. 何を打つか（上から 1 行ずつ）
 
@@ -23,7 +23,7 @@ PC の Rust の部品（wheel）を作り直し、指紋と、足した検査を
 
 **(1) 書き戻したファイルが載っていることを確かめる**（検索語は ASCII だけ・D-101）。
 
-    cd C:\Users\奥村優斗\OneDrive\ドキュメント\eclipse_workフォルダ\meicho_engine_v0.1\engine
+    cd C:\dev\meicho_engine_v0.1\engine
     set PYTHONPATH=%CD%
     findstr /c:"def _queue_switch_triggers" meicho\engine.py
     findstr /c:"fn queue_switch_triggers" rust\src\engine.rs

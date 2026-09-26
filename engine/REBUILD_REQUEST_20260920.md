@@ -23,13 +23,13 @@
 
 ## 1. どこで
 
-    C:\Users\奥村優斗\OneDrive\ドキュメント\eclipse_workフォルダ\meicho_engine_v0.1\engine
+    C:\dev\meicho_engine_v0.1\engine
 
 ## 2. 何を打つか
 
 **(1) 先に、書き戻したファイルが載っていることを確かめる**（検索語は ASCII だけ・D-101）。
 
-    cd C:\Users\奥村優斗\OneDrive\ドキュメント\eclipse_workフォルダ\meicho_engine_v0.1\engine
+    cd C:\dev\meicho_engine_v0.1\engine
     set PYTHONPATH=%CD%
     findstr /c:"from . import trace as _trace" meicho\engine.py
     findstr /c:"def tracing(sink)" meicho\trace.py
