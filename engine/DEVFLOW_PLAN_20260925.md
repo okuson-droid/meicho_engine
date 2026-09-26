@@ -2,6 +2,8 @@
 
 書き手: クロエ（別端末のチャット・エンジンの持ち場の文書として `engine/` 直下に置く）。
 位置づけ: 2026-09-25 にマスターが裁定した**開発の流れの正本**（裁定の内容は §0.1）。台帳への反映は §9。
+改訂 5（2026-09-26）: **改訂 4 の「段 2 は済んだ」は誤りだった。**`Documents` 側のリポジトリは 2,750 件のファイルが OneDrive のクラウドファイルの印（再解析ポイント 0x9000201A・`.git` の中の 729 件を含む）を持っていた＝まだ OneDrive の同期の根の下にある（PC の Claude Code が数えて見つけた）。**段 2 を今やる**——行き先は `C:\dev\meicho_engine_v0.1`、実行は PC の Claude Code（§3）。
+改訂 4（2026-09-26）: リポジトリの実体が `C:\Users\奥村優斗\Documents\eclipse_workフォルダ\meicho_engine_v0.1` に移っていた（マスターが OneDrive のバックアップ設定を変えた）。Cowork の接続フォルダを付け替えた。
 改訂 3（2026-09-26）: 段 3 完了・台帳への反映は `engine/DEVFLOW_LEDGER_DRAFT_20260926.md`（別チャットが動いていたので番号を振らずに置いた）。
 改訂 2（2026-09-25 夜）: 段 1・段 4 が完了。マスターの裁定で §0.1 を確定し、段 2 を「いつか」に格下げ、§6.1 のネットの置き場を確定した。
 
@@ -41,7 +43,7 @@
 3. ~~**段 3** PC に Claude Code を入れ、最初の仕事として再ビルドを 1 回やらせる~~ → **2026-09-26 に完了**（指紋 `f4b80b25c35cfa77` 一致・`--pc` の組 335 通過・1 skip・失敗 0・再ビルド 656 秒・`results/` を git に・報告 `engine/CC_PC_RUN_20260925.md`）。**5 点セットの依頼文は引退**
 4. **段 5** クラウドセッションで測定を 1 便試す。**次はここ**（§6。ネットの置き場は §6.1 で確定した。先に `.gitignore` の 3 行と host 名の 1 行を入れる）
 5. **段 6** 進行盤（アーティファクト）— 段 5 のあとに設計だけ出す（§7）
-6. **段 2** リポジトリを OneDrive の外へ移す — **「いつか」に格下げ**（§3）。GitHub が正本になったので必須ではなくなった。残る理由は「OneDrive と git がぶつかる事故を避ける」と「本名を含む経路を文書から消す」の 2 つ
+6. **段 2** リポジトリを OneDrive の外（`C:\dev\meicho_engine_v0.1`）へ移す——**改訂 5 で「今やる」に戻した**（`Documents` はまだ OneDrive の根の下・§3）。段 5 の前に済ませる
 
 §8 は裁定の記録（決まったこと）と、残っている判断 2 件。
 
@@ -100,10 +102,45 @@ GitHub Desktop（コマンドは打たない）。対象は `C:\Users\奥村優�
 
 ---
 
-## 3. 段 2 — リポジトリを OneDrive の外へ移す（**「いつか」・マスター裁定 2026-09-25**）
+## 3. 段 2 — リポジトリを OneDrive の外へ移す（**改訂 5: 今やる・実行は PC の Claude Code**）
 
-**位置づけ**: GitHub が正本になった（§0.1）ので、移設は必須ではなくなった。**やる価値が残る理由は 2 つ**——(1) OneDrive が `.git` の小さいファイルを掴んで git が止まる事故（`Permission denied` / `unable to index file`）は、Claude Code が PC で commit するようになると頻度が上がる。当面は「Claude Code が commit する前に OneDrive を一時停止する」運用で避ける。(2) 本名を含む Windows の経路（`C:\Users\…`）が引継ぎ書・依頼書に 20 ファイルほど入っていて、Public のリポジトリに見えている。移設して経路を `C:\dev\…` に置き換えると、副作用としてこれが消える。
-移設先は **`C:\dev\meicho_engine_v0.1`**（ASCII だけ・短い）。OneDrive の古いフォルダは消さず、名前を変えて凍結する。**やるときは段 3 のあと**（Claude Code に経路の置き換えをさせられる）。
+**なぜ今か**: 2026-09-26 に PC の Claude Code が数えたところ、`C:\Users\奥村優斗\Documents\eclipse_workフォルダ\meicho_engine_v0.1` の 2,750 ファイルが OneDrive のクラウドファイルの印（再解析ポイント・タグ 0x9000201A）を持っていた。`.git` の中の 729 件も含む。
+つまり `Documents` は OneDrive の同期の根の下にあり、git のオブジェクトを読むたびに OneDrive が絡む。**git にとっていちばん危ない置き方**なので、OneDrive のどの根の下でもない `C:\dev` に写す。
+副作用として、本名を含む経路が文書から消せるようになる。
+
+### 手順（PC の Claude Code に貼る文）
+
+    段 2（DEVFLOW_PLAN_20260925.md §3）をやる。作業ツリーを C:\dev\meicho_engine_v0.1 へ写し、以後そこを使う。
+    (0) git status が空（未 commit の変更が無い）であることを確かめる。空でなければ止まって見せる。OneDrive を一時停止するようマスターに言う。
+    (1) mkdir C:\dev
+        robocopy "C:\Users\奥村優斗\Documents\eclipse_workフォルダ\meicho_engine_v0.1" "C:\dev\meicho_engine_v0.1" /E /COPY:DAT /DCOPY:DAT /R:2 /W:2 /XD target __pycache__ .pytest_cache /LOG:C:\dev\robocopy_20260926.log /NP
+        終わったら表の FAILED の列が 0 であることを見せる。
+    (2) cd /d C:\dev\meicho_engine_v0.1 で
+        powershell -c "(Get-ChildItem -Recurse -Force -Attributes ReparsePoint | Measure-Object).Count" が 0、
+        git status が空、git log --oneline -1 が Documents 側と同じ commit、git fsck --full が正常、であることを見せる。
+        dir /s /b engine\results\models\*.json | find /c ".json" と dir /s /b cards\*.png | find /c ".png" を、Documents 側と C:\dev 側の両方で打って一致を見せる。
+    (3) 一致していたら、Documents 側は消さずに、フォルダ名を meicho_engine_v0.1_OLD_20260926 に変える（ren）。
+    (4) C:\dev\meicho_engine_v0.1 で、TASKS.md・CLAUDE.md・LANES.md・engine/HANDOFF_20260925_ENGINE.md・engine/REBUILD_REQUEST_2026092*.md・engine/DEVFLOW_PLAN_20260925.md・engine/DEVFLOW_LEDGER_DRAFT_20260926.md の中の
+        「C:\Users\奥村優斗\OneDrive\ドキュメント\eclipse_workフォルダ\meicho_engine_v0.1」と「C:\Users\奥村優斗\Documents\eclipse_workフォルダ\meicho_engine_v0.1」を
+        「C:\dev\meicho_engine_v0.1」に置き換える。改行コードは元のまま（TASKS.md・decisions.md は CRLF・CLAUDE.md は LF）。decisions.md は触らない。
+    (5) git status の一覧を見せて止まる。commit と push は私が「よい」と言ってから。
+
+### 成功したらどう見えるか
+- (1) robocopy の表で `FAILED` が 0。(2) 再解析ポイント 0・`git status` 空・commit が同じ・fsck 正常・ファイル数が一致。
+- (4) のあと `git status` に台帳と引継ぎ書の数ファイルが出る。
+
+### そのあとマスターがすること
+- GitHub Desktop: 「Can't find」と出たら `Locate...` で `C:\dev\meicho_engine_v0.1` を選ぶ。
+- Cowork: 接続フォルダに `C:\dev\meicho_engine_v0.1` を足す（クロエが許可の画面を出す）。
+- Claude Code: 以後は `cd /d C:\dev\meicho_engine_v0.1` で起動する。
+- OneDrive の「ドキュメントのバックアップ」は、そのままでも止めてもよい（リポジトリはもう外にある）。`_OLD_20260926` は 1 週間ほど置いてから消す。
+
+### 転びやすいところと症状
+- robocopy の `FAILED` が 0 でない → 中身がクラウドにしか無いファイル。ログの `ERROR` 行の名前を貼る。エクスプローラーでそのファイルを右クリック →「このデバイス上に常に保持する」にしてから (1) を打ち直す（写し済みは飛ばすので 2 回目は速い）。
+- (2) の再解析ポイントが 0 でない → 行き先が OneDrive の根の下。`C:\dev` が OneDrive に含まれていないかを OneDrive の設定で見る。
+- (0) で未 commit の変更がある → 先に commit・push してから (1)。
+
+### （以下は手で robocopy を打つときの手順・Claude Code が使えないときの予備）
 
 ### どこで
 コマンドプロンプト（`cmd`）。**PowerShell ではない**（`PS C:\` と出ていたら別の窓を開く）。

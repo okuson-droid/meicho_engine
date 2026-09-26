@@ -20,8 +20,8 @@
 5. **クラウドの Claude Code はブランチに push する。**`main` への merge は PC の Claude Code かマスター。
 6. **`cards/` は除外のまま**（公式素材）。**`results/` は git に上げる。**除くのは `.bak.json`（移行前の原本・約 230 MB）・`.bin`（記録本体）・`s2v_id_ens3.json`（部品 3 本から決定的に作り直せる）の 3 種。`.gitignore` の `engine/results/*/` と `!engine/results/human_games/` を消し、`engine/results/**/*.bin`・`engine/results/**/*.bak.json`・`engine/results/models/s2v_id_ens3.json` の 3 行に置き換えた（実施済み・2026-09-26）。
 7. **リポジトリは Public のまま**（条件: 秘密の値を書かない／`cards/` の除外を動かさない／本名を含む Windows の経路は移設のあとに置き換える）。2026-09-25 に写しを grep して秘密の値が無いことを確かめた（署名の秘密鍵はリポジトリの外・公開鍵だけ・合言葉やトークンの実値なし）。Public の実利は Actions の無料枠が無制限であること。
-8. **OneDrive の外への移設（D-126 の (5)）は「いつか」に格下げ。**GitHub が正本になったので必須ではなくなった。残る理由は git と OneDrive の衝突の回避と、本名を含む経路の除去の 2 つ。当面は「Claude Code が commit する前に OneDrive を一時停止する」運用。
-9. **Cowork の書き戻しのバイト比較（`LANES.md` §5・D-113）は、リポジトリが OneDrive にある間は残す。**
+8. **OneDrive の外への移設（D-126 の (5)）は「今やる」。**2026-09-26 にリポジトリの実体が `C:\Users\奥村優斗\Documents\eclipse_workフォルダ\meicho_engine_v0.1` に移っていたが、PC の Claude Code が数えると 2,750 ファイル（`.git` の 729 件を含む）が OneDrive のクラウドファイルの印を持っていた＝まだ OneDrive の根の下。行き先は `C:\dev\meicho_engine_v0.1`、実行は PC の Claude Code（正本 §3）。
+9. **Cowork の書き戻しのバイト比較（`LANES.md` §5・D-113）は、OneDrive の外（`C:\dev`）で 5 回以上の書き戻しが全部一致するまで残す。**
 
 **やったこと**
 
@@ -46,17 +46,17 @@
   - [x] 段 3 PC に Claude Code・初仕事（指紋一致・`--pc` 335 通過・`results/` を git に）（2026-09-26）
   - [ ] 段 5 クラウドセッションで測定を 1 便試す（D-132 追記 4 と同じシードの再現・§6）。**前に `provenance.py` の `HOSTS` に `cc-cloud-4`**
   - [ ] 段 6 進行盤（アーティファクト）の設計（§7・段 5 のあと）
-  - [ ] 段 2 OneDrive の外へ移設（**いつか**・§3）。それまでは Claude Code が commit する前に OneDrive を一時停止
+  - [ ] 段 2 OneDrive の外（`C:\dev\meicho_engine_v0.1`）へ——PC の Claude Code が robocopy（§3）。段 5 の前に
   - [ ] `webapp/` の引退の条件と日付（D-126 の (5) の残り・未定）
 
 ---
 
 ## 3. `LANES.md` の書き換え
 
-§5 の冒頭に 1 文を足す: 「**正本は GitHub の `main` である（D-xxx・2026-09-25）。**PC のフォルダは作業ツリー。書き戻しの再ステージとバイト比較の決まりは、リポジトリが OneDrive にある間は残す。」
+§5 の冒頭に 1 文を足す: 「**正本は GitHub の `main` である（D-xxx・2026-09-25）。**PC のフォルダは作業ツリー（段 2 のあとは `C:\dev\meicho_engine_v0.1`）。書き戻しの再ステージとバイト比較の決まりは、移設後 5 回以上の一致を見てから緩める。」
 §10 を次に置き換える:
 「- 2026-09-25 に見直した（D-xxx・`engine/DEVFLOW_PLAN_20260925.md`）。git を受け渡しの土台にし、push は Claude Code（PC）が行う。ブランチで持ち場を分けることはしない。
-- リポジトリを OneDrive の外へ移すのは「いつか」（同 §3）。正本は GitHub なので、移設は必須ではない。」
+- リポジトリは `C:\dev\meicho_engine_v0.1` に移す（段 2・2026-09-26 着手）。書き戻しのバイト比較は、移設後 5 回以上の一致を見てから緩める。」
 
 ---
 
