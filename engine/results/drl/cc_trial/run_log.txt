@@ -33,3 +33,9 @@ v_id_s2|env/ENV_YANG_RF_TSUBAKI|env/ENV_SANGE_RM_TSUBAKI: 77 秒・得点 0.720
 v_id_s2|env/ENV_YANG_RF_TSUBAKI|env/ENV_YANG_RF_TSUBAKI: 78 秒・得点 0.660
 予算 450.0 秒を超えたので止める（続きは同じコマンドで再開）
 chunk_sec 519
+v_id_s2|env/ENV_YANG_RF_TSUBAKI|env/ENV_YANG_RM_TSUBAKI: 73 秒・得点 0.620
+v_id_s2|env/ENV_YANG_RM_TSUBAKI|env/ENV_SANGE_RF_TSUBAKI: 72 秒・得点 0.600
+v_id_s2|env/ENV_YANG_RM_TSUBAKI|env/ENV_SANGE_RM_TSUBAKI: 69 秒・得点 0.653
+v_id_s2|env/ENV_YANG_RM_TSUBAKI|env/ENV_YANG_RF_TSUBAKI: 71 秒・得点 0.587
+v_id_s2|env/ENV_YANG_RM_TSUBAKI|env/ENV_YANG_RM_TSUBAKI: 67 秒・得点 0.580
+chunk_sec 353
