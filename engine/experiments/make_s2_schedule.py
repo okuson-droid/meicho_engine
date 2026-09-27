@@ -23,10 +23,15 @@
 - シードは `--seed0` から隙間なく並べる。`--band-end` を越えるなら作らずに落ちる。
   **帯は台帳 `seed_bands.json` に登録してから回すこと**（D-028。この道具は台帳を読まない・書かない）。
 - 乱数を使わない（同じ引数なら出力はバイトまで同じ）。
+- 教師（段階3・D-138）: 既定は `netfree`・τ = 0（D-131 と同じ表をバイトまで同じに作る）。
+  `--teacher netfree_v --value-net <パス>` で葉を V にし、V の指紋（sha256 先頭 16 桁）を表の教師に書く
+  （`record_mix.py` が回す前にファイルと照合する）。`--tau` は記録の温度。
+  `--merge` は教師（名前・τ・葉の V の指紋）の違う部分を混ぜると落とす。
 """
 from __future__ import annotations
 
 import argparse
+import hashlib
 import itertools
 import json
 import os
@@ -38,6 +43,7 @@ PREFIX = "env/"
 SHARES = {"mirror": 0.4, "cross": 0.4, "anchor": 0.2}
 ANCHOR_OPPONENTS = ("heuristic", "greedy", "planner")
 TOOL_VERSION = "s2sched-1"
+TEACHERS = ("netfree", "netfree_v")
 
 
 def _even(x: float) -> int:
@@ -45,8 +51,27 @@ def _even(x: float) -> int:
     return max(2, 2 * int(x / 2 + 0.5))
 
 
+def teacher_def(teacher: str = "netfree", value_net: str | None = None, tau: float = 0.0) -> dict:
+    """組み合わせ表の教師の定義（D-138）。既定は D-131 と同じ `{"name": "netfree", "tau": 0.0}`。"""
+    if teacher not in TEACHERS:
+        raise SystemExit(f"--teacher は {TEACHERS} のどれか")
+    if teacher == "netfree_v" and not value_net:
+        raise SystemExit("--teacher netfree_v には --value-net（葉の V のパス）が要る")
+    if teacher != "netfree_v" and value_net:
+        raise SystemExit("--value-net は --teacher netfree_v のときだけ使う")
+    out = {"name": teacher, "tau": float(tau)}
+    if value_net:
+        path = value_net if os.path.isabs(value_net) else os.path.join(_HERE, "..", value_net)
+        if not os.path.isfile(path):
+            raise SystemExit(f"--value-net のファイルが無い: {value_net}")
+        with open(path, "rb") as f:
+            out["value_net"] = value_net
+            out["value_net_sha16"] = hashlib.sha256(f.read()).hexdigest()[:16]
+    return out
+
+
 def build(decks_block: dict, *, n_total: int, seed0: int, band_end: int, only: str | None,
-          pilot_n: int | None, name: str) -> dict:
+          pilot_n: int | None, name: str, teacher: dict | None = None) -> dict:
     train = sorted(k for k, v in decks_block.items() if v.get("split") == "train")
     if len(train) < 2:
         raise SystemExit(f"学習デッキが {len(train)} 個しか無い")
@@ -99,7 +124,7 @@ def build(decks_block: dict, *, n_total: int, seed0: int, band_end: int, only: s
                       "n_total_requested": n_total, "per_block": per, "only": only, "pilot_n": pilot_n,
                       "band": [seed0, band_end]},
         "n_total_actual": total,
-        "teacher": {"name": "netfree", "tau": 0.0},
+        "teacher": teacher or teacher_def(),
         "decks": decks,
         "blocks": blocks,
     }
@@ -145,6 +170,12 @@ def merge_manifests(paths: list) -> dict:
         vals = {json.dumps(m.get(key)) for m in ms}
         if len(vals) != 1:
             raise SystemExit(f"{key} が部分ごとに違う（{sorted(vals)}）。版の違う記録を混ぜない")
+    # 教師（名前・τ・葉の V の指紋）も揃える（D-138）。ブロックの `nets` は実際に読んだファイルの指紋
+    teachers = {json.dumps([(m.get("schedule") or {}).get("teacher"),
+                            sorted({(k, v) for b in m["blocks"] for k, v in (b.get("nets") or {}).items()})],
+                           sort_keys=True) for m in ms}
+    if len(teachers) != 1:
+        raise SystemExit(f"教師が部分ごとに違う（{sorted(teachers)}）。教師の違う記録を混ぜない")
     decks: dict = {}
     for m in ms:
         for name, d in m["decks"].items():
@@ -183,6 +214,9 @@ def main(argv=None):
     ap.add_argument("--only", default=None)
     ap.add_argument("--pilot-n", type=int, default=None)
     ap.add_argument("--name", default="s2")
+    ap.add_argument("--teacher", default="netfree", help="netfree（既定）／netfree_v（葉を V に・D-138）")
+    ap.add_argument("--value-net", default=None, help="--teacher netfree_v の葉の V（engine/ からの相対パス）")
+    ap.add_argument("--tau", type=float, default=0.0, help="記録の温度（D-064 §6.2 の下見で決める）")
     ap.add_argument("--parts", type=int, default=1, help="k 個に分けて <out>.p<i>of<k>.json にも書く（D-131）")
     ap.add_argument("--merge", nargs="+", default=None, help="manifest をまとめて --out に書く（D-131）")
     ap.add_argument("--out", required=True)
@@ -196,10 +230,11 @@ def main(argv=None):
         print(json.dumps({"out": args.out, "games": idx["games"], "decisions": idx["decisions_recorded"],
                           "parts": len(idx["parts"])}, ensure_ascii=False))
         return idx
+    teacher = teacher_def(args.teacher, args.value_net, args.tau)
     with open(args.env, encoding="utf-8") as f:
         env = json.load(f)
     sch = build(env["decks_block"], n_total=args.n_total, seed0=args.seed0, band_end=args.band_end,
-                only=args.only, pilot_n=args.pilot_n, name=args.name)
+                only=args.only, pilot_n=args.pilot_n, name=args.name, teacher=teacher)
     sch["generator"]["env"] = {"path": os.path.relpath(args.env, os.path.join(_HERE, "..")).replace(os.sep, "/"),
                                "version": env.get("version")}
     os.makedirs(os.path.dirname(os.path.abspath(args.out)), exist_ok=True)

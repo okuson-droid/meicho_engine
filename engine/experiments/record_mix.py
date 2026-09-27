@@ -38,7 +38,11 @@
   教師以外を相手にするブロックは `record` を `"a"` にすること（記録する席を教師に固定・
   `VALUE_BOOTSTRAP_DESIGN.md` §6.3 の規則）。違反は引数の検査で落とす
 - `teacher.name`: `"netfree"`（既定・ネットを使わない計画探索・下の `NETFREE`）／`"planner"`（素）／
-  `"champion"`（そのプールの現 champion。**ネットが SD001 専用なので SD001 のミラーだけ**許す）
+  `"champion"`（そのプールの現 champion。**ネットが SD001 専用なので SD001 のミラーだけ**許す）／
+  `"netfree_v"`（段階3・D-138: `NETFREE` の葉を `value_net` にしたもの。`value_net` は engine/ からの
+  相対パスか絶対パス。`value_net_sha16`（sha256 の先頭 16 桁）を書けば、回す前にファイルと照合する）
+- `teacher.tau`: 記録の温度（既定 0）。manifest には「argmax 以外を選んだ決定の割合」（`nonargmax`・
+  D-064 §6.2 の τ の下見の尺度）をブロックごとと全体で書く
 - シード帯は各ブロックごとに `seed_bands.json` で検査する（評価帯・未登録の帯は落とす）。
   ブロック同士でシードが重なっても落とす
 
@@ -98,12 +102,32 @@ def load_deck_file(name: str) -> tuple[dict, str]:
     return json.loads(raw.decode("utf-8")), hashlib.sha256(raw).hexdigest()
 
 
+def resolve_value_net(teacher: dict) -> str:
+    """教師 `netfree_v` の葉の V のパスを絶対パスに直し、有無と指紋を確かめる（D-138）。"""
+    rel = teacher.get("value_net")
+    if not rel:
+        raise SystemExit("教師 netfree_v には value_net（葉の V のパス）が要る")
+    path = rel if os.path.isabs(rel) else os.path.join(_HERE, "..", rel)
+    path = os.path.abspath(path)
+    if not os.path.isfile(path):
+        raise SystemExit(f"教師 netfree_v の value_net が無い: {rel}")
+    want = teacher.get("value_net_sha16")
+    if want:
+        with open(path, "rb") as f:
+            got = hashlib.sha256(f.read()).hexdigest()[:16]
+        if got != want:
+            raise SystemExit(f"教師 netfree_v の value_net の指紋が組み合わせ表と違う（{want} → {got}）: {rel}")
+    return path
+
+
 def teacher_spec(teacher: dict, pool: list, deck_a: str, deck_b: str) -> dict:
     name = teacher.get("name", "netfree")
     tau = float(teacher.get("tau", 0.0))
     extra = {"tau": tau} if tau else {}
     if name == "netfree":
         return PLANNER(pool, **NETFREE, **extra)
+    if name == "netfree_v":
+        return PLANNER(pool, **NETFREE, value_net=resolve_value_net(teacher), **extra)
     if name == "planner":
         return PLANNER(pool, **extra)
     if name == "champion":
@@ -155,10 +179,49 @@ def count_decisions(files) -> Counter:
     return c
 
 
+def nonargmax_stats(files) -> dict:
+    """記録から「argmax 以外を選んだ決定の割合」を数える（D-064 §6.2 の τ の下見の尺度・D-138）。
+
+    合法手が 2 つ以上の決定だけを分母にする（`multi`）。選んだ手の点数が最大点より小さい決定を `off` と数える
+    （同点の最大が複数あるとき、そのどれを選んでも argmax とみなす）。点数の NaN（評価していない手）は最大点から除き、
+    選んだ手の点数が NaN なら `off` と数える。
+    **τ = 0 でも 0 にはならない**: 終盤の総当たり（`endgame_enum`）の投票が勝つと、平均点の最大ではない手を指す
+    （`rust/src/agents.rs` の `vote_pick`・段 C-3）。下見では τ = 0 の値を基準として並べて読む。
+    """
+    multi = off = 0
+    for path in files:
+        with open(path, "rb") as f:
+            magic, ver, obs_dim, acl = struct.unpack("<4sIII", f.read(16))
+            if magic != b"MCDR" or ver != 3:
+                raise SystemExit(f"{path}: 想定外の記録（{magic!r} 版 {ver}）")
+            while True:
+                h = f.read(REC_HEAD_V3.size)
+                if not h:
+                    break
+                n_acts, ch = REC_HEAD_V3.unpack(h)[5:7]
+                f.seek(obs_dim + n_acts * acl, 1)
+                sc = struct.unpack(f"<{n_acts}f", f.read(4 * n_acts))
+                if n_acts > 1:
+                    multi += 1
+                    fin = [x for x in sc if x == x]
+                    off += (sc[ch] != sc[ch]) or (bool(fin) and sc[ch] < max(fin))
+    return {"multi": multi, "off": off, "rate": (off / multi if multi else None)}
+
+
+def _sum_nonargmax(stats) -> dict:
+    stats = list(stats)
+    multi = sum(s["multi"] for s in stats)
+    off = sum(s["off"] for s in stats)
+    return {"multi": multi, "off": off, "rate": (off / multi if multi else None)}
+
+
 def check_schedule(sch: dict) -> None:
     blocks = sch.get("blocks") or []
     if not blocks:
         raise SystemExit("blocks が空")
+    for t in [sch.get("teacher") or {}] + [b.get("teacher") or {} for b in blocks]:
+        if dict(sch.get("teacher") or {}, **t).get("name") == "netfree_v":
+            resolve_value_net(dict(sch.get("teacher") or {}, **t))
     used = []
     for i, b in enumerate(blocks):
         for k in ("deck_a", "deck_b", "seed0", "n"):
@@ -222,6 +285,7 @@ def run_block(i: int, b: dict, sch: dict, out: str, workers: int, max_turns: int
         "games": games, "decisions": decisions, "decisions_total": sum(dec.values()),
         "a_won": (sum(decided) / len(decided) if decided else None), "decided": len(decided),
         "mean_turns": sum(r[1] for r in res) / len(res), "seconds": sec,
+        "nonargmax": nonargmax_stats(files),
         "format": record_format(files), "files": files,
     }
 
@@ -285,6 +349,7 @@ def main(argv=None):
         "rules_version": RULES_VERSION, "encoding_version": ENCODING_VERSION,
         "format": record_format(files), "workers": args.workers, "max_turns": args.max_turns,
         **summarize(blocks, sch, deck_cache),
+        "nonargmax": _sum_nonargmax(b["nonargmax"] for b in blocks),
         "blocks": blocks, "files": files, "seconds": time.time() - t,
         "regenerate": "python3 experiments/record_mix.py "
                       + " ".join(shlex.quote(a) for a in (argv if argv is not None else sys.argv[1:])),

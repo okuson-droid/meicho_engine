@@ -14,6 +14,14 @@
 - 候補の探索器は教師と同じ `record_mix.NETFREE`。V の候補はそこに `value_net` を足しただけ（葉を V にする）
 - 得点は勝 1・引き分け 0.5・負 0（計画書 §7.1）
 
+## 局数の足し継ぎと取り込み（段階3・D-138・設計書 §3.7）
+
+- 同じ `--out` に大きい `--n` で打ち直すと、各ブロックの足りない局（seed0+既存の局数 から）だけを回して後ろに足す。
+  局はシードだけで決まるので、足し継いだ結果は最初から大きい n で回したのと同じになる（検査 T-7）
+- `--import 元.json:候補名` は、別ファイルで回した同じ候補の結果を取り込む（V_0 の 150 局を 300 局の課題に使う）。
+  シード（seed0）・デッキ・ネットの指紋のどれかが違えば落とす。取り込み元の局数が取り込み先より多くても落とす。
+  取り込んだ元は `imported` に残す
+
 ## 読み方（事前に固定）
 
 - 主比較: 候補 new と old の**同じ（ブロック・シード）の局どうしの得点差**を、デッキの中で局ごとに再標本化して
@@ -122,7 +130,9 @@ def run(args) -> dict:
     if os.path.exists(args.out):
         with open(args.out, encoding="utf-8") as f:
             data = json.load(f)
-        assert (data["n"], data["seed0"], data["decks"]) == (args.n, args.seed0, decks), "条件が違う（別の --out に）"
+        assert (data["seed0"], data["decks"]) == (args.seed0, decks), "条件が違う（別の --out に）"
+        assert data["n"] <= args.n, "局数を減らして打ち直さない（別の --out に）"
+        data["n"] = args.n                       # 局数を増やすのは足し継ぎ（D-138）
     import hashlib
     for name, path in arms.items():
         fp = hashlib.sha256(open(path, "rb").read()).hexdigest()[:16] if path else None
@@ -130,11 +140,14 @@ def run(args) -> dict:
         if prev is not None and prev["sha"] != fp:
             raise SystemExit(f"候補 {name} のネットが前回と違う（{prev['sha']} → {fp}）。別の名前にすること")
         data["arms"][name] = {"path": path, "sha": fp}
+    for spec in args.imports or []:
+        import_arm(data, spec, decks)
     t0 = time.time()
     for name, path in arms.items():
         for a, b in blocks(decks):
             key = f"{name}|{a}|{b}"
-            if key in data["results"]:
+            have = len(data["results"].get(key, []))
+            if have >= args.n:
                 continue
             if time.time() - t0 > args.budget_sec:
                 print(f"予算 {args.budget_sec} 秒を超えたので止める（続きは同じコマンドで再開）")
@@ -144,13 +157,40 @@ def run(args) -> dict:
             cfg.validate()
             t = time.time()
             res = rs.series(cfg.chara_decks, cfg.action_decks, _arm_spec(name, path, db["action_deck"]),
-                            PLANNER(da["action_deck"]), args.seed0, args.n, args.workers, 200, True)
-            data["results"][key] = [[(0.5 if r[0] is None else float(bool(r[0]))), int(r[1])] for r in res]
+                            PLANNER(da["action_deck"]), args.seed0 + have, args.n - have, args.workers, 200, True)
+            data["results"][key] = data["results"].get(key, []) + \
+                [[(0.5 if r[0] is None else float(bool(r[0]))), int(r[1])] for r in res]
             with open(args.out, "w", encoding="utf-8", newline="\n") as f:
                 json.dump(data, f, ensure_ascii=False)
             print(f"{key}: {time.time() - t:.0f} 秒・得点 {np.mean([x[0] for x in data['results'][key]]):.3f}",
                   flush=True)
     return data
+
+
+def import_arm(data: dict, spec: str, decks: list) -> None:
+    """別ファイルの同じ候補の結果を取り込む（D-138）。シード・デッキ・指紋・局数を確かめる。"""
+    src_path, _, arm = spec.rpartition(":")
+    with open(src_path, encoding="utf-8") as f:
+        src = json.load(f)
+    if (src["seed0"], src["decks"]) != (data["seed0"], decks):
+        raise SystemExit(f"取り込み元 {src_path} のシード・デッキが違う（seed0 {src['seed0']} → {data['seed0']}）")
+    if src["n"] > data["n"]:
+        raise SystemExit(f"取り込み元 {src_path} の局数 {src['n']} が取り込み先 {data['n']} より多い")
+    if arm not in src["arms"] or arm not in data["arms"]:
+        raise SystemExit(f"候補 {arm} が取り込み元か --arm に無い（取り込む候補も --arm で指定する）")
+    if src["arms"][arm]["sha"] != data["arms"][arm]["sha"]:
+        raise SystemExit(f"候補 {arm} のネットの指紋が取り込み元と違う"
+                         f"（{src['arms'][arm]['sha']} → {data['arms'][arm]['sha']}）")
+    for a, b in blocks(decks):
+        key = f"{arm}|{a}|{b}"
+        got, have = src["results"].get(key, []), data["results"].get(key, [])
+        if len(got) > len(have):
+            if got[:len(have)] != have:
+                raise SystemExit(f"{key}: 取り込み元と既存の結果が食い違う")
+            data["results"][key] = got
+    rec = {"from": src_path, "arm": arm, "n": src["n"]}
+    if rec not in data.setdefault("imported", []):
+        data["imported"].append(rec)
 
 
 def games_of(data: dict) -> list:
@@ -199,6 +239,8 @@ def main(argv=None):
     r.add_argument("--workers", type=int, default=4)
     r.add_argument("--budget-sec", type=float, default=450.0)
     r.add_argument("--out", required=True)
+    r.add_argument("--import", dest="imports", action="append", default=None,
+                   help="元.json:候補名 — 別ファイルの同じ候補の結果を取り込む（D-138）")
     q = sub.add_parser("report")
     q.add_argument("--in", dest="inp", required=True)
     q.add_argument("--new", default="v_pf")
