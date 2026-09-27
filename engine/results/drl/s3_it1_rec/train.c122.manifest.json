@@ -1,0 +1,540 @@
+{
+ "tool": "experiments/record_mix.py",
+ "stage": "1C-b",
+ "decision": "D-123",
+ "schedule_name": "s3_it1_train.c122",
+ "schedule": {
+  "name": "s3_it1_train.c122",
+  "teacher": {
+   "name": "netfree_v",
+   "tau": 0.006,
+   "value_net": "results/models/s2v_id_ens3.json",
+   "value_net_sha16": "2d4504e2125bc244"
+  },
+  "generator": {
+   "tool": "experiments/make_s2_schedule.py",
+   "version": "s2sched-1",
+   "decision": "D-129",
+   "shares": {
+    "mirror": 0.4,
+    "cross": 0.4,
+    "anchor": 0.2
+   },
+   "anchor_opponents": [
+    "heuristic",
+    "greedy",
+    "planner"
+   ],
+   "n_total_requested": 5000,
+   "per_block": {
+    "mirror": 126,
+    "cross": 16,
+    "anchor": 20
+   },
+   "only": null,
+   "pilot_n": null,
+   "band": [
+    845000,
+    856999
+   ],
+   "env": {
+    "path": "results/decksim/env_v1.json",
+    "version": "decksim-3"
+   }
+  },
+  "n_total_actual": 4896,
+  "chunk": {
+   "index": 122,
+   "source": "results/drl/s3_it1_train_schedule.json"
+  },
+  "decks": {
+   "env/ENV_SANGE_RM_ANKO": {
+    "lineage": "ENV_SANGE_RF_ANKO",
+    "group": 0,
+    "split": "train"
+   }
+  },
+  "blocks": [
+   {
+    "kind": "anchor",
+    "deck_a": "env/ENV_SANGE_RM_ANKO",
+    "deck_b": "env/ENV_SANGE_RM_ANKO",
+    "seed0": 849118,
+    "n": 18,
+    "record": "a",
+    "opponent": "heuristic",
+    "p_planned": 0.004084967320261438,
+    "parent": 145
+   },
+   {
+    "kind": "anchor",
+    "deck_a": "env/ENV_SANGE_RM_ANKO",
+    "deck_b": "env/ENV_SANGE_RM_ANKO",
+    "seed0": 849136,
+    "n": 20,
+    "record": "a",
+    "opponent": "greedy",
+    "p_planned": 0.004084967320261438,
+    "parent": 146
+   },
+   {
+    "kind": "anchor",
+    "deck_a": "env/ENV_SANGE_RM_ANKO",
+    "deck_b": "env/ENV_SANGE_RM_ANKO",
+    "seed0": 849156,
+    "n": 4,
+    "record": "a",
+    "opponent": "planner",
+    "p_planned": 0.004084967320261438,
+    "parent": 147
+   }
+  ]
+ },
+ "schedule_sha256": "25c2bd40a8cd6396db4418d351eaef31ba6e94e86610631bc7c11d21bebfb493",
+ "opp_decklist_known": true,
+ "opp_from_seat": true,
+ "rules_version": "v0.19",
+ "encoding_version": 6,
+ "format": "MCDR v3",
+ "workers": 4,
+ "max_turns": 200,
+ "decks": {
+  "env/ENV_SANGE_RM_ANKO": {
+   "sha256": "5161de4c376db067d4dd8888eae6aca78317b5a6cb2331844d99ad3a6bf2d3e3",
+   "chara_trio": [
+    "アンコ",
+    "散華",
+    "漂泊者（男）"
+   ],
+   "lineage": "ENV_SANGE_RF_ANKO",
+   "group": 0,
+   "split": "train",
+   "games": 42,
+   "seat_games": 84,
+   "seat_games_teacher": 42,
+   "decisions_recorded": 2287
+  }
+ },
+ "games_by_opponent": {
+  "heuristic": 18,
+  "greedy": 20,
+  "planner": 4
+ },
+ "nonargmax": {
+  "multi": 2287,
+  "off": 487,
+  "rate": 0.2129427197201574
+ },
+ "blocks": [
+  {
+   "i": 0,
+   "deck_a": "env/ENV_SANGE_RM_ANKO",
+   "deck_b": "env/ENV_SANGE_RM_ANKO",
+   "mirror": true,
+   "seed0": 849118,
+   "n": 18,
+   "p_planned": 0.004084967320261438,
+   "record": "a",
+   "opponent": "heuristic",
+   "teacher": {
+    "name": "netfree_v",
+    "tau": 0.006,
+    "value_net": "results/models/s2v_id_ens3.json",
+    "value_net_sha16": "2d4504e2125bc244"
+   },
+   "spec_a": {
+    "kind": "planner",
+    "opp_decklist": [
+     "SD02-013",
+     "SD02-013",
+     "BP01-076",
+     "BP01-076",
+     "SD02-014",
+     "SD02-014",
+     "BP01-077",
+     "BP01-077",
+     "SD02-015",
+     "SD02-015",
+     "SD02-016",
+     "SD02-020",
+     "SD02-020",
+     "SD02-020",
+     "SD02-021",
+     "SD02-021",
+     "SD02-021",
+     "SD02-018",
+     "SD02-018",
+     "SD02-018",
+     "BP01-068",
+     "BP01-068",
+     "SD02-019",
+     "SD02-019",
+     "SD02-022",
+     "SD02-023",
+     "BP01-064",
+     "BP01-064",
+     "BP01-064",
+     "BP01-060",
+     "BP01-060",
+     "BP01-060",
+     "BP01-061",
+     "BP01-061",
+     "BP01-061",
+     "BP01-063",
+     "BP01-063",
+     "BP01-063",
+     "BP01-062",
+     "BP01-062"
+    ],
+    "extra_turns": 1,
+    "choice_phases": true,
+    "solo_samples": 4,
+    "known_hand": true,
+    "endgame_enum": 64,
+    "draw_buckets": 1,
+    "value_net": "s2v_id_ens3.json",
+    "tau": 0.006
+   },
+   "spec_b": {
+    "kind": "heuristic",
+    "params": null
+   },
+   "nets": {
+    "s2v_id_ens3.json": "2d4504e2125bc244"
+   },
+   "games": {
+    "a_seat0": 9,
+    "a_seat1": 9
+   },
+   "decisions": {
+    "a_as_deck_a": 518,
+    "a_as_deck_b": 496,
+    "b_as_deck_a": 0,
+    "b_as_deck_b": 0
+   },
+   "decisions_total": 1014,
+   "a_won": 0.9444444444444444,
+   "decided": 18,
+   "mean_turns": 9.555555555555555,
+   "seconds": 32.806395292282104,
+   "nonargmax": {
+    "multi": 1014,
+    "off": 222,
+    "rate": 0.21893491124260356
+   },
+   "format": "MCDR v3",
+   "files": [
+    "/tmp/s3rec/train.c122.b0.0",
+    "/tmp/s3rec/train.c122.b0.1",
+    "/tmp/s3rec/train.c122.b0.2",
+    "/tmp/s3rec/train.c122.b0.3"
+   ]
+  },
+  {
+   "i": 1,
+   "deck_a": "env/ENV_SANGE_RM_ANKO",
+   "deck_b": "env/ENV_SANGE_RM_ANKO",
+   "mirror": true,
+   "seed0": 849136,
+   "n": 20,
+   "p_planned": 0.004084967320261438,
+   "record": "a",
+   "opponent": "greedy",
+   "teacher": {
+    "name": "netfree_v",
+    "tau": 0.006,
+    "value_net": "results/models/s2v_id_ens3.json",
+    "value_net_sha16": "2d4504e2125bc244"
+   },
+   "spec_a": {
+    "kind": "planner",
+    "opp_decklist": [
+     "SD02-013",
+     "SD02-013",
+     "BP01-076",
+     "BP01-076",
+     "SD02-014",
+     "SD02-014",
+     "BP01-077",
+     "BP01-077",
+     "SD02-015",
+     "SD02-015",
+     "SD02-016",
+     "SD02-020",
+     "SD02-020",
+     "SD02-020",
+     "SD02-021",
+     "SD02-021",
+     "SD02-021",
+     "SD02-018",
+     "SD02-018",
+     "SD02-018",
+     "BP01-068",
+     "BP01-068",
+     "SD02-019",
+     "SD02-019",
+     "SD02-022",
+     "SD02-023",
+     "BP01-064",
+     "BP01-064",
+     "BP01-064",
+     "BP01-060",
+     "BP01-060",
+     "BP01-060",
+     "BP01-061",
+     "BP01-061",
+     "BP01-061",
+     "BP01-063",
+     "BP01-063",
+     "BP01-063",
+     "BP01-062",
+     "BP01-062"
+    ],
+    "extra_turns": 1,
+    "choice_phases": true,
+    "solo_samples": 4,
+    "known_hand": true,
+    "endgame_enum": 64,
+    "draw_buckets": 1,
+    "value_net": "s2v_id_ens3.json",
+    "tau": 0.006
+   },
+   "spec_b": {
+    "kind": "greedy",
+    "opp_decklist": [
+     "SD02-013",
+     "SD02-013",
+     "BP01-076",
+     "BP01-076",
+     "SD02-014",
+     "SD02-014",
+     "BP01-077",
+     "BP01-077",
+     "SD02-015",
+     "SD02-015",
+     "SD02-016",
+     "SD02-020",
+     "SD02-020",
+     "SD02-020",
+     "SD02-021",
+     "SD02-021",
+     "SD02-021",
+     "SD02-018",
+     "SD02-018",
+     "SD02-018",
+     "BP01-068",
+     "BP01-068",
+     "SD02-019",
+     "SD02-019",
+     "SD02-022",
+     "SD02-023",
+     "BP01-064",
+     "BP01-064",
+     "BP01-064",
+     "BP01-060",
+     "BP01-060",
+     "BP01-060",
+     "BP01-061",
+     "BP01-061",
+     "BP01-061",
+     "BP01-063",
+     "BP01-063",
+     "BP01-063",
+     "BP01-062",
+     "BP01-062"
+    ]
+   },
+   "nets": {
+    "s2v_id_ens3.json": "2d4504e2125bc244"
+   },
+   "games": {
+    "a_seat0": 10,
+    "a_seat1": 10
+   },
+   "decisions": {
+    "a_as_deck_a": 514,
+    "a_as_deck_b": 524,
+    "b_as_deck_a": 0,
+    "b_as_deck_b": 0
+   },
+   "decisions_total": 1038,
+   "a_won": 1.0,
+   "decided": 20,
+   "mean_turns": 8.75,
+   "seconds": 34.89770436286926,
+   "nonargmax": {
+    "multi": 1038,
+    "off": 221,
+    "rate": 0.21290944123314065
+   },
+   "format": "MCDR v3",
+   "files": [
+    "/tmp/s3rec/train.c122.b1.0",
+    "/tmp/s3rec/train.c122.b1.1",
+    "/tmp/s3rec/train.c122.b1.2",
+    "/tmp/s3rec/train.c122.b1.3"
+   ]
+  },
+  {
+   "i": 2,
+   "deck_a": "env/ENV_SANGE_RM_ANKO",
+   "deck_b": "env/ENV_SANGE_RM_ANKO",
+   "mirror": true,
+   "seed0": 849156,
+   "n": 4,
+   "p_planned": 0.004084967320261438,
+   "record": "a",
+   "opponent": "planner",
+   "teacher": {
+    "name": "netfree_v",
+    "tau": 0.006,
+    "value_net": "results/models/s2v_id_ens3.json",
+    "value_net_sha16": "2d4504e2125bc244"
+   },
+   "spec_a": {
+    "kind": "planner",
+    "opp_decklist": [
+     "SD02-013",
+     "SD02-013",
+     "BP01-076",
+     "BP01-076",
+     "SD02-014",
+     "SD02-014",
+     "BP01-077",
+     "BP01-077",
+     "SD02-015",
+     "SD02-015",
+     "SD02-016",
+     "SD02-020",
+     "SD02-020",
+     "SD02-020",
+     "SD02-021",
+     "SD02-021",
+     "SD02-021",
+     "SD02-018",
+     "SD02-018",
+     "SD02-018",
+     "BP01-068",
+     "BP01-068",
+     "SD02-019",
+     "SD02-019",
+     "SD02-022",
+     "SD02-023",
+     "BP01-064",
+     "BP01-064",
+     "BP01-064",
+     "BP01-060",
+     "BP01-060",
+     "BP01-060",
+     "BP01-061",
+     "BP01-061",
+     "BP01-061",
+     "BP01-063",
+     "BP01-063",
+     "BP01-063",
+     "BP01-062",
+     "BP01-062"
+    ],
+    "extra_turns": 1,
+    "choice_phases": true,
+    "solo_samples": 4,
+    "known_hand": true,
+    "endgame_enum": 64,
+    "draw_buckets": 1,
+    "value_net": "s2v_id_ens3.json",
+    "tau": 0.006
+   },
+   "spec_b": {
+    "kind": "planner",
+    "opp_decklist": [
+     "SD02-013",
+     "SD02-013",
+     "BP01-076",
+     "BP01-076",
+     "SD02-014",
+     "SD02-014",
+     "BP01-077",
+     "BP01-077",
+     "SD02-015",
+     "SD02-015",
+     "SD02-016",
+     "SD02-020",
+     "SD02-020",
+     "SD02-020",
+     "SD02-021",
+     "SD02-021",
+     "SD02-021",
+     "SD02-018",
+     "SD02-018",
+     "SD02-018",
+     "BP01-068",
+     "BP01-068",
+     "SD02-019",
+     "SD02-019",
+     "SD02-022",
+     "SD02-023",
+     "BP01-064",
+     "BP01-064",
+     "BP01-064",
+     "BP01-060",
+     "BP01-060",
+     "BP01-060",
+     "BP01-061",
+     "BP01-061",
+     "BP01-061",
+     "BP01-063",
+     "BP01-063",
+     "BP01-063",
+     "BP01-062",
+     "BP01-062"
+    ]
+   },
+   "nets": {
+    "s2v_id_ens3.json": "2d4504e2125bc244"
+   },
+   "games": {
+    "a_seat0": 2,
+    "a_seat1": 2
+   },
+   "decisions": {
+    "a_as_deck_a": 129,
+    "a_as_deck_b": 106,
+    "b_as_deck_a": 0,
+    "b_as_deck_b": 0
+   },
+   "decisions_total": 235,
+   "a_won": 0.75,
+   "decided": 4,
+   "mean_turns": 9.25,
+   "seconds": 9.349601030349731,
+   "nonargmax": {
+    "multi": 235,
+    "off": 44,
+    "rate": 0.18723404255319148
+   },
+   "format": "MCDR v3",
+   "files": [
+    "/tmp/s3rec/train.c122.b2.0",
+    "/tmp/s3rec/train.c122.b2.1",
+    "/tmp/s3rec/train.c122.b2.2",
+    "/tmp/s3rec/train.c122.b2.3"
+   ]
+  }
+ ],
+ "files": [
+  "/tmp/s3rec/train.c122.b0.0",
+  "/tmp/s3rec/train.c122.b0.1",
+  "/tmp/s3rec/train.c122.b0.2",
+  "/tmp/s3rec/train.c122.b0.3",
+  "/tmp/s3rec/train.c122.b1.0",
+  "/tmp/s3rec/train.c122.b1.1",
+  "/tmp/s3rec/train.c122.b1.2",
+  "/tmp/s3rec/train.c122.b1.3",
+  "/tmp/s3rec/train.c122.b2.0",
+  "/tmp/s3rec/train.c122.b2.1",
+  "/tmp/s3rec/train.c122.b2.2",
+  "/tmp/s3rec/train.c122.b2.3"
+ ],
+ "seconds": 77.78537821769714,
+ "regenerate": "python3 experiments/record_mix.py --schedule /tmp/s3rec/train.c122.schedule.json --out /tmp/s3rec/train.c122 --workers 4"
+}
