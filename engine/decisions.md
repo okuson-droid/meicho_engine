@@ -9816,3 +9816,36 @@ Rust を変えたので PC の wheel は直す前のままである。依頼は 
 - 下書き `engine/DEVFLOW_LEDGER_DRAFT_20260926.md` はこの項で役目を終えた。Cowork からは消せないので、PC の Claude Code が消す
 
 次に使える D-番号は **D-137**。
+
+## D-137 クラウドの Claude Code を測定環境として採用（段 5）・分担の手直し（2026-09-27・マスター裁定）
+
+**出どころ**: `engine/DEVFLOW_PLAN_20260925.md` §6 の段 5。クラウドの Claude Code のセッションが試行を回し、報告 `engine/CC_CLOUD_TRIAL_20260927.md` を書いた（ブランチ `cc-cloud-trial-20260927`・マスターの許可で `main` に早送りで取り込み済み・`2e943b4`）。台帳への反映も同じセッションが行った（下の §3 の分担による）。
+
+### 1. 試行の結果
+
+- 機械: Intel Xeon @ 2.10GHz・4 コア・メモリ 15 GiB（スワップ無し）・Python 3.11.15・rustc 1.94.1。host 名は `cc-cloud-4`（`experiments/provenance.py` の `HOSTS`）
+- `pip install ./engine/rust` は 44 秒。`meicho_rs.features()` の札は PC と同じ 12 個（`encoding_v6`・`opp_from_seat`・`te13_switched_scope` を含む）
+- **champion の指紋 `f4b80b25c35cfa77` 一致**（`check_champion_fingerprint.py`・49 秒）。ネット `s2v_id_s1.json`・`s2v_id_s2.json` の sha256 先頭 16 桁も元の記録と一致
+- **D-132 追記 4 と同じシード（841000..841149）・同じ引数で V_id の乱数 1 番・2 番の 4,800 局を回し、得点・手数とも 4,800／4,800 局が完全に一致**した。ずれた局は無い。候補ごとの得点（v_id_s1 0.599 [0.580, 0.618]・v_id_s2 0.645 [0.626, 0.665]）もブロック 32 個の得点も元と同じ
+- 所要 **39.4 分**（塊 5 つ・各 353〜524 秒）・**1 局 0.49 秒**（workers 4）。D-132 追記 2 の作業環境（2 コア・1 局約 1.0 秒）の**約 2 倍**速い
+- 出力 `results/drl/cc_trial/`。V_pf の 2 本・全検査（pytest）はこの便では回していない
+
+### 2. 何を決めたか
+
+1. **クラウドの Claude Code を測定環境として採用する。**同じシードで同じ対局が出ることを確かめたので、新しい測定に使ってよい。測定の由来の host は `cc-cloud-4`
+2. **1 時間を超える測定の置き場を Kaggle（D-072）からクラウドの Claude Code に替える。Kaggle の登録は不要とする**（TASKS の「Kaggle の登録と初回セットアップ」は Done へ）。`COMPUTE_PLAN_20260908.md` は記録として残す
+3. **長い実行は 1 回 10 分以内の塊に分け、塊ごとに commit・push する**（容器は放置で回収され、裏の仕事は戻らない。塊ごとに push していれば失うのは最後の 1 塊だけ）
+4. **`main` への取り込み**: コードに触らず `results/` と報告書だけの変更なら、クラウド側が早送り（fast-forward）で `main` に取り込んでよい。コードに触る変更は従来どおり（D-136 §1 の 5・`main` への merge は PC の Claude Code かマスター）
+
+### 3. 分担の手直し（マスター裁定 2026-09-27）
+
+- **便の報告書と、その作業ぶんの `decisions.md`・`TASKS.md`・`CLAUDE.md` の更新は、作業した Claude Code（PC・クラウド）が書いて commit・push する**
+- **裁定が要る設計書・計画書・規約・引継ぎ書は Cowork（クロエ）が書く**
+- **台帳を書くのは同時に 1 人**（D-番号の衝突を避ける。書く前に `main` の `decisions.md` の末尾を見る）
+- D-136 §1 の 4（Cowork の文書は接続フォルダに書き、PC の Claude Code が commit・push）はそのまま残る。変わるのは「作業ぶんの台帳は作業した Claude Code が自分で書く」ところ
+
+### 4. 改行コードについて（気づき）
+
+- リポジトリの中では `decisions.md`・`TASKS.md`・`CLAUDE.md` はすべて LF で持っている（`.gitattributes` の `* text=auto`・`git ls-files --eol` で `i/lf`）。PC の作業ツリーで CRLF に見えるのは checkout のときの変換である。**Linux の Claude Code は LF で書けばよい**（CRLF で書いても commit のときに LF に戻る）
+
+次に使える D-番号は **D-138**。

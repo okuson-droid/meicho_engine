@@ -1,5 +1,7 @@
 # 計算資源の計画 — 長い測定をどこで回すか（2026-09-08）
 
+**2026-09-27: 長い測定はクラウドの Claude Code へ（D-137）。**この文書の Kaggle の計画は記録として残す。
+
 rules_draft.md v0.11 準拠 / engine v0.1 / champion = `planner_vb3cps`（交代していない）
 裁定は `decisions.md` D-072。報告の作法は `REPORTING_RULES.md`（作業依頼は §2.6 の 5 点セット）。
 関連: `LITERATURE_PLAN_20260906.md` §3.5・§4.2（D-069(5) 「輪 2 は Kaggle に寄せる」）、
