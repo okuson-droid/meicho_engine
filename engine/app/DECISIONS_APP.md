@@ -825,3 +825,17 @@ PC 幅とスマホの横持ちで画面に写して見た。
 PC 幅で、尋ねる画面と「候補が 1 つなら確認だけ」を画面に写して見た。
 
 **確かめていないこと。**マスターの実物での使い勝手・スマホでの押しやすさ。
+
+## APP-027 アプリの実装を Cowork から Claude Code へ移す（2026-09-28・マスターの方針／引継ぎはクロエ）
+
+**きっかけ。**マスター「アプリ側の実装も今後は Claude Code 側でやろうと思う」。正本が GitHub の `main` になり（D-136）、PC の作業ツリーが `C:\dev\meicho_engine_v0.1` に移った（2026-09-27）。
+
+**決めたこと。**
+- 以後、`engine/app/` の実装・検査・台帳（`TASKS_APP.md`・`DECISIONS_APP.md`・`TO_ENGINE.md`・`WRITELOG_APP.md`）は Claude Code が書き、commit・push する。PC 版を主とし、`main` へは push の直前に `git pull --rebase` を挟む。クラウド版はブランチ `app/<語>` に push する
+- 持ち場の決まり（`LANES.md`）は変えない。書き手が替わるだけである。台帳を書くのは同時に 1 人（D-137）
+- Cowork のクロエに残るもの: 設計の相談とマスターの裁定が要る文書／知人との対戦の段取り。Claude Docs の文書は Claude Code から読める（2026-09-28 マスターが確かめた）。書き込めるかは未確認で、書けなければクロエが書く
+- Claude Code が最初に読む 1 枚として `engine/app/CLAUDE.md` を置いた（持ち場・commit と push・権利と秘密・構成・設計の約束・検査・改行コード・台帳の書き方・マスターとのやりとり）。引継ぎ書は `engine/app/HANDOFF_20260928_APP.md`
+
+**理由。**Cowork からの書き戻しは、再ステージとバイト比較が毎回要り、PC でサーバを立てる・実機のブラウザで開く・`publish` を打つことができなかった。PC の Claude Code ならこれらが 1 か所でできる。
+
+**確かめていないこと。**Windows でのアプリの全検査（`test_ui.py` は Playwright が無いと丸ごと skip になる）。引継ぎ書 §1 の 2 で初めて回す。
