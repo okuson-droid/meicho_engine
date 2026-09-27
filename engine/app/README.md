@@ -29,7 +29,7 @@
 ## 動かし方（Windows の PowerShell。`engine/` の直下で）
 
 ```
-cd "C:\Users\<ユーザー名>\OneDrive\ドキュメント\eclipse_workフォルダ\meicho_engine_v0.1\engine"
+cd "C:\dev\meicho_engine_v0.1\engine"
 pip install -r app\requirements.txt
 python -m pytest app\tests -q
 python -m app.server --data "$env:LOCALAPPDATA\MeichoSim\data"
@@ -91,7 +91,7 @@ python -m app.server --data "%LOCALAPPDATA%\MeichoSim\data" --allow-origin https
 ### 最初の 1 回
 
 ```
-cd /d "C:\Users\<ユーザー名>\OneDrive\ドキュメント\eclipse_workフォルダ\meicho_engine_v0.1\engine"
+cd /d "C:\dev\meicho_engine_v0.1\engine"
 py -3.11 -m pip install -r app\requirements.txt pyinstaller
 py -3.11 -m pytest app\tests\test_release.py -q
 py -3.11 -m app.release.publish init --feed-dir C:\meicho_dist\feed --feed-url C:\meicho_dist\feed
