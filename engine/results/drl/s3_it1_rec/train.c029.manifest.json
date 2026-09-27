@@ -1,0 +1,266 @@
+{
+ "tool": "experiments/record_mix.py",
+ "stage": "1C-b",
+ "decision": "D-123",
+ "schedule_name": "s3_it1_train.c029",
+ "schedule": {
+  "name": "s3_it1_train.c029",
+  "teacher": {
+   "name": "netfree_v",
+   "tau": 0.006,
+   "value_net": "results/models/s2v_id_ens3.json",
+   "value_net_sha16": "2d4504e2125bc244"
+  },
+  "generator": {
+   "tool": "experiments/make_s2_schedule.py",
+   "version": "s2sched-1",
+   "decision": "D-129",
+   "shares": {
+    "mirror": 0.4,
+    "cross": 0.4,
+    "anchor": 0.2
+   },
+   "anchor_opponents": [
+    "heuristic",
+    "greedy",
+    "planner"
+   ],
+   "n_total_requested": 5000,
+   "per_block": {
+    "mirror": 126,
+    "cross": 16,
+    "anchor": 20
+   },
+   "only": null,
+   "pilot_n": null,
+   "band": [
+    845000,
+    856999
+   ],
+   "env": {
+    "path": "results/decksim/env_v1.json",
+    "version": "decksim-3"
+   }
+  },
+  "n_total_actual": 4896,
+  "chunk": {
+   "index": 29,
+   "source": "results/drl/s3_it1_train_schedule.json"
+  },
+  "decks": {
+   "env/ENV_YANG_RF_JINSHI": {
+    "lineage": "ENV_SANGE_RF_JINSHI",
+    "group": 2,
+    "split": "train"
+   }
+  },
+  "blocks": [
+   {
+    "kind": "mirror",
+    "deck_a": "env/ENV_YANG_RF_JINSHI",
+    "deck_b": "env/ENV_YANG_RF_JINSHI",
+    "seed0": 846334,
+    "n": 46,
+    "record": "both",
+    "p_planned": 0.025735294117647058,
+    "parent": 10
+   }
+  ]
+ },
+ "schedule_sha256": "01294020318165b6181ba4441f174691cba72efa5bcee3fc3916809821417415",
+ "opp_decklist_known": true,
+ "opp_from_seat": true,
+ "rules_version": "v0.19",
+ "encoding_version": 6,
+ "format": "MCDR v3",
+ "workers": 4,
+ "max_turns": 200,
+ "decks": {
+  "env/ENV_YANG_RF_JINSHI": {
+   "sha256": "b4a040973303a776d2a690684fe44cb49b57a448551b7deb192fd416ebcdbed3",
+   "chara_trio": [
+    "今汐",
+    "漂泊者（女）",
+    "秧秧"
+   ],
+   "lineage": "ENV_SANGE_RF_JINSHI",
+   "group": 2,
+   "split": "train",
+   "games": 46,
+   "seat_games": 92,
+   "seat_games_teacher": 92,
+   "decisions_recorded": 6125
+  }
+ },
+ "games_by_opponent": {
+  "teacher": 46
+ },
+ "nonargmax": {
+  "multi": 6125,
+  "off": 1157,
+  "rate": 0.18889795918367347
+ },
+ "blocks": [
+  {
+   "i": 0,
+   "deck_a": "env/ENV_YANG_RF_JINSHI",
+   "deck_b": "env/ENV_YANG_RF_JINSHI",
+   "mirror": true,
+   "seed0": 846334,
+   "n": 46,
+   "p_planned": 0.025735294117647058,
+   "record": "both",
+   "opponent": "teacher",
+   "teacher": {
+    "name": "netfree_v",
+    "tau": 0.006,
+    "value_net": "results/models/s2v_id_ens3.json",
+    "value_net_sha16": "2d4504e2125bc244"
+   },
+   "spec_a": {
+    "kind": "planner",
+    "opp_decklist": [
+     "SD01-015",
+     "SD01-015",
+     "BP01-069",
+     "BP01-069",
+     "SD01-013",
+     "SD01-013",
+     "BP01-071",
+     "BP01-071",
+     "SD01-014",
+     "SD01-014",
+     "BP01-070",
+     "SD01-016",
+     "SD01-020",
+     "SD01-020",
+     "SD01-020",
+     "SD01-021",
+     "SD01-021",
+     "SD01-021",
+     "SD01-018",
+     "SD01-018",
+     "SD01-018",
+     "BP01-066",
+     "BP01-066",
+     "SD01-019",
+     "SD01-022",
+     "SD01-023",
+     "SD02-008",
+     "SD02-008",
+     "SD02-008",
+     "SD02-009",
+     "SD02-009",
+     "SD02-009",
+     "BP01-073",
+     "BP01-073",
+     "BP01-073",
+     "BP01-074",
+     "BP01-074",
+     "BP01-074",
+     "SD02-011",
+     "SD02-011"
+    ],
+    "extra_turns": 1,
+    "choice_phases": true,
+    "solo_samples": 4,
+    "known_hand": true,
+    "endgame_enum": 64,
+    "draw_buckets": 1,
+    "value_net": "s2v_id_ens3.json",
+    "tau": 0.006
+   },
+   "spec_b": {
+    "kind": "planner",
+    "opp_decklist": [
+     "SD01-015",
+     "SD01-015",
+     "BP01-069",
+     "BP01-069",
+     "SD01-013",
+     "SD01-013",
+     "BP01-071",
+     "BP01-071",
+     "SD01-014",
+     "SD01-014",
+     "BP01-070",
+     "SD01-016",
+     "SD01-020",
+     "SD01-020",
+     "SD01-020",
+     "SD01-021",
+     "SD01-021",
+     "SD01-021",
+     "SD01-018",
+     "SD01-018",
+     "SD01-018",
+     "BP01-066",
+     "BP01-066",
+     "SD01-019",
+     "SD01-022",
+     "SD01-023",
+     "SD02-008",
+     "SD02-008",
+     "SD02-008",
+     "SD02-009",
+     "SD02-009",
+     "SD02-009",
+     "BP01-073",
+     "BP01-073",
+     "BP01-073",
+     "BP01-074",
+     "BP01-074",
+     "BP01-074",
+     "SD02-011",
+     "SD02-011"
+    ],
+    "extra_turns": 1,
+    "choice_phases": true,
+    "solo_samples": 4,
+    "known_hand": true,
+    "endgame_enum": 64,
+    "draw_buckets": 1,
+    "value_net": "s2v_id_ens3.json",
+    "tau": 0.006
+   },
+   "nets": {
+    "s2v_id_ens3.json": "2d4504e2125bc244"
+   },
+   "games": {
+    "a_seat0": 23,
+    "a_seat1": 23
+   },
+   "decisions": {
+    "a_as_deck_a": 1603,
+    "a_as_deck_b": 1470,
+    "b_as_deck_a": 1548,
+    "b_as_deck_b": 1504
+   },
+   "decisions_total": 6125,
+   "a_won": 0.5217391304347826,
+   "decided": 46,
+   "mean_turns": 12.76086956521739,
+   "seconds": 137.83417201042175,
+   "nonargmax": {
+    "multi": 6125,
+    "off": 1157,
+    "rate": 0.18889795918367347
+   },
+   "format": "MCDR v3",
+   "files": [
+    "/tmp/s3rec/train.c029.b0.0",
+    "/tmp/s3rec/train.c029.b0.1",
+    "/tmp/s3rec/train.c029.b0.2",
+    "/tmp/s3rec/train.c029.b0.3"
+   ]
+  }
+ ],
+ "files": [
+  "/tmp/s3rec/train.c029.b0.0",
+  "/tmp/s3rec/train.c029.b0.1",
+  "/tmp/s3rec/train.c029.b0.2",
+  "/tmp/s3rec/train.c029.b0.3"
+ ],
+ "seconds": 138.3591821193695,
+ "regenerate": "python3 experiments/record_mix.py --schedule /tmp/s3rec/train.c029.schedule.json --out /tmp/s3rec/train.c029 --workers 4"
+}
