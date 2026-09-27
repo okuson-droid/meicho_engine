@@ -1,0 +1,217 @@
+{
+ "name": "s3_it1_tau0.003.p7of8",
+ "teacher": {
+  "name": "netfree_v",
+  "tau": 0.003,
+  "value_net": "results/models/s2v_id_ens3.json",
+  "value_net_sha16": "2d4504e2125bc244"
+ },
+ "generator": {
+  "note": "段階3 反復 1 の τ の下見の 200 局（make_s2_schedule.build(n_total=200) の表から、ミラー 16×4・学習デッキ同士 44×2・錨 24×2 を抜いてシードを 844100 から並べ直した）",
+  "decision": "D-139 追記 1"
+ },
+ "decks": {
+  "env/ENV_SANGE_RF_ANKO": {
+   "lineage": "ENV_SANGE_RF_ANKO",
+   "group": 0,
+   "split": "train"
+  },
+  "env/ENV_SANGE_RF_CHIXIA": {
+   "lineage": "ENV_SANGE_RF_CHIXIA",
+   "group": 1,
+   "split": "train"
+  },
+  "env/ENV_SANGE_RF_JINSHI": {
+   "lineage": "ENV_SANGE_RF_JINSHI",
+   "group": 2,
+   "split": "train"
+  },
+  "env/ENV_SANGE_RM_ANKO": {
+   "lineage": "ENV_SANGE_RF_ANKO",
+   "group": 0,
+   "split": "train"
+  },
+  "env/ENV_SANGE_RM_CHIXIA": {
+   "lineage": "ENV_SANGE_RF_CHIXIA",
+   "group": 1,
+   "split": "train"
+  },
+  "env/ENV_SANGE_RM_JINSHI": {
+   "lineage": "ENV_SANGE_RF_JINSHI",
+   "group": 2,
+   "split": "train"
+  },
+  "env/ENV_SANGE_SK_ANKO": {
+   "lineage": "ENV_SANGE_SK_ANKO",
+   "group": 4,
+   "split": "train"
+  },
+  "env/ENV_SANGE_SK_TSUBAKI": {
+   "lineage": "ENV_SANGE_SK_TSUBAKI",
+   "group": 7,
+   "split": "train"
+  },
+  "env/ENV_YANG_RF_ANKO": {
+   "lineage": "ENV_SANGE_RF_ANKO",
+   "group": 0,
+   "split": "train"
+  },
+  "env/ENV_YANG_RF_CHIXIA": {
+   "lineage": "ENV_SANGE_RF_CHIXIA",
+   "group": 1,
+   "split": "train"
+  },
+  "env/ENV_YANG_RF_JINSHI": {
+   "lineage": "ENV_SANGE_RF_JINSHI",
+   "group": 2,
+   "split": "train"
+  },
+  "env/ENV_YANG_RM_ANKO": {
+   "lineage": "ENV_SANGE_RF_ANKO",
+   "group": 0,
+   "split": "train"
+  },
+  "env/ENV_YANG_RM_CHIXIA": {
+   "lineage": "ENV_SANGE_RF_CHIXIA",
+   "group": 1,
+   "split": "train"
+  },
+  "env/ENV_YANG_RM_JINSHI": {
+   "lineage": "ENV_SANGE_RF_JINSHI",
+   "group": 2,
+   "split": "train"
+  },
+  "env/ENV_YANG_SK_ANKO": {
+   "lineage": "ENV_SANGE_SK_ANKO",
+   "group": 4,
+   "split": "train"
+  },
+  "env/ENV_YANG_SK_TSUBAKI": {
+   "lineage": "ENV_SANGE_SK_TSUBAKI",
+   "group": 7,
+   "split": "train"
+  }
+ },
+ "blocks": [
+  {
+   "kind": "anchor",
+   "deck_a": "env/ENV_YANG_RF_ANKO",
+   "deck_b": "env/ENV_YANG_RF_ANKO",
+   "seed0": 844276,
+   "n": 2,
+   "record": "a",
+   "opponent": "heuristic",
+   "p_planned": 0.01
+  },
+  {
+   "kind": "anchor",
+   "deck_a": "env/ENV_YANG_RF_ANKO",
+   "deck_b": "env/ENV_YANG_RF_ANKO",
+   "seed0": 844278,
+   "n": 2,
+   "record": "a",
+   "opponent": "planner",
+   "p_planned": 0.01
+  },
+  {
+   "kind": "anchor",
+   "deck_a": "env/ENV_YANG_RF_CHIXIA",
+   "deck_b": "env/ENV_YANG_RF_CHIXIA",
+   "seed0": 844280,
+   "n": 2,
+   "record": "a",
+   "opponent": "greedy",
+   "p_planned": 0.01
+  },
+  {
+   "kind": "anchor",
+   "deck_a": "env/ENV_YANG_RF_JINSHI",
+   "deck_b": "env/ENV_YANG_RF_JINSHI",
+   "seed0": 844282,
+   "n": 2,
+   "record": "a",
+   "opponent": "heuristic",
+   "p_planned": 0.01
+  },
+  {
+   "kind": "anchor",
+   "deck_a": "env/ENV_YANG_RF_JINSHI",
+   "deck_b": "env/ENV_YANG_RF_JINSHI",
+   "seed0": 844284,
+   "n": 2,
+   "record": "a",
+   "opponent": "planner",
+   "p_planned": 0.01
+  },
+  {
+   "kind": "anchor",
+   "deck_a": "env/ENV_YANG_RM_ANKO",
+   "deck_b": "env/ENV_YANG_RM_ANKO",
+   "seed0": 844286,
+   "n": 2,
+   "record": "a",
+   "opponent": "greedy",
+   "p_planned": 0.01
+  },
+  {
+   "kind": "anchor",
+   "deck_a": "env/ENV_YANG_RM_CHIXIA",
+   "deck_b": "env/ENV_YANG_RM_CHIXIA",
+   "seed0": 844288,
+   "n": 2,
+   "record": "a",
+   "opponent": "heuristic",
+   "p_planned": 0.01
+  },
+  {
+   "kind": "anchor",
+   "deck_a": "env/ENV_YANG_RM_CHIXIA",
+   "deck_b": "env/ENV_YANG_RM_CHIXIA",
+   "seed0": 844290,
+   "n": 2,
+   "record": "a",
+   "opponent": "planner",
+   "p_planned": 0.01
+  },
+  {
+   "kind": "anchor",
+   "deck_a": "env/ENV_YANG_RM_JINSHI",
+   "deck_b": "env/ENV_YANG_RM_JINSHI",
+   "seed0": 844292,
+   "n": 2,
+   "record": "a",
+   "opponent": "greedy",
+   "p_planned": 0.01
+  },
+  {
+   "kind": "anchor",
+   "deck_a": "env/ENV_YANG_SK_ANKO",
+   "deck_b": "env/ENV_YANG_SK_ANKO",
+   "seed0": 844294,
+   "n": 2,
+   "record": "a",
+   "opponent": "heuristic",
+   "p_planned": 0.01
+  },
+  {
+   "kind": "anchor",
+   "deck_a": "env/ENV_YANG_SK_ANKO",
+   "deck_b": "env/ENV_YANG_SK_ANKO",
+   "seed0": 844296,
+   "n": 2,
+   "record": "a",
+   "opponent": "planner",
+   "p_planned": 0.01
+  },
+  {
+   "kind": "anchor",
+   "deck_a": "env/ENV_YANG_SK_TSUBAKI",
+   "deck_b": "env/ENV_YANG_SK_TSUBAKI",
+   "seed0": 844298,
+   "n": 2,
+   "record": "a",
+   "opponent": "greedy",
+   "p_planned": 0.01
+  }
+ ]
+}
