@@ -1,0 +1,205 @@
+{
+ "name": "s3_it1_tau0.003.p5of8",
+ "teacher": {
+  "name": "netfree_v",
+  "tau": 0.003,
+  "value_net": "results/models/s2v_id_ens3.json",
+  "value_net_sha16": "2d4504e2125bc244"
+ },
+ "generator": {
+  "note": "段階3 反復 1 の τ の下見の 200 局（make_s2_schedule.build(n_total=200) の表から、ミラー 16×4・学習デッキ同士 44×2・錨 24×2 を抜いてシードを 844100 から並べ直した）",
+  "decision": "D-139 追記 1"
+ },
+ "decks": {
+  "env/ENV_SANGE_RF_ANKO": {
+   "lineage": "ENV_SANGE_RF_ANKO",
+   "group": 0,
+   "split": "train"
+  },
+  "env/ENV_SANGE_RF_CHIXIA": {
+   "lineage": "ENV_SANGE_RF_CHIXIA",
+   "group": 1,
+   "split": "train"
+  },
+  "env/ENV_SANGE_RF_JINSHI": {
+   "lineage": "ENV_SANGE_RF_JINSHI",
+   "group": 2,
+   "split": "train"
+  },
+  "env/ENV_SANGE_RM_ANKO": {
+   "lineage": "ENV_SANGE_RF_ANKO",
+   "group": 0,
+   "split": "train"
+  },
+  "env/ENV_SANGE_RM_CHIXIA": {
+   "lineage": "ENV_SANGE_RF_CHIXIA",
+   "group": 1,
+   "split": "train"
+  },
+  "env/ENV_SANGE_RM_JINSHI": {
+   "lineage": "ENV_SANGE_RF_JINSHI",
+   "group": 2,
+   "split": "train"
+  },
+  "env/ENV_SANGE_SK_ANKO": {
+   "lineage": "ENV_SANGE_SK_ANKO",
+   "group": 4,
+   "split": "train"
+  },
+  "env/ENV_SANGE_SK_TSUBAKI": {
+   "lineage": "ENV_SANGE_SK_TSUBAKI",
+   "group": 7,
+   "split": "train"
+  },
+  "env/ENV_YANG_RF_ANKO": {
+   "lineage": "ENV_SANGE_RF_ANKO",
+   "group": 0,
+   "split": "train"
+  },
+  "env/ENV_YANG_RF_CHIXIA": {
+   "lineage": "ENV_SANGE_RF_CHIXIA",
+   "group": 1,
+   "split": "train"
+  },
+  "env/ENV_YANG_RF_JINSHI": {
+   "lineage": "ENV_SANGE_RF_JINSHI",
+   "group": 2,
+   "split": "train"
+  },
+  "env/ENV_YANG_RM_ANKO": {
+   "lineage": "ENV_SANGE_RF_ANKO",
+   "group": 0,
+   "split": "train"
+  },
+  "env/ENV_YANG_RM_CHIXIA": {
+   "lineage": "ENV_SANGE_RF_CHIXIA",
+   "group": 1,
+   "split": "train"
+  },
+  "env/ENV_YANG_RM_JINSHI": {
+   "lineage": "ENV_SANGE_RF_JINSHI",
+   "group": 2,
+   "split": "train"
+  },
+  "env/ENV_YANG_SK_ANKO": {
+   "lineage": "ENV_SANGE_SK_ANKO",
+   "group": 4,
+   "split": "train"
+  },
+  "env/ENV_YANG_SK_TSUBAKI": {
+   "lineage": "ENV_SANGE_SK_TSUBAKI",
+   "group": 7,
+   "split": "train"
+  }
+ },
+ "blocks": [
+  {
+   "kind": "cross",
+   "deck_a": "env/ENV_SANGE_SK_ANKO",
+   "deck_b": "env/ENV_YANG_RM_JINSHI",
+   "seed0": 844226,
+   "n": 2,
+   "record": "both",
+   "p_planned": 0.01
+  },
+  {
+   "kind": "cross",
+   "deck_a": "env/ENV_SANGE_SK_TSUBAKI",
+   "deck_b": "env/ENV_YANG_RF_ANKO",
+   "seed0": 844228,
+   "n": 2,
+   "record": "both",
+   "p_planned": 0.01
+  },
+  {
+   "kind": "cross",
+   "deck_a": "env/ENV_SANGE_SK_TSUBAKI",
+   "deck_b": "env/ENV_YANG_RM_ANKO",
+   "seed0": 844230,
+   "n": 2,
+   "record": "both",
+   "p_planned": 0.01
+  },
+  {
+   "kind": "cross",
+   "deck_a": "env/ENV_SANGE_SK_TSUBAKI",
+   "deck_b": "env/ENV_YANG_SK_ANKO",
+   "seed0": 844232,
+   "n": 2,
+   "record": "both",
+   "p_planned": 0.01
+  },
+  {
+   "kind": "cross",
+   "deck_a": "env/ENV_YANG_RF_ANKO",
+   "deck_b": "env/ENV_YANG_RF_JINSHI",
+   "seed0": 844234,
+   "n": 2,
+   "record": "both",
+   "p_planned": 0.01
+  },
+  {
+   "kind": "cross",
+   "deck_a": "env/ENV_YANG_RF_ANKO",
+   "deck_b": "env/ENV_YANG_RM_JINSHI",
+   "seed0": 844236,
+   "n": 2,
+   "record": "both",
+   "p_planned": 0.01
+  },
+  {
+   "kind": "cross",
+   "deck_a": "env/ENV_YANG_RF_CHIXIA",
+   "deck_b": "env/ENV_YANG_RF_JINSHI",
+   "seed0": 844238,
+   "n": 2,
+   "record": "both",
+   "p_planned": 0.01
+  },
+  {
+   "kind": "cross",
+   "deck_a": "env/ENV_YANG_RF_CHIXIA",
+   "deck_b": "env/ENV_YANG_RM_JINSHI",
+   "seed0": 844240,
+   "n": 2,
+   "record": "both",
+   "p_planned": 0.01
+  },
+  {
+   "kind": "cross",
+   "deck_a": "env/ENV_YANG_RF_JINSHI",
+   "deck_b": "env/ENV_YANG_RM_ANKO",
+   "seed0": 844242,
+   "n": 2,
+   "record": "both",
+   "p_planned": 0.01
+  },
+  {
+   "kind": "cross",
+   "deck_a": "env/ENV_YANG_RF_JINSHI",
+   "deck_b": "env/ENV_YANG_SK_ANKO",
+   "seed0": 844244,
+   "n": 2,
+   "record": "both",
+   "p_planned": 0.01
+  },
+  {
+   "kind": "cross",
+   "deck_a": "env/ENV_YANG_RM_ANKO",
+   "deck_b": "env/ENV_YANG_RM_JINSHI",
+   "seed0": 844246,
+   "n": 2,
+   "record": "both",
+   "p_planned": 0.01
+  },
+  {
+   "kind": "cross",
+   "deck_a": "env/ENV_YANG_RM_CHIXIA",
+   "deck_b": "env/ENV_YANG_RM_JINSHI",
+   "seed0": 844248,
+   "n": 2,
+   "record": "both",
+   "p_planned": 0.01
+  }
+ ]
+}
