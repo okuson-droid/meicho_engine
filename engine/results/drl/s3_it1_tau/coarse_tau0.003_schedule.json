@@ -1,0 +1,23 @@
+{
+ "name": "s3_it1_tau_coarse_0.003",
+ "teacher": {
+  "name": "netfree_v",
+  "value_net": "results/models/s2v_id_ens3.json",
+  "value_net_sha16": "2d4504e2125bc244",
+  "tau": 0.003
+ },
+ "blocks": [
+  {
+   "deck_a": "env/ENV_SANGE_RF_ANKO",
+   "deck_b": "env/ENV_SANGE_RF_ANKO",
+   "seed0": 844000,
+   "n": 4
+  },
+  {
+   "deck_a": "env/ENV_YANG_SK_TSUBAKI",
+   "deck_b": "env/ENV_YANG_SK_TSUBAKI",
+   "seed0": 844004,
+   "n": 4
+  }
+ ]
+}

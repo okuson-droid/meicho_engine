@@ -588,7 +588,7 @@
    "start": 841000,
    "end": 842999,
    "kind": "validate",
-   "purpose": "汎用 AI 段階2 の表現比較の評価（D-132）。調整デッキ 4 つの順序つき 16 ブロック × 300 局、候補（netfree＋V）対 素 planner。**全ブロック・全候補で同じ 841000..841299 を使う**（対にして測る）／速度の下見 841900..841999／予備はその間。**学習に使用禁止**。D-135（2026-09-25）で束ねた V（`s2v_id_ens3`）も同じ課題を 841000..841149 で回した。段階3 の反復の選択にも 841000..841299 を使い続ける案（`GENERALIST_STAGE3_DESIGN.md` §3.7・裁定待ち）。",
+   "purpose": "汎用 AI 段階2 の表現比較の評価（D-132）。調整デッキ 4 つの順序つき 16 ブロック × 300 局、候補（netfree＋V）対 素 planner。**全ブロック・全候補で同じ 841000..841299 を使う**（対にして測る）／速度の下見 841900..841999／予備はその間。**学習に使用禁止**。D-135（2026-09-25）で束ねた V（`s2v_id_ens3`）も同じ課題を 841000..841149 で回した。段階3 の反復の選択にも 841000..841299 を使い続ける（`GENERALIST_STAGE3_DESIGN.md` §3.7・D-138 で裁定）。",
    "owner": "experiments/eval_s2_repr.py",
    "date": "2026-09-24"
   },
@@ -599,7 +599,31 @@
    "purpose": "汎用 AI 段階3 の土台の V（V_id 3 本のアンサンブル・D-133）の費用の実測。843000..843099 を 1 本の V とアンサンブルで同じシードに使う（対にして時間を比べる）／843999 は検査 tests/test_ensemble_v.py の局面作り。**学習にも強さの評価にも使用禁止**。",
    "owner": "experiments/ensemble_net.py",
    "date": "2026-09-25"
+  },
+  {
+   "start": 844000,
+   "end": 844999,
+   "kind": "diag",
+   "purpose": "汎用 AI 段階3 反復 1 の温度 τ の下見（D-138・D-139 追記 1・設計書 GENERALIST_STAGE3_DESIGN.md §3.3）。教師 netfree_v（葉は束ねた V `s2v_id_ens3`）で τ を掃引し、argmax 以外を選んだ決定の割合が 10〜30% になる τ を選ぶ。τ の目安の粗い掃引 844000..844099／本番の下見 200 局 844100..844299（どの τ でも同じシード）／予備はその間。**学習にも評価にも使用禁止**。",
+   "owner": "experiments/record_mix.py",
+   "date": "2026-09-27"
+  },
+  {
+   "start": 845000,
+   "end": 856999,
+   "kind": "train",
+   "purpose": "汎用 AI 段階3 反復 1 の学習の記録（D-138・D-139 追記 1）。`make_s2_schedule.py --n-total 10000 --teacher netfree_v`（葉は s2v_id_ens3・τ は下見で決める）を `--parts 50` で `record_mix.py` に。予備はその後ろ。**評価に使用禁止**（記録の帯）。",
+   "owner": "experiments/make_s2_schedule.py / record_mix.py",
+   "date": "2026-09-27"
+  },
+  {
+   "start": 857000,
+   "end": 858999,
+   "kind": "train",
+   "purpose": "汎用 AI 段階3 反復 1 の別帯の検証の記録（V の学習の当てはまりを見る held-out・D-138・D-139 追記 1）。同じ生成器を `--n-total 1000 --parts 5` で。予備はその後ろ。**学習にも強さの評価にも使用禁止**（V の学習の検証用の記録だけ）。",
+   "owner": "experiments/make_s2_schedule.py / record_mix.py",
+   "date": "2026-09-27"
   }
  ],
- "next_free": 844000
+ "next_free": 859000
 }
