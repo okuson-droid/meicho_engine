@@ -72,6 +72,7 @@ class Room:
         self._n = 0
         self.cpu = dict(cpu) if cpu else None
         self.ai_seed: Optional[int] = None        # この局の AI のシード（記録に残す）
+        self.review: Optional[dict] = None        # 感想戦（R-REP-4）: {n: 始めるたびに変わる札, pos: 何手目, driver: 操作する人}。保存しない
         if self.cpu:
             m = Member(CPU_ID, f"CPU（{self.cpu['label']}）", "")      # 鍵は空。どんな鍵とも一致しない
             self.members[CPU_ID] = m
@@ -128,6 +129,8 @@ class Room:
         if m is None:
             return []
         m.connected, m.left_at = False, now
+        if self.review and self.review["driver"] == mid:
+            self._pass_review(mid)
         if m.seat is None:
             del self.members[mid]
             if self.owner == mid:
@@ -192,6 +195,7 @@ class Room:
         if self.state == FINISHED:
             self.state, self.game, self.order = LOBBY, None, None
             self.ready, self.rematch = [False, False], [False, False]
+            self.review = None
 
     def _on_deck(self, m, msg):
         self._need_lobby()
@@ -249,6 +253,7 @@ class Room:
     # ------------------------------------------------------------------ 対局の開始
     def _begin(self) -> list:
         self.ready, self.rematch = [False, False], [False, False]
+        self.review = None                             # 次の局が始まったら、前の局の感想戦は終わる
         if self.cpu:
             self.ready[CPU_SEAT] = True
         mode = self.first_mode
@@ -344,10 +349,58 @@ class Room:
     def _on_ping(self, m, msg):
         return [(m.id, {"t": P.S_PONG})]
 
+    # ------------------------------------------------------------------ 感想戦（R-REP-4・APP-029）
+    def _review_last(self) -> int:
+        """最後の局のリプレイの最後の位置（`replay.build` の手の列の長さ − 1。投了で終わった局は 1 つ多い）。"""
+        return len(self.game.applies) + (1 if self.game.resigned is not None else 0)
+
+    def _pass_review(self, mid: str) -> None:
+        """操作していた人が抜けたら、つながっているほかの人へ渡す。誰もいなければ感想戦を終える。"""
+        nxt = next((x.id for x in self.members.values() if x.connected and x.id not in (mid, CPU_ID)), None)
+        if nxt is None:
+            self.review = None
+        else:
+            self.review["driver"] = nxt
+
+    def _on_review(self, m, msg):
+        """感想戦: 部屋の全員が同じリプレイの同じ位置を見る。位置を動かせるのは操作する 1 人で、誰でも代われる。
+        視点は各自が選ぶ（そろえるのは位置だけ）。終局した対局だけなので、全情報も誰でも選べる（R-REP-3）。"""
+        if self.state != FINISHED or self.game is None:
+            raise AppError("not_finished", "感想戦は終局したあとにできる")
+        op = msg.get("op")
+        if op == "start":
+            if self.review is None:
+                # n は画面が「新しく始まった感想戦か」を見分ける札。再起動をまたいでも重ならないよう、数え上げではなく乱数にする
+                self.review = {"n": secrets.token_hex(4), "pos": 0, "driver": m.id}
+                pos = msg.get("pos", 0)
+                if isinstance(pos, int) and not isinstance(pos, bool) and 0 <= pos <= self._review_last():
+                    self.review["pos"] = pos
+            return self._room_to_all()
+        if self.review is None:
+            raise AppError("no_review", "感想戦をしていない")
+        if op == "move":
+            if self.review["driver"] != m.id:
+                raise AppError("not_driver", "いまは別の人が操作している")
+            pos = msg.get("pos")
+            if not isinstance(pos, int) or isinstance(pos, bool) or not 0 <= pos <= self._review_last():
+                raise AppError("bad_message", "pos の値が違う")
+            if pos == self.review["pos"]:
+                return []
+            self.review["pos"] = pos
+        elif op == "take":
+            if self.review["driver"] == m.id:
+                return []
+            self.review["driver"] = m.id
+        elif op == "stop":
+            self.review = None
+        else:
+            raise AppError("bad_message", "op は start・move・take・stop のどれか")
+        return self._room_to_all()
+
     _HANDLERS = {P.C_SIT: _on_sit, P.C_STAND: _on_stand, P.C_DECK: _on_deck,
                  P.C_READY: _on_ready, P.C_SETTINGS: _on_settings, P.C_FIRST: _on_first,
                  P.C_ACT: _on_act, P.C_RESIGN: _on_resign, P.C_REMATCH: _on_rematch,
-                 P.C_PING: _on_ping}
+                 P.C_PING: _on_ping, P.C_REVIEW: _on_review}
 
     # ------------------------------------------------------------------ 送るものを作る
     def info(self) -> dict:
@@ -370,6 +423,7 @@ class Room:
             "kind": self.kind, "cpu": ({"level": self.cpu["level"], "label": self.cpu["label"],
                                         "deck": self.cpu["deck"]["name"]} if self.cpu else None),
             "result": self.game.result() if self.game and self.game.over else None,
+            "review": dict(self.review) if self.review else None,
         }
 
     def _welcome(self, m: Member, key: str) -> list:

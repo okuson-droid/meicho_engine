@@ -280,6 +280,8 @@ input[type="checkbox"] { width: 22px; height: 22px; accent-color: var(--accent);
 .replay-bar { flex-wrap: wrap; justify-content: flex-end; row-gap: 4px; }
 .replay-bar .btn { min-width: 40px; padding-left: 8px; padding-right: 8px; }
 .replay-bar .sel { height: 36px; max-width: 9em; background: var(--panel); color: var(--ink); border: 1px solid var(--felt-line); border-radius: var(--r-m); padding: 0 6px; }
+.review-badge { position: absolute; top: 6px; left: 50%; transform: translateX(-50%); z-index: 5; pointer-events: none; background: var(--panel); color: var(--accent); border: 1px solid var(--accent); border-radius: 999px; padding: 2px 12px; font-size: var(--fs-s); font-weight: 600; white-space: nowrap; }
+.review-badge[hidden] { display: none; }
 .records { display: grid; gap: var(--sp-2); margin-bottom: var(--sp-3); max-height: 60dvh; overflow: auto; }
 .record-row { display: flex; gap: var(--sp-2); align-items: center; justify-content: space-between; border: 1px solid var(--felt-line); border-radius: var(--r-m); padding: var(--sp-2); }
 .record-row .rec-main { min-width: 0; }

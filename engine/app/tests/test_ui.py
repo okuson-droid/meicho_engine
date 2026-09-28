@@ -5,6 +5,7 @@
 Playwright が無い環境（マスターの PC など）では丸ごと skip になる。
 """
 import asyncio
+import json
 
 import pytest
 
@@ -1049,4 +1050,93 @@ async def test_level_up_from_a_character_on_the_board(tmp_path):
             await a.wait_for_timeout(50)
         applied = game().applies[n]                               # 1 要素 = {席(文字列): 行動}
         assert applied["0"]["type"] == "levelup" and applied["0"]["slot"] == slot and applied["0"]["card"] in cands, applied
+        assert not rig.errors, rig.errors[:5]
+
+
+async def test_review_mode_keeps_everyone_on_the_same_move(tmp_path):
+    """感想戦（R-REP-4・APP-029）: 終局後に 1 人が始めると、部屋の全員（観戦者も）の画面でリプレイが開き、同じ手を見る。
+    操作できるのは 1 人で、ほかの人の送りのボタンは押せない。誰でも「代わる」で代われる。視点は各自が選ぶ。
+    閉じた人は「リプレイ」で、開き直した人は自動で、また加われる。操作している人が終えると、全員が自由に送れるリプレイに戻る。"""
+    async with Rig(tmp_path, seed_source=lambda: 20260928) as rig:
+        a, b, c = [await rig.page(t, fx="off", **PC) for t in ("A", "B", "C")]
+        room = await create_room(a, rig.url, "マスター", "あいことば")
+        await sit_and_ready(a, 0, "SD001")
+        await join_room(b, rig.url, room, "知人", "あいことば")
+        await sit_and_ready(b, 1, "SD02")
+        await join_room(c, rig.url, room, "見学", "あいことば")
+        for p in (a, b, c):
+            await p.wait_for_selector("#board .midbar")
+        await asyncio.gather(UiPlayer(a, "mouse", 5).play(timeout=300), UiPlayer(b, "mouse", 6).play(timeout=300))
+        for p in (a, b, c):
+            await p.wait_for_selector(".modal .result")
+            await p.click('.modal button[data-act="close"]')
+
+        pos = lambda p: p.inner_text("#layer-replay #replay-label")           # noqa: E731
+
+        async def at(p, text):                                                # 同じ手（「12 / 80 手」の前半）にいるまで待つ
+            head = text.split(" ")[0]
+            await p.wait_for_function(f"(document.querySelector('#layer-replay #replay-label') || {{}}).textContent?.startsWith({json.dumps(head + ' ')})")
+
+        # A がリプレイを開いて感想戦を始めると、B と C の画面でもリプレイが開く
+        await a.click('button[data-act="menu"]')
+        await a.click('.modal button[data-act="replay"]')
+        await a.wait_for_selector("#layer-replay #replay-label")
+        await a.click('#layer-replay [data-act="rp-next-turn"]')
+        await a.click('#layer-replay [data-act="rp-review-start"]')
+        await a.wait_for_selector("#layer-replay .review-badge >> text=あなたが操作中")
+        for p in (b, c):
+            await p.wait_for_selector("#layer-replay .review-badge >> text=マスターが操作中")
+            await at(p, await pos(a))
+            assert await p.locator('#layer-replay [data-act="rp-next"]').is_disabled()
+            assert await p.locator('#layer-replay [data-act="rp-auto"]').is_disabled()
+        # A が送ると、全員が同じ手へ。B は視点だけ自分で替えられる（手はそのまま）
+        for _ in range(3):
+            await a.click('#layer-replay [data-act="rp-next-turn"]')
+        here = await pos(a)
+        for p in (b, c):
+            await at(p, here)
+        await b.select_option("#layer-replay #replay-viewer", "full")
+        await b.wait_for_function("document.querySelector('#layer-replay #replay-viewer').value === 'full' && !document.querySelector('#layer-replay .handrow .card.back')")
+        await at(b, here)
+        assert await a.input_value("#layer-replay #replay-viewer") == "0"     # A の視点は変わらない
+        await b.keyboard.press("ArrowRight")                                   # 操作していない人のキーは効かない
+        await asyncio.sleep(0.3)
+        await at(b, here)
+
+        # 観戦者の C が代わる。A は押せなくなり、C の送りに全員がついていく
+        await c.click('#layer-replay [data-act="rp-review-take"]')
+        await c.wait_for_selector("#layer-replay .review-badge >> text=あなたが操作中")
+        await a.wait_for_selector("#layer-replay .review-badge >> text=見学が操作中")
+        assert await a.locator('#layer-replay [data-act="rp-prev"]').is_disabled()
+        await c.click('#layer-replay [data-act="rp-last"]')
+        last = await pos(c)
+        for p in (a, b):
+            await at(p, last)
+
+        # B は閉じても、また「リプレイ」で加われる（いまの手から）
+        await b.click('#layer-replay [data-act="rp-close"]')
+        await c.click('#layer-replay [data-act="rp-first"]')
+        await at(a, "0 / x")
+        await b.click('button[data-act="menu"]')
+        await b.click('.modal button[data-act="replay"]')
+        await b.wait_for_selector("#layer-replay .review-badge >> text=見学が操作中")
+        await at(b, "0 / x")
+        # ページを開き直した人も、感想戦の最中なら加わる
+        await c.click('#layer-replay [data-act="rp-next-turn"]')
+        here = await pos(c)
+        await b.reload()
+        await b.wait_for_selector("#layer-replay .review-badge >> text=見学が操作中")
+        await at(b, here)
+
+        # 終えられるのは操作している人（ほかの人は「代わる」だけ）。終えると、全員が自由に送れる
+        assert await a.locator('#layer-replay [data-act="rp-review-stop"]').count() == 0
+        await c.click('#layer-replay [data-act="rp-review-stop"]')
+        for p in (a, b, c):
+            await p.wait_for_selector('#layer-replay [data-act="rp-review-start"]')
+            assert await p.locator('#layer-replay [data-act="rp-next"]').is_enabled()
+        await a.click('#layer-replay [data-act="rp-first"]')                 # 操作していた人の位置から離れても、ほかの画面は動かない
+        await at(a, "0 / x")
+        await asyncio.sleep(0.3)
+        await at(b, here)
+        assert rig.room(room).review is None
         assert not rig.errors, rig.errors[:5]

@@ -148,13 +148,15 @@ function onMessage(msg) {
     case "welcome":
       S.member = msg.member; S.room = msg.room; S.view = null;
       store.setSeatKey(roomId, msg.key);
-      render(); break;
+      render();
+      syncReview(msg.room.review); break;                  // 開き直した人も、感想戦の最中なら加わる
     case "room": {
       const before = S.room && S.room.state;
       S.room = msg.room;
       if (msg.room.state === "lobby" || msg.room.state === "choosing_first") { S.view = null; S.forceLobby = false; }
       if (before !== "playing" && msg.room.state === "playing") { S.forceLobby = false; closeModal(); }
-      render(); break;
+      render();
+      syncReview(msg.room.review); break;
     }
     case "view":
       S.view = msg.view;
@@ -202,7 +204,9 @@ async function onMenu(what) {
 
 // ------------------------------------------------------------------ リプレイ（APP-019）
 // 部屋の最後の局: 終局したあと、部屋の全員が見られる。手の列はサーバが作って送ってくる
+// 感想戦（R-REP-4・APP-029）のあいだは、開いたリプレイが操作する人の位置についていく
 function openRoomReplay() {
+  if (S.replay) return;
   const fetchFrames = (viewer) => new Promise((resolve, reject) => {
     if (S.replayWait) S.replayWait.reject(new Error("前の読み込みを取り消した"));
     S.replayWait = { resolve, reject };
@@ -210,7 +214,30 @@ function openRoomReplay() {
     setTimeout(() => { if (S.replayWait && S.replayWait.resolve === resolve) { S.replayWait = null; reject(new Error("リプレイの読み込みが時間切れになった")); } }, 20000);
   });
   const me = S.board && S.board.me !== null && S.board.me !== undefined ? S.board.me : "full";
-  new Replay({ fetchFrames, viewer: me }).load(me);
+  const sync = { me: S.member, send, name: memberName };
+  S.replay = new Replay({ fetchFrames, viewer: me, sync, onClose: () => { S.replay = null; } });
+  S.replay.syncReview(S.room && S.room.review);
+  S.replay.load(me);
+}
+
+function memberName(mid) {
+  const r = S.room; if (!r) return "?";
+  const m = [...r.seats, ...(r.spectators || [])].find((x) => x && x.member === mid);
+  return m ? m.name : "?";
+}
+
+// 部屋の情報が届くたびに呼ぶ。新しく感想戦が始まったら、全員の画面でリプレイを開く（閉じた人は「リプレイ」でまた加われる）
+function syncReview(rv) {
+  if (rv && rv.n !== S.reviewSeen) {
+    S.reviewSeen = rv.n;
+    if (!S.replay) {
+      closeModal();
+      if (rv.driver !== S.member) toast(`${memberName(rv.driver)}が感想戦を始めた`);
+      openRoomReplay();
+      return;
+    }
+  }
+  if (S.replay) S.replay.syncReview(rv);
 }
 
 // 手元の記録の一覧（手元で起動したときだけ）。終局した対局を新しい順に出し、選ぶとリプレイを開く
