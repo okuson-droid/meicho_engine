@@ -36,6 +36,8 @@ def plan(sch: dict, budget: float, src_path: str | None = None) -> dict:
         while left > 0:
             room = int((budget - acc) / c) // 2 * 2
             if room < 2:
+                if not cur:
+                    raise SystemExit(f"予算 {budget} 秒では {b['kind']} の 2 局（{2 * c} 秒）も入らない")
                 chunks.append(cur)
                 cur, acc = [], 0.0
                 continue
@@ -75,14 +77,14 @@ def main(argv=None):
         src = json.load(f)
     if args.cmd == "plan":
         out = plan(src, args.budget_sec, args.schedule)
-        with open(args.out, "w", encoding="utf-8") as f:
+        with open(args.out, "w", encoding="utf-8", newline="\n") as f:
             json.dump(out, f, ensure_ascii=False, indent=1)
         print(len(out["chunks"]), "塊・", sum(b["n"] for c in out["chunks"] for b in c), "局")
         return out
     with open(args.chunks, encoding="utf-8") as f:
         chunks = json.load(f)["chunks"]
     out = chunk_schedule(src, chunks, args.k, args.schedule)
-    with open(args.out, "w", encoding="utf-8") as f:
+    with open(args.out, "w", encoding="utf-8", newline="\n") as f:
         json.dump(out, f, ensure_ascii=False, indent=1)
     return out
 

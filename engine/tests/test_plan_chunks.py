@@ -29,11 +29,13 @@ SCHED = {x: os.path.join(ROOT, "results", "drl", f"s3_it1_{x}_schedule.json") fo
 @pytest.mark.parametrize("x", ["train", "val"])
 def test_rebuild_matches_d141(tmp_path, x):
     """C-1: D-141 の割り振りとバイト単位で同じ。"""
-    out = tmp_path / "c.json"
-    P.main(["plan", "--schedule", os.path.relpath(SCHED[x], ROOT), "--out", str(out), "--budget-sec", "420"])
+    # `source` 欄は engine/ からの相対パスの文字列なので、cwd に依らないよう道具の関数を直接呼ぶ（D-105）
+    with open(SCHED[x], encoding="utf-8") as f:
+        sch = json.load(f)
+    got = json.dumps(P.plan(sch, 420.0, f"results/drl/s3_it1_{x}_schedule.json"), ensure_ascii=False, indent=1)
     with open(os.path.join(REC, f"{x}_chunks.json"), "rb") as f:
         ref = f.read()
-    assert out.read_bytes() == ref
+    assert got.encode("utf-8") == ref
 
 
 @pytest.mark.parametrize("x", ["train", "val"])
@@ -57,6 +59,23 @@ def test_chunks_cover_blocks(x):
         assert s == blk["seed0"] + blk["n"]
 
 
+def test_budget_too_small_is_rejected():
+    """C-2: 予算が 2 局ぶんに満たなければ、止まらずに落とす（前は無限ループ）。"""
+    with open(SCHED["val"], encoding="utf-8") as f:
+        sch = json.load(f)
+    with pytest.raises(SystemExit, match="予算"):
+        P.plan(sch, 20.0)
+
+
+def test_cli_plan_writes_same_bytes(tmp_path, monkeypatch):
+    """C-1: CLI の `plan` も同じバイトを書く（改行は LF 固定・engine/ から打つ前提の相対パス）。"""
+    monkeypatch.chdir(ROOT)
+    out = tmp_path / "c.json"
+    P.main(["plan", "--schedule", "results/drl/s3_it1_val_schedule.json", "--out", str(out), "--budget-sec", "420"])
+    with open(os.path.join(REC, "val_chunks.json"), "rb") as f:
+        assert out.read_bytes() == f.read()
+
+
 @pytest.mark.parametrize("x, k", [("train", 0), ("train", 77), ("train", 140), ("val", 0), ("val", 15)])
 def test_chunk_schedule_matches_manifest(x, k):
     """C-3: 塊の組み合わせ表は D-141 の manifest に入っているものと同じ。"""
@@ -70,7 +89,7 @@ def test_chunk_schedule_matches_manifest(x, k):
     assert json.loads(json.dumps(got, ensure_ascii=False)) == man["schedule"]
 
 
-def test_report_skips_incomplete_arm(tmp_path, capsys):
+def test_report_skips_incomplete_arm(tmp_path):
     """C-4: 足し継ぎの途中の候補は飛ばし、揃った候補だけで報告する（前は IndexError で落ちた）。"""
     decks = R.tune_decks()
     n = 4
