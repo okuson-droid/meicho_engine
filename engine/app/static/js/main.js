@@ -224,15 +224,45 @@ async function openRecords() {
       h("b", { text: `${(r.names || []).join(" 対 ")}` }),
       h("span", { class: "muted", text: `　${String(r.played_at || "").replace("T", " ").slice(0, 16)}・${r.kind === "cpu" ? `CPU（${r.opponent || ""}）` : "対人"}・${(r.decks || []).join(" / ")}` }),
       h("div", { class: r.problem ? "warn-text" : "muted", text: r.problem ? `再生できない: ${r.problem}` : `${winner(r)}（${reason(r)}・${(r.result || {}).turns ?? "?"} ターン）` })),
-    h("button", { class: "btn primary", dataset: { act: "record-replay" }, disabled: !!r.problem, onclick: () => { closeModal(); openRecordReplay(r); }, text: "リプレイ" }));
+    h("div", { class: "row" },
+      h("button", { class: "btn", dataset: { act: "record-export" }, onclick: () => exportRecord(r), text: "書き出す" }),
+      h("button", { class: "btn primary", dataset: { act: "record-replay" }, disabled: !!r.problem, onclick: () => { closeModal(); openRecordReplay(r); }, text: "リプレイ" })));
+  const picker = h("input", { type: "file", accept: ".json,application/json", id: "record-file", hidden: true, onchange: (e) => importRecord(e.target) });
   openModal([h("h3", { text: "記録（この PC で終局した対局）" }),
     list.length ? h("div", { class: "records" }, list.map(row)) : h("p", { class: "muted", text: "まだ記録が無い。対局を最後まで打つと、ここに出る。" }),
-    h("div", { class: "row end" }, h("button", { class: "btn", dataset: { act: "close" }, onclick: closeModal, text: "閉じる" }))], { wide: true });
+    h("div", { class: "row end" }, picker,
+      h("button", { class: "btn", dataset: { act: "record-import" }, onclick: () => picker.click(), text: "ファイルから読み込む" }),
+      h("button", { class: "btn", dataset: { act: "close" }, onclick: closeModal, text: "閉じる" }))], { wide: true });
 }
+
+// CPU 対戦の記録は自分（人間）の席の視点で開く。それ以外は全情報（終局した対局だけなので開いてよい・R-REP-3）
+const recordViewer = (kind, cpuSeat) => (kind === "cpu" && (cpuSeat === 0 || cpuSeat === 1) ? 1 - cpuSeat : "full");
 
 function openRecordReplay(r) {
   const fetchFrames = (viewer) => api("/api/records/replay", { id: r.id, viewer });
-  const me = r.kind === "cpu" && (r.cpu_seat === 0 || r.cpu_seat === 1) ? 1 - r.cpu_seat : "full";
+  const me = recordViewer(r.kind, r.cpu_seat);
+  new Replay({ fetchFrames, viewer: me }).load(me);
+}
+
+// 棋譜の書き出し（R-KIF-1・APP-028）: 記録 1 件を JSON のファイル 1 つにする。中身と名前はサーバが作る
+function exportRecord(r) {
+  const a = h("a", { href: `/api/records/export?id=${encodeURIComponent(r.id)}`, download: "" });
+  document.body.append(a); a.click(); a.remove();
+}
+
+// 棋譜の取り込み（R-KIF-2・APP-028）: 読んだファイルをサーバへ渡し、照合が通ればリプレイで開く。手元の一覧には足さない
+async function importRecord(input) {
+  const f = input.files && input.files[0];
+  input.value = "";                                   // 同じファイルをもう一度選んでも読む
+  if (!f) return;
+  let file;
+  try { file = JSON.parse(await f.text()); } catch { return toast("棋譜のファイルではない（JSON として読めない）"); }
+  const rec = (file && file.record) || {};
+  const me = recordViewer(rec.kind, (rec.opponent || {}).seat);
+  const got = {};                                     // 視点ごとの答え。同じ視点を何度開いてもファイルを送り直さない
+  const fetchFrames = async (viewer) => (got[viewer] ??= await api("/api/records/import", { file, viewer }));
+  try { await fetchFrames(me); } catch (e) { return toast(`再生できない: ${e.message}`); }   // 照合に落ちたら一覧は開いたまま
+  closeModal();
   new Replay({ fetchFrames, viewer: me }).load(me);
 }
 

@@ -6,6 +6,7 @@
 import asyncio
 import json
 import random
+import re
 
 import pytest
 
@@ -196,3 +197,76 @@ def test_replay_messages_carry_no_hidden_cards_for_a_seat(sd001, sd02):
         for f in frames[v]:
             ever |= visible_cards(f["view"])
             assert card_ids_in(f["events"]) <= ever | visible_cards(f["view"]), v
+
+
+@pytest.mark.asyncio
+async def test_record_export_and_import(tmp_path, sd001, sd02):
+    """棋譜の書き出しと取り込み（R-KIF-1・2・APP-028）。書き出したファイルは公式の素材を含まず、取り込むと同じリプレイになる。
+    行動列・結果・版が合わないファイルは理由つきで再生しない。取り込んでも手元の一覧は増えない。外へ出したサーバには口が無い。"""
+    srv, url = await boot(tmp_path, cpu=True, cpu_delay=0)
+    try:
+        room = await new_room(url)
+        a, b = await pair(url, room, sd001, sd02)
+        await asyncio.gather(a.play(), b.play())
+        async with aiohttp.ClientSession() as s:
+            async with s.get(url + "/api/records") as r:
+                rid = (await r.json())["records"][0]["id"]
+            async with s.get(url + "/api/records/export", params={"id": rid}) as r:
+                assert r.status == 200 and "attachment" in r.headers["Content-Disposition"]
+                assert re.search(r'filename="meichosim_\d{8}-\d{4}_pvp\.json"', r.headers["Content-Disposition"])
+                text = await r.text()
+            assert "■【" not in text and "http" not in text              # 公式テキスト・画像・URL を含まない（R-KIF-1・R-LAW）
+            file = json.loads(text)
+            assert file["format"] == "meichosim-record" and file["record"]["seed"] and file["record"]["decks"][0]["chara_deck"]
+            async with s.get(url + "/api/records/export", params={"id": rid.split(":")[0] + ":999"}) as r:
+                assert r.status == 404
+
+            async def imp(f, viewer="full"):
+                async with s.post(url + "/api/records/import", json={"file": f, "viewer": viewer}) as r:
+                    return r.status, await r.json()
+
+            async with s.post(url + "/api/records/replay", json={"id": rid, "viewer": 0}) as r:
+                want = await r.json()
+            st, got = await imp(file, 0)
+            assert st == 200 and got["frames"] == want["frames"] and got["result"] == want["result"] and got["source"] == {"file": True}
+
+            def edited(fn):
+                f = json.loads(text)
+                fn(f["record"])
+                return f
+            flip = edited(lambda rec: rec["result"].update(winner=1 - rec["result"]["winner"]) if rec["result"]["winner"] is not None
+                          else rec["result"].update(winner=0))
+            st, got = await imp(flip)
+            assert st == 400 and got["code"] == "bad_record" and "結果が記録と違う" in got["msg"]
+            st, got = await imp(edited(lambda rec: rec["applies"].pop(len(rec["applies"]) // 2)))
+            assert st == 400 and got["code"] == "bad_record" and "手目" in got["msg"]
+            st, got = await imp(edited(lambda rec: rec.update(rules_version="v0.1")))
+            assert st == 400 and got["code"] == "old_record" and "ルールの版が違う" in got["msg"]
+            st, got = await imp(edited(lambda rec: rec["decks"][0]["chara_deck"].__setitem__(0, "NO-SUCH-CARD")))
+            assert st == 400 and got["code"] == "bad_file" and "デッキ" in got["msg"]
+            st, got = await imp({"record": file["record"]})
+            assert st == 400 and got["code"] == "bad_file" and "目印" in got["msg"]
+            st, got = await imp({**file, "format_version": 99})
+            assert st == 400 and got["code"] == "bad_file" and "版が違う" in got["msg"]
+            async with s.post(url + "/api/records/import", data=b"{not json", headers={"Content-Type": "application/json"}) as r:
+                assert r.status == 400 and (await r.json())["code"] == "bad_file"
+            # 1 通の上限（64KB）より大きい記録も受ける。上限（1MB）を超えるものは断る
+            st, got = await imp(edited(lambda rec: rec.update(note="x" * 200_000)))
+            assert st == 200 and got["result"] == want["result"]
+            st, got = await imp(edited(lambda rec: rec.update(note="x" * 1_100_000)))
+            assert st == 400 and got["code"] == "too_large"
+            async with s.get(url + "/api/records") as r:
+                assert len((await r.json())["records"]) == 1                # 取り込みは見るだけ。一覧は増えない
+        for x in (a, b):
+            await x.close()
+    finally:
+        await srv.close()
+    srv, url = await boot(tmp_path / "out")                                  # 外へ出す形の起動
+    try:
+        async with aiohttp.ClientSession() as s:
+            async with s.get(url + "/api/records/export", params={"id": rid}) as r:
+                assert r.status == 404 and (await r.json())["code"] == "local_only"
+            async with s.post(url + "/api/records/import", json={"file": file, "viewer": 0}) as r:
+                assert r.status == 404
+    finally:
+        await srv.close()
