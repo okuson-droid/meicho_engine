@@ -837,7 +837,37 @@ async def test_replay_after_a_cpu_game_and_from_the_records(tmp_path):
         await a.wait_for_selector("#layer-replay #replay-label")
         assert (await label()).startswith(f"0 / {n} ")
         assert await a.input_value("#replay-viewer") in ("0", "1")                # CPU 対戦は自分の席の視点で開く
+
+        # 棋譜の書き出しと取り込み（R-KIF-1・2・APP-028）: 書き出したファイルを読み込むと同じリプレイが開く
+        await a.click('#layer-replay [data-act="rp-close"]')
+        await a.click("#home-records")
+        await a.wait_for_selector(".modal .record-row")
+        async with a.expect_download() as dl:
+            await a.click('.modal .record-row button[data-act="record-export"]')
+        saved = tmp_path / (await dl.value).suggested_filename
+        await (await dl.value).save_as(saved)
+        assert saved.name.startswith("meichosim_") and saved.name.endswith("_cpu.json")
+        file = json.loads(saved.read_text(encoding="utf-8"))
+        await a.set_input_files("#record-file", str(saved))
+        await a.wait_for_selector("#layer-replay #replay-label")
+        assert (await label()).startswith(f"0 / {n} ") and await a.input_value("#replay-viewer") in ("0", "1")
+        await a.select_option("#replay-viewer", "full")                          # 視点を替えても取り込んだ記録のまま
+        await a.wait_for_function("document.querySelector('#replay-viewer').value === 'full'")
+        await a.click('#layer-replay [data-act="rp-last"]')
+        assert (await label()).startswith(f"{n} / ")
+        await a.click('#layer-replay [data-act="rp-close"]')
         assert not rig.errors, rig.errors[:5]
+        # 結果を書き換えたファイルは、理由を出して再生しない（一覧は開いたまま）。断りの 400 はブラウザが控えに出すので、それだけは許す
+        r = file["record"]["result"]
+        r["winner"] = 0 if r["winner"] != 0 else 1
+        bad = tmp_path / "bad.json"
+        bad.write_text(json.dumps(file, ensure_ascii=False), encoding="utf-8")
+        await a.click("#home-records")
+        await a.wait_for_selector(".modal .record-row")
+        await a.set_input_files("#record-file", str(bad))
+        await a.wait_for_selector(".toast >> text=再生できない")
+        assert await a.locator("#layer-replay").count() == 0 and await a.locator(".modal .record-row").count() == 1
+        assert [m for _, m in rig.errors] == ["Failed to load resource: the server responded with a status of 400 (Bad Request)"], rig.errors[:5]
 
 
 FEEDBACK_WATCH = """() => {

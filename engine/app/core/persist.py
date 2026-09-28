@@ -15,8 +15,8 @@ from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Optional
 
-from .game import Game
-from .protocol import PROTOCOL_VERSION
+from .game import Game, check_deck
+from .protocol import PROTOCOL_VERSION, AppError
 
 JST = timezone(timedelta(hours=9))
 RECORD_VERSION = 3          # 現行 webapp の記録は app_version 1・2（R-DATA-6）。新アプリは 3 から
@@ -149,6 +149,62 @@ def record_problem(rec: dict) -> Optional[str]:
     if rec.get("cards_version") != cards_version():
         return "カードデータの版が違う（カードの追加や訂正のあとの記録ではない）"
     return None
+
+
+FILE_FORMAT = "meichosim-record"   # 書き出したファイルの目印（R-KIF-1・APP-028）
+FILE_VERSION = 1                     # ファイルの包みの版。中の記録の版は `app_version`
+MAX_FILE_BYTES = 1024 * 1024         # 取り込むファイルの上限。長い局（5,000 手）でも 300KB ほど
+
+
+def export_file(rec: dict) -> dict:
+    """記録 1 件を、書き出すファイルの中身にする（R-KIF-1）。記録そのものに公式テキストと画像は無い（番号と行動だけ）。"""
+    return {"format": FILE_FORMAT, "format_version": FILE_VERSION, "record": rec}
+
+
+def export_name(rec: dict) -> str:
+    """書き出すファイルの名前。英数字だけにする（どの OS・どのブラウザでも崩れない）。"""
+    when = re.sub(r"\D", "", str(rec.get("played_at") or ""))[:12]
+    kind = rec.get("kind") if rec.get("kind") in ("cpu", "pvp", "practice") else "game"
+    return f"meichosim_{when[:8]}-{when[8:12]}_{kind}.json" if len(when) == 12 else f"meichosim_{kind}.json"
+
+
+def import_file(obj) -> dict:
+    """読み込んだファイルの中身から記録を取り出す。形が違えば理由つきの `AppError("bad_file")`（R-KIF-2）。
+
+    ここでは形だけを検める。版の照合は `record_problem`、行動列と結果の照合は `replay.build` が行う。
+    """
+    def bad(why: str):
+        return AppError("bad_file", f"棋譜のファイルではない（{why}）")
+
+    if not isinstance(obj, dict) or obj.get("format") != FILE_FORMAT:
+        raise bad("目印が無い")
+    if obj.get("format_version") != FILE_VERSION:
+        raise AppError("bad_file", f"ファイルの形式の版が違う（{obj.get('format_version')}。いまは {FILE_VERSION}）")
+    rec = obj.get("record")
+    if not isinstance(rec, dict):
+        raise bad("記録が無い")
+    if not isinstance(rec.get("seed"), int) or isinstance(rec.get("seed"), bool):
+        raise bad("シードが無い")
+    decks = rec.get("decks")
+    if not isinstance(decks, list) or len(decks) != 2:
+        raise bad("デッキが 2 つない")
+    for d in decks:
+        try:
+            check_deck(d)
+        except AppError as e:
+            raise bad(f"デッキ: {e.msg}") from None
+    applies = rec.get("applies")
+    if not isinstance(applies, list) or not all(isinstance(row, dict) for row in applies):
+        raise bad("行動列の形が違う")
+    if rec.get("resigned") not in (None, 0, 1) or isinstance(rec.get("resigned"), bool):
+        raise bad("投了の欄の形が違う")
+    res = rec.get("result")
+    if not isinstance(res, dict) or res.get("winner") not in (None, 0, 1) or not isinstance(res.get("reason"), str):
+        raise bad("結果の形が違う")
+    names = rec.get("names")
+    if not (isinstance(names, list) and len(names) == 2 and all(isinstance(n, str) for n in names)):
+        raise bad("対局者の名前の形が違う")
+    return rec
 
 
 def legacy_view(rec: dict) -> dict:
