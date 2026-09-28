@@ -211,9 +211,14 @@ def report(args) -> dict:
     with open(args.inp, encoding="utf-8") as f:
         data = json.load(f)
     games = games_of(data)
-    arms = [a for a in data["arms"] if all(f"{a}|{x}|{y}" in data["results"] for x, y in blocks(data["decks"]))]
+    # 全ブロックが n 局そろった候補だけを報告する。足し継ぎの途中（D-138）の候補は飛ばし、
+    # 足りないブロックの数を `incomplete` に残す（前はキーの有無だけを見ていて IndexError で落ちた）。
+    short = {a: sum(len(data["results"].get(f"{a}|{x}|{y}", [])) < data["n"] for x, y in blocks(data["decks"]))
+             for a in data["arms"]}
+    arms = [a for a in data["arms"] if short[a] == 0]
     out = {"version": TOOL_VERSION, "n_per_block": data["n"], "decks": data["decks"],
-           "scores": {a: score_ci(games, scores_of(data, a)) for a in arms}, "compare": {}}
+           "scores": {a: score_ci(games, scores_of(data, a)) for a in arms}, "compare": {},
+           "incomplete": {a: k for a, k in short.items() if k}}
     pairs = [(args.new, args.old)] + [tuple(p.split(":")) for p in (args.also or [])]
     for new, old in pairs:
         if new in arms and old in arms:
