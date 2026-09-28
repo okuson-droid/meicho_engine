@@ -67,10 +67,10 @@
 
 ## 5. 再開に要る外部資源
 
-- PC のフォルダ `C:\Users\奥村優斗\OneDrive\ドキュメント\eclipse_workフォルダ\meicho_engine_v0.1` への接続（チャットごとに許可の取り直しが要ることがある）
+- PC のフォルダ `C:\Users\<ユーザー名>\OneDrive\ドキュメント\eclipse_workフォルダ\meicho_engine_v0.1` への接続（チャットごとに許可の取り直しが要ることがある）
 - Claude Docs: 計画書 `36c70594-96e6-4ff6-be45-9c160699273c`／要件定義書 `644bd767-54a9-4b24-8a93-0ad439d4359a`／**基本設計書 `ac841c45-9b40-455a-8b1a-4dc573cc27f0`**（https://claude.ai/code/artifact/ac841c45-9b40-455a-8b1a-4dc573cc27f0 。今回作った。2〜6 章は APP-004・006・007・009・010 の要約、7 章がサーバの置き場所、8 章が確かめていないこと）
 - マスターの PC にだけあるもの（接続フォルダの外なので、こちらからは見えない）:
-  秘密鍵 `C:\Users\奥村優斗\.meichosim\signing_key.txt`（控えは PC の外に取った・マスターの報告）／公開の設定と合言葉 `C:\Users\奥村優斗\.meichosim\publish.json`／
+  秘密鍵 `C:\Users\<ユーザー名>\.meichosim\signing_key.txt`（控えは PC の外に取った・マスターの報告）／公開の設定と合言葉 `C:\Users\<ユーザー名>\.meichosim\publish.json`／
   置き場の元 `C:\meicho_dist\site\`（`functions\`・`public\`）／起動役の出力 `C:\meicho_dist\launcher\`／マスターが遊ぶ場所 `C:\meicho_dist\play\MeichoSim\`／2026-09-21 の対局の記録の控え `C:\meicho_dist\data_backup_20260922`／
   2026-09-21 の手元の試しの更新元 `C:\meicho_dist\feed`（もう使わない。消してよい）
 - Cloudflare: マスターのアカウント・Pages のプロジェクト `meichosim-hhdmauhgjr`・秘密の設定 `FEED_KEY`。**合言葉の値はリポジトリのどこにも書いていない**（書かない）
