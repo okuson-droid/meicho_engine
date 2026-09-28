@@ -14,6 +14,7 @@ Claude outputs/
 engine/results/**/*.bin
 engine/results/**/*.bak.json
 engine/results/models/s2v_id_ens3.json
+engine/results/models/s3v*_ens3.json
 engine/rust/target/
 engine/rust/dist/
 engine/_shim/
