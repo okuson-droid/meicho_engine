@@ -1,0 +1,305 @@
+{
+ "train": "/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c000,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c001,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c002,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c003,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c004,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c005,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c006,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c007,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c008,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c009,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c010,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c011,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c012,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c013,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c014,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c015,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c016,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c017,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c018,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c019,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c020,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c021,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c022,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c023,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c024,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c025,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c026,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c027,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c028,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c029,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c030,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c031,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c032,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c033,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c034,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c035,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c036,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c037,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c038,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c039,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c040,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c041,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c042,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c043,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c044,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c045,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c046,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c047,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c048,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c049,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c050,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c051,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c052,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c053,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c054,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c055,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c056,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c057,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c058,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c059,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c060,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c061,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c062,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c063,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c064,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c065,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c066,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c067,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c068,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c069,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c070,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c071,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c072,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c073,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c074,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c075,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c076,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c077,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c078,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c079,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c080,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c081,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c082,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c083,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c084,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c085,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c086,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c087,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c088,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c089,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c090,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c091,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c092,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c093,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c094,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c095,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c096,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c097,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c098,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c099,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c100,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c101,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c102,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c103,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c104,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c105,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c106,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c107,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c108,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c109,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c110,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c111,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c112,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c113,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c114,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c115,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c116,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c117,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c118,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c119,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c120,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c121,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c122,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c123,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c124,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c125,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c126,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c127,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c128,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c129,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c130,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c131,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c132,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c133,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c134,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c135,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c136,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c137,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c138,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c139,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c140",
+ "valid": "/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/val.c000,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/val.c001,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/val.c002,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/val.c003,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/val.c004,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/val.c005,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/val.c006,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/val.c007,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/val.c008,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/val.c009,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/val.c010,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/val.c011,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/val.c012,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/val.c013,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/val.c014,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/val.c015",
+ "epochs": 6,
+ "hidden": 256,
+ "depth": 2,
+ "phead": 128,
+ "lr": 0.001,
+ "bs": 1024,
+ "seed": 2,
+ "lam": 0.7,
+ "init": "results/models/s2v_id_s2.json",
+ "n_train": 587665,
+ "n_valid": 63706,
+ "chance_acc_valid": 0.28021252546315123,
+ "log": [
+  {
+   "epoch": 1,
+   "train_loss": 1.6976613520147847,
+   "valid": {
+    "n": 63706,
+    "v_logloss": 0.6276648773546889,
+    "v_acc": 0.6328289329105579,
+    "t_logloss": 0.650625453131377,
+    "p_logloss": 1.0250639979088507,
+    "p_acc": 0.5739961699055034,
+    "p_acc_by_phase": {
+     "setup": [
+      1.0,
+      960
+     ],
+     "mulligan": [
+      0.9822916666666667,
+      960
+     ],
+     "action": [
+      0.48741543971348983,
+      20104
+     ],
+     "clash": [
+      0.5507911244265519,
+      10681
+     ],
+     "choice": [
+      0.6164642681496614,
+      26433
+     ],
+     "rush": [
+      0.6025316455696202,
+      4345
+     ],
+     "discard": [
+      0.3094170403587444,
+      223
+     ]
+    }
+   },
+   "sec": 82.62312459945679
+  },
+  {
+   "epoch": 2,
+   "train_loss": 1.6446234888972158,
+   "valid": {
+    "n": 63706,
+    "v_logloss": 0.6290788108900653,
+    "v_acc": 0.629469751671742,
+    "t_logloss": 0.6531473262244235,
+    "p_logloss": 1.0135839696589608,
+    "p_acc": 0.5792233070668383,
+    "p_acc_by_phase": {
+     "setup": [
+      1.0,
+      960
+     ],
+     "mulligan": [
+      0.9822916666666667,
+      960
+     ],
+     "action": [
+      0.49164345403899723,
+      20104
+     ],
+     "clash": [
+      0.5584683082108417,
+      10681
+     ],
+     "choice": [
+      0.622895622895623,
+      26433
+     ],
+     "rush": [
+      0.6011507479861911,
+      4345
+     ],
+     "discard": [
+      0.3183856502242152,
+      223
+     ]
+    }
+   },
+   "sec": 78.40208649635315
+  },
+  {
+   "epoch": 3,
+   "train_loss": 1.6111788029150724,
+   "valid": {
+    "n": 63706,
+    "v_logloss": 0.6328375287637251,
+    "v_acc": 0.6254355947634446,
+    "t_logloss": 0.6543587187719514,
+    "p_logloss": 1.0119528461617135,
+    "p_acc": 0.5808244121432832,
+    "p_acc_by_phase": {
+     "setup": [
+      1.0,
+      960
+     ],
+     "mulligan": [
+      0.9822916666666667,
+      960
+     ],
+     "action": [
+      0.4969160366096299,
+      20104
+     ],
+     "clash": [
+      0.5589364291732983,
+      10681
+     ],
+     "choice": [
+      0.623538758370219,
+      26433
+     ],
+     "rush": [
+      0.5960874568469505,
+      4345
+     ],
+     "discard": [
+      0.3004484304932735,
+      223
+     ]
+    }
+   },
+   "sec": 80.23632216453552
+  },
+  {
+   "epoch": 4,
+   "train_loss": 1.5788281076087285,
+   "valid": {
+    "n": 63706,
+    "v_logloss": 0.6325804042998795,
+    "v_acc": 0.6268797287539635,
+    "t_logloss": 0.6560342471513427,
+    "p_logloss": 1.0117796299480228,
+    "p_acc": 0.5794587636957272,
+    "p_acc_by_phase": {
+     "setup": [
+      1.0,
+      960
+     ],
+     "mulligan": [
+      0.9822916666666667,
+      960
+     ],
+     "action": [
+      0.4941305212892957,
+      20104
+     ],
+     "clash": [
+      0.5609025372156166,
+      10681
+     ],
+     "choice": [
+      0.621231036961374,
+      26433
+     ],
+     "rush": [
+      0.5986191024165708,
+      4345
+     ],
+     "discard": [
+      0.2914798206278027,
+      223
+     ]
+    }
+   },
+   "sec": 78.24462699890137
+  },
+  {
+   "epoch": 5,
+   "train_loss": 1.5492565923024644,
+   "valid": {
+    "n": 63706,
+    "v_logloss": 0.6344029206187408,
+    "v_acc": 0.6233478793206292,
+    "t_logloss": 0.6562219667115833,
+    "p_logloss": 1.0157009983790282,
+    "p_acc": 0.5802279220167645,
+    "p_acc_by_phase": {
+     "setup": [
+      1.0,
+      960
+     ],
+     "mulligan": [
+      0.9822916666666667,
+      960
+     ],
+     "action": [
+      0.49447871070433747,
+      20104
+     ],
+     "clash": [
+      0.5612770339855818,
+      10681
+     ],
+     "choice": [
+      0.6227442969016003,
+      26433
+     ],
+     "rush": [
+      0.5972382048331415,
+      4345
+     ],
+     "discard": [
+      0.3094170403587444,
+      223
+     ]
+    }
+   },
+   "sec": 79.77357840538025
+  },
+  {
+   "epoch": 6,
+   "train_loss": 1.5282905681285024,
+   "valid": {
+    "n": 63706,
+    "v_logloss": 0.6332875176531155,
+    "v_acc": 0.6252158352431482,
+    "t_logloss": 0.6563267705878616,
+    "p_logloss": 1.0154866653982257,
+    "p_acc": 0.581766238658839,
+    "p_acc_by_phase": {
+     "setup": [
+      1.0,
+      960
+     ],
+     "mulligan": [
+      0.9822916666666667,
+      960
+     ],
+     "action": [
+      0.49815957023477914,
+      20104
+     ],
+     "clash": [
+      0.5632431420279,
+      10681
+     ],
+     "choice": [
+      0.6230091173911398,
+      26433
+     ],
+     "rush": [
+      0.5958573072497123,
+      4345
+     ],
+     "discard": [
+      0.3183856502242152,
+      223
+     ]
+    }
+   },
+   "sec": 78.91364598274231
+  }
+ ],
+ "select": "best_v",
+ "selected_epoch": 1,
+ "calibration": {
+  "a": 3.751479387283325,
+  "b": -2.6448919773101807,
+  "c": 0.9169878959655762,
+  "n": 570001,
+  "scale": "bulk",
+  "sentinel_frac": 0.0,
+  "spread": 0.19389808177947998,
+  "logloss": 0.6392232179641724,
+  "base": 0.6845121544706112,
+  "useful": true
+ },
+ "league_mode": "keep",
+ "league_seeds": null,
+ "n_league_train": 0,
+ "n_v_train": 587665,
+ "vtarget": "max",
+ "calib_scale": "bulk",
+ "calib_by": "none",
+ "distil_from": null,
+ "n_fresh_used": 0,
+ "wd": 0.0,
+ "wv": 1.0,
+ "wp": 1.0,
+ "card_profile": null,
+ "n_params_trained": 632194,
+ "n_params_exported": 632194
+}
