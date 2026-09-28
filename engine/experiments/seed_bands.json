@@ -612,7 +612,7 @@
    "start": 845000,
    "end": 856999,
    "kind": "train",
-   "purpose": "汎用 AI 段階3 反復 1 の学習の記録（D-138・D-139 追記 1）。`make_s2_schedule.py --n-total 10000 --teacher netfree_v`（葉は s2v_id_ens3・τ は下見で決める）を `--parts 50` で `record_mix.py` に。予備はその後ろ。**評価に使用禁止**（記録の帯）。",
+   "purpose": "汎用 AI 段階3 反復 1 の学習の記録（D-138・D-139 追記 1・D-140 追記 1・D-141）。`make_s2_schedule.py --n-total 5000 --teacher netfree_v`（葉は s2v_id_ens3・τ = 0.006）→ 4,896 局（845000..849895）。1 回の実行が 10 分に収まるよう、ブロックをシードの連続した小ブロックに割った 141 塊で `record_mix.py` に（`results/drl/s3_it1_rec/train_chunks.json`）。予備 849896..856999。**評価に使用禁止**（記録の帯）。",
    "owner": "experiments/make_s2_schedule.py / record_mix.py",
    "date": "2026-09-27"
   },
@@ -620,7 +620,7 @@
    "start": 857000,
    "end": 858999,
    "kind": "train",
-   "purpose": "汎用 AI 段階3 反復 1 の別帯の検証の記録（V の学習の当てはまりを見る held-out・D-138・D-139 追記 1）。同じ生成器を `--n-total 1000 --parts 5` で。予備はその後ろ。**学習にも強さの評価にも使用禁止**（V の学習の検証用の記録だけ）。",
+   "purpose": "汎用 AI 段階3 反復 1 の別帯の検証の記録（V の学習の当てはまりを見る held-out・D-138・D-139 追記 1・D-140 追記 1・D-141）。同じ生成器を `--n-total 500` で → 528 局（857000..857527）を 16 塊で（`val_chunks.json`）。予備 857528..858999。**学習にも強さの評価にも使用禁止**（V の学習の検証用の記録だけ）。",
    "owner": "experiments/make_s2_schedule.py / record_mix.py",
    "date": "2026-09-27"
   }
