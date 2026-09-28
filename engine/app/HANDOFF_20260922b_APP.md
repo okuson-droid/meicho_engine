@@ -65,7 +65,7 @@
 
 ## 5. 再開に要る外部資源
 
-- PC のフォルダ `C:\Users\奥村優斗\OneDrive\ドキュメント\eclipse_workフォルダ\meicho_engine_v0.1` への接続（チャットごとに許可の取り直しが要ることがある）
+- PC のフォルダ `C:\Users\<ユーザー名>\OneDrive\ドキュメント\eclipse_workフォルダ\meicho_engine_v0.1` への接続（チャットごとに許可の取り直しが要ることがある）
 - Claude Docs: 計画書・要件定義書・基本設計書（ID は前の引継ぎ書 §5）。**基本設計書は APP-012〜014 を反映していない**（7 章に Origin の検査、画像とデッキメーカーの節が無い）。直すなら次の便で
 - デッキメーカーのアーティファクト版: https://claude.ai/artifact/XBrAp7dQJ1soSQqjQvEDaQ （更新を止めた。読むだけ）
 - マスターの PC にだけあるもの（前の引継ぎ書 §5 の一覧に足す分）: `C:\meicho_dist\tunnel_data`（トンネルの試しの対局の保存先。消してよい）／cloudflared（winget で入れた）

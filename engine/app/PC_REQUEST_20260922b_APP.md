@@ -10,7 +10,7 @@
 
 ## 1. どこで
 
-    A: C:\Users\奥村優斗\OneDrive\ドキュメント\eclipse_workフォルダ\meicho_engine_v0.1\engine     （窓 1。py -3.11 の行）
+    A: C:\Users\<ユーザー名>\OneDrive\ドキュメント\eclipse_workフォルダ\meicho_engine_v0.1\engine     （窓 1。py -3.11 の行）
     B: どこでもよい                                                                              （窓 2。cloudflared の行）
 
 対局の保存先は `C:\meicho_dist\tunnel_data`（OneDrive の外。遊ぶ用の `play` の記録とは分ける。無ければサーバが作る）。
@@ -19,7 +19,7 @@
 
 ### 2.1 書き戻しが載っているかと、検査（窓 1・A）
 
-    cd /d "C:\Users\奥村優斗\OneDrive\ドキュメント\eclipse_workフォルダ\meicho_engine_v0.1\engine"
+    cd /d "C:\Users\<ユーザー名>\OneDrive\ドキュメント\eclipse_workフォルダ\meicho_engine_v0.1\engine"
     findstr /c:"def origin_guard" app\server.py
     py -3.11 -m pytest app\tests\test_server.py -q
 

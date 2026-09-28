@@ -8,13 +8,13 @@
 
 ## 1. どこで
 
-    C:\Users\奥村優斗\OneDrive\ドキュメント\eclipse_workフォルダ\meicho_engine_v0.1\engine
+    C:\Users\<ユーザー名>\OneDrive\ドキュメント\eclipse_workフォルダ\meicho_engine_v0.1\engine
 
-出力先は OneDrive の外の `C:\meicho_dist\`（無ければ道具が作る）。秘密鍵は `C:\Users\奥村優斗\.meichosim\` にできる。
+出力先は OneDrive の外の `C:\meicho_dist\`（無ければ道具が作る）。秘密鍵は `C:\Users\<ユーザー名>\.meichosim\` にできる。
 
 ## 2. 何を打つか（上から 1 行ずつ）
 
-    cd /d "C:\Users\奥村優斗\OneDrive\ドキュメント\eclipse_workフォルダ\meicho_engine_v0.1\engine"
+    cd /d "C:\Users\<ユーザー名>\OneDrive\ドキュメント\eclipse_workフォルダ\meicho_engine_v0.1\engine"
     py -3.11 -m pip install -r app\requirements.txt pyinstaller
     py -3.11 -m pytest app\tests\test_release.py -q
     py -3.11 -m app.release.publish init --feed-dir C:\meicho_dist\feed --feed-url C:\meicho_dist\feed
@@ -34,7 +34,7 @@
 ## 3. 成功したらどう見えるか
 
 - `pytest`: 最後の行が `33 passed`（`cryptography` が入っていなければ `32 passed, 1 skipped`）
-- `init`: 「秘密鍵を作った: C:\Users\奥村優斗\.meichosim\signing_key.txt」「公開鍵: （16 進 64 桁）」。`app\mslauncher\pubkey.txt` ができる
+- `init`: 「秘密鍵を作った: C:\Users\<ユーザー名>\.meichosim\signing_key.txt」「公開鍵: （16 進 64 桁）」。`app\mslauncher\pubkey.txt` ができる
 - `release`: `[1/5] 組み立て` 〜 `[5/5] 配置` と進み、途中に「1 局（SD001・やさしい）: normal」「1 局（SD02・やさしい）: normal」「OK」、最後に「公開した: 版 2026.09.21-1」（日付は実行日）
 - `launcher`: 最後に「実行ファイルの煙テスト: OK」「固めたフォルダの走査: 合格」「配る zip: C:\meicho_dist\launcher\MeichoSim_launcher1_<版>.zip」
 - exe: 黒い窓に「版 … を起動している…」「起動した: http://127.0.0.1:8765/」。ブラウザにホームが開く
@@ -46,7 +46,7 @@
 2. ホームの一番下の「設定・版と更新の履歴」→「版と更新」に、版の名前と「最新の版を使っている」が出る
 3. 更新の試しのあと、同じ場所の「更新の履歴」を開くと「二回目」「最初の公開」の 2 行がある
 4. `C:\meicho_dist\launcher\dist\MeichoSim\data\games\` に対局の記録（`.jsonl`）ができていて、更新のあとも残っている
-5. 秘密鍵 `C:\Users\奥村優斗\.meichosim\signing_key.txt` の控えを USB メモリなど PC の外に 1 つ取る（誰にも渡さない）
+5. 秘密鍵 `C:\Users\<ユーザー名>\.meichosim\signing_key.txt` の控えを USB メモリなど PC の外に 1 つ取る（誰にも渡さない）
 
 ## 5. 転びやすいところと症状
 

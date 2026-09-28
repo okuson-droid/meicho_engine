@@ -61,9 +61,9 @@
 
 ## 5. 再開に要る外部資源
 
-- PC のフォルダ `C:\Users\奥村優斗\OneDrive\ドキュメント\eclipse_workフォルダ\meicho_engine_v0.1` への接続（次のチャットで許可の取り直しが要ることがある）
+- PC のフォルダ `C:\Users\<ユーザー名>\OneDrive\ドキュメント\eclipse_workフォルダ\meicho_engine_v0.1` への接続（次のチャットで許可の取り直しが要ることがある）
 - Claude Docs: 計画書 `36c70594-96e6-4ff6-be45-9c160699273c`／要件定義書 `644bd767-54a9-4b24-8a93-0ad439d4359a`。基本設計書は未作成
-- マスターの PC にだけあるもの（まだ無い。依頼書を回すとできる）: 秘密鍵 `C:\Users\奥村優斗\.meichosim\`／更新元のフォルダ `C:\meicho_dist\feed`／起動役 `C:\meicho_dist\launcher`
+- マスターの PC にだけあるもの（まだ無い。依頼書を回すとできる）: 秘密鍵 `C:\Users\<ユーザー名>\.meichosim\`／更新元のフォルダ `C:\meicho_dist\feed`／起動役 `C:\meicho_dist\launcher`
 - 作業環境で固めた Linux 版の起動役と、設定画面の画面写真は使い捨て（残っていなくてよい）
 
 ## 6. 確かめていないこと

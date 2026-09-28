@@ -11,14 +11,14 @@
 
 2 か所を行き来する。**wrangler（Cloudflare の道具）は必ず `C:\meicho_dist\site` で打つ**（打った場所に `.wrangler` という作業フォルダを作るので、OneDrive の中のリポジトリで打たない）。
 
-    A: C:\Users\奥村優斗\OneDrive\ドキュメント\eclipse_workフォルダ\meicho_engine_v0.1\engine     （py -3.11 の行）
+    A: C:\Users\<ユーザー名>\OneDrive\ドキュメント\eclipse_workフォルダ\meicho_engine_v0.1\engine     （py -3.11 の行）
     B: C:\meicho_dist\site                                                                      （wrangler の行）
 
 ## 2. 何を打つか（上から 1 行ずつ）
 
 ### 2.1 準備と検査（A）
 
-    cd /d "C:\Users\奥村優斗\OneDrive\ドキュメント\eclipse_workフォルダ\meicho_engine_v0.1\engine"
+    cd /d "C:\Users\<ユーザー名>\OneDrive\ドキュメント\eclipse_workフォルダ\meicho_engine_v0.1\engine"
     node --version
     py -3.11 -m pytest app\tests\test_release.py -q
     xcopy /E /I /Y C:\meicho_dist\launcher\dist\MeichoSim\data C:\meicho_dist\data_backup_20260922
@@ -39,7 +39,7 @@
 
 ### 2.3 合言葉を作り、置き場に教える（A → B）
 
-    cd /d "C:\Users\奥村優斗\OneDrive\ドキュメント\eclipse_workフォルダ\meicho_engine_v0.1\engine"
+    cd /d "C:\Users\<ユーザー名>\OneDrive\ドキュメント\eclipse_workフォルダ\meicho_engine_v0.1\engine"
     py -3.11 -m app.release.publish init --feed-dir C:\meicho_dist\site\public --feed-url https://meichosim-hhdmauhgjr.pages.dev --feed-key new --after "wrangler pages deploy public --project-name meichosim-hhdmauhgjr --branch main --cwd C:\meicho_dist\site"
     type %USERPROFILE%\.meichosim\publish.json
 
@@ -52,7 +52,7 @@
 
 ### 2.4 公開して、起動役を作り直す（A）
 
-    cd /d "C:\Users\奥村優斗\OneDrive\ドキュメント\eclipse_workフォルダ\meicho_engine_v0.1\engine"
+    cd /d "C:\Users\<ユーザー名>\OneDrive\ドキュメント\eclipse_workフォルダ\meicho_engine_v0.1\engine"
     py -3.11 -m app.release.publish release --notes "Cloudflare Pages への最初の公開"
     py -3.11 -m app.release.publish launcher --out C:\meicho_dist\launcher --author "オクソン"
 
