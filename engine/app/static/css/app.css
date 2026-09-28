@@ -283,6 +283,8 @@ input[type="checkbox"] { width: 22px; height: 22px; accent-color: var(--accent);
 .records { display: grid; gap: var(--sp-2); margin-bottom: var(--sp-3); max-height: 60dvh; overflow: auto; }
 .record-row { display: flex; gap: var(--sp-2); align-items: center; justify-content: space-between; border: 1px solid var(--felt-line); border-radius: var(--r-m); padding: var(--sp-2); }
 .record-row .rec-main { min-width: 0; }
+.record-row > .row { flex: none; justify-content: flex-end; }
+@media (max-width: 560px) { .record-row { flex-wrap: wrap; } .record-row > .row { margin-left: auto; } }
 
 /* ---------------------------------------------------------------- 知人との対戦の感想（APP-022） */
 /* 先攻・後攻の札。ライフの名前の横と、準備の案内に出す */
