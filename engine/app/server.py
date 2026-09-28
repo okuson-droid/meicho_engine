@@ -16,6 +16,7 @@ from __future__ import annotations
 
 import argparse
 import asyncio
+import hashlib
 import ipaddress
 import json
 import logging
@@ -33,7 +34,8 @@ from .core import describe
 from .core import protocol as P
 from .core import release
 from .core import replay as replay_mod
-from .core.persist import ENGINE_DIR, SeedBand, Store, cards_version, make_record, record_problem, rules_version
+from .core.persist import (ENGINE_DIR, MAX_FILE_BYTES, SeedBand, Store, cards_version, export_file, export_name,
+                           import_file, make_record, record_problem, rules_version)
 from .core.protocol import AppError
 from .core.room import CPU_ID, CPU_SEAT, FINISHED, PLAYING, Room, RoomManager
 
@@ -631,16 +633,65 @@ async def record_replay(request: web.Request) -> web.Response:
         rec = hub.store.get_record(body.get("id"))
         if rec is None:
             raise AppError("no_record", "その記録は無い")
-        why = record_problem(rec)
-        if why:
-            raise AppError("old_record", why)
-        dump = {"seed": rec["seed"], "decks": rec["decks"], "applies": rec["applies"], "resigned": rec.get("resigned")}
-        frames = await hub.frames_for(("rec", body.get("id")), dump, rec.get("result"))
+        frames = await _record_frames(hub, ("rec", body.get("id")), rec)
     except AppError as e:
         return web.json_response({"ok": False, "code": e.code, "msg": e.msg}, status=400)
-    msg = replay_mod.message(frames, viewer, names=rec.get("names") or ["", ""], result=rec.get("result"),
-                             source={"record": body.get("id")})
+    return _replay_response(frames, viewer, rec, {"record": body.get("id")})
+
+
+async def _record_frames(hub: "Hub", key, rec: dict) -> dict:
+    """記録 1 件のリプレイの手の列。版が違えば再生しない。当て直した行動列と結果が記録と合わなければ理由つきで断る（R-KIF-2）。"""
+    why = record_problem(rec)
+    if why:
+        raise AppError("old_record", why)
+    dump = {"seed": rec["seed"], "decks": rec["decks"], "applies": rec["applies"], "resigned": rec.get("resigned")}
+    return await hub.frames_for(key, dump, rec.get("result"))
+
+
+def _replay_response(frames: dict, viewer, rec: dict, source: dict) -> web.Response:
+    msg = replay_mod.message(frames, viewer, names=rec.get("names") or ["", ""], result=rec.get("result"), source=source)
     return web.json_response({"ok": True, **msg}, dumps=lambda o: json.dumps(o, ensure_ascii=False, separators=(",", ":")))
+
+
+async def record_export(request: web.Request) -> web.Response:
+    """手元の記録 1 件をファイルにする（R-KIF-1・APP-028）。版が違う記録も書き出せる（結果と行動列は残す・R-DATA-5）。"""
+    hub: Hub = request.app[HUB]
+    _local_only(hub)
+    rec = hub.store.get_record(request.query.get("id"))
+    if rec is None:
+        return web.json_response({"ok": False, "code": "no_record", "msg": "その記録は無い"}, status=404)
+    body = json.dumps(export_file(rec), ensure_ascii=False, indent=1) + "\n"
+    return web.Response(body=body.encode("utf-8"), content_type="application/json", charset="utf-8",
+                        headers={"Content-Disposition": f'attachment; filename="{export_name(rec)}"'})
+
+
+async def record_import(request: web.Request) -> web.Response:
+    """書き出したファイルを取り込んで再生する（R-KIF-2・APP-028）。手元起動のときだけ。
+
+    本文は `{"file": ファイルの中身, "viewer": 視点}`。形・版・行動列・結果を照合し、合わなければ理由を返して再生しない。
+    取り込んだ記録は手元の一覧には足さない（見るだけ。同じファイルを何度読んでも一覧が増えない）。
+    """
+    hub: Hub = request.app[HUB]
+    _local_only(hub)
+    try:
+        raw = bytearray()                       # 1 通の上限（MAX_MSG）より大きい記録も受ける。上限は別に MAX_FILE_BYTES
+        while chunk := await request.content.read(64 * 1024):
+            raw += chunk
+            if len(raw) > MAX_FILE_BYTES:
+                raise AppError("too_large", "ファイルが大きすぎる")
+        try:
+            body = json.loads(raw)
+        except ValueError:
+            raise AppError("bad_file", "棋譜のファイルではない（JSON として読めない）") from None
+        if not isinstance(body, dict):
+            raise AppError("bad_message", "JSON の辞書を送ってほしい")
+        viewer = replay_mod.parse_viewer(body.get("viewer", 0))
+        rec = import_file(body.get("file"))
+        digest = hashlib.sha256(json.dumps(rec, sort_keys=True, ensure_ascii=False).encode("utf-8")).hexdigest()
+        frames = await _record_frames(hub, ("imp", digest), rec)
+    except AppError as e:
+        return web.json_response({"ok": False, "code": e.code, "msg": e.msg}, status=400)
+    return _replay_response(frames, viewer, rec, {"file": True})
 
 
 async def cards(request: web.Request) -> web.Response:
@@ -717,6 +768,8 @@ def create_app(data_dir, *, seed_source=None, clock=time.time, flood_per_sec=FLO
     app.router.add_get("/api/decks", decks)
     app.router.add_get("/api/records", records)
     app.router.add_post("/api/records/replay", record_replay)
+    app.router.add_get("/api/records/export", record_export)
+    app.router.add_post("/api/records/import", record_import)
     if STATIC_DIR.exists():
         app.router.add_static("/static/", STATIC_DIR)
     app.cleanup_ctx.append(_sweeper)
