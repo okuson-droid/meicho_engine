@@ -917,3 +917,16 @@ PC 幅で、尋ねる画面と「候補が 1 つなら確認だけ」を画面�
 - マスターの実物での使い勝手
 - 縦持ちでは、リプレイの帯のボタンの列が前から画面の右へはみ出している（APP-019 からの持ち越し。★もその右側に隠れる）。アプリは横向きを勧めているので今回は直していない
 - 旧アプリの記録（`app_version` 1・2）の印の取り込み（R-DATA-6）は、まだ作っていない
+
+## APP-031 サーバを bat で起動する（2026-09-29・マスターの要望「サーバーの起動に毎回コマンドを打つのが面倒なので bat ファイルを作って簡単に起動できるようにしてほしい」／実装は Claude Code）
+
+**作り。**`engine/app/` に 2 つ置いた。どちらもダブルクリックで立ち、少し待つとブラウザで開く。
+- `start_local.bat`: 手元起動（`python -m app.server --data "%LOCALAPPDATA%\MeichoSim\data"`）。`--host` も `--allow-origin` も付けないので、CPU 対戦と「記録を見る」が出る（APP-012）
+- `start_friends.bat`: 知人と遊ぶ形（APP-020）。Tailscale Funnel を別の窓で立て（`--bg` は使わない）、`--allow-origin <固定の URL>` でサーバを立てる。固定の URL は公開のリポジトリに書かない決まり（`CLAUDE.md` §4）なので、最初の 1 回だけ尋ね、`%USERPROFILE%\.meichosim\funnel_url.txt` に覚える。形（`https://` で始まり `.ts.net` で終わる）が違えば止める
+- 共通: bat の置き場所から `engine/` へ移る（作業ツリーの経路を書かない）。aiohttp の入った Python を `py -3.11` → `py -3` → `python` の順に探す。見つからなければ入れ方を出して止まる。サーバが止まったら窓を閉じずに待つ（エラーを読めるように）
+- 文字と改行: UTF-8 で書き、先頭で `chcp 65001` に切り替える。改行は CRLF で、`engine/app/.gitattributes` の `*.bat text eol=crlf` で取り出しも CRLF に固定した（LF だと cmd が行を読み違えることがある）
+- 配布版には入らない（`publish.APP_ALLOW` に無い）
+
+**確かめたこと（作業環境・Linux）。**`tests/test_launch_bat.py`: CRLF・UTF-8・先頭 2 行／`( … )` の中の echo に半角の `)` が無い（ブロックが途中で閉じる事故）／置き場所から `engine/` へ移る・本名を含む経路と固定の URL が無い／手元の bat は外向きの引数を持たず、知人の bat だけが `--allow-origin` と Funnel を持つ／配布版に入らない。
+
+**確かめていないこと。**Windows の cmd で実際に立つこと（作業環境では cmd を動かせない）。マスターの PC でダブルクリックして確かめてもらう。

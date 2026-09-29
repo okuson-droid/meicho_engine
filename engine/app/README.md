@@ -26,6 +26,17 @@
 - `bot.py` 画面なしの自動クライアント（乱数で打つだけ。テストと手動確認用）
 - `tests/` 検査。`test_ui.py` は本物のブラウザをマウスとタッチで動かす（Playwright が無ければ skip）
 
+## いちばん簡単な起動（bat・APP-031）
+
+エクスプローラで `C:\dev\meicho_engine_v0.1\engine\app` を開き、次のどちらかをダブルクリックする。黒い窓が開いてサーバが立ち、少し待つとブラウザで開く。
+止めるときは黒い窓で Ctrl+C（「バッチ ジョブを終了しますか (Y/N)?」には Y）。デスクトップに置きたいときは、bat を右クリック →「ショートカットの作成」でできたショートカットを移す（bat 本体は動かさない）。
+
+- `start_local.bat`: この PC だけで遊ぶ（CPU 対戦・記録を見る が出る）。下の「動かし方」の最後の行と同じ
+- `start_friends.bat`: 知人と遊ぶ（Tailscale Funnel の固定の URL から入る・APP-020）。Funnel の窓も自動で開く。遊び終わったらサーバの窓で Ctrl+C を押し、Funnel の窓も閉じる。
+  固定の URL は最初の 1 回だけ尋ね、`%USERPROFILE%\.meichosim\funnel_url.txt` に覚える（リポジトリには書かない）。URL を替えたいときはこのファイルを消す
+
+どちらも、aiohttp の入った Python を `py -3.11` → `py -3` → `python` の順に探して使う。保存先は `%LOCALAPPDATA%\MeichoSim\data`（下と同じ）。
+
 ## 動かし方（Windows の PowerShell。`engine/` の直下で）
 
 ```
