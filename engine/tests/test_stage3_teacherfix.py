@@ -34,7 +34,7 @@ from meicho.drl_data import read_records                               # noqa: E
 
 MODELS = os.path.join(ROOT, "results", "models")
 NET_REL = "results/models/s2v_id_s0.json"
-REC_SEED0 = 860000                    # seed_bands.json の検査用（kind=diag・860000..860099）
+REC_SEED0 = 824080                    # 既存の record_mix の煙試験の帯（824000..824099・kind=diag・D-123）。設計書 §6「新しい帯は取らない」
 
 
 def _T():

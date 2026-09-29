@@ -35,7 +35,7 @@
 | rules 版 | `engine/rules_draft.md` の版。**現在 v0.19**。**実装より先に版を上げ、`meicho/version.py` の `RULES_VERSION` も同時に上げる**（番人 `tests/test_versions.py`・D-117）。経緯は decisions.md |
 | 符号化 | 観測・行動の符号化の版。**現在 v6**（D-124）。`meicho_rs.encoding_info()` = `(ENCODING_VERSION, OBS_DIM, ACT_DIM)` = **`(6, 1923, 317)`**（v5 の 1,825 列の末尾に信念の要約 20＋`hand_known` 78）、`ACT_CODE_LEN` 13。**`load_cards()` を先に呼ばないと `RuntimeError`** |
 | A-n / B-n / R-n | 公式ルールと実装の差異の番号と、その裁定の番号（`engine/official_rules/OFFICIAL_RULE_RECHECK_20260917.md`・D-092）。12 件すべて閉じた |
-| D-番号 | `engine/decisions.md` の設計判断の番号。**正本は `decisions.md` の末尾**（最新 D-148・次に使えるのは D-149）。**振るのはエンジンの持ち場だけ**（`LANES.md` §3）。アプリの決定は APP-番号で `engine/app/DECISIONS_APP.md` |
+| D-番号 | `engine/decisions.md` の設計判断の番号。**正本は `decisions.md` の末尾**（最新 D-149・次に使えるのは D-150）。**振るのはエンジンの持ち場だけ**（`LANES.md` §3）。アプリの決定は APP-番号で `engine/app/DECISIONS_APP.md` |
 | SD001 / SD02 | カードプール（構築済みデッキ）。学習した AI があるのは SD001 のみ |
 | V / π₀ / 代打ち π | 葉の価値関数／相手モデルの方策／先読み中の代打ち方策 |
 | 塊 | クラウドの Claude Code の実行単位。10 分以内・塊ごとに push（D-137） |
