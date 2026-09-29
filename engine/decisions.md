@@ -10131,3 +10131,23 @@ Rust を変えたので PC の wheel は直す前のままである。依頼は 
 1. **項目 3（教師の較正）の直し方の設計書を Cowork が書き（D-137 §3）、裁定をもらってから回す。最終評価はまだ開かない。**設計書で比べる候補: (a) 較正の形を葉が V の探索値（[0, 1]）に合わせる（上位の頭打ちを外す）／(b) 教師の値を `max` から `fresh` に／(c) λ を下げて z を重く／(d) リーグ・δ 介入
 2. 道具の PR（[okuson-droid/meicho_engine#8](https://github.com/okuson-droid/meicho_engine/pull/8)）を `main` に取り込む
 
+## D-147 自走化の規約（採点役の分離・STEER.md と AGENT_STOP・開始の定型・脱線の兆候・Stop hook・CLAUDE.md の減量）を採用（2026-09-29）
+
+**出どころ**: Cowork の規約案 `engine/AUTONOMY_20260929.md`（2026-09-29）。マスター裁定「自走化の規約案は全て推しを採用」（2026-09-29）。この項はクラウドの Claude Code が台帳に入れた。
+
+### 1. 裁定（§9 の 5 件・すべて推し）
+
+1. **採点役のモデル**: 定義では指定しない（既定を継ぐ）。上位モデルを当てたいときは呼ぶ側が指定する
+2. **STEER.md と AGENT_STOP**: リポジトリ直下に置く。書くのはマスターだけ・Claude Code は読むだけ
+3. **Stop hook の範囲**: まず測定の便だけ（§6）。実装の便は 2 回目
+4. **CLAUDE.md の減量**: 案 `engine/autonomy/CLAUDE_PROPOSED_20260929.md` どおり行う（§7.2 の削る一覧・§7.3 の足す 5 行）。写すのは Claude Code・削る前に diff を 2 人で見る（§7.4）
+5. **D-142 の「上位モデルによる点検」は採点役（reviewer）に置き換える。**点検の運用としては続き、モデルの格の条件だけ外す。**D-142 の点検は reviewer で行う**
+
+### 2. 次（§8 の分担と順序）
+
+- **PC の Claude Code（1 便）**: `engine/autonomy/agents/reviewer.md` → `.claude/agents/reviewer.md`／`engine/autonomy/STEER.md` → `STEER.md`／`CLAUDE_PROPOSED` → `CLAUDE.md`（§7.4 の 2 人で削る手順）／`engine/scripts/check_done.py` の実装と手回し（§6.3）／台帳。サブエージェント定義と hooks の JSON の形は、入れる前に公式の説明で確かめる（§10）
+- 次の測定の便で、採点役と `check_done.py` を**手で**使ってみる。1 便で問題が無ければ Stop hook に配線する
+- 進行盤の 2 回目で STEER.md と AGENT_STOP を盤に出す
+
+次に使える D-番号は **D-148**。
+

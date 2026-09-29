@@ -12,6 +12,7 @@
 
 ## Active
 
+- [ ] **★PC の Claude Code: 自走化の規約を入れる（D-147・`engine/AUTONOMY_20260929.md` §8 の 2）** - `.claude/agents/reviewer.md`・直下の `STEER.md`・`CLAUDE.md` の減量（§7.4 の 2 人で削る手順）・`engine/scripts/check_done.py` の実装と手回し（§6.3）・台帳。形は入れる前に公式の説明で確かめる（§10）。次の測定の便で採点役と check_done.py を手で使い、問題が無ければ Stop hook に配線
 - [x] ~~**★マスター: 段階3 反復 1 の規模と記録の持ち越しの裁定（D-140 §3）**~~ (2026-09-27・D-140 追記 1) — 3 件すべて推し: 学習の記録 5,000 局・検証 500 局に半減（約 25〜28 時間）／記録は xz で縮めて `results/drl/s3_it1_rec/` に上げる／セッション (1) の出力は `main` へ早送り
 - [x] ~~**塊に割る道具と `report` の直し（D-143）を `main` に取り込む**~~ (2026-09-28) — [okuson-droid/meicho_engine#4](https://github.com/okuson-droid/meicho_engine/pull/4) をマスターの許可で `main` に早送り（`f38177e`）
 - [x] ~~**★マスター: 設計書の書き換えの範囲と塊に割る道具の置き場の裁定（D-142 §3）**~~ (2026-09-28・D-142 追記 1) — すべて推し: 裁定・実測値の書き写しは設計書も「軽微な修正」に含める／`plan_chunks.py` は `experiments/` に検査つきで（PR）／`.gitignore` に `s3v*_ens3.json` を足した 1 行も認める
