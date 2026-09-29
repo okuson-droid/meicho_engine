@@ -64,4 +64,8 @@ D-144 追記 3（案 M・比較書 `GENERALIST_STAGE3_DIAG_COMPARE_20260929.md` 
 
 ## 5. 全検査
 
-（全検査の結果をここに書く）
+- `python3 -m pytest tests -q -rfs --run-slow`: **1,354 通過・9 失敗・7 skip・43 分 36 秒**（前回 D-139 の 1,327 通過に、`test_plan_chunks.py` 12 件と今回の 15 件を足した数）
+- 失敗 9 件は 1 件ずつ理由を読んだ。前回（`CC_STAGE3_TOOLS_20260927.md` §3）と同じ顔ぶれ: `cards/` が git に無いため 8 件（`test_bp01.py` 4 件・`test_card_images.py` 4 件）と、前からある `test_d065.py::test_distil_makes_the_student_agree_with_the_teacher`（偽の記録では学習前から一致率 1.000）
+- skip 7 件: `cards/cards_structured.csv` が無い 5 件・段階2 の記録が無い 1 件・移行したネットが無い 1 件
+- **この便の変更による失敗は無い**
+- 新しい検査で 20 秒を超えるのは H-1（約 37 秒・H-2 と対局を共有）。検査の組（`tests/test_sets.json`）は「手で直さない」決まりで、クラウドの結果から作り直すと資材の違いで組がずれる（試して確かめた）ので作り直していない。次に作業環境か PC の全検査から作り直すまで、H-1 は既定の組でも回る

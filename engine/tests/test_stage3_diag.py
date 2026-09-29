@@ -8,12 +8,15 @@ M-3 `diag_s3_desk.net_logit` は `Net.value_of` と同じ値
 M-4 束ねた V を部品のロジットの平均で計算した値が `ensemble_net.combine` の値と同じ
 M-5 3-a の教師は `s3v1_id_s0.meta.json` の較正をそのまま当てる（検証の記録で合わせ直さない）
 M-6 2-a・3-a の規則の境目
-M-7 （重い）検証の記録全体で、V_1 の部品 3 本の v_logloss が学習の記録（meta の選んだエポック）と一致
+M-7 検証の記録全体で、V_1 の部品 3 本の v_logloss が学習の記録（meta の選んだエポック）と一致
 H-1 `eval_s3_h2h`: 同じシードは同じ局／足し継ぎは一度に回したのと同じ
 H-2 挑戦に null と同じ V を渡すと d が全局 0
 H-3 学習の帯（kind=train）では回さない
 H-4 `report` は B 席の V が違う組・局数がそろっていない組を対にしない
 H-5 ブロック等重みの対の差と区間
+
+H-1・H-2 は対局 16 局（約 40 秒）を回す。`tests/test_sets.json` は作業環境か PC の全検査から `make_test_sets.py` で作り直す
+（手で直さない・クラウドの結果では資材の違いで組がずれる）ので、次に作り直すまでは既定の組でも回る
 """
 from __future__ import annotations
 
@@ -178,7 +181,6 @@ def test_rules_thresholds():
     assert "足していない" in D.teacher_uplift(z, p, p, tg)["verdict"]
 
 
-@pytest.mark.slow
 def test_full_val_matches_training_log(tmp_path_factory):
     """M-7: 検証の記録全体で、V_1 の部品の v_logloss が学習の記録と一致（配線の確認）。"""
     files = D.extract("val", str(tmp_path_factory.mktemp("full")))
