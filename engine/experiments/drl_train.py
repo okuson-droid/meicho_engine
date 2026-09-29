@@ -133,8 +133,19 @@ def calib_scale(v: np.ndarray, scale: str = "p90", bulk_cut: float = BULK_CUT) -
     return max(float(np.percentile(a, 90)), 1e-6)
 
 
+LOGIT_CLIP = 0.001         # `--calib-form logit` で探索値を [0.001, 0.999] に切ってからロジットにする（D-148 (a)）
+
+
+def calib_input(v: np.ndarray, calib: dict) -> np.ndarray:
+    """較正の式の入力 u。`linear`（従来）は clip(v, ±c)/c、`logit` は logit(clip(v, 0.001, 0.999))。"""
+    if calib.get("form", "linear") == "logit":
+        w = np.clip(v, LOGIT_CLIP, 1 - LOGIT_CLIP)
+        return np.log(w / (1 - w))
+    return np.clip(v, -calib["c"], calib["c"]) / calib["c"]
+
+
 def calibrate_vsearch(v: np.ndarray, z: np.ndarray, steps: int = 400, seed: int = 0,
-                      scale: str = "p90", min_n: int = 1000) -> dict:
+                      scale: str = "p90", min_n: int = 1000, form: str = "linear") -> dict:
     """探索値 v（無界の評価値）を勝率に直す 1 変数ロジスティック較正（D-059 / D-064）。
 
     p = sigmoid(a * clip(v, -c, c) / c + b)。c の決め方は `calib_scale`（`--calib-scale`）。
@@ -148,8 +159,14 @@ def calibrate_vsearch(v: np.ndarray, z: np.ndarray, steps: int = 400, seed: int 
     v, z = v[ok].astype(np.float64), z[ok].astype(np.float64)
     if len(v) < min_n:
         raise SystemExit(f"較正に使える決定が少なすぎる（{len(v)} 件・下限 {min_n}）")
+    if form not in ("linear", "logit"):
+        raise SystemExit(f"未対応の --calib-form: {form!r}")
+    if form == "logit" and (np.abs(v) > 1).any():
+        # 手作り評価の探索値（無界・番兵つき）に誤って使わないため（D-148 (a)・設計書 §2.1）
+        raise SystemExit(f"--calib-form logit は探索値が [−1, 1] に収まる記録だけに使う"
+                         f"（|v| > 1 が {int((np.abs(v) > 1).sum())} 件）")
     c = calib_scale(v, scale)
-    u = np.clip(v, -c, c) / c
+    u = calib_input(v, {"form": form, "c": c})
     torch.manual_seed(seed)
     ut = torch.from_numpy(u).float()
     zt = torch.from_numpy(z).float()
@@ -173,14 +190,17 @@ def calibrate_vsearch(v: np.ndarray, z: np.ndarray, steps: int = 400, seed: int 
     # （D-064 反復 1 の失敗の指標。実測 0.001）。
     # `logloss < base` だけでは、番兵の 1 ビットだけで基準を下回れてしまい見抜けない。
     # 5%〜95% で測ると番兵の分だけ広く見えてしまうので、**四分位で測る**。
-    return {"a": float(a.item()), "b": float(b.item()), "c": c, "n": int(len(v)),
-            "scale": scale, "sentinel_frac": float((np.abs(v) >= BULK_CUT).mean()),
-            "spread": float(np.percentile(p, 75) - np.percentile(p, 25)),
-            "logloss": ll, "base": base, "useful": bool(ll < base - 1e-3)}
+    out = {"a": float(a.item()), "b": float(b.item()), "c": c, "n": int(len(v)),
+           "scale": scale, "sentinel_frac": float((np.abs(v) >= BULK_CUT).mean()),
+           "spread": float(np.percentile(p, 75) - np.percentile(p, 25)),
+           "logloss": ll, "base": base, "useful": bool(ll < base - 1e-3)}
+    if form != "linear":
+        out["form"] = form          # 既定（linear）の meta は従来とバイト単位で同じにする
+    return out
 
 
 def _sigmoid_calib(v: np.ndarray, calib: dict) -> np.ndarray:
-    u = np.clip(v, -calib["c"], calib["c"]) / calib["c"]
+    u = calib_input(v, calib)
     return 1.0 / (1.0 + np.exp(-(calib["a"] * u + calib["b"])))
 
 
@@ -333,6 +353,15 @@ def calibrate_vsearch_strata(v: np.ndarray, z: np.ndarray, strata: np.ndarray,
 
 
 # ---------------------------------------------------------------------- データ
+def is_argmax(scores: np.ndarray, chosen: int) -> bool:
+    """選んだ手が点数の最大か（有限の点数だけで見る・同点は最初の手＝Rust の `argmax_by` と同じ）。"""
+    fin = np.isfinite(scores)
+    if not fin.any() or chosen >= len(scores) or not np.isfinite(scores[chosen]):
+        return False
+    m = scores[fin].max()
+    return int(np.nonzero(fin & (scores == m))[0][0]) == chosen
+
+
 class Batcher:
     """記録を固定長の配列に詰め替える（行動は MAX_ACTS に詰めてマスク）。"""
 
@@ -352,9 +381,10 @@ class Batcher:
         m = len(idx)
         acts = np.full((m, MAX_ACTS, ACT_CODE_LEN), -1, np.int8)
         vsearch = np.full(m, np.nan, np.float32)
-        if vtarget not in ("chosen", "max", "fresh"):
+        if vtarget not in ("chosen", "max", "fresh", "fresh_am"):
             raise SystemExit(f"未対応の --vtarget: {vtarget!r}")
         self.vtarget = vtarget
+        self.n_nonargmax = 0
         # 層の鍵（phase × 自分のターンか）。`--calib-by phase_turn` のときだけ使う。
         self.stratum = strata_of(self.phase, self.obs)
         fresh = (recs.fresh[keep] if getattr(recs, "fresh", None) is not None
@@ -365,14 +395,22 @@ class Batcher:
             k = min(len(a), MAX_ACTS)
             acts[j, :k] = a[:k]
             sc = recs.scores_of(i)
-            if vtarget == "fresh" and np.isfinite(fresh[j]):
+            if vtarget == "fresh_am" and len(sc) and not is_argmax(sc, int(recs.chosen[i])):
+                # 温度 τ で argmax 以外を選んだ決定。選んだ手の取り直し（fresh）はわざと選んだ悪い手の値に
+                # なるので使わず、従来どおり max にする（D-148 (b)・設計書 §2.2）
+                self.n_nonargmax += 1
+                fin = np.isfinite(sc)
+                if fin.any():
+                    vsearch[j] = sc[fin].max()
+                continue
+            if vtarget in ("fresh", "fresh_am") and np.isfinite(fresh[j]):
                 # 取り直した値があればそれを使う（決定化の揺れを最大で拾わない教師）
                 vsearch[j] = fresh[j]
                 self.n_fresh_used += 1
                 continue
             if not len(sc):
                 continue
-            if vtarget in ("max", "fresh"):
+            if vtarget in ("max", "fresh", "fresh_am"):
                 # `fresh` が NaN の決定（版 2 の記録・探索していない決定）はここに落ちる
                 # 局面の価値 = 「そこから最善を尽くしたときの価値」（D-064 §3.3）。
                 # 記録時は温度 τ で探索的な手も選ぶので、**選んだ手の値**を教師にすると
@@ -699,12 +737,15 @@ def train(args):
         # 反復 1 の探索値は手作り評価の尺度（±10000 の番兵込み・無界）、
         # 反復 2 以降は葉が V なのでおおむね [0,1]＋番兵、と尺度が変わるからである。
         # `fit` は較正を取るのに使う決定（案 B ではリーグを外す）。
+        args.calib_form = getattr(args, "calib_form", "linear")
+        if args.calib_form != "linear" and args.calib_by != "none":
+            raise SystemExit("--calib-form logit は --calib-by none とだけ組める")
         if args.calib_by == "phase_turn":
             calib = calibrate_vsearch_strata(tr.vsearch[fit], tr.z[fit], tr.stratum[fit],
                                              seed=args.seed, scale=args.calib_scale)
         else:
             calib = calibrate_vsearch(tr.vsearch[fit], tr.z[fit], seed=args.seed,
-                                      scale=args.calib_scale)
+                                      scale=args.calib_scale, form=args.calib_form)
         print(f"探索値の較正[{calib['scale']}]: p = sigmoid({calib['a']:.3f}·clip(v,±{calib['c']:.3f})/{calib['c']:.3f} "
               f"+ {calib['b']:.3f})  n={calib['n']}  番兵の割合 {calib['sentinel_frac']:.3f}")
         if calib.get("strata") is not None:
@@ -836,6 +877,8 @@ def train(args):
             "n_fresh_used": int(tr.n_fresh_used), "wd": args.wd, "wv": args.wv, "wp": args.wp,
             "card_profile": proj_info, "n_params_trained": n_params,
             "keep_pairs": args.keep_pairs, "n_train_read": int(n_read),
+            **({"calib_form": args.calib_form} if getattr(args, "calib_form", "linear") != "linear" else {}),
+            **({"n_nonargmax": int(tr.n_nonargmax)} if args.vtarget == "fresh_am" else {}),
             "n_params_exported": int(sum(w.size + b.size for w, b in net.trunk) + net.value[0].size
                                      + net.value[1].size + sum(w.size + b.size for w, b in net.policy))}
     with open(args.out.replace(".json", ".meta.json"), "w", encoding="utf-8") as f:
@@ -853,11 +896,16 @@ def main():
     ap.add_argument("--phead", type=int, default=128)
     ap.add_argument("--wv", type=float, default=1.0); ap.add_argument("--wp", type=float, default=1.0)
     ap.add_argument("--lam", type=float, default=0.0)
-    ap.add_argument("--vtarget", choices=["chosen", "max", "fresh"], default="max",
+    ap.add_argument("--vtarget", choices=["chosen", "max", "fresh", "fresh_am"], default="max",
                     help="V の教師に使う探索値（既定 max）。max = その決定で探索が付けた値の最大値"
                          "＝「そこから最善を尽くしたときの価値」。chosen = 実際に選んだ手の値（旧既定）。"
                          "fresh = 選んだ手を別の決定化で取り直した値（楽観の偏りを持たない・"
-                         "無いところは max で埋める・D-065 §4.1）")
+                         "無いところは max で埋める・D-065 §4.1）。fresh_am = argmax を選んだ決定だけ fresh・"
+                         "それ以外（温度で選んだ手）は max（D-148 (b)）")
+    ap.add_argument("--calib-form", choices=["linear", "logit"], default="linear",
+                    help="較正の式の形（既定 linear = 従来の sigmoid(a·clip(v,±c)/c + b)）。"
+                         "logit = sigmoid(a·logit(clip(v, 0.001, 0.999)) + b)。葉が V で探索値が [0,1] に"
+                         "収まる記録だけに使う（|v| > 1 があれば止める・D-148 (a)）")
     ap.add_argument("--calib-by", choices=["none", "phase_turn"], default="none",
                     help="較正を層ごとに取るか（既定 none = 全体で 1 本・従来どおり）。"
                          "phase_turn = phase × 自分のターンかの組ごとに取る。"

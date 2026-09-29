@@ -51,7 +51,8 @@ def _even(x: float) -> int:
     return max(2, 2 * int(x / 2 + 0.5))
 
 
-def teacher_def(teacher: str = "netfree", value_net: str | None = None, tau: float = 0.0) -> dict:
+def teacher_def(teacher: str = "netfree", value_net: str | None = None, tau: float = 0.0,
+                reeval_samples: int = 0) -> dict:
     """組み合わせ表の教師の定義（D-138）。既定は D-131 と同じ `{"name": "netfree", "tau": 0.0}`。"""
     if teacher not in TEACHERS:
         raise SystemExit(f"--teacher は {TEACHERS} のどれか")
@@ -60,6 +61,9 @@ def teacher_def(teacher: str = "netfree", value_net: str | None = None, tau: flo
     if teacher != "netfree_v" and value_net:
         raise SystemExit("--value-net は --teacher netfree_v のときだけ使う")
     out = {"name": teacher, "tau": float(tau)}
+    if reeval_samples:
+        # 既定（0）は欄を足さない＝従来の組み合わせ表とバイト単位で同じ（D-148 (b)）
+        out["reeval_samples"] = int(reeval_samples)
     if value_net:
         path = value_net if os.path.isabs(value_net) else os.path.join(_HERE, "..", value_net)
         if not os.path.isfile(path):
@@ -217,6 +221,8 @@ def main(argv=None):
     ap.add_argument("--teacher", default="netfree", help="netfree（既定）／netfree_v（葉を V に・D-138）")
     ap.add_argument("--value-net", default=None, help="--teacher netfree_v の葉の V（engine/ からの相対パス）")
     ap.add_argument("--tau", type=float, default=0.0, help="記録の温度（D-064 §6.2 の下見で決める）")
+    ap.add_argument("--reeval-samples", type=int, default=0,
+                    help="選んだ手を別の決定化で取り直す本数（記録の fresh 欄・既定 0 = 取らない・D-148 (b)）")
     ap.add_argument("--parts", type=int, default=1, help="k 個に分けて <out>.p<i>of<k>.json にも書く（D-131）")
     ap.add_argument("--merge", nargs="+", default=None, help="manifest をまとめて --out に書く（D-131）")
     ap.add_argument("--out", required=True)
@@ -230,7 +236,7 @@ def main(argv=None):
         print(json.dumps({"out": args.out, "games": idx["games"], "decisions": idx["decisions_recorded"],
                           "parts": len(idx["parts"])}, ensure_ascii=False))
         return idx
-    teacher = teacher_def(args.teacher, args.value_net, args.tau)
+    teacher = teacher_def(args.teacher, args.value_net, args.tau, args.reeval_samples)
     with open(args.env, encoding="utf-8") as f:
         env = json.load(f)
     sch = build(env["decks_block"], n_total=args.n_total, seed0=args.seed0, band_end=args.band_end,

@@ -186,11 +186,15 @@ def rule_2a(slices: dict, a: str = "V0", b: str = "V1") -> dict:
 
 
 def apply_calib(v: np.ndarray, calib: dict) -> np.ndarray:
-    """層別でない較正（`drl_train.apply_calibration` の全体の較正と同じ式・検査 M-5b）。
+    """層別でない較正（`drl_train.apply_calibration` の全体の較正と同じ式・形 `linear`／`logit` を読む・検査 M-5b・F-4）。
 
     `drl_train` は torch を読み込むので、torch の無い PC でもこの道具が動くよう式だけをここに置く。
     """
-    u = np.clip(v, -calib["c"], calib["c"]) / calib["c"]
+    if calib.get("form", "linear") == "logit":
+        w = np.clip(v, 0.001, 0.999)                  # drl_train.LOGIT_CLIP と同じ
+        u = np.log(w / (1 - w))
+    else:
+        u = np.clip(v, -calib["c"], calib["c"]) / calib["c"]
     return 1.0 / (1.0 + np.exp(-(calib["a"] * u + calib["b"])))
 
 
@@ -307,6 +311,216 @@ def calib_effect(files: list) -> dict:
             "all": one(ok), "non_sentinel": one(ok & ~sent)}
 
 
+# ------------------------------------------------------------------ 項目 3 の直し方の門（D-148）
+RULE_T0 = {"u": 0.002, "e_na": 0.05, "gain_na": 0.002, "u_lin_check": 0.0002}
+RULE_TB = {"u": 0.002, "gain": 0.002}
+ISO_CLIP = 1e-4
+
+
+def fit_iso(v: np.ndarray, z: np.ndarray) -> dict:
+    """単調回帰（PAV）。どんな単調な較正の形でも出せる最良の当てはまり（判定に使わない上限・設計書 §4.1）。"""
+    order = np.argsort(v, kind="mergesort")
+    xs, inv = np.unique(v[order], return_inverse=True)
+    w = np.bincount(inv).astype(float)
+    y = np.bincount(inv, weights=z[order]) / w
+    blocks = []                                  # [値, 重み, 区間の先頭の添字]
+    for i in range(len(xs)):
+        blocks.append([y[i], w[i], i])
+        while len(blocks) > 1 and blocks[-2][0] >= blocks[-1][0]:
+            b2 = blocks.pop()
+            b1 = blocks[-1]
+            b1[0] = (b1[0] * b1[1] + b2[0] * b2[1]) / (b1[1] + b2[1])
+            b1[1] += b2[1]
+    fitted = np.empty(len(xs))
+    starts = [b[2] for b in blocks] + [len(xs)]
+    for k, b in enumerate(blocks):
+        fitted[starts[k]:starts[k + 1]] = b[0]
+    return {"form": "iso", "x": xs, "p": np.clip(fitted, ISO_CLIP, 1 - ISO_CLIP)}
+
+
+def apply_iso(v: np.ndarray, iso: dict) -> np.ndarray:
+    """学習の記録で合わせた階段を当てる（最小値より下は最初の段）。"""
+    k = np.clip(np.searchsorted(iso["x"], v, side="right") - 1, 0, len(iso["x"]) - 1)
+    return iso["p"][k]
+
+
+def fit_form(v, z, form: str) -> dict:
+    if form == "iso":
+        return fit_iso(v, z)
+    import drl_train as T
+    return T.calibrate_vsearch(v, z, scale="bulk", form=form)
+
+
+def apply_form(v, calib: dict) -> np.ndarray:
+    return apply_iso(v, calib) if calib.get("form") == "iso" else apply_calib(v, calib)
+
+
+def deciles(p, z) -> list:
+    q = np.quantile(p, np.linspace(0, 1, 11))
+    k = np.clip(np.searchsorted(q, p, side="right") - 1, 0, 9)
+    return [{"pred": float(p[k == j].mean()), "actual": float(z[k == j].mean()), "n": int((k == j).sum())}
+            for j in range(10) if (k == j).any()]
+
+
+def calib_summary(c: dict) -> dict:
+    if c.get("form") == "iso":
+        return {"form": "iso", "steps": int(len(np.unique(c["p"])))}
+    return {k: c[k] for k in ("a", "b", "c", "logloss", "base", "spread") if k in c} | {"form": c.get("form", "linear")}
+
+
+def batch_tagged(files: list, mans: list, vtarget: str = "max"):
+    """記録を `Batcher` に通し（学習と同じ教師の値）、決定の属性を同じ並び（z が有限の決定だけ）で返す。"""
+    import drl_train as T
+    recs = read_records(files)
+    keep = ~np.isnan(recs.z)
+    tg = {k: v[keep] for k, v in tags(recs, block_table(mans)).items()}
+    b = T.Batcher(recs, vtarget=vtarget)
+    seed = recs.seed[keep]
+    return b, tg, seed
+
+
+def t0(train_files, train_mans, val_files, val_mans, u_3a: float | None = None) -> dict:
+    """門 T-0（(a) の門・設計書 §4.1）。較正は学習の記録で合わせ、検証の記録に当てるだけ。"""
+    tr, tg_tr, _ = batch_tagged(train_files, train_mans)
+    va, tg_va, _ = batch_tagged(val_files, val_mans)
+    parts = load_parts("s2v_id")
+    p_v0 = sigmoid(np.mean([net_logit(n, va.obs) for n in parts], 0))
+    ok_tr, ok_va = np.isfinite(tr.vsearch), np.isfinite(va.vsearch)
+    z_tr, z_va = tr.z.astype(np.float64), va.z.astype(np.float64)
+    out = {"n_train": int(ok_tr.sum()), "n_val": int(ok_va.sum()), "forms": {}}
+    L_v0 = logloss(p_v0[ok_va], z_va[ok_va])
+    preds = {}
+    for form in ("linear", "logit", "iso"):
+        c = fit_form(tr.vsearch[ok_tr].astype(np.float64), z_tr[ok_tr], form)
+        p = apply_form(va.vsearch[ok_va].astype(np.float64), c)
+        preds[form] = p
+        by = {}
+        for key in ("kind", "phase", "tband"):
+            for v in sorted(set(tg_va[key][ok_va].tolist())):
+                m = tg_va[key][ok_va] == v
+                by[f"{key}={v}"] = {"n": int(m.sum()),
+                                    "u": logloss(p_v0[ok_va][m], z_va[ok_va][m]) - logloss(p[m], z_va[ok_va][m])}
+        out["forms"][form] = {"calib": calib_summary(c), "L": logloss(p, z_va[ok_va]), "u": L_v0 - logloss(p, z_va[ok_va]),
+                              "auc": auc(p, z_va[ok_va]), "spread": float(np.percentile(p, 75) - np.percentile(p, 25)),
+                              "deciles": deciles(p, z_va[ok_va]),
+                              "deciles_by_kind": {k: deciles(p[tg_va["kind"][ok_va] == k], z_va[ok_va][tg_va["kind"][ok_va] == k])
+                                                  for k in sorted(set(tg_va["kind"][ok_va].tolist()))},
+                              "by": by}
+    out["L_V0"], out["auc_V0"] = L_v0, auc(p_v0[ok_va], z_va[ok_va])
+    # 錨を除いた集合（学習・検証の両方から除き、合わせ直す）
+    na_tr, na_va = ok_tr & (tg_tr["kind"] != "anchor"), ok_va & (tg_va["kind"] != "anchor")
+    L_v0_na = logloss(p_v0[na_va], z_va[na_va])
+    na = {"n_train": int(na_tr.sum()), "n_val": int(na_va.sum())}
+    for form in ("linear", "logit"):
+        c = fit_form(tr.vsearch[na_tr].astype(np.float64), z_tr[na_tr], form)
+        p = apply_form(va.vsearch[na_va].astype(np.float64), c)
+        na[form] = {"calib": calib_summary(c), "u": L_v0_na - logloss(p, z_va[na_va]), "deciles": deciles(p, z_va[na_va])}
+    top = na["linear"]["deciles"][-1]
+    na["e_na"] = top["actual"] - top["pred"]
+    out["no_anchor"] = na
+    u_lin, u_logit, u_iso = (out["forms"][f]["u"] for f in ("linear", "logit", "iso"))
+    rule1 = na["e_na"] >= RULE_T0["e_na"] and na["logit"]["u"] - na["linear"]["u"] >= RULE_T0["gain_na"]
+    out["check"] = {"u_lin": u_lin, "u_3a": u_3a,
+                    "ok": u_3a is None or abs(u_lin - u_3a) < RULE_T0["u_lin_check"]}
+    if not out["check"]["ok"]:
+        verdict = "止める（u_lin が 3-a の値を再現しない・配線を疑う）"
+    elif u_logit >= RULE_T0["u"] and rule1:
+        verdict = "(a) を腕にする（規則 2）"
+    elif u_logit >= RULE_T0["u"]:
+        verdict = "(a) は回さず相談（u_logit は越えたが錨を除くと形の説明が立たない・規則 2）"
+    elif u_iso >= RULE_T0["u"]:
+        verdict = "(a) は回さず相談（ロジット型より良い単調な形がある・規則 3）"
+    else:
+        verdict = "(a) は回さない（u_logit < 0.002）。上限 u_iso も 0.002 未満＝較正の形では項目 3 は直らない（規則 3）"
+    out["rules"] = {"rule1_shape_explains": bool(rule1), "u_logit": u_logit, "u_iso": u_iso, "verdict": verdict,
+                    "thresholds": RULE_T0}
+    return out
+
+
+RECORD_KEYS = ("seed", "step", "turn", "pi", "phase", "n_acts", "chosen")
+
+
+def record_order(recs) -> np.ndarray:
+    return np.lexsort((recs.step, recs.pi, recs.seed))
+
+
+def compare_retake(orig, retake) -> dict:
+    """取り直した記録が元の記録と、fresh 以外で全件一致するか（設計書 §4.2 の止める規則）。"""
+    out = {"n_orig": int(orig.n), "n_retake": int(retake.n), "mismatch": {}}
+    if orig.n != retake.n:
+        out["mismatch"]["n"] = abs(orig.n - retake.n)
+        out["same"] = False
+        return out
+    a, b = record_order(orig), record_order(retake)
+    for k in RECORD_KEYS:
+        out["mismatch"][k] = int((getattr(orig, k)[a] != getattr(retake, k)[b]).sum())
+    out["mismatch"]["z"] = int((~((orig.z[a] == retake.z[b]) | (np.isnan(orig.z[a]) & np.isnan(retake.z[b])))).sum())
+    out["mismatch"]["obs"] = int((orig.obs[a] != retake.obs[b]).any(1).sum())
+    bad_act = bad_sc = 0
+    for i, j in zip(a, b):
+        if not np.array_equal(orig.actions_of(i), retake.actions_of(j)):
+            bad_act += 1
+        if not np.array_equal(orig.scores_of(i), retake.scores_of(j), equal_nan=True):
+            bad_sc += 1
+    out["mismatch"]["actions"], out["mismatch"]["scores"] = bad_act, bad_sc
+    out["fresh_finite"] = {"orig": int(np.isfinite(orig.fresh).sum()), "retake": int(np.isfinite(retake.fresh).sum())}
+    out["same"] = not any(out["mismatch"].values())
+    return out
+
+
+def split_calib(v, z, seed, ok) -> np.ndarray:
+    """局のシードの対 (2m, 2m+1) を m の偶奇で 2 つに分け、片方で合わせてもう片方に当てる（2 通り）。"""
+    half = (seed // 2) % 2
+    p = np.full(len(v), np.nan)
+    for h in (0, 1):
+        fit, use = ok & (half == h), ok & (half != h)
+        c = fit_form(v[fit], z[fit], "linear")
+        p[use] = apply_form(v[use], c)
+    return p
+
+
+def tb(orig_files, retake_files, val_mans) -> dict:
+    """門 T-b（(b) の門・設計書 §4.2）。"""
+    cmp = compare_retake(read_records(orig_files), read_records(retake_files))
+    out = {"compare": cmp}
+    if not cmp["same"]:
+        out["rules"] = {"verdict": "止める（取り直した記録が元の記録と一致しない＝打ち方が変わった）"}
+        return out
+    bm, tg, seed = batch_tagged(retake_files, val_mans, "max")
+    bf, _, _ = batch_tagged(retake_files, val_mans, "fresh_am")
+    parts = load_parts("s2v_id")
+    p_v0 = sigmoid(np.mean([net_logit(n, bm.obs) for n in parts], 0))
+    z = bm.z.astype(np.float64)
+    ok = np.isfinite(bm.vsearch) & np.isfinite(bf.vsearch)
+    p_max = split_calib(bm.vsearch.astype(np.float64), z, seed, ok)
+    p_fr = split_calib(bf.vsearch.astype(np.float64), z, seed, ok)
+    L_v0 = logloss(p_v0[ok], z[ok])
+    u_max2, u_fresh = L_v0 - logloss(p_max[ok], z[ok]), L_v0 - logloss(p_fr[ok], z[ok])
+    out.update({"n": int(ok.sum()), "L_V0": L_v0, "u_max2": u_max2, "u_fresh": u_fresh,
+                "auc": {"V0": auc(p_v0[ok], z[ok]), "max": auc(p_max[ok], z[ok]), "fresh_am": auc(p_fr[ok], z[ok])},
+                "n_fresh_used": int(bf.n_fresh_used), "n_nonargmax": int(bf.n_nonargmax),
+                "nonargmax_rate": float(bf.n_nonargmax / max(1, bf.n))})
+    # root − fresh（argmax を選び fresh が有限の決定＝fresh_am が fresh を使った決定・候補の数別）
+    import drl_train as T
+    rr = read_records(retake_files)
+    keep = np.nonzero(~np.isnan(rr.z))[0]
+    used = np.array([np.isfinite(rr.fresh[i]) and T.is_argmax(rr.scores_of(i), int(rr.chosen[i])) for i in keep])
+    diff = (bm.vsearch - bf.vsearch).astype(np.float64)
+    na = rr.n_acts[keep]
+    out["root_minus_fresh"] = {}
+    for lab, m in (("all", na > 0), ("2", na == 2), ("3", na == 3), ("4-8", (na >= 4) & (na <= 8)), ("9+", na >= 9)):
+        mm = ok & used & m
+        out["root_minus_fresh"][lab] = {"n": int(mm.sum()), "mean": float(diff[mm].mean()) if mm.any() else None}
+    if u_max2 >= RULE_TB["u"]:
+        verdict = "どの腕も回さず止めて相談（u_max2 ≥ 0.002＝3-a の判定が較正の合わせ方で変わる）"
+    elif u_fresh >= RULE_TB["u"] and u_fresh - u_max2 >= RULE_TB["gain"]:
+        verdict = "(b) を腕にする"
+    else:
+        verdict = "(b) は回さない"
+    out["rules"] = {"verdict": verdict, "thresholds": RULE_TB}
+    return out
+
+
 def load_parts(stem: str) -> list:
     return [Net.load(os.path.join(MODELS, f"{stem}_s{k}.json")) for k in range(3)]
 
@@ -348,7 +562,26 @@ def main(argv=None):
     ap.add_argument("--out", default=None)
     ap.add_argument("--calib", action="append", default=None,
                     help="名前=記録の接頭辞（カンマ区切りで複数）。付けると較正の効き（calib_effect）だけを出す")
+    ap.add_argument("--t0", action="store_true", help="門 T-0（(a) の門・D-148 §4.1）を回す（--work に記録を伸ばす）")
+    ap.add_argument("--tb", default=None, help="門 T-b（(b) の門・D-148 §4.2）。取り直した検証の記録の接頭辞（カンマ区切り）")
     args = ap.parse_args(argv)
+    if args.t0 or args.tb:
+        if not args.work:
+            raise SystemExit("--work が要る")
+        out = {"version": TOOL_VERSION, "decision": "D-148"}
+        if args.t0:
+            prev = os.path.join(ROOT, "results", "drl", "s3_diag_desk.json")
+            u_3a = json.load(open(prev, encoding="utf-8"))["teacher"]["u"] if os.path.exists(prev) else None
+            out["t0"] = t0(extract("train", args.work), manifests("train"), extract("val", args.work),
+                           manifests("val"), u_3a)
+        if args.tb:
+            from drl_train import files_of
+            out["tb"] = tb(extract("val", args.work), files_of(args.tb), manifests("val"))
+        print(json.dumps({k: out[k]["rules"] for k in ("t0", "tb") if k in out}, ensure_ascii=False, indent=1))
+        if args.out:
+            with open(args.out, "w", encoding="utf-8", newline="\n") as f:
+                json.dump(out, f, ensure_ascii=False, indent=1)
+        return out
     if args.calib:
         from drl_train import files_of
         out = {"version": TOOL_VERSION, "decision": "D-145 追記 1", "calib": {}}

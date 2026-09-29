@@ -124,6 +124,13 @@ def teacher_spec(teacher: dict, pool: list, deck_a: str, deck_b: str) -> dict:
     name = teacher.get("name", "netfree")
     tau = float(teacher.get("tau", 0.0))
     extra = {"tau": tau} if tau else {}
+    # 選んだ手を別の決定化で採点し直した値（記録の fresh 欄）を取る本数（D-148 (b)・既定 0 = 取らない）。
+    # 取り直しは別の乱数を使うので打ち方は変わらない（D-065 便 4 の案 C・検査 R-1）
+    reeval = int(teacher.get("reeval_samples", 0))
+    if reeval < 0:
+        raise SystemExit("reeval_samples は 0 以上")
+    if reeval:
+        extra["reeval_samples"] = reeval
     if name == "netfree":
         return PLANNER(pool, **NETFREE, **extra)
     if name == "netfree_v":

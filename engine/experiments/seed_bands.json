@@ -631,7 +631,15 @@
    "purpose": "汎用 AI 段階3 反復 1 の診断の直接対決（D-144 追記 3・比較書 `GENERALIST_STAGE3_DIAG_COMPARE_20260929.md` §4・Cowork 版 §11）。`experiments/eval_s3_h2h.py`。本測定 859000..859074（調整デッキ 16 ブロック × 75 局・全ブロック・全組で同じシード）: 0 番の挑戦（V_1 対 V_0）と null（V_0 対 V_0）／1-b（V_1b 対 V_0）／5-b。null は 1 本を共通に使う／境界の追試 859100..859249（16 ブロック × 150 局）／1 局の時間の下見 859800..859849（勝敗は読まない）／検査 859900..859949（`tests/test_stage3_diag.py` が回す対局）／予備はその他。**学習に使用禁止**。",
    "owner": "experiments/eval_s3_h2h.py",
    "date": "2026-09-29"
+  },
+  {
+   "start": 860000,
+   "end": 860099,
+   "kind": "diag",
+   "purpose": "段階3 項目 3 の直し方の道具の検査（D-148・`tests/test_stage3_teacherfix.py`）。`record_mix.py` の `reeval_samples` 0 と 4 で同じシードの記録を取り、fresh 以外が全件一致することを確かめる局（860000..860003）。**学習にも評価にも使用禁止**（検査だけ）。",
+   "owner": "tests/test_stage3_teacherfix.py",
+   "date": "2026-09-30"
   }
  ],
- "next_free": 860000
+ "next_free": 860100
 }

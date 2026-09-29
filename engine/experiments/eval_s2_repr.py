@@ -79,7 +79,19 @@ def check_eval_band(seed0: int, n: int) -> None:
                              f"評価には kind=validate の帯を使う")
 
 
-def paired_diff(games: list, new: list, old: list, n_boot: int = 10000, seed: int = 0) -> dict:
+def ci_percentiles(level: float = 0.95) -> list:
+    """両側 level の区間の分位（%）。既定 0.95 は従来どおり [2.5, 97.5]（丸めでバイト単位に同じ）。
+
+    D-148 §4.3: 腕を k 本回すときは level = 1 − 0.05/k（Bonferroni）にする。
+    """
+    if not 0.5 < level < 1:
+        raise SystemExit(f"--level は 0.5 と 1 の間: {level}")
+    lo = round(50 * (1 - level), 10)
+    return [lo, round(100 - lo, 10)]
+
+
+def paired_diff(games: list, new: list, old: list, n_boot: int = 10000, seed: int = 0,
+                level: float = 0.95) -> dict:
     """同じ局どうしの得点差を、デッキ内で局を再標本化・デッキ等重みで平均した差と 95% 区間。"""
     d = np.asarray(new, float) - np.asarray(old, float)
     decks = sorted({g["deck"] for g in games})
@@ -91,17 +103,17 @@ def paired_diff(games: list, new: list, old: list, n_boot: int = 10000, seed: in
         dk = d[idx[k]]
         boots += dk[rng.randint(0, len(dk), size=(n_boot, len(dk)))].mean(1)
     boots /= len(decks)
-    lo, hi = np.percentile(boots, [2.5, 97.5])
+    lo, hi = np.percentile(boots, ci_percentiles(level))
     by_deck = {k: {"n": int(len(idx[k])), "diff": float(d[idx[k]].mean()),
                    "new_only": int((d[idx[k]] > 0).sum()), "old_only": int((d[idx[k]] < 0).sum())}
                for k in decks}
     return {"diff": diff, "lo": float(lo), "hi": float(hi), "n_games": int(len(d)), "by_deck": by_deck}
 
 
-def score_ci(games: list, s: list, n_boot: int = 10000, seed: int = 0) -> dict:
-    """デッキ等重みの平均得点と 95% 区間（局を再標本化）。"""
+def score_ci(games: list, s: list, n_boot: int = 10000, seed: int = 0, level: float = 0.95) -> dict:
+    """デッキ等重みの平均得点と区間（既定 95%・局を再標本化）。"""
     zero = [0.0] * len(s)
-    r = paired_diff(games, s, zero, n_boot, seed)
+    r = paired_diff(games, s, zero, n_boot, seed, level)
     return {"score": r["diff"], "lo": r["lo"], "hi": r["hi"],
             "by_deck": {k: v["diff"] for k, v in r["by_deck"].items()}}
 
@@ -216,13 +228,17 @@ def report(args) -> dict:
     short = {a: sum(len(data["results"].get(f"{a}|{x}|{y}", [])) < data["n"] for x, y in blocks(data["decks"]))
              for a in data["arms"]}
     arms = [a for a in data["arms"] if short[a] == 0]
+    level = getattr(args, "level", 0.95)
     out = {"version": TOOL_VERSION, "n_per_block": data["n"], "decks": data["decks"],
-           "scores": {a: score_ci(games, scores_of(data, a)) for a in arms}, "compare": {},
+           "scores": {a: score_ci(games, scores_of(data, a), level=level) for a in arms}, "compare": {},
            "incomplete": {a: k for a, k in short.items() if k}}
+    if level != 0.95:
+        out["level"] = level            # 既定の報告は従来とバイト単位で同じにする
     pairs = [(args.new, args.old)] + [tuple(p.split(":")) for p in (args.also or [])]
     for new, old in pairs:
         if new in arms and old in arms:
-            out["compare"][f"{new}-{old}"] = paired_diff(games, scores_of(data, new), scores_of(data, old))
+            out["compare"][f"{new}-{old}"] = paired_diff(games, scores_of(data, new), scores_of(data, old),
+                                                         level=level)
     path = args.out or args.inp.replace(".json", "_report.json")
     with open(path, "w", encoding="utf-8", newline="\n") as f:
         json.dump(out, f, ensure_ascii=False, indent=1)
@@ -252,6 +268,8 @@ def main(argv=None):
     q.add_argument("--old", default="v_id")
     q.add_argument("--also", nargs="*", default=None, help="追加の比較 new:old（診断）")
     q.add_argument("--out", default=None)
+    q.add_argument("--level", type=float, default=0.95,
+                   help="区間の水準（既定 0.95）。腕を k 本回すときは 1 − 0.05/k（D-148 §4.3・Bonferroni）")
     args = ap.parse_args(argv)
     return run(args) if args.cmd == "run" else report(args)
 
