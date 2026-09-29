@@ -10151,3 +10151,11 @@ Rust を変えたので PC の wheel は直す前のままである。依頼は 
 
 次に使える D-番号は **D-148**。
 
+### D-147 追記 1 入れた（2026-09-30・マスター「こっちでファイルの移動と CLAUDE.md の写しをやって」・クラウドの Claude Code）
+
+- `engine/autonomy/agents/reviewer.md` → `.claude/agents/reviewer.md`・`engine/autonomy/STEER.md` → `STEER.md`（git mv）。サブエージェントの書式（`name`・`description`・`tools` のカンマ区切り・`model: inherit`）は公式の説明（code.claude.com の sub-agents）で確かめた
+- `CLAUDE.md` を案 `engine/autonomy/CLAUDE_PROPOSED_20260929.md` どおりに写した（26,117 → 約 14.8 KB）。案から変えたのは: D-番号を最新 D-147・次 D-148 に／符号化の行に列の内訳（v5 の 1,825 列＋信念の要約 20＋`hand_known` 78）を残す／段階3 の行を D-146 と直し方の設計書（裁定待ち）に／`check_done.py` は未実装（PC の Claude Code が作る・それまで手で確かめる）と明記
+- **§7.4 の「2 人で削る」**: 旧版にあって案に無い情報を、別のエージェント（読むだけ）に 1 件ずつ「消すと間違えるか・ほかの場所にあるか」で判定させた。**残すべき 2 件を戻した**: 「台帳を書くのは同時に 1 人（D-137）」（D 番号の罠の行に）／「旧エンジンの勝率を champion 交代の根拠に使わない（D-095）」（閉じた線の行に）。ほかは消してよい（正本が decisions.md・`check_champion_fingerprint.py` の `EXPECTED`・`LANES.md`・各設計書にあることを確かめた）。帯の `kind` は「など」を足した
+- 進行盤の抜き出し（`engine/board/extract_board.py`）は新しい CLAUDE.md で誤り 0（champion・符号化の行を読める）・検査 `engine/board/tests` も通った
+- 残り（PC の Claude Code）: `engine/scripts/check_done.py` の実装と手回し・Stop hook の配線（次の測定の便で手で使ってから）
+

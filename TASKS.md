@@ -12,11 +12,11 @@
 
 ## Active
 
-- [ ] **★PC の Claude Code: 自走化の規約を入れる（D-147・`engine/AUTONOMY_20260929.md` §8 の 2）** - `.claude/agents/reviewer.md`・直下の `STEER.md`・`CLAUDE.md` の減量（§7.4 の 2 人で削る手順）・`engine/scripts/check_done.py` の実装と手回し（§6.3）・台帳。形は入れる前に公式の説明で確かめる（§10）。次の測定の便で採点役と check_done.py を手で使い、問題が無ければ Stop hook に配線
+- [ ] **★PC の Claude Code: `check_done.py` の実装と手回し（D-147・`engine/AUTONOMY_20260929.md` §6.3）** - reviewer・STEER.md・CLAUDE.md の減量はクラウドの Claude Code が入れた（D-147 追記 1）。残りは `engine/scripts/check_done.py` の実装と手回し。形は入れる前に公式の説明で確かめる（§10）。次の測定の便で採点役と check_done.py を手で使い、問題が無ければ Stop hook に配線
 - [x] ~~**★マスター: 段階3 反復 1 の規模と記録の持ち越しの裁定（D-140 §3）**~~ (2026-09-27・D-140 追記 1) — 3 件すべて推し: 学習の記録 5,000 局・検証 500 局に半減（約 25〜28 時間）／記録は xz で縮めて `results/drl/s3_it1_rec/` に上げる／セッション (1) の出力は `main` へ早送り
 - [x] ~~**塊に割る道具と `report` の直し（D-143）を `main` に取り込む**~~ (2026-09-28) — [okuson-droid/meicho_engine#4](https://github.com/okuson-droid/meicho_engine/pull/4) をマスターの許可で `main` に早送り（`f38177e`）
 - [x] ~~**★マスター: 設計書の書き換えの範囲と塊に割る道具の置き場の裁定（D-142 §3）**~~ (2026-09-28・D-142 追記 1) — すべて推し: 裁定・実測値の書き写しは設計書も「軽微な修正」に含める／`plan_chunks.py` は `experiments/` に検査つきで（PR）／`.gitignore` に `s3v*_ens3.json` を足した 1 行も認める
-- [ ] **★Cowork（クロエ）: 項目 3（教師の較正）の直し方の設計書（D-146 追記 1）** - 診断は項目 3 で説明できた（3-a u = −0.0037・0 番は追試で伸びていない・G-1 は平ら）。候補: (a) 較正の形を [0,1] の探索値に合わせる（上位 9.9% が p = 0.751 に頭打ち・実際の勝率 0.866）／(b) `fresh`／(c) λ を下げる／(d) リーグ・δ。**最終評価はまだ開かない**。材料: `engine/CC_STAGE3_DIAG_RUN_20260929.md`・`CC_STAGE3_DIAG_TOOLS_20260929.md`・D-145・D-146・`results/drl/s3_diag_desk.json`・`s3_diag_calib.json`
+- [ ] **★マスター: 項目 3（教師の較正）の直し方の設計書の裁定（`engine/GENERALIST_STAGE3_TEACHER_FIX_DESIGN_20260930.md`・Cowork が 2026-09-30 に書いた・D-146 追記 1）** - 診断は項目 3 で説明できた（3-a u = −0.0037・0 番は追試で伸びていない・G-1 は平ら）。候補: (a) 較正の形を [0,1] の探索値に合わせる（上位 9.9% が p = 0.751 に頭打ち・実際の勝率 0.866）／(b) `fresh`／(c) λ を下げる／(d) リーグ・δ。**最終評価はまだ開かない**。材料: `engine/CC_STAGE3_DIAG_RUN_20260929.md`・`CC_STAGE3_DIAG_TOOLS_20260929.md`・D-145・D-146・`results/drl/s3_diag_desk.json`・`s3_diag_calib.json`
 - [x] ~~**★マスター: 診断は項目 3（教師の較正）で説明できた——次の一手の裁定（D-146 §2）**~~ (2026-09-29・D-146 追記 1) — 全部推し: 項目 3 の直し方の設計は Cowork・最終評価はまだ開かない／PR #8 を取り込む
 - [x] ~~**★段階3 反復 1 の診断: 机上の残り（G-1・CC 版 (ii)）→ 0 番（D-145 追記 1）**~~ (2026-09-29・D-146) — G-1・CC 版 (ii)・0 番（本測定＋追試）を回し、§6 の順に読んで項目 3 で止めた。報告 `engine/CC_STAGE3_DIAG_RUN_20260929.md`
 - [x] ~~**★マスター: 診断の道具の PR と次の順の裁定（D-145 §3）**~~ (2026-09-29・D-145 追記 1) — 全部推し: PR を取り込む／次は G-1・CC 版 (ii)・0 番／1-b の前に相談を挟む

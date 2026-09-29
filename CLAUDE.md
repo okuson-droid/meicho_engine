@@ -27,7 +27,7 @@
 | fingerprint | 既定の打ち方が不変であることの指紋（4 種）。**champion は `f4b80b25c35cfa77`**。歴代は `check_champion_fingerprint.py` の `EXPECTED`。**指紋は打ち方を変えなくても動く**（決定列に選択が増える・ルールが変わるだけで動く・D-091 §3／D-104） |
 | 門番 | champion 交代の直接対決。**n≥300 で勝率の 95% 下端 > 0.5**（D-081）。GSPRT は診断として残す（「越えたか」だけ・大きさは固定 n で測る） |
 | 錨 | 第三者（H・貪欲・素 planner）との勝率。候補が別のところで弱くなっていないかの確認 |
-| 帯 | シード帯。`experiments/seed_bands.json` に**登録してから**使う。現在値は `next_free` を読む。`kind`（train／validate／diag）を用途と合わせ、学習に使った帯で評価しない |
+| 帯 | シード帯。`experiments/seed_bands.json` に**登録してから**使う。現在値は `next_free` を読む。`kind`（train／validate／diag など）を用途と合わせ、学習に使った帯で評価しない |
 | 対照 / null | 同じ AI どうしを同じ帯で回した基準。0.5 を含めば配線は健全 |
 | T-14 | 回帰局面の検査（対人局で AI が詰みを逃した対抗）。候補の最初の関門 |
 | 対抗 | 対抗ステップ（互いに伏せてカードを出す同時手番） |
@@ -43,16 +43,16 @@
 ## Projects（動いている線だけ。閉じた線は decisions.md と TASKS.md の Done）
 | Name | What |
 |------|------|
-| **汎用 AI（段階3）** | 設計書 `engine/GENERALIST_STAGE3_DESIGN.md`（D-138）。反復 1 は V_1 を採らず止めた（D-144）。診断（案 M・`engine/GENERALIST_STAGE3_DIAG_COMPARE_20260929.md`・道具 D-145）は**項目 3（教師の較正）で説明できた**（D-146）。直し方の設計は Cowork（D-146 追記 1）。**最終評価の 4 デッキ（SK 系）はまだ開けない** |
+| **汎用 AI（段階3）** | 設計書 `engine/GENERALIST_STAGE3_DESIGN.md`（D-138）。反復 1 は V_1 を採らず止めた（D-144）。診断（案 M・`engine/GENERALIST_STAGE3_DIAG_COMPARE_20260929.md`・道具 D-145）は**項目 3（教師の較正）で説明できた**（D-146）。直し方の設計書 `engine/GENERALIST_STAGE3_TEACHER_FIX_DESIGN_20260930.md`（Cowork）が裁定待ち。**最終評価の 4 デッキ（SK 系）はまだ開けない** |
 | **環境デッキ群とデッキ類似度** | 設計書 `engine/DECK_SIMILARITY_DESIGN.md`（D-126）。環境デッキ 24 種 `decklists/env/`（D-128）。割り振りは学習 16・調整 4・最終評価 4（`results/decksim/env_v1_split.json`） |
 | **開発の流れ（devflow）** | `engine/DEVFLOW_PLAN_20260925.md`（D-136・D-137）。段 6 進行盤 `engine/board/`（`PROGRESS_BOARD_DESIGN_20260929.md`・1 日 3 回の定期実行が db に写す） |
-| **自走化の規約** | `engine/AUTONOMY_20260929.md`（D-147 で採用）。採点役・`STEER.md`・脱線の兆候・`check_done.py`（Stop hook・まず測定の便） |
+| **自走化の規約** | `engine/AUTONOMY_20260929.md`（D-147 で採用）。採点役・`STEER.md`・脱線の兆候・`check_done.py`（Stop hook・まず測定の便・**未実装**＝PC の Claude Code が作る） |
 | **オンライン対戦アプリ（アプリの持ち場）** | 別のチャットと Claude Code が開発（D-108・APP-027）。台帳 `engine/app/TASKS_APP.md`・決定 `engine/app/DECISIONS_APP.md`・頼みごと `engine/app/TO_ENGINE.md`（こちらからは `engine/TO_APP.md`）。**エンジン本体はエンジンの持ち場が実装する**（`LANES.md` §6） |
 | **配布版** | 知人向け Windows 実行ファイル（D-074）。`scripts/make_dist.py` の `verify` が**公式素材（`■【` の印）を配らないための番人**（D-098 §2(a)） |
 | **対人検証アプリ** | `engine/webapp/`。記録は `engine/results/human_games/2026-09.jsonl`。`app_version < 2` の記録は `is_legacy_stage1a()` で補完（D-098 §2(b)）。引退の条件は未定（D-126） |
 | **BP01 のカードデータ** | `cards/cards_official_20260910.json`（D-078・`adopted_effect` / `adopted_name` があればそちら）。画像は `cards/` 直下の 123 枚（手動スクショ・D-084）。**`cards/` は git の外・公式素材は配らない** |
 
-閉じた線（正本の場所だけ）: 文献活用計画（`LITERATURE_PLAN_20260906.md`・便 A 後半 D-082 で閉）／公式ルール線（差異 12 件すべて閉・D-092〜D-104。**A-2・A-6 で SD001/SD02 の対局が変わった＝便 A〜C の勝率は旧エンジンの測定**）／段階1A・1B（D-088〜D-091・控え `results/models/*.enc4.bak.json` は消さない）／カード線 便 K（D-083・D-085）。
+閉じた線（正本の場所だけ）: 文献活用計画（`LITERATURE_PLAN_20260906.md`・便 A 後半 D-082 で閉）／公式ルール線（差異 12 件すべて閉・D-092〜D-104。**A-2・A-6 で SD001/SD02 の対局が変わった＝便 A〜C の勝率は旧エンジンの測定で、champion 交代の根拠に使わない**（D-095）／段階1A・1B（D-088〜D-091・控え `results/models/*.enc4.bak.json` は消さない）／カード線 便 K（D-083・D-085）。
 
 ## Preferences
 - 返事は簡潔・表なし（モバイル）。数字は基準・n・95% 区間つき
@@ -69,7 +69,7 @@
 - **書き戻したファイルは必ず再ステージしてバイト比較する。**「written」は載ったことを意味しない（2026-09-20 に 6 回中 3 回載らなかった・`PARALLEL_WORK_REVIEW_20260920.md` §2）。台帳類は `engine/WRITELOG_ENGINE.md` に控えを残す（`LANES.md` §5）
 - **依頼書で出力をファイルに流す（`> x.txt 2>&1`）なら「画面には何も出ない」と先に書く**（D-116）
 - **`python scripts\xxx.py` の形で起動すると `meicho` が見つからない。**`engine` で `set PYTHONPATH=%CD%` を先に 1 回打つ。コンソールを開き直したら打ち直す
-- **D 番号は別セッションと衝突する。**書く前に `decisions.md` の末尾を必ず見る（2026-09-11 に衝突した）。振るのはエンジンの持ち場だけ（`LANES.md` §3）
+- **D 番号は別セッションと衝突する。**書く前に `git pull` して `main` の `decisions.md` の末尾を必ず見る（2026-09-11 に衝突した）。**台帳（decisions.md・TASKS.md）を書くのは同時に 1 人**（D-137）。振るのはエンジンの持ち場だけ（`LANES.md` §3）
 - **skip は「通った」ではない。**作業環境で常に skip になる検査が PC で初めて落ちることがある
 - **「基準が通った」は「その基準が変更点を踏んだ」を意味しない。**通った帯がその変更を一度も踏んでいないだけかもしれない（D-097・D-098 §5）
 - **判定を写して 2 箇所に書くと、写した側だけが取り残される**（D-098 §5・D-075）
