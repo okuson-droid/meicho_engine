@@ -1,0 +1,565 @@
+{
+ "train": "/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c000,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c001,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c002,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c003,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c004,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c005,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c006,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c007,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c008,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c009,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c010,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c011,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c012,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c013,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c014,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c015,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c016,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c017,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c018,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c019,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c020,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c021,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c022,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c023,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c024,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c025,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c026,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c027,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c028,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c029,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c030,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c031,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c032,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c033,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c034,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c035,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c036,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c037,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c038,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c039,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c040,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c041,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c042,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c043,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c044,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c045,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c046,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c047,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c048,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c049,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c050,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c051,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c052,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c053,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c054,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c055,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c056,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c057,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c058,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c059,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c060,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c061,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c062,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c063,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c064,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c065,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c066,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c067,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c068,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c069,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c070,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c071,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c072,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c073,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c074,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c075,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c076,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c077,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c078,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c079,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c080,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c081,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c082,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c083,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c084,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c085,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c086,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c087,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c088,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c089,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c090,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c091,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c092,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c093,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c094,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c095,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c096,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c097,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c098,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c099,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c100,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c101,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c102,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c103,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c104,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c105,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c106,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c107,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c108,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c109,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c110,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c111,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c112,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c113,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c114,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c115,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c116,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c117,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c118,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c119,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c120,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c121,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c122,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c123,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c124,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c125,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c126,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c127,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c128,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c129,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c130,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c131,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c132,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c133,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c134,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c135,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c136,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c137,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c138,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c139,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c140",
+ "valid": "/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/val.c000,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/val.c001,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/val.c002,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/val.c003,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/val.c004,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/val.c005,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/val.c006,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/val.c007,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/val.c008,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/val.c009,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/val.c010,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/val.c011,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/val.c012,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/val.c013,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/val.c014,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/val.c015",
+ "epochs": 12,
+ "hidden": 256,
+ "depth": 2,
+ "phead": 128,
+ "lr": 0.001,
+ "bs": 1024,
+ "seed": 2,
+ "lam": 0.7,
+ "init": "results/models/s2v_id_s2.json",
+ "n_train": 293714,
+ "n_valid": 63706,
+ "chance_acc_valid": 0.28021252546315123,
+ "log": [
+  {
+   "epoch": 1,
+   "train_loss": 1.7126321474255446,
+   "valid": {
+    "n": 63706,
+    "v_logloss": 0.6272481873365293,
+    "v_acc": 0.6310551596395944,
+    "t_logloss": 0.6508545308937492,
+    "p_logloss": 1.0384815498576958,
+    "p_acc": 0.567152230559131,
+    "p_acc_by_phase": {
+     "setup": [
+      1.0,
+      960
+     ],
+     "mulligan": [
+      0.9822916666666667,
+      960
+     ],
+     "action": [
+      0.4860226820533227,
+      20104
+     ],
+     "clash": [
+      0.5406797116374872,
+      10681
+     ],
+     "choice": [
+      0.6061362690576174,
+      26433
+     ],
+     "rush": [
+      0.5997698504027618,
+      4345
+     ],
+     "discard": [
+      0.242152466367713,
+      223
+     ]
+    }
+   },
+   "sec": 48.29615354537964
+  },
+  {
+   "epoch": 2,
+   "train_loss": 1.648938715767594,
+   "valid": {
+    "n": 63706,
+    "v_logloss": 0.6305728184575432,
+    "v_acc": 0.6277430697265564,
+    "t_logloss": 0.6546504508381275,
+    "p_logloss": 1.0287151085773907,
+    "p_acc": 0.5712334787932063,
+    "p_acc_by_phase": {
+     "setup": [
+      1.0,
+      960
+     ],
+     "mulligan": [
+      0.9822916666666667,
+      960
+     ],
+     "action": [
+      0.49000198965380026,
+      20104
+     ],
+     "clash": [
+      0.5427394438722966,
+      10681
+     ],
+     "choice": [
+      0.6128702757916241,
+      26433
+     ],
+     "rush": [
+      0.5935558112773303,
+      4345
+     ],
+     "discard": [
+      0.273542600896861,
+      223
+     ]
+    }
+   },
+   "sec": 45.77732849121094
+  },
+  {
+   "epoch": 3,
+   "train_loss": 1.6112881571644389,
+   "valid": {
+    "n": 63706,
+    "v_logloss": 0.6350511774793584,
+    "v_acc": 0.6222647788277399,
+    "t_logloss": 0.6564919542967647,
+    "p_logloss": 1.0282373584930187,
+    "p_acc": 0.5725206416977993,
+    "p_acc_by_phase": {
+     "setup": [
+      1.0,
+      960
+     ],
+     "mulligan": [
+      0.9822916666666667,
+      960
+     ],
+     "action": [
+      0.4875149224035018,
+      20104
+     ],
+     "clash": [
+      0.5521018631214306,
+      10681
+     ],
+     "choice": [
+      0.6146861877198956,
+      26433
+     ],
+     "rush": [
+      0.5889528193325662,
+      4345
+     ],
+     "discard": [
+      0.2914798206278027,
+      223
+     ]
+    }
+   },
+   "sec": 46.35137748718262
+  },
+  {
+   "epoch": 4,
+   "train_loss": 1.5765109479314101,
+   "valid": {
+    "n": 63706,
+    "v_logloss": 0.6334224625838569,
+    "v_acc": 0.6266599692336672,
+    "t_logloss": 0.6582511245813287,
+    "p_logloss": 1.0342995465743023,
+    "p_acc": 0.573933381471133,
+    "p_acc_by_phase": {
+     "setup": [
+      1.0,
+      960
+     ],
+     "mulligan": [
+      0.9822916666666667,
+      960
+     ],
+     "action": [
+      0.4879625945085555,
+      20104
+     ],
+     "clash": [
+      0.5476079018818463,
+      10681
+     ],
+     "choice": [
+      0.619150304543563,
+      26433
+     ],
+     "rush": [
+      0.59102416570771,
+      4345
+     ],
+     "discard": [
+      0.3004484304932735,
+      223
+     ]
+    }
+   },
+   "sec": 46.84099268913269
+  },
+  {
+   "epoch": 5,
+   "train_loss": 1.5411653734671908,
+   "valid": {
+    "n": 63706,
+    "v_logloss": 0.6364017209089656,
+    "v_acc": 0.6228612689542586,
+    "t_logloss": 0.6598978608765266,
+    "p_logloss": 1.0446909558165636,
+    "p_acc": 0.5685806674410574,
+    "p_acc_by_phase": {
+     "setup": [
+      1.0,
+      960
+     ],
+     "mulligan": [
+      0.9822916666666667,
+      960
+     ],
+     "action": [
+      0.48278949462793475,
+      20104
+     ],
+     "clash": [
+      0.5441438067596667,
+      10681
+     ],
+     "choice": [
+      0.6137025687587485,
+      26433
+     ],
+     "rush": [
+      0.5781357882623706,
+      4345
+     ],
+     "discard": [
+      0.3004484304932735,
+      223
+     ]
+    }
+   },
+   "sec": 46.51636505126953
+  },
+  {
+   "epoch": 6,
+   "train_loss": 1.5058718954845427,
+   "valid": {
+    "n": 63706,
+    "v_logloss": 0.6370478010221025,
+    "v_acc": 0.6210561014661099,
+    "t_logloss": 0.6600546480119612,
+    "p_logloss": 1.057812945313481,
+    "p_acc": 0.5691614604589834,
+    "p_acc_by_phase": {
+     "setup": [
+      1.0,
+      960
+     ],
+     "mulligan": [
+      0.9822916666666667,
+      960
+     ],
+     "action": [
+      0.4832869080779944,
+      20104
+     ],
+     "clash": [
+      0.5468589083419155,
+      10681
+     ],
+     "choice": [
+      0.6144970302273673,
+      26433
+     ],
+     "rush": [
+      0.5726121979286536,
+      4345
+     ],
+     "discard": [
+      0.30493273542600896,
+      223
+     ]
+    }
+   },
+   "sec": 45.76744985580444
+  },
+  {
+   "epoch": 7,
+   "train_loss": 1.4701719835251525,
+   "valid": {
+    "n": 63706,
+    "v_logloss": 0.6382625544983989,
+    "v_acc": 0.6197689385615169,
+    "t_logloss": 0.6604110099335718,
+    "p_logloss": 1.0801883496673195,
+    "p_acc": 0.5666028317583901,
+    "p_acc_by_phase": {
+     "setup": [
+      1.0,
+      960
+     ],
+     "mulligan": [
+      0.9822916666666667,
+      960
+     ],
+     "action": [
+      0.47980501392757663,
+      20104
+     ],
+     "clash": [
+      0.5416159535624006,
+      10681
+     ],
+     "choice": [
+      0.6129837702871411,
+      26433
+     ],
+     "rush": [
+      0.5721518987341773,
+      4345
+     ],
+     "discard": [
+      0.3273542600896861,
+      223
+     ]
+    }
+   },
+   "sec": 45.50233483314514
+  },
+  {
+   "epoch": 8,
+   "train_loss": 1.4372604878615343,
+   "valid": {
+    "n": 63706,
+    "v_logloss": 0.6400731331968339,
+    "v_acc": 0.618717232285813,
+    "t_logloss": 0.6614248473180263,
+    "p_logloss": 1.095319381281296,
+    "p_acc": 0.5647034816186859,
+    "p_acc_by_phase": {
+     "setup": [
+      1.0,
+      960
+     ],
+     "mulligan": [
+      0.9822916666666667,
+      960
+     ],
+     "action": [
+      0.4780640668523677,
+      20104
+     ],
+     "clash": [
+      0.5398370939050651,
+      10681
+     ],
+     "choice": [
+      0.6115083418454205,
+      26433
+     ],
+     "rush": [
+      0.5670886075949367,
+      4345
+     ],
+     "discard": [
+      0.3004484304932735,
+      223
+     ]
+    }
+   },
+   "sec": 45.88404846191406
+  },
+  {
+   "epoch": 9,
+   "train_loss": 1.4092229535293186,
+   "valid": {
+    "n": 63706,
+    "v_logloss": 0.6387739157866066,
+    "v_acc": 0.6219037453301102,
+    "t_logloss": 0.6617210995842964,
+    "p_logloss": 1.1089750418119466,
+    "p_acc": 0.5625372806329074,
+    "p_acc_by_phase": {
+     "setup": [
+      1.0,
+      960
+     ],
+     "mulligan": [
+      0.9822916666666667,
+      960
+     ],
+     "action": [
+      0.4781635495423796,
+      20104
+     ],
+     "clash": [
+      0.5336578972006366,
+      10681
+     ],
+     "choice": [
+      0.6090871259410585,
+      26433
+     ],
+     "rush": [
+      0.5643268124280783,
+      4345
+     ],
+     "discard": [
+      0.3094170403587444,
+      223
+     ]
+    }
+   },
+   "sec": 46.56550121307373
+  },
+  {
+   "epoch": 10,
+   "train_loss": 1.3872795302078378,
+   "valid": {
+    "n": 63706,
+    "v_logloss": 0.6390417496181188,
+    "v_acc": 0.6211659812262581,
+    "t_logloss": 0.6616775627185332,
+    "p_logloss": 1.118780469099506,
+    "p_acc": 0.562239035569648,
+    "p_acc_by_phase": {
+     "setup": [
+      1.0,
+      960
+     ],
+     "mulligan": [
+      0.9822916666666667,
+      960
+     ],
+     "action": [
+      0.4762733784321528,
+      20104
+     ],
+     "clash": [
+      0.5354367568579721,
+      10681
+     ],
+     "choice": [
+      0.608935799947036,
+      26433
+     ],
+     "rush": [
+      0.5661680092059839,
+      4345
+     ],
+     "discard": [
+      0.2914798206278027,
+      223
+     ]
+    }
+   },
+   "sec": 46.96400761604309
+  },
+  {
+   "epoch": 11,
+   "train_loss": 1.3724191834305675,
+   "valid": {
+    "n": 63706,
+    "v_logloss": 0.6389944513480382,
+    "v_acc": 0.6208049477286284,
+    "t_logloss": 0.6616823952512322,
+    "p_logloss": 1.12452382499171,
+    "p_acc": 0.5630552852164631,
+    "p_acc_by_phase": {
+     "setup": [
+      1.0,
+      960
+     ],
+     "mulligan": [
+      0.9822916666666667,
+      960
+     ],
+     "action": [
+      0.47701949860724235,
+      20104
+     ],
+     "clash": [
+      0.5355303810504635,
+      10681
+     ],
+     "choice": [
+      0.6099194189081829,
+      26433
+     ],
+     "rush": [
+      0.5682393555811277,
+      4345
+     ],
+     "discard": [
+      0.29596412556053814,
+      223
+     ]
+    }
+   },
+   "sec": 47.11952996253967
+  },
+  {
+   "epoch": 12,
+   "train_loss": 1.3644774596588545,
+   "valid": {
+    "n": 63706,
+    "v_logloss": 0.6389786967549171,
+    "v_acc": 0.620585188208332,
+    "t_logloss": 0.6617369480688141,
+    "p_logloss": 1.1271278434760363,
+    "p_acc": 0.5633535302797225,
+    "p_acc_by_phase": {
+     "setup": [
+      1.0,
+      960
+     ],
+     "mulligan": [
+      0.9822916666666667,
+      960
+     ],
+     "action": [
+      0.47731794667727817,
+      20104
+     ],
+     "clash": [
+      0.5351558842804981,
+      10681
+     ],
+     "choice": [
+      0.6105247228842734,
+      26433
+     ],
+     "rush": [
+      0.5684695051783659,
+      4345
+     ],
+     "discard": [
+      0.29596412556053814,
+      223
+     ]
+    }
+   },
+   "sec": 47.99537181854248
+  }
+ ],
+ "select": "best_v",
+ "selected_epoch": 1,
+ "calibration": {
+  "a": 3.716754674911499,
+  "b": -2.6093342304229736,
+  "c": 0.916590917110443,
+  "n": 284882,
+  "scale": "bulk",
+  "sentinel_frac": 0.0,
+  "spread": 0.19148671627044678,
+  "logloss": 0.6393698453903198,
+  "base": 0.684038747720588,
+  "useful": true
+ },
+ "league_mode": "keep",
+ "league_seeds": null,
+ "n_league_train": 0,
+ "n_v_train": 293714,
+ "vtarget": "max",
+ "calib_scale": "bulk",
+ "calib_by": "none",
+ "distil_from": null,
+ "n_fresh_used": 0,
+ "wd": 0.0,
+ "wv": 1.0,
+ "wp": 1.0,
+ "card_profile": null,
+ "n_params_trained": 632194,
+ "keep_pairs": "2:0",
+ "n_train_read": 587665,
+ "n_params_exported": 632194
+}
