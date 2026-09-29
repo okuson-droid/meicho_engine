@@ -270,3 +270,69 @@ async def test_record_export_and_import(tmp_path, sd001, sd02):
                 assert r.status == 404
     finally:
         await srv.close()
+
+
+@pytest.mark.asyncio
+async def test_flags_are_recorded_listed_and_editable_only_on_local_records(tmp_path, sd001, sd02):
+    """「気になる」印とメモ（R-REP-5・APP-030）: 対局中の印は記録に入り、一覧に数が出て、リプレイに添えて届く。
+    手元の記録は印とメモを付け・直し・消せる（位置・長さを検める）。部屋のリプレイ・読み込んだファイルは見るだけ。"""
+    from app.tests.test_server import until
+    srv, url = await boot(tmp_path, cpu=True, cpu_delay=0)
+    try:
+        room = await new_room(url)
+        a, b = await pair(url, room, sd001, sd02)
+        await asyncio.gather(a.play(stop=until(8)), b.play(stop=until(8)))
+        await a.send({"t": P.C_FLAG})
+        got = await a.wait_for(lambda m: m["t"] == P.S_FLAGGED)
+        assert got["flag"]["by"] == "A" and got["flag"]["pos"] >= 8
+        assert not any(m["t"] == P.S_FLAGGED for m in b.inbox)               # 相手には届かない
+        await asyncio.gather(a.play(), b.play())
+        await b.send({"t": P.C_REPLAY, "viewer": "full"})                     # 部屋のリプレイ: 印は見られるが直せない
+        rp = await b.wait_for(lambda m: m["t"] == P.S_REPLAY, timeout=20)
+        assert [f["pos"] for f in rp["flags"]] == [got["flag"]["pos"]] and rp["editable"] is False
+        async with aiohttp.ClientSession() as s:
+            async with s.get(url + "/api/records") as r:
+                rec = (await r.json())["records"][0]
+            assert rec["flags"] == 1
+            async with s.post(url + "/api/records/replay", json={"id": rec["id"], "viewer": 0}) as r:
+                rp = await r.json()
+            assert rp["editable"] is True and rp["flags"][0]["when"] == "live" and rp["flags"][0]["note"] == ""
+            last = len(rp["frames"]) - 1
+
+            async def put(flags, by="マスター"):
+                async with s.post(url + "/api/records/flags", json={"id": rec["id"], "flags": flags, "by": by}) as r:
+                    return r.status, await r.json()
+            live = rp["flags"][0]
+            st, body = await put([{**live, "note": "ここで守るべきだった"}, {"pos": 3, "turn": 1, "note": " 早い ", "when": "replay"}])
+            assert st == 200 and [f["pos"] for f in body["flags"]] == [3, live["pos"]]   # 位置の順に並ぶ
+            assert body["flags"][0] == {"pos": 3, "turn": 1, "note": "早い", "by": "マスター", "seat": None, "when": "replay"}
+            assert body["flags"][1]["by"] == "A" and body["flags"][1]["note"] == "ここで守るべきだった"   # 付けた人は変わらない
+            async with s.post(url + "/api/records/replay", json={"id": rec["id"], "viewer": 0}) as r:
+                assert [f["note"] for f in (await r.json())["flags"]] == ["早い", "ここで守るべきだった"]   # ファイルに残った
+            for bad in ([{"pos": last + 1}], [{"pos": -1}], [{"pos": "3"}], [{"pos": 1, "note": "x" * 201}], "x", [{"pos": 1}] * 201):
+                st, body = await put(bad)
+                assert st == 400 and body["code"] == "bad_flags", bad
+            st, body = await put([])
+            assert st == 200 and body["flags"] == []
+            async with s.get(url + "/api/records") as r:
+                recs = (await r.json())["records"]
+            assert len(recs) == 1 and recs[0]["flags"] == 0                 # 書き換えても記録は増えない
+            await put([{"pos": 2, "note": "書き出しに入る"}])
+            async with s.get(url + "/api/records/export", params={"id": rec["id"]}) as r:
+                file = json.loads(await r.text())
+            async with s.post(url + "/api/records/import", json={"file": file, "viewer": 0}) as r:
+                imp = await r.json()
+            assert imp["flags"][0]["note"] == "書き出しに入る" and imp["editable"] is False   # 読み込んだファイルは見るだけ
+            async with s.post(url + "/api/records/replay", json={"id": rec["id"], "viewer": 0}) as r:
+                assert (await r.json())["result"] == rp["result"]           # 印を直しても再生は同じ
+        for x in (a, b):
+            await x.close()
+    finally:
+        await srv.close()
+    srv, url = await boot(tmp_path / "out")
+    try:
+        async with aiohttp.ClientSession() as s:
+            async with s.post(url + "/api/records/flags", json={"id": "2026-09:1", "flags": []}) as r:
+                assert r.status == 404
+    finally:
+        await srv.close()

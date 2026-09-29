@@ -295,3 +295,35 @@ def test_review_mode_shares_one_position_and_anyone_can_take_over(sd001, sd02):
     r.handle(a.id, {"t": "rematch"})
     r.handle(b.id, {"t": "rematch"})                                  # 次の局が始まったら感想戦は終わる
     assert r.state in (PLAYING, CHOOSING) and r.review is None and r.info()["review"] is None
+
+
+def test_live_flags_go_only_to_their_author_and_into_the_record(sd001, sd02):
+    """対局中の「気になる」印（R-REP-5・APP-030）: 直前の手（いまの局面を作った手）に付く。返事は付けた本人にだけで、
+    部屋の情報には載らない（相手に見せない）。観戦者も付けられる。保存と復元をまたぎ、終局で記録の材料に入り、次の局で空になる。"""
+    r, a, b = setup_room(sd001, sd02)
+    c, _ = r.join("C", "himitsu")
+    with pytest.raises(AppError) as e:
+        r.handle(a.id, {"t": "flag"})
+    assert e.value.code == "not_playing"
+    start(r, a, b)
+    rnd = random.Random(4)
+    by_seat = {m.seat: m for m in (a, b)}
+    for _ in range(12):
+        g = rnd.choice(r.game.awaiting())
+        r.handle(by_seat[r.order[g]].id, {"t": "act", "token": r.game.tokens[g], "index": rnd.randrange(len(r.game.legal(g)))})
+    out = r.handle(b.id, {"t": "flag"})
+    assert [mid for mid, _ in out] == [b.id] and out[0][1]["t"] == P.S_FLAGGED
+    f = out[0][1]["flag"]
+    assert f == {"pos": len(r.game.applies), "turn": r.game.state.turn_no, "note": "", "by": "B",
+                 "seat": r.gseat_of(b), "when": "live"}
+    r.handle(c.id, {"t": "flag"})                                     # 観戦者は席なし
+    assert r.flags[1]["by"] == "C" and r.flags[1]["seat"] is None
+    assert "flags" not in r.info() and "flag" not in json.dumps(r.info())
+    r2 = Room.load(json.loads(json.dumps(r.dump())))                  # 再起動をまたぐ
+    assert r2.flags == r.flags
+    play_out(r, rnd)
+    fin = r.finished[-1]
+    assert [x["by"] for x in fin["flags"]] == ["B", "C"]
+    r.handle(a.id, {"t": "rematch"})
+    r.handle(b.id, {"t": "rematch"})
+    assert r.state in (PLAYING, CHOOSING) and r.flags == []

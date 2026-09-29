@@ -1,5 +1,5 @@
 // 入口。画面の切り替え（ホーム → 入室 → ロビー → 対局）と、通信の受け口。
-import { h, toast, confirmDialog, openModal, closeModal } from "./ui.js";
+import { h, toast, confirmDialog, openModal, closeModal, modalOpen } from "./ui.js";
 import { Conn, api } from "./net.js";
 import { loadCards, dbInfo, info } from "./cards.js";
 import { decodeDeck, looksLikeDeckCode, DeckCodeError } from "./deckcode.js";
@@ -164,6 +164,9 @@ function onMessage(msg) {
     case "replay":
       if (S.replayWait) { S.replayWait.resolve(msg); S.replayWait = null; }
       break;
+    case "flagged":                                      // R-REP-5・APP-030: 自分にだけ届く。相手には見えない
+      toast(`★ ${msg.flag.pos} 手目のあとに印を付けた（ターン ${msg.flag.turn}）。メモは終局後に記録のリプレイで書ける`);
+      break;
     case "error":
       if (S.replayWait && ["not_finished", "no_room", "bad_record", "bad_message"].includes(msg.code)) { S.replayWait.reject(new Error(msg.msg || msg.code)); S.replayWait = null; break; }
       if (msg.code === "stale") toast("画面が古かったので、最新の状態に取り直した");      // R-NET-5
@@ -175,6 +178,16 @@ function onMessage(msg) {
 }
 
 function send(msg) { return S.conn ? S.conn.send(msg) : false; }
+
+// 対局中の F キーで「気になる」印（R-REP-5・APP-030）。旧アプリと同じ 1 回の操作。入力欄・ダイアログ・リプレイの上では効かない
+document.addEventListener("keydown", (e) => {
+  if (e.key !== "f" && e.key !== "F") return;
+  if (e.ctrlKey || e.metaKey || e.altKey || e.repeat) return;
+  if (!S.board || !S.room || S.room.state !== "playing" || S.replay || modalOpen()) return;
+  if (e.target && /^(INPUT|TEXTAREA|SELECT)$/.test(e.target.tagName)) return;
+  e.preventDefault();
+  send({ t: "flag" });
+});
 
 // ------------------------------------------------------------------ 画面の切り替え
 function render(events, full = false) {
@@ -250,7 +263,7 @@ async function openRecords() {
     h("div", { class: "rec-main" },
       h("b", { text: `${(r.names || []).join(" 対 ")}` }),
       h("span", { class: "muted", text: `　${String(r.played_at || "").replace("T", " ").slice(0, 16)}・${r.kind === "cpu" ? `CPU（${r.opponent || ""}）` : "対人"}・${(r.decks || []).join(" / ")}` }),
-      h("div", { class: r.problem ? "warn-text" : "muted", text: r.problem ? `再生できない: ${r.problem}` : `${winner(r)}（${reason(r)}・${(r.result || {}).turns ?? "?"} ターン）` })),
+      h("div", { class: r.problem ? "warn-text" : "muted", text: (r.problem ? `再生できない: ${r.problem}` : `${winner(r)}（${reason(r)}・${(r.result || {}).turns ?? "?"} ターン）`) + (r.flags ? `・★${r.flags}` : "") })),
     h("div", { class: "row" },
       h("button", { class: "btn", dataset: { act: "record-export" }, onclick: () => exportRecord(r), text: "書き出す" }),
       h("button", { class: "btn primary", dataset: { act: "record-replay" }, disabled: !!r.problem, onclick: () => { closeModal(); openRecordReplay(r); }, text: "リプレイ" })));
@@ -268,7 +281,9 @@ const recordViewer = (kind, cpuSeat) => (kind === "cpu" && (cpuSeat === 0 || cpu
 function openRecordReplay(r) {
   const fetchFrames = (viewer) => api("/api/records/replay", { id: r.id, viewer });
   const me = recordViewer(r.kind, r.cpu_seat);
-  new Replay({ fetchFrames, viewer: me }).load(me);
+  // 手元の記録だけ、印とメモを付け・直し・消せる（APP-030）。付けた人の名前はホームの表示名
+  const saveFlags = async (flags) => (await api("/api/records/flags", { id: r.id, flags, by: store.load("name", "") || "あなた" })).flags;
+  new Replay({ fetchFrames, viewer: me, saveFlags }).load(me);
 }
 
 // 棋譜の書き出し（R-KIF-1・APP-028）: 記録 1 件を JSON のファイル 1 つにする。中身と名前はサーバが作る

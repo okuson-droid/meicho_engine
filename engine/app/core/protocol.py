@@ -22,6 +22,7 @@ C_REMATCH = "rematch"    # {}
 C_PING = "ping"          # {}
 C_REPLAY = "replay"      # {viewer: 0|1|"spec"|"full"}  終局したあとだけ。この部屋の最後の局を再生する（APP-019）
 C_REVIEW = "review"      # {op: "start"|"move"|"take"|"stop", pos?}  感想戦（R-REP-4・APP-029）。終局したあとだけ
+C_FLAG = "flag"          # {}  対局中の「気になる」印を直前の手に付ける（R-REP-5・APP-030）。付けた本人にだけ返事が来る
 
 # サーバ → 画面
 S_WELCOME = "welcome"    # {v, member, key, room}
@@ -30,6 +31,7 @@ S_VIEW = "view"          # {view, events, full}
 S_ERROR = "error"        # {code, msg, ref?}
 S_PONG = "pong"
 S_REPLAY = "replay"      # {viewer, frames, names, result, source}
+S_FLAGGED = "flagged"    # {flag}  印を付けた本人にだけ。相手には見せない（終局後の記録に入る）
 S_BYE = "bye"            # {code}  この接続は閉じられる
 
 FIRST_MODES = ("random", "seat0", "seat1", "loser")
@@ -37,6 +39,8 @@ FIRST_MODES = ("random", "seat0", "seat1", "loser")
 MAX_ROOMS = 4            # 要件 R-NF-5
 MAX_SPECTATORS = 4       # 要件 R-SPEC-4
 MAX_NAME = 24
+MAX_FLAGS = 200          # 1 局に付けられる印の数
+MAX_NOTE = 200           # 印のメモの長さ
 
 
 class AppError(Exception):

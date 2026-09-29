@@ -34,8 +34,8 @@ from .core import describe
 from .core import protocol as P
 from .core import release
 from .core import replay as replay_mod
-from .core.persist import (ENGINE_DIR, MAX_FILE_BYTES, SeedBand, Store, cards_version, export_file, export_name,
-                           import_file, make_record, record_problem, rules_version)
+from .core.persist import (ENGINE_DIR, MAX_FILE_BYTES, SeedBand, Store, cards_version, clean_flags, export_file,
+                           export_name, import_file, make_record, record_last_pos, record_problem, rules_version)
 from .core.protocol import AppError
 from .core.room import CPU_ID, CPU_SEAT, FINISHED, PLAYING, Room, RoomManager
 
@@ -424,7 +424,7 @@ class Hub:
             viewer = replay_mod.parse_viewer(msg.get("viewer", 0))
             frames = await self.frames_for((room.id, room.games_played), room.game.dump(), room.game.result())
             conn.push(replay_mod.message(frames, viewer, names=room.game_names(), result=room.game.result(),
-                                         source={"room": room.id, "game": room.games_played}))
+                                         source={"room": room.id, "game": room.games_played}, flags=room.flags))
         except AppError as e:
             conn.push(_err(e, ref))
 
@@ -614,7 +614,7 @@ async def records(request: web.Request) -> web.Response:
         out.append({"id": rid, "played_at": rec.get("played_at"), "kind": rec.get("kind"), "names": rec.get("names"),
                     "decks": [d.get("name", "") for d in rec.get("decks") or []], "result": res,
                     "opponent": (rec.get("opponent") or {}).get("name"), "cpu_seat": (rec.get("opponent") or {}).get("seat"),
-                    "problem": record_problem(rec)})
+                    "flags": len(rec.get("flags") or []), "problem": record_problem(rec)})
     return web.json_response({"ok": True, "records": out}, dumps=lambda o: json.dumps(o, ensure_ascii=False))
 
 
@@ -636,7 +636,7 @@ async def record_replay(request: web.Request) -> web.Response:
         frames = await _record_frames(hub, ("rec", body.get("id")), rec)
     except AppError as e:
         return web.json_response({"ok": False, "code": e.code, "msg": e.msg}, status=400)
-    return _replay_response(frames, viewer, rec, {"record": body.get("id")})
+    return _replay_response(frames, viewer, rec, {"record": body.get("id")}, editable=True)
 
 
 async def _record_frames(hub: "Hub", key, rec: dict) -> dict:
@@ -648,9 +648,37 @@ async def _record_frames(hub: "Hub", key, rec: dict) -> dict:
     return await hub.frames_for(key, dump, rec.get("result"))
 
 
-def _replay_response(frames: dict, viewer, rec: dict, source: dict) -> web.Response:
-    msg = replay_mod.message(frames, viewer, names=rec.get("names") or ["", ""], result=rec.get("result"), source=source)
+def _replay_response(frames: dict, viewer, rec: dict, source: dict, *, editable: bool = False) -> web.Response:
+    msg = replay_mod.message(frames, viewer, names=rec.get("names") or ["", ""], result=rec.get("result"), source=source,
+                             flags=rec.get("flags") or [], editable=editable)
     return web.json_response({"ok": True, **msg}, dumps=lambda o: json.dumps(o, ensure_ascii=False, separators=(",", ":")))
+
+
+async def record_flags(request: web.Request) -> web.Response:
+    """手元の記録の「気になる」印とメモを置き換える（R-REP-5・APP-030）。手元起動のときだけ。
+
+    本文は `{"id": 記録の番号, "flags": 印の一覧, "by": 付けた人の表示名}`。検めて並べ直した一覧を返す。
+    版が違う記録も直せる（印は再生と関係しない）。
+    """
+    hub: Hub = request.app[HUB]
+    _local_only(hub)
+    try:
+        body = await request.json()
+    except ValueError:
+        body = None
+    try:
+        if not isinstance(body, dict):
+            raise AppError("bad_message", "JSON の辞書を送ってほしい")
+        rec = hub.store.get_record(body.get("id"))
+        if rec is None:
+            raise AppError("no_record", "その記録は無い")
+        by = body.get("by") if isinstance(body.get("by"), str) and body.get("by").strip() else "あなた"
+        rec["flags"] = clean_flags(body.get("flags"), record_last_pos(rec), by=by.strip())
+        if not hub.store.update_record(body.get("id"), rec):
+            raise AppError("no_record", "その記録を書き換えられなかった")
+    except AppError as e:
+        return web.json_response({"ok": False, "code": e.code, "msg": e.msg}, status=400)
+    return web.json_response({"ok": True, "flags": rec["flags"]}, dumps=lambda o: json.dumps(o, ensure_ascii=False))
 
 
 async def record_export(request: web.Request) -> web.Response:
@@ -769,6 +797,7 @@ def create_app(data_dir, *, seed_source=None, clock=time.time, flood_per_sec=FLO
     app.router.add_get("/api/records", records)
     app.router.add_post("/api/records/replay", record_replay)
     app.router.add_get("/api/records/export", record_export)
+    app.router.add_post("/api/records/flags", record_flags)
     app.router.add_post("/api/records/import", record_import)
     if STATIC_DIR.exists():
         app.router.add_static("/static/", STATIC_DIR)

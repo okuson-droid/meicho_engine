@@ -3,6 +3,6 @@
 `LANES.md` §5.3。台帳類を書いたら、該当の行を置き換える（ファイルごとに最新の 1 行だけ）。
 チャットの始めに、PC の実物のバイト数と sha256 の先頭 12 桁をこの控えと比べる。合わなければ作業の前にマスターへ報告する。
 
-- engine/app/TASKS_APP.md | 20131 | bb0643028274 | 2026-09-28 23:27 JST
-- engine/app/DECISIONS_APP.md | 141360 | b33e45795c50 | 2026-09-28 23:27 JST
+- engine/app/TASKS_APP.md | 21000 | 62e01e2a2054 | 2026-09-29 09:41 JST
+- engine/app/DECISIONS_APP.md | 146046 | b515414cde1c | 2026-09-29 09:41 JST
 - engine/app/TO_ENGINE.md | 19539 | de3d4a6c6292 | 2026-09-28 05:30 JST
