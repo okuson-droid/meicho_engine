@@ -1,0 +1,52 @@
+{
+ "version": "s3h2h-1",
+ "challenge": "ch",
+ "null": "null",
+ "n_per_block": 150,
+ "n_games": 2400,
+ "main": {
+  "diff": 0.01,
+  "lo": -0.017083333333333332,
+  "hi": 0.037083333333333336,
+  "verdict": "伸びていない（項目 1 へ）"
+ },
+ "raw": {
+  "ch": {
+   "score": 0.5095833333333333,
+   "lo": 0.49,
+   "hi": 0.5291666666666667
+  },
+  "null": {
+   "score": 0.4995833333333334,
+   "lo": 0.47958333333333336,
+   "hi": 0.5199999999999999,
+   "contains_half": true
+  }
+ },
+ "by_deck": {
+  "env/ENV_SANGE_RF_TSUBAKI": {
+   "n": 600,
+   "diff": 0.0033333333333333335,
+   "challenge_only": 137,
+   "null_only": 135
+  },
+  "env/ENV_SANGE_RM_TSUBAKI": {
+   "n": 600,
+   "diff": 0.006666666666666667,
+   "challenge_only": 148,
+   "null_only": 144
+  },
+  "env/ENV_YANG_RF_TSUBAKI": {
+   "n": 600,
+   "diff": 0.008333333333333333,
+   "challenge_only": 142,
+   "null_only": 137
+  },
+  "env/ENV_YANG_RM_TSUBAKI": {
+   "n": 600,
+   "diff": 0.021666666666666667,
+   "challenge_only": 134,
+   "null_only": 121
+  }
+ }
+}
