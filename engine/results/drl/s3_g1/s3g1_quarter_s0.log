@@ -1,0 +1,57 @@
+--keep-pairs 4:0: 学習の決定 587665 → 147145
+train 147145 decisions / valid 63706 decisions  (read 10s)  chance acc: train 0.279 valid 0.280
+探索値の較正[bulk]: p = sigmoid(3.548·clip(v,±0.917)/0.917 + -2.480)  n=142729  番兵の割合 0.000
+  較正後の対数損失 0.6427 vs 「常に平均勝率」0.6843 → 探索値は勝敗の情報を持つ
+  教師 p の広がり（75%点−25%点） 0.183
+init from results/models/s2v_id_s0.json
+学習する重みの数 632,194（書き出すネットは射影の有無によらず同じ形）
+ep 1: loss 1.7352 | valid v_logloss 0.6299 v_acc 0.631 | t_logloss 0.6543 | p_logloss 1.0553 p_acc 0.562 | 30s
+   by phase: {'setup': '1.000(960)', 'mulligan': '0.983(960)', 'action': '0.483(20104)', 'clash': '0.534(10681)', 'choice': '0.601(26433)', 'rush': '0.577(4345)', 'discard': '0.314(223)'}
+ep 2: loss 1.6583 | valid v_logloss 0.6331 v_acc 0.624 | t_logloss 0.6573 | p_logloss 1.0445 p_acc 0.565 | 29s
+   by phase: {'setup': '1.000(960)', 'mulligan': '0.983(960)', 'action': '0.484(20104)', 'clash': '0.536(10681)', 'choice': '0.606(26433)', 'rush': '0.584(4345)', 'discard': '0.296(223)'}
+ep 3: loss 1.6143 | valid v_logloss 0.6355 v_acc 0.622 | t_logloss 0.6610 | p_logloss 1.0461 p_acc 0.565 | 28s
+   by phase: {'setup': '1.000(960)', 'mulligan': '0.983(960)', 'action': '0.481(20104)', 'clash': '0.539(10681)', 'choice': '0.609(26433)', 'rush': '0.583(4345)', 'discard': '0.265(223)'}
+ep 4: loss 1.5764 | valid v_logloss 0.6345 v_acc 0.625 | t_logloss 0.6601 | p_logloss 1.0512 p_acc 0.565 | 28s
+   by phase: {'setup': '1.000(960)', 'mulligan': '0.983(960)', 'action': '0.480(20104)', 'clash': '0.538(10681)', 'choice': '0.610(26433)', 'rush': '0.578(4345)', 'discard': '0.265(223)'}
+ep 5: loss 1.5390 | valid v_logloss 0.6361 v_acc 0.624 | t_logloss 0.6624 | p_logloss 1.0647 p_acc 0.564 | 28s
+   by phase: {'setup': '1.000(960)', 'mulligan': '0.983(960)', 'action': '0.476(20104)', 'clash': '0.539(10681)', 'choice': '0.610(26433)', 'rush': '0.574(4345)', 'discard': '0.242(223)'}
+ep 6: loss 1.5009 | valid v_logloss 0.6387 v_acc 0.620 | t_logloss 0.6636 | p_logloss 1.0844 p_acc 0.560 | 28s
+   by phase: {'setup': '1.000(960)', 'mulligan': '0.983(960)', 'action': '0.472(20104)', 'clash': '0.532(10681)', 'choice': '0.608(26433)', 'rush': '0.570(4345)', 'discard': '0.238(223)'}
+ep 7: loss 1.4626 | valid v_logloss 0.6361 v_acc 0.624 | t_logloss 0.6639 | p_logloss 1.1073 p_acc 0.558 | 29s
+   by phase: {'setup': '1.000(960)', 'mulligan': '0.983(960)', 'action': '0.472(20104)', 'clash': '0.532(10681)', 'choice': '0.604(26433)', 'rush': '0.571(4345)', 'discard': '0.220(223)'}
+ep 8: loss 1.4245 | valid v_logloss 0.6385 v_acc 0.622 | t_logloss 0.6649 | p_logloss 1.1320 p_acc 0.556 | 28s
+   by phase: {'setup': '1.000(960)', 'mulligan': '0.982(960)', 'action': '0.470(20104)', 'clash': '0.529(10681)', 'choice': '0.604(26433)', 'rush': '0.561(4345)', 'discard': '0.238(223)'}
+ep 9: loss 1.3847 | valid v_logloss 0.6390 v_acc 0.623 | t_logloss 0.6660 | p_logloss 1.1733 p_acc 0.552 | 29s
+   by phase: {'setup': '1.000(960)', 'mulligan': '0.982(960)', 'action': '0.466(20104)', 'clash': '0.521(10681)', 'choice': '0.599(26433)', 'rush': '0.556(4345)', 'discard': '0.224(223)'}
+ep 10: loss 1.3483 | valid v_logloss 0.6371 v_acc 0.623 | t_logloss 0.6654 | p_logloss 1.1984 p_acc 0.550 | 29s
+   by phase: {'setup': '1.000(960)', 'mulligan': '0.982(960)', 'action': '0.459(20104)', 'clash': '0.522(10681)', 'choice': '0.601(26433)', 'rush': '0.550(4345)', 'discard': '0.220(223)'}
+ep 11: loss 1.3126 | valid v_logloss 0.6384 v_acc 0.623 | t_logloss 0.6661 | p_logloss 1.2336 p_acc 0.546 | 28s
+   by phase: {'setup': '1.000(960)', 'mulligan': '0.982(960)', 'action': '0.455(20104)', 'clash': '0.522(10681)', 'choice': '0.594(26433)', 'rush': '0.551(4345)', 'discard': '0.247(223)'}
+ep 12: loss 1.2791 | valid v_logloss 0.6389 v_acc 0.621 | t_logloss 0.6667 | p_logloss 1.2718 p_acc 0.546 | 28s
+   by phase: {'setup': '1.000(960)', 'mulligan': '0.982(960)', 'action': '0.452(20104)', 'clash': '0.520(10681)', 'choice': '0.596(26433)', 'rush': '0.554(4345)', 'discard': '0.233(223)'}
+ep 13: loss 1.2473 | valid v_logloss 0.6401 v_acc 0.620 | t_logloss 0.6668 | p_logloss 1.3188 p_acc 0.544 | 28s
+   by phase: {'setup': '1.000(960)', 'mulligan': '0.982(960)', 'action': '0.455(20104)', 'clash': '0.516(10681)', 'choice': '0.593(26433)', 'rush': '0.551(4345)', 'discard': '0.215(223)'}
+ep 14: loss 1.2176 | valid v_logloss 0.6393 v_acc 0.623 | t_logloss 0.6670 | p_logloss 1.3438 p_acc 0.543 | 27s
+   by phase: {'setup': '1.000(960)', 'mulligan': '0.982(960)', 'action': '0.451(20104)', 'clash': '0.515(10681)', 'choice': '0.593(26433)', 'rush': '0.551(4345)', 'discard': '0.224(223)'}
+ep 15: loss 1.1927 | valid v_logloss 0.6401 v_acc 0.621 | t_logloss 0.6673 | p_logloss 1.3821 p_acc 0.543 | 29s
+   by phase: {'setup': '1.000(960)', 'mulligan': '0.982(960)', 'action': '0.452(20104)', 'clash': '0.515(10681)', 'choice': '0.593(26433)', 'rush': '0.546(4345)', 'discard': '0.233(223)'}
+ep 16: loss 1.1701 | valid v_logloss 0.6397 v_acc 0.622 | t_logloss 0.6675 | p_logloss 1.4070 p_acc 0.541 | 28s
+   by phase: {'setup': '1.000(960)', 'mulligan': '0.982(960)', 'action': '0.448(20104)', 'clash': '0.511(10681)', 'choice': '0.592(26433)', 'rush': '0.545(4345)', 'discard': '0.233(223)'}
+ep 17: loss 1.1509 | valid v_logloss 0.6395 v_acc 0.622 | t_logloss 0.6670 | p_logloss 1.4368 p_acc 0.541 | 30s
+   by phase: {'setup': '1.000(960)', 'mulligan': '0.982(960)', 'action': '0.448(20104)', 'clash': '0.512(10681)', 'choice': '0.591(26433)', 'rush': '0.550(4345)', 'discard': '0.229(223)'}
+ep 18: loss 1.1352 | valid v_logloss 0.6400 v_acc 0.622 | t_logloss 0.6671 | p_logloss 1.4512 p_acc 0.538 | 29s
+   by phase: {'setup': '1.000(960)', 'mulligan': '0.982(960)', 'action': '0.447(20104)', 'clash': '0.508(10681)', 'choice': '0.587(26433)', 'rush': '0.545(4345)', 'discard': '0.233(223)'}
+ep 19: loss 1.1227 | valid v_logloss 0.6402 v_acc 0.622 | t_logloss 0.6677 | p_logloss 1.4695 p_acc 0.539 | 29s
+   by phase: {'setup': '1.000(960)', 'mulligan': '0.982(960)', 'action': '0.445(20104)', 'clash': '0.510(10681)', 'choice': '0.590(26433)', 'rush': '0.543(4345)', 'discard': '0.238(223)'}
+ep 20: loss 1.1125 | valid v_logloss 0.6406 v_acc 0.622 | t_logloss 0.6677 | p_logloss 1.4807 p_acc 0.538 | 29s
+   by phase: {'setup': '1.000(960)', 'mulligan': '0.982(960)', 'action': '0.446(20104)', 'clash': '0.507(10681)', 'choice': '0.589(26433)', 'rush': '0.542(4345)', 'discard': '0.238(223)'}
+ep 21: loss 1.1050 | valid v_logloss 0.6405 v_acc 0.621 | t_logloss 0.6676 | p_logloss 1.4908 p_acc 0.538 | 29s
+   by phase: {'setup': '1.000(960)', 'mulligan': '0.982(960)', 'action': '0.447(20104)', 'clash': '0.507(10681)', 'choice': '0.588(26433)', 'rush': '0.545(4345)', 'discard': '0.233(223)'}
+ep 22: loss 1.0996 | valid v_logloss 0.6404 v_acc 0.621 | t_logloss 0.6676 | p_logloss 1.4955 p_acc 0.538 | 29s
+   by phase: {'setup': '1.000(960)', 'mulligan': '0.982(960)', 'action': '0.447(20104)', 'clash': '0.507(10681)', 'choice': '0.589(26433)', 'rush': '0.543(4345)', 'discard': '0.233(223)'}
+ep 23: loss 1.0963 | valid v_logloss 0.6405 v_acc 0.622 | t_logloss 0.6677 | p_logloss 1.4972 p_acc 0.538 | 29s
+   by phase: {'setup': '1.000(960)', 'mulligan': '0.982(960)', 'action': '0.447(20104)', 'clash': '0.506(10681)', 'choice': '0.589(26433)', 'rush': '0.543(4345)', 'discard': '0.238(223)'}
+ep 24: loss 1.0945 | valid v_logloss 0.6405 v_acc 0.622 | t_logloss 0.6677 | p_logloss 1.4978 p_acc 0.538 | 28s
+   by phase: {'setup': '1.000(960)', 'mulligan': '0.982(960)', 'action': '0.446(20104)', 'clash': '0.506(10681)', 'choice': '0.589(26433)', 'rush': '0.543(4345)', 'discard': '0.238(223)'}
+--select best_v: エポック 1 の版を保存する（検証 v_logloss 0.6299・最後は 0.6405）
+saved /tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/g1/s3g1_quarter_s0.json (708s)
