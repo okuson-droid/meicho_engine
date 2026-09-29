@@ -26,6 +26,9 @@
 ## 局数の足し継ぎ
 
 - 同じ `--out` に大きい `--n` で打ち直すと、各ブロックの足りない局だけを回して後ろに足す（`eval_s2_repr.py` と同じ作法）
+- **挑戦と null は同じ `--out` に入れる**（別の `--out` の組を取り込む口は無い）。0 番の null を 1-b・5-b で使い回すときは、
+  同じ `--out` に別名の `--pair` で足す（同じシード・同じデッキなので、既にある組は回し直さない）。同じファイルの中なので
+  シードとデッキは構造上そろい、`report` は B 席の V の指紋と局数を確かめる
 """
 from __future__ import annotations
 
@@ -81,7 +84,8 @@ def run(args, decks: list | None = None) -> dict:
         with open(args.out, encoding="utf-8") as f:
             data = json.load(f)
         if (data["seed0"], data["decks"]) != (args.seed0, decks):
-            raise SystemExit("条件が違う（別の --out に）")
+            raise SystemExit(f"条件が違う（seed0 {data['seed0']} → {args.seed0}・decks {data['decks']} → {decks}）。"
+                             f"別の --out に")
         if data["n"] > args.n:
             raise SystemExit("局数を減らして打ち直さない（別の --out に）")
         data["n"] = args.n

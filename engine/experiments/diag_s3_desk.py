@@ -16,9 +16,10 @@
 - `rule_2a`（Cowork 版 2-a の規則）: V_0 も V_1 も基準からの改善が 0.01 未満で、決定数の 10% 以上を占める層があるか
 - `teacher`（Cowork 版 3-a・CC 版 §2.2）: 教師（探索値の最大を S5 の較正で勝率に直したもの）と V_0（束ねたもの）の
   対数損失と上乗せ u = L(V_0) − L(教師)。**較正は `s3v1_id_s0.meta.json` の a・b・c をそのまま当てる**（検証の記録で
-  合わせ直さない）。規則: u < 0.002 → 「教師が V_0 に情報を足していない」。あわせて層別の u と 10 分位の較正図
+  合わせ直さない）。規則: u < 0.002 → 「教師が V_0 に情報を足していない」。あわせて層別の u と 10 分位の較正図と、
+  順位だけの物差し（AUC・判定には使わない）
 - `columns_zero`（CC 版 §4 (i)）: 信念の要約（20 列）・`hand_known`（78 列）・その両方を 0 にしたときの v_logloss の悪化
-- `select`（CC 版 §2.3）: 選択の評価の局を、候補のデッキ・席・手数（3 等分）ごとに「V_1 だけ勝った／V_0 だけ勝った」で数える
+- `select`（CC 版 §2.3）: 選択の評価の局を、候補のデッキ・席・ターン数（3 等分）ごとに「V_1 だけ勝った／V_0 だけ勝った」で数える
 
 束ねた V は部品のロジットの平均の sigmoid として計算する（`ensemble_net.py` の `mean_logit` と同じ値・検査 M-4）。
 """
@@ -159,6 +160,7 @@ def coverage(recs, tg: dict) -> dict:
     out["games"] = len(games)
     out["turns"] = {"mean": float(turns.mean()), "p10": float(np.percentile(turns, 10)),
                     "p50": float(np.percentile(turns, 50)), "p90": float(np.percentile(turns, 90))}
+    # 錨は片側だけ記録するので、教師が席 1 に座った錨の局は席 0 の決定が無く、ここに入らない
     out["seat0_win"] = {"n": int(len(z0)), "rate": float(z0.mean()) if len(z0) else None}
     return out
 
@@ -182,16 +184,42 @@ def rule_2a(slices: dict, a: str = "V0", b: str = "V1") -> dict:
             "verdict": "情報欠落の疑いがある層がある（2-b へ）" if hit else "説明できない（項目 3 へ）"}
 
 
+def apply_calib(v: np.ndarray, calib: dict) -> np.ndarray:
+    """層別でない較正（`drl_train.apply_calibration` の全体の較正と同じ式・検査 M-5b）。
+
+    `drl_train` は torch を読み込むので、torch の無い PC でもこの道具が動くよう式だけをここに置く。
+    """
+    u = np.clip(v, -calib["c"], calib["c"]) / calib["c"]
+    return 1.0 / (1.0 + np.exp(-(calib["a"] * u + calib["b"])))
+
+
+def auc(p, z) -> float:
+    """順位だけの物差し（勝った決定の予測が負けた決定より高い割合・同順位は半分）。判定には使わない。"""
+    p = np.asarray(p, np.float64)
+    z = np.asarray(z) > 0.5
+    order = np.argsort(p, kind="mergesort")
+    ranks = np.empty(len(p))
+    ps = p[order]
+    i = 0
+    while i < len(ps):
+        j = i
+        while j + 1 < len(ps) and ps[j + 1] == ps[i]:
+            j += 1
+        ranks[order[i:j + 1]] = (i + j) / 2 + 1
+        i = j + 1
+    n1, n0 = int(z.sum()), int((~z).sum())
+    return float((ranks[z].sum() - n1 * (n1 + 1) / 2) / (n1 * n0))
+
+
 def teacher_p(recs, calib: dict) -> np.ndarray:
     """探索値の最大（`--vtarget max`）を S5 の較正で勝率に。探索していない決定は NaN。"""
-    from drl_train import apply_calibration
     v = np.full(recs.n, np.nan, np.float32)
     for i in range(recs.n):
         sc = recs.scores_of(i)
         fin = np.isfinite(sc)
         if fin.any():
             v[i] = sc[fin].max()
-    return apply_calibration(v, calib)
+    return apply_calib(v, calib)
 
 
 def teacher_uplift(z, p_v0, p_t, tg: dict) -> dict:
@@ -199,6 +227,8 @@ def teacher_uplift(z, p_v0, p_t, tg: dict) -> dict:
     out = {"n": int(ok.sum()), "L_V0": logloss(p_v0[ok], z[ok]), "L_teacher": logloss(p_t[ok], z[ok]),
            "base": base_logloss(z[ok])}
     out["u"] = out["L_V0"] - out["L_teacher"]
+    # 順位だけの物差し（添える・判定には使わない）: 較正の形（上位の頭打ち）と、探索値の情報の有無を読み分ける
+    out["auc"] = {"V0": auc(p_v0[ok], z[ok]), "teacher": auc(p_t[ok], z[ok])}
     out["rule"] = f"u < {RULE_3A}"
     out["verdict"] = ("教師が V_0 に情報を足していない（項目 3 で説明できる・止めて相談）" if out["u"] < RULE_3A
                       else "説明できない（項目 4 へ）")
@@ -235,9 +265,10 @@ def select_breakdown(sel: dict, new: str = "v1", old: str = "v_ens3") -> dict:
         for i in range(sel["n"]):
             deck, seat = cand_deck(a, b, sel["seed0"] + i)
             rows.append((deck, seat, rn[i][0] - ro[i][0], (rn[i][1] + ro[i][1]) / 2))
-    moves = np.array([r[3] for r in rows])
-    cut = np.percentile(moves, [100 / 3, 200 / 3])
-    out = {"n": len(rows), "moves_cut": [float(c) for c in cut], "by": {}}
+    # 結果の 2 列目は `rs.series` の返すターン数（手数ではない）
+    turns = np.array([r[3] for r in rows])
+    cut = np.percentile(turns, [100 / 3, 200 / 3])
+    out = {"n": len(rows), "turns_cut": [float(c) for c in cut], "by": {}}
 
     def add(key, sub):
         d = np.array([r[2] for r in sub])
@@ -247,9 +278,9 @@ def select_breakdown(sel: dict, new: str = "v1", old: str = "v_ens3") -> dict:
         add(f"deck={deck}", [r for r in rows if r[0] == deck])
     for seat in (0, 1):
         add(f"seat={seat}", [r for r in rows if r[1] == seat])
-    bins = np.digitize(moves, cut, right=True)            # 0: ≤ 1/3 点・1: ≤ 2/3 点・2: それより長い
+    bins = np.digitize(turns, cut, right=True)            # 0: ≤ 1/3 点・1: ≤ 2/3 点・2: それより長い
     for j, lab in enumerate(("short", "mid", "long")):
-        add(f"moves={lab}", [r for r, k in zip(rows, bins) if k == j])
+        add(f"turns={lab}", [r for r, k in zip(rows, bins) if k == j])
     return out
 
 

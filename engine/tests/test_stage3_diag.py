@@ -6,14 +6,16 @@ M-1 `diag_s3_desk.tags`: 決定のデッキは席で決まる（席 0 = deck_a�
 M-2 `diag_s3_desk.fit_slices`: 層の決定数の合計が全体と一致
 M-3 `diag_s3_desk.net_logit` は `Net.value_of` と同じ値
 M-4 束ねた V を部品のロジットの平均で計算した値が `ensemble_net.combine` の値と同じ
-M-5 3-a の教師は `s3v1_id_s0.meta.json` の較正をそのまま当てる（検証の記録で合わせ直さない）
+M-5 3-a の教師は `s3v1_id_s0.meta.json` の較正をそのまま当てる（検証の記録で合わせ直さない）／M-5b その式は `drl_train` と同じ
 M-6 2-a・3-a の規則の境目
-M-7 検証の記録全体で、V_1 の部品 3 本の v_logloss が学習の記録（meta の選んだエポック）と一致
+M-7 検証の記録全体で、V_1 の部品 3 本の v_logloss が学習の記録（meta の選んだエポック）と一致・決定数が 63,706・全決定に属性が付く
 H-1 `eval_s3_h2h`: 同じシードは同じ局／足し継ぎは一度に回したのと同じ
 H-2 挑戦に null と同じ V を渡すと d が全局 0
 H-3 学習の帯（kind=train）では回さない
 H-4 `report` は B 席の V が違う組・局数がそろっていない組を対にしない
-H-5 ブロック等重みの対の差と区間
+H-5 ブロック等重みの対の差と区間・順位の物差し（AUC）
+
+K 系と M-5b は torch、H-1〜H-3 は meicho_rs が無ければ skip にする（torch の無い PC で収集が落ちないように）
 
 H-1・H-2 は対局 16 局（約 40 秒）を回す。`tests/test_sets.json` は作業環境か PC の全検査から `make_test_sets.py` で作り直す
 （手で直さない・クラウドの結果では資材の違いで組がずれる）ので、次に作り直すまでは既定の組でも回る
@@ -35,7 +37,6 @@ sys.path.insert(0, ROOT)
 sys.path.insert(0, os.path.join(ROOT, "experiments"))
 
 import diag_s3_desk as D                                               # noqa: E402
-import drl_train as T                                                  # noqa: E402
 import eval_s3_h2h as H                                                # noqa: E402
 from meicho.drl_data import read_records                               # noqa: E402
 from meicho.drlnet import Net                                          # noqa: E402
@@ -43,6 +44,13 @@ from meicho.drlnet import Net                                          # noqa: E
 MODELS = os.path.join(ROOT, "results", "models")
 SMALL_V = os.path.join(MODELS, "s2v_id_s0.json")
 TEST_SEED0 = 859900                   # seed_bands.json の検査用（859900..859949）
+
+
+def _T():
+    """`drl_train` は torch を読み込む。torch の無い PC では K 系を skip にする（ほかの学習の検査と同じ）。"""
+    pytest.importorskip("torch")
+    import drl_train
+    return drl_train
 
 
 @pytest.fixture(scope="module")
@@ -55,6 +63,7 @@ def val_small(tmp_path_factory):
 
 # ------------------------------------------------------------------ K
 def test_keep_pairs_partition(val_small):
+    T = _T()
     files, _ = val_small
     r = read_records(files)
     for mod in (2, 4):
@@ -78,6 +87,7 @@ def test_keep_pairs_partition(val_small):
 
 
 def test_parse_keep_pairs():
+    T = _T()
     assert T.parse_keep_pairs(None) is None
     assert T.parse_keep_pairs("4:1") == (4, 1)
     for bad in ("1:0", "2:2", "2", "a:b", "3:-1"):
@@ -86,6 +96,7 @@ def test_parse_keep_pairs():
 
 
 def test_train_keep_pairs_meta(val_small, tmp_path):
+    T = _T()
     files, _ = val_small
     prefix = os.path.join(os.path.dirname(files[0]), "val.c000")
     out = str(tmp_path / "v.json")
@@ -168,6 +179,14 @@ def test_teacher_uses_meta_calibration(val_small):
         assert abs(p[i] - 1 / (1 + np.exp(-(calib["a"] * u + calib["b"])))) < 1e-6
 
 
+def test_desk_calibration_equals_drl_train(val_small):
+    """M-5b: 机上の道具の較正の式は `drl_train.apply_calibration`（全体の較正）と同じ値。"""
+    T = _T()
+    calib = json.load(open(os.path.join(MODELS, "s3v1_id_s0.meta.json"), encoding="utf-8"))["calibration"]
+    v = np.linspace(-0.2, 1.2, 57).astype(np.float32)
+    assert np.abs(D.apply_calib(v, calib) - T.apply_calibration(v, calib)).max() < 1e-6
+
+
 def test_rules_thresholds():
     sl = {"all": {"share": 1.0, "base": 0.69, "V0": 0.6, "V1": 0.6},
           "a=x": {"share": 0.10, "base": 0.69, "V0": 0.681, "V1": 0.6801},     # 両方 < 0.01・占有 10% → 当たる
@@ -186,6 +205,10 @@ def test_full_val_matches_training_log(tmp_path_factory):
     files = D.extract("val", str(tmp_path_factory.mktemp("full")))
     r = read_records(files)
     ok = ~np.isnan(r.z)
+    assert r.n == int(ok.sum()) == 63706                              # D-141 の検証の記録の決定数
+    tg = D.tags(r, D.block_table(D.manifests("val")))
+    for key in ("phase", "tband", "own", "sk", "kind"):
+        assert len(tg[key]) == 63706
     for k in range(3):
         meta = json.load(open(os.path.join(MODELS, f"s3v1_id_s{k}.meta.json"), encoding="utf-8"))
         ref = meta["log"][meta["selected_epoch"] - 1]["valid"]["v_logloss"]
@@ -202,6 +225,7 @@ def _h2h_args(out, n, pairs, seed0=TEST_SEED0):
 
 @pytest.fixture(scope="module")
 def h2h_runs(tmp_path_factory):
+    pytest.importorskip("meicho_rs")
     d = tmp_path_factory.mktemp("h2h")
     decks = H.tune_decks()[:1]                        # ミラー 1 ブロックだけ
     pairs = [f"x={SMALL_V}:{SMALL_V}", f"y={SMALL_V}:{SMALL_V}"]
@@ -227,6 +251,7 @@ def test_h2h_identical_pairs_zero_diff(h2h_runs):
 
 
 def test_h2h_rejects_train_band(tmp_path):
+    pytest.importorskip("meicho_rs")
     with pytest.raises(SystemExit, match="kind=train"):
         H.run(_h2h_args(tmp_path / "t.json", 2, [f"x={SMALL_V}:{SMALL_V}"], seed0=845000), H.tune_decks()[:1])
 
@@ -253,3 +278,9 @@ def test_paired_blocks_equal_weight():
     assert r["diff"] == 0.5 and r["lo"] == r["hi"] == 0.5          # 局数でなくブロックで等重み
     assert H.verdict(0.011).startswith("伸びていた") and H.verdict(-0.011).startswith("伸びていない")
     assert H.verdict(0.0).startswith("境界") and H.verdict(0.01).startswith("境界")
+
+
+def test_auc_ranks():
+    z = np.array([0, 0, 1, 1])
+    assert D.auc([0.1, 0.2, 0.3, 0.4], z) == 1.0 and D.auc([0.4, 0.3, 0.2, 0.1], z) == 0.0
+    assert D.auc([0.5, 0.5, 0.5, 0.5], z) == 0.5
