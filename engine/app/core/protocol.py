@@ -21,6 +21,7 @@ C_RESIGN = "resign"      # {}
 C_REMATCH = "rematch"    # {}
 C_PING = "ping"          # {}
 C_REPLAY = "replay"      # {viewer: 0|1|"spec"|"full"}  終局したあとだけ。この部屋の最後の局を再生する（APP-019）
+C_REVIEW = "review"      # {op: "start"|"move"|"take"|"stop", pos?}  感想戦（R-REP-4・APP-029）。終局したあとだけ
 
 # サーバ → 画面
 S_WELCOME = "welcome"    # {v, member, key, room}

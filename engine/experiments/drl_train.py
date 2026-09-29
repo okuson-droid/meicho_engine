@@ -225,6 +225,40 @@ def stratum_name(key: int) -> str:
     return f"{PHASE_NAMES[key // 2]}/{'自分' if key % 2 else '相手'}のターン"
 
 
+def parse_keep_pairs(text: str | None):
+    """`--keep-pairs M:R` を (M, R) に。None なら None（間引かない・従来どおり）。"""
+    if text is None:
+        return None
+    m, _, r = text.partition(":")
+    try:
+        m, r = int(m), int(r)
+    except ValueError:
+        raise SystemExit(f"--keep-pairs は M:R の形（例 2:0）: {text!r}")
+    if m < 2 or not 0 <= r < m:
+        raise SystemExit(f"--keep-pairs は M ≥ 2・0 ≤ R < M: {text!r}")
+    return m, r
+
+
+def keep_pairs(recs: Records, mod: int, rem: int) -> Records:
+    """局のシードの対 (2k, 2k+1) を単位に、k mod `mod` == `rem` の局の決定だけを残す（D-144 追記 3・G-1）。
+
+    対を単位にするのは、`series` が奇数シードで席を入れ替えるので、対の 2 局で 2 つのデッキを
+    両方の席で持つ形（組み合わせ表の配分）を崩さないためである。記録の中の順序は保つ。
+    """
+    mask = (recs.seed // 2) % mod == rem
+    idx = np.nonzero(mask)[0]
+    na = recs.n_acts[idx].astype(np.int64)
+    starts = recs.act_off[idx]
+    off = np.zeros(len(idx) + 1, np.int64)
+    if len(idx):
+        off[1:] = np.cumsum(na)
+    flat = (np.repeat(starts - off[:-1], na) + np.arange(off[-1])) if len(idx) else np.zeros(0, np.int64)
+    return Records(n=int(len(idx)), seed=recs.seed[idx], step=recs.step[idx], turn=recs.turn[idx],
+                   pi=recs.pi[idx], phase=recs.phase[idx], n_acts=recs.n_acts[idx], chosen=recs.chosen[idx],
+                   z=recs.z[idx], fresh=recs.fresh[idx], obs=recs.obs[idx], act_off=off,
+                   acts_flat=recs.acts_flat[flat], scores_flat=recs.scores_flat[flat])
+
+
 def parse_seed_ranges(text: str | None) -> list:
     """`"487100-488099,488100-489099"` を [(487100, 488099), ...] にする。
 
@@ -618,8 +652,16 @@ def train(args):
                          "（keep のままでは 1 ビットも挙動が変わらない）")
     if args.league_mode != "keep" and not lg:
         raise SystemExit(f"--league-mode {args.league_mode} には --league-seeds が要る")
-    tr = Batcher(read_records(files_of(args.train), args.max_records),
-                 vtarget=args.vtarget, league_ranges=lg)
+    args.keep_pairs = getattr(args, "keep_pairs", None)
+    kp = parse_keep_pairs(args.keep_pairs)
+    tr_recs = read_records(files_of(args.train), args.max_records)
+    n_read = tr_recs.n
+    if kp is not None:
+        # G-1（学習曲線）: 学習の記録だけを間引く。検証の記録は間引かない（物差しを変えない）
+        tr_recs = keep_pairs(tr_recs, *kp)
+        print(f"--keep-pairs {kp[0]}:{kp[1]}: 学習の決定 {n_read} → {tr_recs.n}")
+    tr = Batcher(tr_recs, vtarget=args.vtarget, league_ranges=lg)
+    del tr_recs
     va = Batcher(read_records(files_of(args.valid), args.max_records),
                  vtarget=args.vtarget, league_ranges=lg)
     print(f"train {tr.n} decisions / valid {va.n} decisions  (read {time.time()-t0:.0f}s)  chance acc: "
@@ -793,6 +835,7 @@ def train(args):
             "distil_from": args.distil_from,
             "n_fresh_used": int(tr.n_fresh_used), "wd": args.wd, "wv": args.wv, "wp": args.wp,
             "card_profile": proj_info, "n_params_trained": n_params,
+            "keep_pairs": args.keep_pairs, "n_train_read": int(n_read),
             "n_params_exported": int(sum(w.size + b.size for w, b in net.trunk) + net.value[0].size
                                      + net.value[1].size + sum(w.size + b.size for w, b in net.policy))}
     with open(args.out.replace(".json", ".meta.json"), "w", encoding="utf-8") as f:
@@ -841,6 +884,9 @@ def main():
                          "--wv 0 と一緒に使う。生徒は --hidden / --phead で小さくする")
     ap.add_argument("--card-profile", action="store_true",
                     help="カードの効果表現の射影を第 1 層に足して学ぶ（D-132。書き出しで畳み込むので Rust の形は同じ）")
+    ap.add_argument("--keep-pairs", default=None,
+                    help="学習の記録を局のシードの対 (2k, 2k+1) を単位に間引く。M:R で k mod M == R の局だけを残す"
+                         "（例 2:0 で半分・4:0 で 4 分の 1）。検証の記録は間引かない（D-144 追記 3・G-1 学習曲線）")
     ap.add_argument("--seed", type=int, default=0); ap.add_argument("--threads", type=int, default=2)
     ap.add_argument("--max-records", type=int, default=None)
     a = ap.parse_args()
