@@ -241,3 +241,57 @@ def test_manager_limits():
         mgr.get("nope")
     mgr.close(rooms[0].id)
     mgr.create("p")
+
+
+def test_review_mode_shares_one_position_and_anyone_can_take_over(sd001, sd02):
+    """感想戦（R-REP-4・APP-029）: 終局したあとだけ始められ、部屋の全員に同じ位置が配られる。
+    位置を動かせるのは操作する 1 人で、誰でも代われる。操作する人が抜けたら次の人へ渡り、次の局が始まったら終わる。"""
+    from app.core import replay
+    r, a, b = setup_room(sd001, sd02)
+    c, _ = r.join("C", "himitsu")                                     # 観戦者も加われる
+    start(r, a, b)
+    with pytest.raises(AppError) as e:
+        r.handle(c.id, {"t": "review", "op": "start"})
+    assert e.value.code == "not_finished" and r.review is None
+    play_out(r, random.Random(3))
+    last = len(replay.build(r.game.dump(), r.game.result())["full"]) - 1    # リプレイの最後の位置と一致させる
+    assert r._review_last() == last
+    with pytest.raises(AppError) as e:
+        r.handle(a.id, {"t": "review", "op": "move", "pos": 1})
+    assert e.value.code == "no_review"
+
+    out = r.handle(c.id, {"t": "review", "op": "start", "pos": 5})
+    assert {mid for mid, _ in out} == {a.id, b.id, c.id}              # 部屋の全員へ
+    rv = out[0][1]["room"]["review"]
+    assert rv["driver"] == c.id and rv["pos"] == 5
+    first_n = rv["n"]
+    assert r.handle(a.id, {"t": "review", "op": "start"}) and r.review["driver"] == c.id    # 2 回目の start は加わるだけ
+    with pytest.raises(AppError) as e:
+        r.handle(a.id, {"t": "review", "op": "move", "pos": 6})
+    assert e.value.code == "not_driver" and r.review["pos"] == 5      # 操作していない人は動かせない（状態は変わらない）
+    for bad in (-1, last + 1, "3", True, None):
+        with pytest.raises(AppError):
+            r.handle(c.id, {"t": "review", "op": "move", "pos": bad})
+    out = r.handle(c.id, {"t": "review", "op": "move", "pos": last})
+    assert all(m["room"]["review"]["pos"] == last for _, m in out)
+    assert r.handle(c.id, {"t": "review", "op": "move", "pos": last}) == []   # 同じ位置は配り直さない
+
+    r.handle(a.id, {"t": "review", "op": "take"})                     # 誰でも代われる
+    assert r.review["driver"] == a.id
+    r.handle(a.id, {"t": "review", "op": "move", "pos": 2})
+    with pytest.raises(AppError):
+        r.handle(c.id, {"t": "review", "op": "move", "pos": 3})
+    r.disconnect(a.id, 1.0)                                           # 操作する人が抜けたら、つながっている人へ
+    assert r.review["driver"] in (b.id, c.id) and r.review["pos"] == 2
+    with pytest.raises(AppError):
+        r.handle(c.id, {"t": "review", "op": "nope"})
+    r.handle(b.id, {"t": "review", "op": "stop"})
+    assert r.review is None and r.info()["review"] is None
+    r.handle(b.id, {"t": "review", "op": "start"})
+    assert r.review["n"] != first_n and r.review["pos"] == 0          # 始め直すと別の感想戦（画面はまた開く）
+    assert "review" not in json.dumps(r.dump())                      # 保存しない（再起動したら終わる）
+
+    r.members[a.id].connected = True                                 # A がつなぎ直した（席は保たれている）
+    r.handle(a.id, {"t": "rematch"})
+    r.handle(b.id, {"t": "rematch"})                                  # 次の局が始まったら感想戦は終わる
+    assert r.state in (PLAYING, CHOOSING) and r.review is None and r.info()["review"] is None
