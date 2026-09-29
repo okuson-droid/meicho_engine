@@ -198,6 +198,7 @@ def test_calib_effect_matches_training_calibration(val_small):
     assert abs(out["all"]["logloss"] - ref["logloss"]) < 1e-9 and out["all"]["n"] == ref["n"]
     assert out["all"]["gain"] == ref["base"] - ref["logloss"]
     assert out["non_sentinel"]["n"] + out["n_sentinel"] == out["all"]["n"] == out["n_search"]
+    assert out["non_sentinel"]["sentinel_frac"] == 0.0
 
 
 def test_rules_thresholds():
