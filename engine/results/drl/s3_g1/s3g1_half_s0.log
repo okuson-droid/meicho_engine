@@ -1,0 +1,33 @@
+--keep-pairs 2:0: 学習の決定 587665 → 293714
+train 293714 decisions / valid 63706 decisions  (read 13s)  chance acc: train 0.279 valid 0.280
+探索値の較正[bulk]: p = sigmoid(3.717·clip(v,±0.917)/0.917 + -2.609)  n=284882  番兵の割合 0.000
+  較正後の対数損失 0.6394 vs 「常に平均勝率」0.6840 → 探索値は勝敗の情報を持つ
+  教師 p の広がり（75%点−25%点） 0.191
+init from results/models/s2v_id_s0.json
+学習する重みの数 632,194（書き出すネットは射影の有無によらず同じ形）
+ep 1: loss 1.7153 | valid v_logloss 0.6306 v_acc 0.626 | t_logloss 0.6520 | p_logloss 1.0407 p_acc 0.567 | 60s
+   by phase: {'setup': '1.000(960)', 'mulligan': '0.982(960)', 'action': '0.486(20104)', 'clash': '0.540(10681)', 'choice': '0.607(26433)', 'rush': '0.586(4345)', 'discard': '0.327(223)'}
+ep 2: loss 1.6510 | valid v_logloss 0.6306 v_acc 0.627 | t_logloss 0.6532 | p_logloss 1.0307 p_acc 0.571 | 51s
+   by phase: {'setup': '1.000(960)', 'mulligan': '0.983(960)', 'action': '0.489(20104)', 'clash': '0.549(10681)', 'choice': '0.613(26433)', 'rush': '0.581(4345)', 'discard': '0.336(223)'}
+ep 3: loss 1.6154 | valid v_logloss 0.6321 v_acc 0.629 | t_logloss 0.6559 | p_logloss 1.0319 p_acc 0.573 | 49s
+   by phase: {'setup': '1.000(960)', 'mulligan': '0.982(960)', 'action': '0.489(20104)', 'clash': '0.553(10681)', 'choice': '0.615(26433)', 'rush': '0.588(4345)', 'discard': '0.309(223)'}
+ep 4: loss 1.5836 | valid v_logloss 0.6339 v_acc 0.626 | t_logloss 0.6573 | p_logloss 1.0317 p_acc 0.572 | 48s
+   by phase: {'setup': '1.000(960)', 'mulligan': '0.982(960)', 'action': '0.488(20104)', 'clash': '0.552(10681)', 'choice': '0.613(26433)', 'rush': '0.586(4345)', 'discard': '0.305(223)'}
+ep 5: loss 1.5512 | valid v_logloss 0.6352 v_acc 0.626 | t_logloss 0.6588 | p_logloss 1.0413 p_acc 0.571 | 48s
+   by phase: {'setup': '1.000(960)', 'mulligan': '0.983(960)', 'action': '0.484(20104)', 'clash': '0.551(10681)', 'choice': '0.615(26433)', 'rush': '0.574(4345)', 'discard': '0.318(223)'}
+ep 6: loss 1.5192 | valid v_logloss 0.6347 v_acc 0.627 | t_logloss 0.6592 | p_logloss 1.0541 p_acc 0.568 | 49s
+   by phase: {'setup': '1.000(960)', 'mulligan': '0.982(960)', 'action': '0.484(20104)', 'clash': '0.546(10681)', 'choice': '0.613(26433)', 'rush': '0.567(4345)', 'discard': '0.305(223)'}
+ep 7: loss 1.4882 | valid v_logloss 0.6345 v_acc 0.628 | t_logloss 0.6591 | p_logloss 1.0685 p_acc 0.565 | 48s
+   by phase: {'setup': '1.000(960)', 'mulligan': '0.982(960)', 'action': '0.477(20104)', 'clash': '0.542(10681)', 'choice': '0.610(26433)', 'rush': '0.583(4345)', 'discard': '0.291(223)'}
+ep 8: loss 1.4591 | valid v_logloss 0.6362 v_acc 0.626 | t_logloss 0.6601 | p_logloss 1.0817 p_acc 0.564 | 48s
+   by phase: {'setup': '1.000(960)', 'mulligan': '0.982(960)', 'action': '0.474(20104)', 'clash': '0.546(10681)', 'choice': '0.609(26433)', 'rush': '0.576(4345)', 'discard': '0.278(223)'}
+ep 9: loss 1.4338 | valid v_logloss 0.6368 v_acc 0.624 | t_logloss 0.6604 | p_logloss 1.0930 p_acc 0.564 | 47s
+   by phase: {'setup': '1.000(960)', 'mulligan': '0.982(960)', 'action': '0.474(20104)', 'clash': '0.542(10681)', 'choice': '0.610(26433)', 'rush': '0.578(4345)', 'discard': '0.300(223)'}
+ep 10: loss 1.4146 | valid v_logloss 0.6367 v_acc 0.625 | t_logloss 0.6609 | p_logloss 1.1009 p_acc 0.562 | 49s
+   by phase: {'setup': '1.000(960)', 'mulligan': '0.982(960)', 'action': '0.473(20104)', 'clash': '0.541(10681)', 'choice': '0.608(26433)', 'rush': '0.575(4345)', 'discard': '0.287(223)'}
+ep 11: loss 1.4013 | valid v_logloss 0.6367 v_acc 0.625 | t_logloss 0.6607 | p_logloss 1.1051 p_acc 0.561 | 48s
+   by phase: {'setup': '1.000(960)', 'mulligan': '0.982(960)', 'action': '0.472(20104)', 'clash': '0.542(10681)', 'choice': '0.606(26433)', 'rush': '0.576(4345)', 'discard': '0.283(223)'}
+ep 12: loss 1.3941 | valid v_logloss 0.6366 v_acc 0.624 | t_logloss 0.6608 | p_logloss 1.1069 p_acc 0.562 | 49s
+   by phase: {'setup': '1.000(960)', 'mulligan': '0.982(960)', 'action': '0.471(20104)', 'clash': '0.542(10681)', 'choice': '0.608(26433)', 'rush': '0.578(4345)', 'discard': '0.278(223)'}
+--select best_v: エポック 2 の版を保存する（検証 v_logloss 0.6306・最後は 0.6366）
+saved /tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/g1/s3g1_half_s0.json (628s)
