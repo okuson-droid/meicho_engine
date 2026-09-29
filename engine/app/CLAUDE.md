@@ -44,6 +44,7 @@
 - `static/`: `index.html`・`deck.html`、`js/`（`board.js` 盤面・`fx.js` 演出・`intents.js`・`net.js`・`replay.js`・`deckcode.js`・`settings.js`・`sfx.js`・`help.js` ほか）、`css/`（`tokens.css`・`app.css`・`deck.css`）
 - `mslauncher/`: 配布版の起動役（標準ライブラリだけ・`app`・`meicho`・`webapp` を import しない）
 - `release/`: 公開の道具 `publish.py`（init・release・launcher）と更新元の門番 `feed_host/`
+- `start_local.bat`・`start_friends.bat`: マスターの PC でサーバを立てる bat（APP-031）。CRLF・UTF-8（`.gitattributes` で CRLF に固定）。配布版には入らない。静的な検査は `tests/test_launch_bat.py`
 - `tests/`: `test_server.py`・`test_room.py`・`test_game.py`・`test_cpu.py`・`test_replay.py`・`test_release.py`・`test_ui.py`（Playwright で本物のブラウザを動かす）
 - エンジンから使っている口: `meicho` の純粋関数とトレース点（`meicho/trace.py`・D-114）、`webapp/view.py` の 3 関数、`webapp/agents.py`、`webapp/record.py`、`scripts/make_dist.py`、`experiments/registry.py`・`champion.py`（TE-7〜TE-12 で知らせ済み）
 

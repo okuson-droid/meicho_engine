@@ -4,7 +4,7 @@
 // 入力はいっさい受けない。下にある対局の画面（部屋）は、そのまま生きている。
 // 感想戦（R-REP-4・APP-029）: 部屋の最後の局のリプレイでは、部屋の全員が同じ位置を見られる。位置を動かせるのは操作する 1 人で、誰でも代われる。
 // 位置はサーバの部屋の情報（room.review）で配られ、画面はそれに合わせるだけ。視点は各自が選ぶ。
-import { h, toast } from "./ui.js";
+import { h, toast, openModal, closeModal } from "./ui.js";
 import { Board } from "./board.js";
 import { logLine } from "./fx.js";
 
@@ -14,8 +14,10 @@ const same = (a, b) => String(a) === String(b);
 export class Replay {
   // fetchFrames(viewer) → Promise<{frames, names, result, viewer}>
   // sync: 部屋の最後の局のときだけ。{ me: 自分の member, send(msg), name(member) → 表示名 }。記録のリプレイには無い
-  constructor({ fetchFrames, viewer = "full", onClose = null, sync = null }) {
+  // saveFlags(flags) → Promise<flags>: 手元の記録のときだけ。「気になる」印とメモを直せる（R-REP-5・APP-030）。無ければ見るだけ
+  constructor({ fetchFrames, viewer = "full", onClose = null, sync = null, saveFlags = null }) {
     this.fetchFrames = fetchFrames; this.onClose = onClose; this.sync = sync; this.rv = null; this.sendTimer = null;
+    this.saveFlags = saveFlags; this.flags = [];
     this.viewer = viewer; this.frames = []; this.i = 0; this.auto = false; this.names = ["", ""]; this.result = null;
     this.layer = h("div", { id: "layer-replay", class: "replay-layer", role: "dialog", "aria-label": "リプレイ" });
     this.badge = h("div", { class: "review-badge", role: "status", hidden: true });   // 感想戦のあいだ、誰が操作しているかを盤面の上に出す
@@ -36,6 +38,7 @@ export class Replay {
     let msg;
     try { msg = await this.fetchFrames(viewer); } catch (e) { toast(e.message || "リプレイを読めなかった"); if (!this.frames.length) this.close(); return false; }
     this.viewer = msg.viewer; this.frames = msg.frames || []; this.names = msg.names || ["", ""]; this.result = msg.result || null;
+    this.flags = msg.flags || [];
     this.room = { order: [0, 1], seats: [{ name: this.names[0] || "先攻" }, { name: this.names[1] || "後攻" }], state: "finished" };
     this.jump(Math.min(this.i, this.frames.length - 1), true);
     if (this.rv) this._follow();
@@ -71,6 +74,46 @@ export class Replay {
     if (!this.rv || !this.canDrive()) return;
     clearTimeout(this.sendTimer);
     this.sendTimer = setTimeout(() => { if (this.rv && this.canDrive()) this.sync.send({ t: "review", op: "move", pos: this.i }); }, 120);
+  }
+
+  // ---------------------------------------------------------------- 「気になる」印とメモ（R-REP-5・APP-030）
+  flagsHere() { return this.flags.filter((f) => f.pos === this.i); }
+
+  async _storeFlags(next) {
+    try { this.flags = await this.saveFlags(next); } catch (e) { toast(`保存できなかった: ${e.message}`); return false; }
+    this._refresh();
+    return true;
+  }
+
+  // 印の一覧。手元の記録なら、この手に付ける・メモを直す・消すができる。そうでなければ見るだけ
+  openFlags() {
+    const editable = !!this.saveFlags;
+    const meta = (f) => `${f.pos} 手目${f.turn !== null && f.turn !== undefined ? `・ターン ${f.turn}` : ""}・${f.by || "?"}${f.when === "live" ? "（対局中）" : ""}`;
+    const row = (f, k) => {
+      const note = h("input", { class: "flag-note", maxlength: 200, value: f.note || "", placeholder: "メモ（200 字まで）", "aria-label": "メモ", disabled: !editable });
+      return h("div", { class: "flag-row" + (f.pos === this.i ? " here" : ""), dataset: { pos: f.pos } },
+        h("div", { class: "flag-meta", text: meta(f) }),
+        editable ? note : h("div", { class: "flag-text", text: f.note || "（メモなし）" }),
+        h("div", { class: "row end" },
+          h("button", { class: "btn", dataset: { act: "flag-go" }, disabled: !this.canDrive(), onclick: () => { closeModal(); this.jump(f.pos); }, text: "ここへ" }),
+          editable ? h("button", { class: "btn", dataset: { act: "flag-save" }, onclick: async () => {
+            if (await this._storeFlags(this.flags.map((x, j) => (j === k ? { ...x, note: note.value } : x)))) { toast("メモを保存した"); this.openFlags(); }
+          }, text: "保存" }) : null,
+          editable ? h("button", { class: "btn danger", dataset: { act: "flag-del" }, onclick: async () => {
+            if (await this._storeFlags(this.flags.filter((_, j) => j !== k))) this.openFlags();
+          }, text: "消す" }) : null));
+    };
+    const add = editable ? (() => {
+      const note = h("input", { class: "flag-note", id: "flag-new-note", maxlength: 200, placeholder: "メモ（任意・200 字まで）", "aria-label": "新しい印のメモ" });
+      const turn = this.frames[this.i] ? this.frames[this.i].view.turn_no : null;
+      return h("div", { class: "flag-add" }, note,
+        h("button", { class: "btn primary", dataset: { act: "flag-add" }, onclick: async () => {
+          if (await this._storeFlags([...this.flags, { pos: this.i, turn, note: note.value, when: "replay" }])) { toast(`★ ${this.i} 手目に印を付けた`); this.openFlags(); }
+        }, text: `この手（${this.i} 手目）に印を付ける` }));
+    })() : h("p", { class: "muted", text: "印とメモを付け・直せるのは、この PC の「記録を見る」から開いたリプレイだけ。" });
+    openModal([h("h3", { text: `気になる印（${this.flags.length}）` }), add,
+      this.flags.length ? h("div", { class: "flag-list" }, this.flags.map(row)) : h("p", { class: "muted", text: "まだ印が無い。" }),
+      h("div", { class: "row end" }, h("button", { class: "btn", dataset: { act: "close" }, onclick: closeModal, text: "閉じる" }))], { wide: true });
   }
 
   // 帯のボタンは 1 つだけ（狭い画面で帯からはみ出さないように）。誰が操作しているかは盤面の上の札に出す
@@ -162,7 +205,7 @@ export class Replay {
       const why = res.reason === "resign" ? "投了" : (res.draw ? "引き分け" : "ライフが 0");
       tail = res.draw || res.winner === null ? `｜引き分け（${why}）` : `｜${this.room.seats[res.winner].name} の勝ち（${why}）`;
     }
-    return `${this.i} / ${this.last} 手${tail}`;
+    return `${this.i} / ${this.last} 手${this.flagsHere().length ? "★" : ""}${tail}`;
   }
 
   _refresh() {
@@ -189,6 +232,7 @@ export class Replay {
       btn("rp-last", "⏭", "最後へ", () => this.jump(this.last), atEnd),
       sel,
       btn("rp-log", "ログ", "ログ", () => this.board._showLog()),
+      btn("rp-flags", this.flags.length ? `★${this.flags.length}` : "★", "気になる印とメモ", () => this.openFlags()),
       this._reviewButton(),
       btn("rp-close", "閉じる", "リプレイを閉じる", () => this.close()));
   }

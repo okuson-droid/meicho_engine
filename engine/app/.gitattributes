@@ -1,0 +1,2 @@
+# Windows の bat は CRLF で取り出す（LF だと cmd が行を読み違えることがある・APP-031）
+*.bat text eol=crlf

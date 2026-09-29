@@ -72,6 +72,7 @@ class Room:
         self._n = 0
         self.cpu = dict(cpu) if cpu else None
         self.ai_seed: Optional[int] = None        # この局の AI のシード（記録に残す）
+        self.flags: list = []                     # いまの局（終局したら最後の局）の「気になる」印（R-REP-5）。終局で記録に入る
         self.review: Optional[dict] = None        # 感想戦（R-REP-4）: {n: 始めるたびに変わる札, pos: 何手目, driver: 操作する人}。保存しない
         if self.cpu:
             m = Member(CPU_ID, f"CPU（{self.cpu['label']}）", "")      # 鍵は空。どんな鍵とも一致しない
@@ -284,6 +285,7 @@ class Room:
         self.order = [first_seat, 1 - first_seat]
         self.game = Game([self.decks[s] for s in self.order], seed)
         self.state, self.chooser = PLAYING, None
+        self.flags = []
         self.ai_seed = self._seed_source() if self.cpu else None
         return self._room_to_all() + self._views(None, full=True)
 
@@ -321,6 +323,19 @@ class Room:
             raise AppError("not_seated", "観戦者は操作できない")
         return self._after_game_step(self.game.resign(g))
 
+    def _on_flag(self, m, msg):
+        """「気になる」印（R-REP-5・APP-030）。直前の手（いまの局面を作った手）に付ける。メモは空で、あとで手元の記録のリプレイで書ける。
+        観戦者も付けられる。付けた本人にだけ返事をし、部屋の情報には載せない（対局中は相手に見せない）。終局で記録に入る。"""
+        if self.state != PLAYING:
+            raise AppError("not_playing", "対局中ではない")
+        if len(self.flags) >= P.MAX_FLAGS:
+            raise AppError("too_many_flags", f"印は 1 局に {P.MAX_FLAGS} 個まで")
+        g = self.gseat_of(m)
+        f = {"pos": len(self.game.applies), "turn": self.game.state.turn_no, "note": "", "by": m.name,
+             "seat": g, "when": "live"}
+        self.flags.append(f)
+        return [(m.id, {"t": P.S_FLAGGED, "flag": dict(f)})]
+
     def _after_game_step(self, events: dict) -> list:
         out = self._views(events, full=False)
         if self.game.over:
@@ -340,7 +355,7 @@ class Room:
         names = [self.members[self.seats[s]].name if self.seats[s] in self.members else ""
                  for s in self.order]
         fin = {"game": self.game.dump(), "result": res, "names": names, "kind": self.kind,
-               "room_seats": list(self.order), "first_mode": self.first_mode}
+               "room_seats": list(self.order), "first_mode": self.first_mode, "flags": [dict(f) for f in self.flags]}
         if self.cpu:
             fin["opponent"] = {"name": self.cpu["agent"], "level": self.cpu["level"], "seed": self.ai_seed,
                                "seat": self.order.index(CPU_SEAT), "deck": self.cpu["deck"]["name"]}
@@ -400,7 +415,7 @@ class Room:
     _HANDLERS = {P.C_SIT: _on_sit, P.C_STAND: _on_stand, P.C_DECK: _on_deck,
                  P.C_READY: _on_ready, P.C_SETTINGS: _on_settings, P.C_FIRST: _on_first,
                  P.C_ACT: _on_act, P.C_RESIGN: _on_resign, P.C_REMATCH: _on_rematch,
-                 P.C_PING: _on_ping, P.C_REVIEW: _on_review}
+                 P.C_PING: _on_ping, P.C_REVIEW: _on_review, P.C_FLAG: _on_flag}
 
     # ------------------------------------------------------------------ 送るものを作る
     def info(self) -> dict:
@@ -460,7 +475,7 @@ class Room:
             "first_mode": self.first_mode, "state": self.state, "order": self.order,
             "chooser": self.chooser, "last_loser": self.last_loser, "rematch": self.rematch,
             "games_played": self.games_played, "n": self._n, "cpu": self.cpu, "ai_seed": self.ai_seed,
-            "game": self.game.dump() if self.game else None,
+            "game": self.game.dump() if self.game else None, "flags": self.flags,
         }
 
     @classmethod
@@ -480,6 +495,7 @@ class Room:
         r.chooser, r.last_loser = d["chooser"], d["last_loser"]
         r.rematch, r.games_played, r._n = list(d["rematch"]), d["games_played"], d["n"]
         r.game = Game.load(d["game"]) if d["game"] else None
+        r.flags = list(d.get("flags") or [])
         return r
 
 

@@ -705,6 +705,8 @@ export class Board {
       h("div", { class: "list" },
         h("button", { class: "btn", dataset: { act: "list" }, onclick: () => this._legalList(), text: "いま選べる手の一覧（予備の入口）" }),
         h("button", { class: "btn", dataset: { act: "log" }, onclick: () => this._showLog(), text: "ログ" }),
+        this.room && this.room.state === "playing" && !this.replay ? h("button", { class: "btn", dataset: { act: "flag" }, title: "直前の手に「気になる」印を付ける（F キー）。相手には見えない。メモは終局後に記録のリプレイで書ける",
+          onclick: () => { closeModal(); this.send({ t: "flag" }); }, text: "★ 気になる（直前の手に印・F）" }) : null,       // R-REP-5・APP-030
         h("button", { class: "btn", dataset: { act: "help" }, onclick: () => help.openHelp(), text: "遊び方" }),
         this.room && this.room.state === "finished" ? h("button", { class: "btn", dataset: { act: "replay" }, onclick: () => { closeModal(); this.onMenu("replay"); }, text: "リプレイ" }) : null,
         h("button", { class: "btn", dataset: { act: "settings" }, onclick: () => settings.openSettings({ onTestSound: () => sfx.play("charge") }), text: "設定" }),
