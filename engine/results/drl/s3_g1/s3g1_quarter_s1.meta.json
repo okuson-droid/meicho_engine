@@ -1,0 +1,1081 @@
+{
+ "train": "/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c000,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c001,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c002,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c003,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c004,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c005,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c006,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c007,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c008,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c009,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c010,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c011,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c012,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c013,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c014,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c015,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c016,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c017,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c018,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c019,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c020,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c021,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c022,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c023,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c024,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c025,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c026,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c027,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c028,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c029,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c030,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c031,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c032,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c033,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c034,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c035,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c036,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c037,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c038,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c039,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c040,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c041,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c042,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c043,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c044,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c045,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c046,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c047,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c048,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c049,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c050,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c051,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c052,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c053,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c054,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c055,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c056,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c057,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c058,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c059,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c060,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c061,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c062,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c063,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c064,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c065,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c066,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c067,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c068,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c069,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c070,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c071,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c072,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c073,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c074,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c075,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c076,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c077,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c078,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c079,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c080,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c081,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c082,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c083,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c084,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c085,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c086,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c087,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c088,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c089,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c090,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c091,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c092,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c093,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c094,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c095,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c096,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c097,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c098,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c099,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c100,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c101,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c102,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c103,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c104,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c105,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c106,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c107,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c108,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c109,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c110,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c111,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c112,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c113,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c114,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c115,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c116,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c117,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c118,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c119,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c120,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c121,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c122,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c123,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c124,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c125,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c126,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c127,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c128,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c129,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c130,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c131,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c132,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c133,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c134,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c135,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c136,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c137,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c138,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c139,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/train.c140",
+ "valid": "/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/val.c000,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/val.c001,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/val.c002,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/val.c003,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/val.c004,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/val.c005,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/val.c006,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/val.c007,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/val.c008,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/val.c009,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/val.c010,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/val.c011,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/val.c012,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/val.c013,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/val.c014,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/rec_raw/val.c015",
+ "epochs": 24,
+ "hidden": 256,
+ "depth": 2,
+ "phead": 128,
+ "lr": 0.001,
+ "bs": 1024,
+ "seed": 1,
+ "lam": 0.7,
+ "init": "results/models/s2v_id_s1.json",
+ "n_train": 147145,
+ "n_valid": 63706,
+ "chance_acc_valid": 0.28021252546315123,
+ "log": [
+  {
+   "epoch": 1,
+   "train_loss": 1.739345449904523,
+   "valid": {
+    "n": 63706,
+    "v_logloss": 0.6301861717701482,
+    "v_acc": 0.6287162904592974,
+    "t_logloss": 0.6547112733016219,
+    "p_logloss": 1.0573898860095596,
+    "p_acc": 0.5600728345838697,
+    "p_acc_by_phase": {
+     "setup": [
+      1.0,
+      960
+     ],
+     "mulligan": [
+      0.9822916666666667,
+      960
+     ],
+     "action": [
+      0.4864703541583764,
+      20104
+     ],
+     "clash": [
+      0.5345941391255501,
+      10681
+     ],
+     "choice": [
+      0.5934248855597171,
+      26433
+     ],
+     "rush": [
+      0.5861910241657077,
+      4345
+     ],
+     "discard": [
+      0.242152466367713,
+      223
+     ]
+    }
+   },
+   "sec": 30.023924827575684
+  },
+  {
+   "epoch": 2,
+   "train_loss": 1.6589058606225766,
+   "valid": {
+    "n": 63706,
+    "v_logloss": 0.6343719096317458,
+    "v_acc": 0.6237873983612219,
+    "t_logloss": 0.6577426605133592,
+    "p_logloss": 1.0463511856467602,
+    "p_acc": 0.5634320158226854,
+    "p_acc_by_phase": {
+     "setup": [
+      1.0,
+      960
+     ],
+     "mulligan": [
+      0.9822916666666667,
+      960
+     ],
+     "action": [
+      0.4826900119379228,
+      20104
+     ],
+     "clash": [
+      0.5398370939050651,
+      10681
+     ],
+     "choice": [
+      0.6025044452010744,
+      26433
+     ],
+     "rush": [
+      0.5845799769850403,
+      4345
+     ],
+     "discard": [
+      0.24663677130044842,
+      223
+     ]
+    }
+   },
+   "sec": 27.915062189102173
+  },
+  {
+   "epoch": 3,
+   "train_loss": 1.6148931168234715,
+   "valid": {
+    "n": 63706,
+    "v_logloss": 0.6372601028828966,
+    "v_acc": 0.6228926631714439,
+    "t_logloss": 0.6606343794822603,
+    "p_logloss": 1.0442117609543744,
+    "p_acc": 0.5679370859887609,
+    "p_acc_by_phase": {
+     "setup": [
+      1.0,
+      960
+     ],
+     "mulligan": [
+      0.9822916666666667,
+      960
+     ],
+     "action": [
+      0.485624751293275,
+      20104
+     ],
+     "clash": [
+      0.5402115906750304,
+      10681
+     ],
+     "choice": [
+      0.6102977338932395,
+      26433
+     ],
+     "rush": [
+      0.5880322209436134,
+      4345
+     ],
+     "discard": [
+      0.2600896860986547,
+      223
+     ]
+    }
+   },
+   "sec": 28.482004404067993
+  },
+  {
+   "epoch": 4,
+   "train_loss": 1.5763323572344758,
+   "valid": {
+    "n": 63706,
+    "v_logloss": 0.6402414651417498,
+    "v_acc": 0.6227356920855178,
+    "t_logloss": 0.6642645082978841,
+    "p_logloss": 1.0504088192365122,
+    "p_acc": 0.5652057890936489,
+    "p_acc_by_phase": {
+     "setup": [
+      1.0,
+      960
+     ],
+     "mulligan": [
+      0.9822916666666667,
+      960
+     ],
+     "action": [
+      0.48099880620771984,
+      20104
+     ],
+     "clash": [
+      0.5386199794026777,
+      10681
+     ],
+     "choice": [
+      0.609805924412666,
+      26433
+     ],
+     "rush": [
+      0.5758342922899885,
+      4345
+     ],
+     "discard": [
+      0.26905829596412556,
+      223
+     ]
+    }
+   },
+   "sec": 28.3149516582489
+  },
+  {
+   "epoch": 5,
+   "train_loss": 1.5375647161239359,
+   "valid": {
+    "n": 63706,
+    "v_logloss": 0.6409202654485302,
+    "v_acc": 0.6203811257966283,
+    "t_logloss": 0.6638343669000467,
+    "p_logloss": 1.061249228634273,
+    "p_acc": 0.5643581452296487,
+    "p_acc_by_phase": {
+     "setup": [
+      1.0,
+      960
+     ],
+     "mulligan": [
+      0.9822916666666667,
+      960
+     ],
+     "action": [
+      0.4826402705929168,
+      20104
+     ],
+     "clash": [
+      0.5383391068252036,
+      10681
+     ],
+     "choice": [
+      0.6069307305262361,
+      26433
+     ],
+     "rush": [
+      0.5726121979286536,
+      4345
+     ],
+     "discard": [
+      0.29596412556053814,
+      223
+     ]
+    }
+   },
+   "sec": 29.05563187599182
+  },
+  {
+   "epoch": 6,
+   "train_loss": 1.4981669789161995,
+   "valid": {
+    "n": 63706,
+    "v_logloss": 0.6433824523555964,
+    "v_acc": 0.6183561987881833,
+    "t_logloss": 0.6658352500463556,
+    "p_logloss": 1.0874937901379973,
+    "p_acc": 0.5617681223118701,
+    "p_acc_by_phase": {
+     "setup": [
+      1.0,
+      960
+     ],
+     "mulligan": [
+      0.9822916666666667,
+      960
+     ],
+     "action": [
+      0.4780640668523677,
+      20104
+     ],
+     "clash": [
+      0.5317854133508099,
+      10681
+     ],
+     "choice": [
+      0.6074225400068096,
+      26433
+     ],
+     "rush": [
+      0.5705408515535098,
+      4345
+     ],
+     "discard": [
+      0.2645739910313901,
+      223
+     ]
+    }
+   },
+   "sec": 26.945263862609863
+  },
+  {
+   "epoch": 7,
+   "train_loss": 1.4573007964274503,
+   "valid": {
+    "n": 63706,
+    "v_logloss": 0.6432577224255761,
+    "v_acc": 0.6174614635984051,
+    "t_logloss": 0.6663220386147645,
+    "p_logloss": 1.1054682173100356,
+    "p_acc": 0.5573572347973503,
+    "p_acc_by_phase": {
+     "setup": [
+      1.0,
+      960
+     ],
+     "mulligan": [
+      0.9822916666666667,
+      960
+     ],
+     "action": [
+      0.47169717469160366,
+      20104
+     ],
+     "clash": [
+      0.5295384327310177,
+      10681
+     ],
+     "choice": [
+      0.60254227669958,
+      26433
+     ],
+     "rush": [
+      0.569620253164557,
+      4345
+     ],
+     "discard": [
+      0.2825112107623318,
+      223
+     ]
+    }
+   },
+   "sec": 27.372005462646484
+  },
+  {
+   "epoch": 8,
+   "train_loss": 1.4178927035226245,
+   "valid": {
+    "n": 63706,
+    "v_logloss": 0.6459097807304012,
+    "v_acc": 0.6138197344049227,
+    "t_logloss": 0.6671266342314941,
+    "p_logloss": 1.1424578482047905,
+    "p_acc": 0.5549241829654977,
+    "p_acc_by_phase": {
+     "setup": [
+      1.0,
+      960
+     ],
+     "mulligan": [
+      0.9822916666666667,
+      960
+     ],
+     "action": [
+      0.4702049343414246,
+      20104
+     ],
+     "clash": [
+      0.5283213182286303,
+      10681
+     ],
+     "choice": [
+      0.5999319033026899,
+      26433
+     ],
+     "rush": [
+      0.5578826237054085,
+      4345
+     ],
+     "discard": [
+      0.3183856502242152,
+      223
+     ]
+    }
+   },
+   "sec": 28.04658031463623
+  },
+  {
+   "epoch": 9,
+   "train_loss": 1.3781035380956654,
+   "valid": {
+    "n": 63706,
+    "v_logloss": 0.6456294229362717,
+    "v_acc": 0.6144790129658116,
+    "t_logloss": 0.6682883812240262,
+    "p_logloss": 1.172209690254352,
+    "p_acc": 0.5518161554641635,
+    "p_acc_by_phase": {
+     "setup": [
+      1.0,
+      960
+     ],
+     "mulligan": [
+      0.9822916666666667,
+      960
+     ],
+     "action": [
+      0.467966573816156,
+      20104
+     ],
+     "clash": [
+      0.5225166182941672,
+      10681
+     ],
+     "choice": [
+      0.5964135739416638,
+      26433
+     ],
+     "rush": [
+      0.5611047180667433,
+      4345
+     ],
+     "discard": [
+      0.2645739910313901,
+      223
+     ]
+    }
+   },
+   "sec": 29.207838535308838
+  },
+  {
+   "epoch": 10,
+   "train_loss": 1.3387991381394737,
+   "valid": {
+    "n": 63706,
+    "v_logloss": 0.6437903836477579,
+    "v_acc": 0.6175556462499607,
+    "t_logloss": 0.6677513224354114,
+    "p_logloss": 1.197534334512497,
+    "p_acc": 0.5482529118136439,
+    "p_acc_by_phase": {
+     "setup": [
+      1.0,
+      960
+     ],
+     "mulligan": [
+      0.9822916666666667,
+      960
+     ],
+     "action": [
+      0.4638877835256665,
+      20104
+     ],
+     "clash": [
+      0.5198951409044097,
+      10681
+     ],
+     "choice": [
+      0.5916846366284568,
+      26433
+     ],
+     "rush": [
+      0.5622554660529344,
+      4345
+     ],
+     "discard": [
+      0.27802690582959644,
+      223
+     ]
+    }
+   },
+   "sec": 28.748245000839233
+  },
+  {
+   "epoch": 11,
+   "train_loss": 1.3021731492288535,
+   "valid": {
+    "n": 63706,
+    "v_logloss": 0.6450870257511067,
+    "v_acc": 0.6172260069695162,
+    "t_logloss": 0.668535319429415,
+    "p_logloss": 1.2470341815576633,
+    "p_acc": 0.5470599315606065,
+    "p_acc_by_phase": {
+     "setup": [
+      1.0,
+      960
+     ],
+     "mulligan": [
+      0.9822916666666667,
+      960
+     ],
+     "action": [
+      0.4597095105451651,
+      20104
+     ],
+     "clash": [
+      0.5133414474300159,
+      10681
+     ],
+     "choice": [
+      0.5947489880074149,
+      26433
+     ],
+     "rush": [
+      0.5613348676639816,
+      4345
+     ],
+     "discard": [
+      0.2825112107623318,
+      223
+     ]
+    }
+   },
+   "sec": 29.990789651870728
+  },
+  {
+   "epoch": 12,
+   "train_loss": 1.2675631745574776,
+   "valid": {
+    "n": 63706,
+    "v_logloss": 0.6460305154856881,
+    "v_acc": 0.6149813204407748,
+    "t_logloss": 0.6693515939861925,
+    "p_logloss": 1.2817156668364733,
+    "p_acc": 0.544705365271717,
+    "p_acc_by_phase": {
+     "setup": [
+      1.0,
+      960
+     ],
+     "mulligan": [
+      0.9822916666666667,
+      960
+     ],
+     "action": [
+      0.45906287306008753,
+      20104
+     ],
+     "clash": [
+      0.5163374215897388,
+      10681
+     ],
+     "choice": [
+      0.5903605341807588,
+      26433
+     ],
+     "rush": [
+      0.5502876869965477,
+      4345
+     ],
+     "discard": [
+      0.2600896860986547,
+      223
+     ]
+    }
+   },
+   "sec": 28.97507333755493
+  },
+  {
+   "epoch": 13,
+   "train_loss": 1.2346947790476286,
+   "valid": {
+    "n": 63706,
+    "v_logloss": 0.6453619780834027,
+    "v_acc": 0.6160016324992936,
+    "t_logloss": 0.6693478881502527,
+    "p_logloss": 1.3239432611454376,
+    "p_acc": 0.5423507989828273,
+    "p_acc_by_phase": {
+     "setup": [
+      1.0,
+      960
+     ],
+     "mulligan": [
+      0.9822916666666667,
+      960
+     ],
+     "action": [
+      0.4565260644647831,
+      20104
+     ],
+     "clash": [
+      0.5168991667446868,
+      10681
+     ],
+     "choice": [
+      0.5860855748496198,
+      26433
+     ],
+     "rush": [
+      0.5530494821634062,
+      4345
+     ],
+     "discard": [
+      0.242152466367713,
+      223
+     ]
+    }
+   },
+   "sec": 29.603554487228394
+  },
+  {
+   "epoch": 14,
+   "train_loss": 1.205566263174548,
+   "valid": {
+    "n": 63706,
+    "v_logloss": 0.646489366573228,
+    "v_acc": 0.6161272093680344,
+    "t_logloss": 0.669278900967555,
+    "p_logloss": 1.3670711551465424,
+    "p_acc": 0.540765391014975,
+    "p_acc_by_phase": {
+     "setup": [
+      1.0,
+      960
+     ],
+     "mulligan": [
+      0.9822916666666667,
+      960
+     ],
+     "action": [
+      0.4545861520095503,
+      20104
+     ],
+     "clash": [
+      0.5115625877726805,
+      10681
+     ],
+     "choice": [
+      0.5857450913630688,
+      26433
+     ],
+     "rush": [
+      0.5532796317606444,
+      4345
+     ],
+     "discard": [
+      0.2556053811659193,
+      223
+     ]
+    }
+   },
+   "sec": 29.227646112442017
+  },
+  {
+   "epoch": 15,
+   "train_loss": 1.1792680417658126,
+   "valid": {
+    "n": 63706,
+    "v_logloss": 0.6472678852916621,
+    "v_acc": 0.6147301667032933,
+    "t_logloss": 0.6699060322639351,
+    "p_logloss": 1.401350172079553,
+    "p_acc": 0.5397764731736414,
+    "p_acc_by_phase": {
+     "setup": [
+      1.0,
+      960
+     ],
+     "mulligan": [
+      0.9822916666666667,
+      960
+     ],
+     "action": [
+      0.45135296458416235,
+      20104
+     ],
+     "clash": [
+      0.5104390974627844,
+      10681
+     ],
+     "choice": [
+      0.5869178678167443,
+      26433
+     ],
+     "rush": [
+      0.5482163406214039,
+      4345
+     ],
+     "discard": [
+      0.27802690582959644,
+      223
+     ]
+    }
+   },
+   "sec": 28.6146502494812
+  },
+  {
+   "epoch": 16,
+   "train_loss": 1.1563678152436667,
+   "valid": {
+    "n": 63706,
+    "v_logloss": 0.6478876585683894,
+    "v_acc": 0.6161115122594418,
+    "t_logloss": 0.6714418943166411,
+    "p_logloss": 1.4255181126544694,
+    "p_acc": 0.5393683483502338,
+    "p_acc_by_phase": {
+     "setup": [
+      1.0,
+      960
+     ],
+     "mulligan": [
+      0.9822916666666667,
+      960
+     ],
+     "action": [
+      0.4514027059291683,
+      20104
+     ],
+     "clash": [
+      0.5117498361576631,
+      10681
+     ],
+     "choice": [
+      0.5848371353989331,
+      26433
+     ],
+     "rush": [
+      0.551668584579977,
+      4345
+     ],
+     "discard": [
+      0.273542600896861,
+      223
+     ]
+    }
+   },
+   "sec": 29.05517601966858
+  },
+  {
+   "epoch": 17,
+   "train_loss": 1.136813662016427,
+   "valid": {
+    "n": 63706,
+    "v_logloss": 0.6468683678183276,
+    "v_acc": 0.615483627915738,
+    "t_logloss": 0.6700623940138586,
+    "p_logloss": 1.4571631654960875,
+    "p_acc": 0.5396195020877155,
+    "p_acc_by_phase": {
+     "setup": [
+      1.0,
+      960
+     ],
+     "mulligan": [
+      0.9822916666666667,
+      960
+     ],
+     "action": [
+      0.45209908475925187,
+      20104
+     ],
+     "clash": [
+      0.5124052055051025,
+      10681
+     ],
+     "choice": [
+      0.5846858094049106,
+      26433
+     ],
+     "rush": [
+      0.5512082853855006,
+      4345
+     ],
+     "discard": [
+      0.27802690582959644,
+      223
+     ]
+    }
+   },
+   "sec": 29.288682460784912
+  },
+  {
+   "epoch": 18,
+   "train_loss": 1.120690482229611,
+   "valid": {
+    "n": 63706,
+    "v_logloss": 0.6473007702742873,
+    "v_acc": 0.6154679308071453,
+    "t_logloss": 0.6707525475150251,
+    "p_logloss": 1.4731084003076633,
+    "p_acc": 0.5367155369980849,
+    "p_acc_by_phase": {
+     "setup": [
+      1.0,
+      960
+     ],
+     "mulligan": [
+      0.9822916666666667,
+      960
+     ],
+     "action": [
+      0.45070632709908476,
+      20104
+     ],
+     "clash": [
+      0.5090347345754143,
+      10681
+     ],
+     "choice": [
+      0.5808648280558393,
+      26433
+     ],
+     "rush": [
+      0.5470655926352129,
+      4345
+     ],
+     "discard": [
+      0.26905829596412556,
+      223
+     ]
+    }
+   },
+   "sec": 29.529570817947388
+  },
+  {
+   "epoch": 19,
+   "train_loss": 1.1072784593351683,
+   "valid": {
+    "n": 63706,
+    "v_logloss": 0.6479265506842468,
+    "v_acc": 0.6143848303142561,
+    "t_logloss": 0.6710678156633353,
+    "p_logloss": 1.4967565389494317,
+    "p_acc": 0.5387561611151226,
+    "p_acc_by_phase": {
+     "setup": [
+      1.0,
+      960
+     ],
+     "mulligan": [
+      0.9822916666666667,
+      960
+     ],
+     "action": [
+      0.4508058097890967,
+      20104
+     ],
+     "clash": [
+      0.5104390974627844,
+      10681
+     ],
+     "choice": [
+      0.5846101464078992,
+      26433
+     ],
+     "rush": [
+      0.5502876869965477,
+      4345
+     ],
+     "discard": [
+      0.26905829596412556,
+      223
+     ]
+    }
+   },
+   "sec": 29.93967604637146
+  },
+  {
+   "epoch": 20,
+   "train_loss": 1.096816900771402,
+   "valid": {
+    "n": 63706,
+    "v_logloss": 0.6476626315491281,
+    "v_acc": 0.6144633158572191,
+    "t_logloss": 0.6708068857237005,
+    "p_logloss": 1.5047230361690813,
+    "p_acc": 0.537060873387122,
+    "p_acc_by_phase": {
+     "setup": [
+      1.0,
+      960
+     ],
+     "mulligan": [
+      0.9822916666666667,
+      960
+     ],
+     "action": [
+      0.44926382809391163,
+      20104
+     ],
+     "clash": [
+      0.5090347345754143,
+      10681
+     ],
+     "choice": [
+      0.5821132675065259,
+      26433
+     ],
+     "rush": [
+      0.5514384349827388,
+      4345
+     ],
+     "discard": [
+      0.2645739910313901,
+      223
+     ]
+    }
+   },
+   "sec": 29.280081748962402
+  },
+  {
+   "epoch": 21,
+   "train_loss": 1.0890758927790631,
+   "valid": {
+    "n": 63706,
+    "v_logloss": 0.6476246764310858,
+    "v_acc": 0.6148243493548489,
+    "t_logloss": 0.6708692909278806,
+    "p_logloss": 1.5174189886634992,
+    "p_acc": 0.5370137820613443,
+    "p_acc_by_phase": {
+     "setup": [
+      1.0,
+      960
+     ],
+     "mulligan": [
+      0.9822916666666667,
+      960
+     ],
+     "action": [
+      0.44861719060883404,
+      20104
+     ],
+     "clash": [
+      0.5085666136129576,
+      10681
+     ],
+     "choice": [
+      0.5833238754587069,
+      26433
+     ],
+     "rush": [
+      0.5475258918296892,
+      4345
+     ],
+     "discard": [
+      0.2645739910313901,
+      223
+     ]
+    }
+   },
+   "sec": 29.668092250823975
+  },
+  {
+   "epoch": 22,
+   "train_loss": 1.0837404473451968,
+   "valid": {
+    "n": 63706,
+    "v_logloss": 0.6478090235656522,
+    "v_acc": 0.6144476187486265,
+    "t_logloss": 0.670990403164905,
+    "p_logloss": 1.5207897319571548,
+    "p_acc": 0.5367312341066776,
+    "p_acc_by_phase": {
+     "setup": [
+      1.0,
+      960
+     ],
+     "mulligan": [
+      0.9822916666666667,
+      960
+     ],
+     "action": [
+      0.4485177079188221,
+      20104
+     ],
+     "clash": [
+      0.5093156071528883,
+      10681
+     ],
+     "choice": [
+      0.5822645935005486,
+      26433
+     ],
+     "rush": [
+      0.5484464902186421,
+      4345
+     ],
+     "discard": [
+      0.2645739910313901,
+      223
+     ]
+    }
+   },
+   "sec": 29.27490234375
+  },
+  {
+   "epoch": 23,
+   "train_loss": 1.0801795407842596,
+   "valid": {
+    "n": 63706,
+    "v_logloss": 0.6477225170148073,
+    "v_acc": 0.6145574985087747,
+    "t_logloss": 0.6709391825338272,
+    "p_logloss": 1.5243678717651692,
+    "p_acc": 0.5370765704957147,
+    "p_acc_by_phase": {
+     "setup": [
+      1.0,
+      960
+     ],
+     "mulligan": [
+      0.9822916666666667,
+      960
+     ],
+     "action": [
+      0.44946279347393553,
+      20104
+     ],
+     "clash": [
+      0.5085666136129576,
+      10681
+     ],
+     "choice": [
+      0.5827185714826164,
+      26433
+     ],
+     "rush": [
+      0.5482163406214039,
+      4345
+     ],
+     "discard": [
+      0.2645739910313901,
+      223
+     ]
+    }
+   },
+   "sec": 29.784916639328003
+  },
+  {
+   "epoch": 24,
+   "train_loss": 1.0783584776669695,
+   "valid": {
+    "n": 63706,
+    "v_logloss": 0.6477284532504543,
+    "v_acc": 0.6145574985087747,
+    "t_logloss": 0.6709567670511069,
+    "p_logloss": 1.5246341477659582,
+    "p_acc": 0.5369352965183813,
+    "p_acc_by_phase": {
+     "setup": [
+      1.0,
+      960
+     ],
+     "mulligan": [
+      0.9822916666666667,
+      960
+     ],
+     "action": [
+      0.4493633107839236,
+      20104
+     ],
+     "clash": [
+      0.5090347345754143,
+      10681
+     ],
+     "choice": [
+      0.5822267620020429,
+      26433
+     ],
+     "rush": [
+      0.5482163406214039,
+      4345
+     ],
+     "discard": [
+      0.26905829596412556,
+      223
+     ]
+    }
+   },
+   "sec": 29.24212884902954
+  }
+ ],
+ "select": "best_v",
+ "selected_epoch": 1,
+ "calibration": {
+  "a": 3.5484697818756104,
+  "b": -2.479544162750244,
+  "c": 0.917452073097229,
+  "n": 142729,
+  "scale": "bulk",
+  "sentinel_frac": 0.0,
+  "spread": 0.18311437964439392,
+  "logloss": 0.6426913142204285,
+  "base": 0.6842538671398494,
+  "useful": true
+ },
+ "league_mode": "keep",
+ "league_seeds": null,
+ "n_league_train": 0,
+ "n_v_train": 147145,
+ "vtarget": "max",
+ "calib_scale": "bulk",
+ "calib_by": "none",
+ "distil_from": null,
+ "n_fresh_used": 0,
+ "wd": 0.0,
+ "wv": 1.0,
+ "wp": 1.0,
+ "card_profile": null,
+ "n_params_trained": 632194,
+ "keep_pairs": "4:0",
+ "n_train_read": 587665,
+ "n_params_exported": 632194
+}
