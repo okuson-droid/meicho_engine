@@ -9,6 +9,7 @@ M-4 束ねた V を部品のロジットの平均で計算した値が `ensemble
 M-5 3-a の教師は `s3v1_id_s0.meta.json` の較正をそのまま当てる（検証の記録で合わせ直さない）／M-5b その式は `drl_train` と同じ
 M-6 2-a・3-a の規則の境目
 M-7 検証の記録全体で、V_1 の部品 3 本の v_logloss が学習の記録（meta の選んだエポック）と一致・決定数が 63,706・全決定に属性が付く
+M-8 較正の効き（CC 版 (ii)）は学習と同じ較正で、番兵の数が合う
 H-1 `eval_s3_h2h`: 同じシードは同じ局／足し継ぎは一度に回したのと同じ
 H-2 挑戦に null と同じ V を渡すと d が全局 0
 H-3 学習の帯（kind=train）では回さない
@@ -185,6 +186,18 @@ def test_desk_calibration_equals_drl_train(val_small):
     calib = json.load(open(os.path.join(MODELS, "s3v1_id_s0.meta.json"), encoding="utf-8"))["calibration"]
     v = np.linspace(-0.2, 1.2, 57).astype(np.float32)
     assert np.abs(D.apply_calib(v, calib) - T.apply_calibration(v, calib)).max() < 1e-6
+
+
+def test_calib_effect_matches_training_calibration(val_small):
+    """M-8: 較正の効きの「全体」は `drl_train` の学習と同じ較正（Batcher の max・bulk）で、番兵の数が合う。"""
+    T = _T()
+    files, _ = val_small
+    out = D.calib_effect(files)
+    b = T.Batcher(read_records(files), vtarget="max")
+    ref = T.calibrate_vsearch(b.vsearch, b.z, scale="bulk")
+    assert abs(out["all"]["logloss"] - ref["logloss"]) < 1e-9 and out["all"]["n"] == ref["n"]
+    assert out["all"]["gain"] == ref["base"] - ref["logloss"]
+    assert out["non_sentinel"]["n"] + out["n_sentinel"] == out["all"]["n"] == out["n_search"]
 
 
 def test_rules_thresholds():

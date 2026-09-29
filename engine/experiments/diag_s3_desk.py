@@ -19,6 +19,7 @@
   合わせ直さない）。規則: u < 0.002 → 「教師が V_0 に情報を足していない」。あわせて層別の u と 10 分位の較正図と、
   順位だけの物差し（AUC・判定には使わない）
 - `columns_zero`（CC 版 §4 (i)）: 信念の要約（20 列）・`hand_known`（78 列）・その両方を 0 にしたときの v_logloss の悪化
+- `calib`（`--calib`・CC 版 (ii)）: 探索値の較正の効きを、全体と番兵を除いた部分で（段階2 の教師と反復 1 の教師を同じ物差しで比べる）
 - `select`（CC 版 §2.3）: 選択の評価の局を、候補のデッキ・席・ターン数（3 等分）ごとに「V_1 だけ勝った／V_0 だけ勝った」で数える
 
 束ねた V は部品のロジットの平均の sigmoid として計算する（`ensemble_net.py` の `mean_logit` と同じ値・検査 M-4）。
@@ -284,6 +285,28 @@ def select_breakdown(sel: dict, new: str = "v1", old: str = "v_ens3") -> dict:
     return out
 
 
+def calib_effect(files: list) -> dict:
+    """CC 版 (ii)・Cowork 版 3-a の添えるもの: 探索値の較正の効き（基準 − 較正後の対数損失）を、全体と番兵を除いた部分で。
+
+    較正は学習と同じ作り方（`--vtarget max`・`--calib-scale bulk`・`drl_train.calibrate_vsearch`）で、
+    その記録自身に当てる。番兵は |v| ≥ `drl_train.BULK_CUT`（100）。段階2 の教師（手作り評価の葉・番兵 17.5%）と
+    反復 1 の教師（葉が V・番兵 0%）を、番兵を除いた同じ物差しで比べるためのもの（比較書 §4 の 1）。
+    torch を使う（`drl_train` の較正の関数をそのまま呼ぶ）。
+    """
+    import drl_train as T
+    b = T.Batcher(read_records(files), vtarget="max")
+    v, z = b.vsearch.astype(np.float64), b.z.astype(np.float64)
+    ok = np.isfinite(v)
+    sent = ok & (np.abs(v) >= T.BULK_CUT)
+
+    def one(m):
+        c = T.calibrate_vsearch(v[m], z[m], scale="bulk")
+        return {k: c[k] for k in ("n", "a", "b", "c", "logloss", "base", "spread", "sentinel_frac")} | \
+            {"gain": c["base"] - c["logloss"]}
+    return {"n_decisions": int(b.n), "n_search": int(ok.sum()), "n_sentinel": int(sent.sum()),
+            "all": one(ok), "non_sentinel": one(ok & ~sent)}
+
+
 def load_parts(stem: str) -> list:
     return [Net.load(os.path.join(MODELS, f"{stem}_s{k}.json")) for k in range(3)]
 
@@ -321,9 +344,24 @@ def run(args) -> dict:
 
 def main(argv=None):
     ap = argparse.ArgumentParser()
-    ap.add_argument("--work", required=True, help="記録を伸ばす置き場（git の外）")
+    ap.add_argument("--work", default=None, help="記録を伸ばす置き場（git の外）")
     ap.add_argument("--out", default=None)
+    ap.add_argument("--calib", action="append", default=None,
+                    help="名前=記録の接頭辞（カンマ区切りで複数）。付けると較正の効き（calib_effect）だけを出す")
     args = ap.parse_args(argv)
+    if args.calib:
+        from drl_train import files_of
+        out = {"version": TOOL_VERSION, "decision": "D-145 追記 1", "calib": {}}
+        for spec in args.calib:
+            name, _, prefix = spec.partition("=")
+            out["calib"][name] = calib_effect(files_of(prefix))
+        print(json.dumps(out, ensure_ascii=False, indent=1))
+        if args.out:
+            with open(args.out, "w", encoding="utf-8", newline="\n") as f:
+                json.dump(out, f, ensure_ascii=False, indent=1)
+        return out
+    if not args.work:
+        raise SystemExit("--work が要る（--calib を付けないとき）")
     out = run(args)
     print(json.dumps({k: out[k] for k in ("n_decisions", "rule_2a")} |
                      {"teacher": {k: out["teacher"][k] for k in ("L_V0", "L_teacher", "u", "verdict")}},
