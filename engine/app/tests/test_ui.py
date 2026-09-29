@@ -1140,3 +1140,59 @@ async def test_review_mode_keeps_everyone_on_the_same_move(tmp_path):
         await at(b, here)
         assert rig.room(room).review is None
         assert not rig.errors, rig.errors[:5]
+
+
+async def test_flags_live_and_in_the_record_replay(tmp_path):
+    """「気になる」印とメモ（R-REP-5・APP-030）: 対局中は F キーかメニューで直前の手に★を付けられ、付けた本人に知らせが出る。
+    終局後、記録の一覧に★の数が出る。手元の記録のリプレイでは、印の一覧から飛べて、この手に付ける・メモを直す・消すができる。"""
+    async with Rig(tmp_path) as rig:
+        a = await rig.page("A", fx="off", **PC)
+        await a.goto(rig.url + "/")
+        await a.fill("#name", "マスター")
+        await a.select_option("#cpu-deck", "SD001")
+        await a.select_option("#cpu-level", "0")
+        await a.click("#cpu-start")
+        await a.wait_for_selector("#board .midbar")
+        await a.keyboard.press("f")
+        await a.wait_for_selector(".toast >> text=印を付けた")
+        await a.click('button[data-act="menu"]')
+        await a.click('.modal button[data-act="flag"]')
+        await a.wait_for_function("[...document.querySelectorAll('.toast')].filter((t) => t.textContent.includes('印を付けた')).length >= 1")
+        rid = next(iter(rig.srv.app[S.HUB].manager.rooms))
+        assert [f["by"] for f in rig.room(rid).flags] == ["マスター", "マスター"]
+        await a.click('button[data-act="menu"]')
+        await a.click('.modal button[data-act="resign"]')
+        await a.click('.modal button[data-act="ok"]')
+        await a.wait_for_selector(".modal .result")
+
+        await a.goto(rig.url + "/")
+        await a.click("#home-records")
+        await a.wait_for_selector(".modal .record-row")
+        assert "★2" in await a.inner_text(".modal .record-row")
+        await a.click('.modal .record-row button[data-act="record-replay"]')
+        await a.wait_for_selector("#layer-replay #replay-label")
+        assert await a.inner_text('#layer-replay [data-act="rp-flags"]') == "★2"
+        await a.click('#layer-replay [data-act="rp-last"]')
+        await a.click('#layer-replay [data-act="rp-flags"]')
+        await a.wait_for_selector(".modal .flag-row")
+        assert await a.locator(".modal .flag-row").count() == 2 and "（対局中）" in await a.inner_text(".modal .flag-list")
+        # この手（最後）に印を付ける
+        await a.fill("#flag-new-note", "ここで投了は早い")
+        await a.click('.modal button[data-act="flag-add"]')
+        await a.wait_for_function("document.querySelectorAll('.modal .flag-row').length === 3")
+        await a.click('.modal button[data-act="close"]')
+        assert "★" in await a.inner_text("#layer-replay #replay-label")        # いまの手に印がある
+        # 1 つめのメモを直し、2 つめを消す
+        await a.click('#layer-replay [data-act="rp-flags"]')
+        await a.fill(".modal .flag-row >> nth=0 >> .flag-note", "直前の手")
+        await a.click('.modal .flag-row >> nth=0 >> button[data-act="flag-save"]')
+        await a.wait_for_selector(".toast >> text=メモを保存した")
+        await a.click('.modal .flag-row >> nth=1 >> button[data-act="flag-del"]')
+        await a.wait_for_function("document.querySelectorAll('.modal .flag-row').length === 2")
+        notes = [f["note"] for f in json.loads((tmp_path / "data" / "games").glob("*.jsonl").__next__().read_text(encoding="utf-8").splitlines()[-1])["flags"]]
+        assert notes == ["直前の手", "ここで投了は早い"]
+        # 一覧から飛べる
+        await a.click('.modal .flag-row >> nth=0 >> button[data-act="flag-go"]')
+        await a.wait_for_function("document.querySelector('#layer-replay #replay-label').textContent.includes('★')")
+        await a.click('#layer-replay [data-act="rp-close"]')
+        assert not rig.errors, rig.errors[:5]

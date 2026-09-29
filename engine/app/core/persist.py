@@ -16,6 +16,7 @@ from pathlib import Path
 from typing import Optional
 
 from .game import Game, check_deck
+from . import protocol as P
 from .protocol import PROTOCOL_VERSION, AppError
 
 JST = timezone(timedelta(hours=9))
@@ -59,7 +60,7 @@ def make_record(fin: dict, *, kind: Optional[str] = None, now: Optional[datetime
         "opponent": fin.get("opponent"),                   # CPU 対戦のときだけ: 登録名・段・AI のシード・AI の席
         "times": g.get("times") or [],                      # 席ごとの所要時間（ミリ秒）。applies と同じ並び（R-DATA-7）
         "seed": g["seed"], "decks": g["decks"],            # デッキは全体を残す（R-DATA-2）
-        "applies": g["applies"], "resigned": g["resigned"], "flags": [],
+        "applies": g["applies"], "resigned": g["resigned"], "flags": list(fin.get("flags") or []),
         "result": fin["result"], "verified": res == fin["result"],
     }
     return rec
@@ -130,6 +131,28 @@ class Store:
             return json.loads(lines[int(m.group(2)) - 1]) if 0 < int(m.group(2)) <= len(lines) else None
         except (OSError, ValueError):
             return None
+
+    def update_record(self, rid: str, rec: dict) -> bool:
+        """記録 1 件を置き換える（印とメモの直し・R-REP-5）。ファイルは一時ファイルに書いてから置き換える。"""
+        m = re.fullmatch(r"(\d{4}-\d{2}):(\d{1,7})", str(rid or ""))
+        if not m:
+            return False
+        path = self.root / "games" / f"{m.group(1)}.jsonl"
+        try:
+            lines = path.read_text(encoding="utf-8").splitlines()
+        except OSError:
+            return False
+        k = int(m.group(2)) - 1
+        if not 0 <= k < len(lines):
+            return False
+        lines[k] = json.dumps(rec, ensure_ascii=False)
+        tmp = path.with_suffix(".tmp")
+        with open(tmp, "w", encoding="utf-8") as f:
+            f.write("\n".join(lines) + "\n")
+            f.flush()
+            os.fsync(f.fileno())
+        os.replace(tmp, path)
+        return True
 
     def append_record(self, rec: dict) -> Path:
         path = self.root / "games" / f"{rec['played_at'][:7]}.jsonl"
@@ -205,6 +228,37 @@ def import_file(obj) -> dict:
     if not (isinstance(names, list) and len(names) == 2 and all(isinstance(n, str) for n in names)):
         raise bad("対局者の名前の形が違う")
     return rec
+
+
+def record_last_pos(rec: dict) -> int:
+    """リプレイの最後の位置（行動の数。投了で終わった局は 1 つ多い）。印の位置の上限。"""
+    return len(rec.get("applies") or []) + (1 if rec.get("resigned") is not None else 0)
+
+
+def clean_flags(flags, last: int, *, by: str) -> list:
+    """画面から来た印の一覧を検める（R-REP-5・APP-030）。形が違えば理由つきの `AppError`。
+
+    1 つの印は `{pos, turn, note, by, seat, when}`。`pos` は何手目のあとの局面か（0..last）。
+    新しく付けた印（`by` が無いもの）は、付けた人の名前 `by` で埋める。位置の順に並べて返す。
+    """
+    if not isinstance(flags, list) or len(flags) > P.MAX_FLAGS:
+        raise AppError("bad_flags", f"印は一覧で、{P.MAX_FLAGS} 個まで")
+    out = []
+    for f in flags:
+        if not isinstance(f, dict):
+            raise AppError("bad_flags", "印の形が違う")
+        pos, turn, note = f.get("pos"), f.get("turn"), f.get("note", "")
+        if not isinstance(pos, int) or isinstance(pos, bool) or not 0 <= pos <= last:
+            raise AppError("bad_flags", "印の位置が記録の外にある")
+        if turn is not None and (not isinstance(turn, int) or isinstance(turn, bool) or not 0 <= turn <= 999):
+            raise AppError("bad_flags", "印のターンの形が違う")
+        if not isinstance(note, str) or len(note) > P.MAX_NOTE:
+            raise AppError("bad_flags", f"メモは {P.MAX_NOTE} 字まで")
+        who = f.get("by") if isinstance(f.get("by"), str) and f.get("by") else by
+        seat = f.get("seat") if f.get("seat") in (0, 1) and not isinstance(f.get("seat"), bool) else None
+        when = f.get("when") if f.get("when") in ("live", "replay") else "replay"
+        out.append({"pos": pos, "turn": turn, "note": note.strip(), "by": who[:P.MAX_NAME], "seat": seat, "when": when})
+    return sorted(out, key=lambda x: x["pos"])
 
 
 def legacy_view(rec: dict) -> dict:

@@ -78,7 +78,9 @@ def build(dump: dict, result: dict = None) -> dict:
     return frames
 
 
-def message(frames: dict, viewer, *, names: list, result: dict, source: dict) -> dict:
-    """画面へ送る 1 通。`source` はどの対局か（部屋の最後の局／手元の記録の番号）。"""
+def message(frames: dict, viewer, *, names: list, result: dict, source: dict, flags: list = (),
+            editable: bool = False) -> dict:
+    """画面へ送る 1 通。`source` はどの対局か（部屋の最後の局／手元の記録の番号）。
+    `flags` はその局の「気になる」印（R-REP-5）。`editable` は印とメモを直せるか（手元の記録だけ・APP-030）。"""
     return {"t": "replay", "viewer": viewer, "frames": frames[viewer], "names": list(names),
-            "result": result, "source": source}
+            "result": result, "source": source, "flags": [dict(f) for f in flags], "editable": editable}
