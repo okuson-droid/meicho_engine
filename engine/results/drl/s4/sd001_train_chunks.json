@@ -1,0 +1,93 @@
+{
+ "source": "results/drl/s4/sd001_train_schedule.json",
+ "budget_sec": 30000.0,
+ "cost_per_game": {
+  "mirror": 8.8,
+  "cross": 15.5,
+  "anchor": 9.9
+ },
+ "chunks": [
+  [
+   {
+    "kind": "mirror",
+    "deck_a": "SD001",
+    "deck_b": "SD001",
+    "seed0": 864000,
+    "n": 3408,
+    "record": "both",
+    "p_planned": 0.8003169572107766,
+    "parent": 0
+   }
+  ],
+  [
+   {
+    "kind": "mirror",
+    "deck_a": "SD001",
+    "deck_b": "SD001",
+    "seed0": 867408,
+    "n": 3408,
+    "record": "both",
+    "p_planned": 0.8003169572107766,
+    "parent": 0
+   }
+  ],
+  [
+   {
+    "kind": "mirror",
+    "deck_a": "SD001",
+    "deck_b": "SD001",
+    "seed0": 870816,
+    "n": 1264,
+    "record": "both",
+    "p_planned": 0.8003169572107766,
+    "parent": 0
+   },
+   {
+    "kind": "anchor",
+    "deck_a": "SD001",
+    "deck_b": "SD001",
+    "seed0": 872080,
+    "n": 672,
+    "record": "a",
+    "opponent": "heuristic",
+    "p_planned": 0.06656101426307448,
+    "parent": 1
+   },
+   {
+    "kind": "anchor",
+    "deck_a": "SD001",
+    "deck_b": "SD001",
+    "seed0": 872752,
+    "n": 672,
+    "record": "a",
+    "opponent": "greedy",
+    "p_planned": 0.06656101426307448,
+    "parent": 2
+   },
+   {
+    "kind": "anchor",
+    "deck_a": "SD001",
+    "deck_b": "SD001",
+    "seed0": 873424,
+    "n": 562,
+    "record": "a",
+    "opponent": "planner",
+    "p_planned": 0.06656101426307448,
+    "parent": 3
+   }
+  ],
+  [
+   {
+    "kind": "anchor",
+    "deck_a": "SD001",
+    "deck_b": "SD001",
+    "seed0": 873986,
+    "n": 110,
+    "record": "a",
+    "opponent": "planner",
+    "p_planned": 0.06656101426307448,
+    "parent": 3
+   }
+  ]
+ ]
+}

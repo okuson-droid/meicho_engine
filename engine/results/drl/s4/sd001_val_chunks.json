@@ -1,0 +1,56 @@
+{
+ "source": "results/drl/s4/sd001_val_schedule.json",
+ "budget_sec": 30000.0,
+ "cost_per_game": {
+  "mirror": 8.8,
+  "cross": 15.5,
+  "anchor": 9.9
+ },
+ "chunks": [
+  [
+   {
+    "kind": "mirror",
+    "deck_a": "SD001",
+    "deck_b": "SD001",
+    "seed0": 876000,
+    "n": 872,
+    "record": "both",
+    "p_planned": 0.8014705882352942,
+    "parent": 0
+   },
+   {
+    "kind": "anchor",
+    "deck_a": "SD001",
+    "deck_b": "SD001",
+    "seed0": 876872,
+    "n": 72,
+    "record": "a",
+    "opponent": "heuristic",
+    "p_planned": 0.0661764705882353,
+    "parent": 1
+   },
+   {
+    "kind": "anchor",
+    "deck_a": "SD001",
+    "deck_b": "SD001",
+    "seed0": 876944,
+    "n": 72,
+    "record": "a",
+    "opponent": "greedy",
+    "p_planned": 0.0661764705882353,
+    "parent": 2
+   },
+   {
+    "kind": "anchor",
+    "deck_a": "SD001",
+    "deck_b": "SD001",
+    "seed0": 877016,
+    "n": 72,
+    "record": "a",
+    "opponent": "planner",
+    "p_planned": 0.0661764705882353,
+    "parent": 3
+   }
+  ]
+ ]
+}
