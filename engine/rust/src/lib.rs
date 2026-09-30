@@ -1313,7 +1313,8 @@ fn encode_phase(p: state::Phase) -> u8 {
 /// 戻り値は各シードの (a_won, turns, steps, fired_a, digest) と、書いたファイルの一覧。
 fn run_series_record(d: &Arc<CardDb>, cd: &[Vec<u16>; 2], ad: &[Vec<u16>; 2], sa: &AgentSpec, sb: &AgentSpec,
                      seed0: i64, n: i64, workers: usize, max_turns: i64, out_path: &str,
-                     record_a: bool, record_b: bool, opp_from_seat: bool, leaf: Option<(&str, usize)>)
+                     record_a: bool, record_b: bool, opp_from_seat: bool, leaf: Option<(&str, usize)>,
+                     record_seats: Option<[bool; 2]>)
                      -> std::io::Result<(Vec<(Option<bool>, i64, i64, u64, u64)>, Vec<String>)> {
     use std::io::Write;
     let seeds: Vec<i64> = (seed0..seed0 + n).collect();
@@ -1328,7 +1329,10 @@ fn run_series_record(d: &Arc<CardDb>, cd: &[Vec<u16>; 2], ad: &[Vec<u16>; 2], sa
     let job = |seed: i64, buf: &mut Vec<u8>, lb: Option<(&mut Vec<u8>, usize)>| -> (Option<bool>, i64, i64, u64, u64) {
         let flip = seed % 2 == 1;
         let mut ags: [AnyAgent; 2] = seat_agents(ad, sa, sb, seed, flip, opp_from_seat);
-        let rec = if flip { [record_b, record_a] } else { [record_a, record_b] };
+        let rec = match record_seats {
+            Some(seats) => seats,
+            None => if flip { [record_b, record_a] } else { [record_a, record_b] },
+        };
         let (winner, turns, _l0, _l1, draw, aborted, steps, digest) = run_one_record(d, cd, ad, seed, &mut ags, max_turns, buf, rec, lb);
         let a_seat: usize = if flip { 1 } else { 0 };
         let fired = ags[a_seat].fired();
@@ -1436,12 +1440,16 @@ fn series_digest(py: Python<'_>, chara_decks: Vec<Vec<String>>, action_decks: Ve
 ///
 /// `leaf_dump`（段階3 項目 4・D-151）を渡すと、記録する決定ごとに探索が V を呼んだ局面から最大 `leaf_cap` 個を
 /// `leaf_dump.<worker>` に書く（形式は `write_leaves`）。渡さなければ従来とバイト単位で同じ。
+///
+/// `record_seats`（段階4・D-154）を渡すと、`record_a` / `record_b`（エージェントで選ぶ）の代わりに
+/// **席で**記録する側を選ぶ（席 0 = deck_a）。エージェントは奇数シードで席を入れ替えるので、
+/// 「deck_a の席だけ」を記録するにはこちらを使う。渡さなければ従来どおり。
 #[pyfunction]
-#[pyo3(signature = (chara_decks, action_decks, spec_a, spec_b, seed0, n, out_path, workers=1, max_turns=200, record_a=true, record_b=true, opp_from_seat=false, leaf_dump=None, leaf_cap=8))]
+#[pyo3(signature = (chara_decks, action_decks, spec_a, spec_b, seed0, n, out_path, workers=1, max_turns=200, record_a=true, record_b=true, opp_from_seat=false, leaf_dump=None, leaf_cap=8, record_seats=None))]
 fn series_record(py: Python<'_>, chara_decks: Vec<Vec<String>>, action_decks: Vec<Vec<String>>,
                  spec_a: &Bound<'_, PyDict>, spec_b: &Bound<'_, PyDict>, seed0: i64, n: i64, out_path: String,
                  workers: usize, max_turns: i64, record_a: bool, record_b: bool, opp_from_seat: bool,
-                 leaf_dump: Option<String>, leaf_cap: usize)
+                 leaf_dump: Option<String>, leaf_cap: usize, record_seats: Option<(bool, bool)>)
                  -> PyResult<(Vec<(Option<bool>, i64, i64, u64, u64)>, Vec<String>)> {
     let d = db()?;
     let sa = spec_from_py(&d, spec_a)?;
@@ -1451,7 +1459,8 @@ fn series_record(py: Python<'_>, chara_decks: Vec<Vec<String>>, action_decks: Ve
         return Err(PyValueError::new_err("leaf_cap は 1..65535"));
     }
     let leaf = leaf_dump.as_deref().map(|p| (p, leaf_cap));
-    py.allow_threads(|| run_series_record(&d, &cd, &ad, &sa, &sb, seed0, n, workers, max_turns, &out_path, record_a, record_b, opp_from_seat, leaf))
+    let seats = record_seats.map(|(x, y)| [x, y]);
+    py.allow_threads(|| run_series_record(&d, &cd, &ad, &sa, &sb, seed0, n, workers, max_turns, &out_path, record_a, record_b, opp_from_seat, leaf, seats))
         .map_err(|e| PyRuntimeError::new_err(e.to_string()))
 }
 
@@ -1474,7 +1483,8 @@ fn features() -> Vec<String> {
         "opp_from_seat".to_string(),              // 段階 1C-b（D-123）: series 系の相手デッキ表を席ごとに相手の行動デッキにする
         "encoding_v6".to_string(),                // 段階 1C-c（D-124）: 符号化 v6（信念の要約・統一した hand_known）
         "te13_switched_scope".to_string(),        // TE-13（D-134）: 【切り替え】は入れ替わった 2 枠だけが誘発する
-        "leaf_dump".to_string(),                  // 段階3 項目 4（D-151）: series_record の leaf_dump（V を呼んだ局面の書き出し・既定オフ）
+        "leaf_dump".to_string(),
+        "record_seats".to_string(),               // 段階4（D-154）: series_record の record_seats（記録する側を席で選ぶ）                  // 段階3 項目 4（D-151）: series_record の leaf_dump（V を呼んだ局面の書き出し・既定オフ）
     ]
 }
 

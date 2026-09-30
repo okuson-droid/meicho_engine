@@ -639,7 +639,55 @@
    "purpose": "汎用 AI 段階3 項目 4 の葉の書き出し（D-151・`GENERALIST_STAGE3_ITEM4_DESIGN_20260930.md` §7.1）。4-a-E 860000..860006（調整デッキ 16 ブロック × 7 局・候補 NETFREE＋葉 V_1 対 素 planner・候補の席だけ記録・全ブロックで同じシード）／書き出しの大きさの下見 860800..860809（勝敗は読まない）／検査 860900..860949（`tests/test_stage3_item4.py` が回す対局）／予備はその他。**学習にも強さの評価にも使用禁止**。",
    "owner": "experiments/record_mix.py（--leaf-dump）/ diag_s3_desk.py（--leaf）",
    "date": "2026-09-30"
+  },
+  {
+   "start": 861000,
+   "end": 862999,
+   "kind": "train",
+   "purpose": "段階4 便 4-A（D-154・`GENERALIST_STAGE4_DESIGN_20261001.md` §9）: 対象デッキ `ENV_SANGE_RM_TSUBAKI` の追加学習の教材（学習 1,000 局・教師 netfree・`make_s2_schedule.py --target`・purpose stage4_finetune）。861000..861999 を使う予定・予備はその他。**評価に使用禁止**。汎用 V の系統の学習にも使わない（隔離）",
+   "owner": "experiments/make_s2_schedule.py / record_mix.py / eval_s2_repr.py",
+   "date": "2026-10-01"
+  },
+  {
+   "start": 863000,
+   "end": 863999,
+   "kind": "train",
+   "purpose": "段階4 便 4-A（D-154・`GENERALIST_STAGE4_DESIGN_20261001.md` §9）: 対象デッキの検証の記録（204 局・`--select best_v` にだけ使う）。**学習にも強さの評価にも使用禁止**。汎用 V の系統にも使わない",
+   "owner": "experiments/make_s2_schedule.py / record_mix.py / eval_s2_repr.py",
+   "date": "2026-10-01"
+  },
+  {
+   "start": 864000,
+   "end": 875999,
+   "kind": "train",
+   "purpose": "段階4 便 4-A（D-154・`GENERALIST_STAGE4_DESIGN_20261001.md` §9）: S（SD001 だけで事前学習）の学習の記録（10,096 局・ミラー 8,080＋錨 3 × 672・教師 netfree・`--pool-only SD001`）。**評価に使用禁止**",
+   "owner": "experiments/make_s2_schedule.py / record_mix.py / eval_s2_repr.py",
+   "date": "2026-10-01"
+  },
+  {
+   "start": 876000,
+   "end": 877999,
+   "kind": "train",
+   "purpose": "段階4 便 4-A（D-154・`GENERALIST_STAGE4_DESIGN_20261001.md` §9）: S の検証の記録（1,088 局・ミラー 872＋錨 3 × 72）。**学習にも強さの評価にも使用禁止**",
+   "owner": "experiments/make_s2_schedule.py / record_mix.py / eval_s2_repr.py",
+   "date": "2026-10-01"
+  },
+  {
+   "start": 878000,
+   "end": 878999,
+   "kind": "validate",
+   "purpose": "段階4 便 4-A（D-154・`GENERALIST_STAGE4_DESIGN_20261001.md` §9）: 評価（`eval_s2_repr.py --task s4`・対象デッキのミラー・相手 素 planner・H・貪欲）。878000..878399 を全候補・全ブロックで同じに使う（300・0 局の時点は先頭 200）。**学習に使用禁止**",
+   "owner": "experiments/make_s2_schedule.py / record_mix.py / eval_s2_repr.py",
+   "date": "2026-10-01"
+  },
+  {
+   "start": 879000,
+   "end": 879999,
+   "kind": "diag",
+   "purpose": "段階4 便 4-A（D-154・`GENERALIST_STAGE4_DESIGN_20261001.md` §9）: 門 S-0（SD001 ミラー・対 素 planner 400 局・879000..879399）と配線の確かめ・検査 879900..879949（`tests/test_stage4_tools.py`）。**学習にも強さの評価にも使用禁止**",
+   "owner": "experiments/make_s2_schedule.py / record_mix.py / eval_s2_repr.py",
+   "date": "2026-10-01"
   }
  ],
- "next_free": 861000
+ "next_free": 880000
 }

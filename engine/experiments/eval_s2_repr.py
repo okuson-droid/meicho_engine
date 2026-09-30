@@ -28,6 +28,19 @@
   デッキ等重みで平均する（計画書 §7.3 の対ブートストラップ・10,000 回）。**95% 区間の下端 > 0 なら new を採る**。
   0 をまたげば未判定（通るまで追試しない）
 - 各候補の対 素 planner の得点（デッキ等重み）も区間つきで出す（診断）
+
+## 課題 s4（段階4・D-154・設計書 `GENERALIST_STAGE4_DESIGN_20261001.md` §5）
+
+    python3 experiments/eval_s2_repr.py run --task s4 --target ENV_SANGE_RM_TSUBAKI --arm G1000=<束ねた V> \
+        --n 400 --seed0 <validate の帯> --out results/drl/s4/eval_1000.json
+    python3 experiments/eval_s2_repr.py report --in results/drl/s4/eval_1000.json --new G1000 --old S1000 --also G1000:R1000
+
+- 候補も相手も対象デッキ D だけを使う（ミラー）。相手は素 planner・H・貪欲の 3 ブロック（`--opponents`）
+- 全候補・全ブロックで同じシード列。候補ごとに局数（`--n`）を変えてよい（300・0 局の時点は先頭 200 シード）
+- 差は同じ（ブロック・シード）の局どうし。**ブロックの中で席を入れ替えた 2 局の組 (2k, 2k+1) を単位に**
+  10,000 回再標本化し、ブロックを等しい重みで平均する（計画書 §7.3）。局数が違う候補どうしは、両方にある先頭の組だけで対にする
+- 帯は既定で kind=validate。門 S-0（設計書 §3.1）は `--band-kind diag` で診断の帯に回す
+- 課題 s2（既定）の結果ファイルと報告は従来とバイト単位で同じ（検査 S4-4）
 """
 from __future__ import annotations
 
@@ -125,7 +138,156 @@ def _arm_spec(arm: str, path: str | None, pool: list) -> dict:
     return PLANNER(pool, **NETFREE, **extra)
 
 
+S4_OPPONENTS = ("planner", "heuristic", "greedy")
+
+
+def resolve_deck(name: str) -> str:
+    """`ENV_…` は `env/ENV_…`、それ以外（SD001 など）はそのまま。decklists にあることを確かめる。"""
+    for cand in ((name if name.startswith("env/") else f"env/{name}"), name):
+        if os.path.isfile(os.path.join(_HERE, "..", "decklists", f"{cand}.json")):
+            return cand
+    raise SystemExit(f"デッキ {name} が decklists に無い")
+
+
+def check_band_kind(seed0: int, n: int, kind: str) -> None:
+    with open(os.path.join(_HERE, "seed_bands.json"), encoding="utf-8") as f:
+        led = json.load(f)
+    for s in (seed0, seed0 + n - 1):
+        hit = [b for b in led["bands"] if b["start"] <= s <= b["end"]]
+        if not hit:
+            raise SystemExit(f"帯 {s} は seed_bands.json に未登録。台帳に追記してから使うこと（D-028）")
+        if hit[0].get("kind") != kind:
+            raise SystemExit(f"帯 {hit[0]['start']}..{hit[0]['end']} は kind={hit[0].get('kind')}。"
+                             f"この課題は kind={kind} の帯で回す")
+
+
+def _opp_spec(kind: str, pool: list) -> dict:
+    from arena_rs import GREEDY, HEURISTIC, PLANNER
+    return {"planner": lambda: PLANNER(pool), "heuristic": HEURISTIC, "greedy": lambda: GREEDY(pool)}[kind]()
+
+
+def run_s4(args) -> dict:
+    """課題 s4（D-154 §5.1）。候補は A 席・デッキは D どうし・相手は opponents のブロック。"""
+    import hashlib
+    import meicho_rs as rs
+    from arena import load_deck, matchup_config
+    from arena_rs import ensure_cards
+    if not args.target:
+        raise SystemExit("--task s4 には --target が要る")
+    target = resolve_deck(args.target)
+    opps = [o.strip() for o in args.opponents.split(",")] if args.opponents else list(S4_OPPONENTS)
+    for o in opps:
+        if o not in S4_OPPONENTS:
+            raise SystemExit(f"--opponents は {S4_OPPONENTS} から: {o}")
+    if args.n % 2:
+        raise SystemExit("--n は偶数（席を入れ替えた 2 局の組で数える）")
+    check_band_kind(args.seed0, args.n, args.band_kind)
+    ensure_cards()
+    data = {"version": TOOL_VERSION, "task": "s4", "decision": "D-154", "target": target, "opponents": opps,
+            "seed0": args.seed0, "band_kind": args.band_kind, "arms": {}, "results": {}}
+    if os.path.exists(args.out):
+        with open(args.out, encoding="utf-8") as f:
+            data = json.load(f)
+        if (data.get("task"), data["target"], data["opponents"], data["seed0"]) != ("s4", target, opps, args.seed0):
+            raise SystemExit("条件（課題・対象デッキ・相手・シード）が前回と違う。別の --out に")
+    arms = {}
+    for a in args.arm:
+        name, _, path = a.partition("=")
+        arms[name] = path or None
+        fp = hashlib.sha256(open(path, "rb").read()).hexdigest()[:16] if path else None
+        prev = data["arms"].get(name)
+        if prev is not None and prev["sha"] != fp:
+            raise SystemExit(f"候補 {name} のネットが前回と違う（{prev['sha']} → {fp}）。別の名前にすること")
+        data["arms"][name] = {"path": path, "sha": fp, "n": max(args.n, (prev or {}).get("n", 0))}
+    d = load_deck(target)
+    cfg = matchup_config(d, d)
+    cfg.validate()
+    t0 = time.time()
+    for name, path in arms.items():
+        for o in opps:
+            key = f"{name}|{o}"
+            have = len(data["results"].get(key, []))
+            if have >= args.n:
+                continue
+            if time.time() - t0 > args.budget_sec:
+                print(f"予算 {args.budget_sec} 秒を超えたので止める（続きは同じコマンドで再開）")
+                return data
+            t = time.time()
+            res = rs.series(cfg.chara_decks, cfg.action_decks, _arm_spec(name, path, d["action_deck"]),
+                            _opp_spec(o, d["action_deck"]), args.seed0 + have, args.n - have, args.workers, 200, True)
+            data["results"][key] = data["results"].get(key, []) + \
+                [[(0.5 if r[0] is None else float(bool(r[0]))), int(r[1])] for r in res]
+            with open(args.out, "w", encoding="utf-8", newline="\n") as f:
+                json.dump(data, f, ensure_ascii=False)
+            print(f"{key}: {time.time() - t:.0f} 秒・得点 {np.mean([x[0] for x in data['results'][key]]):.3f}",
+                  flush=True)
+    return data
+
+
+def _s4_pairs(data: dict, arm: str, opp: str, n: int) -> np.ndarray:
+    """(組の数, 2) の得点。先頭 n 局（偶数）だけ。"""
+    r = data["results"][f"{arm}|{opp}"][:n]
+    return np.array([x[0] for x in r], float).reshape(-1, 2)
+
+
+def s4_common_n(data: dict, arms: list) -> int:
+    n = min(len(data["results"].get(f"{a}|{o}", [])) for a in arms for o in data["opponents"])
+    return n - n % 2
+
+
+def s4_paired(data: dict, new: str, old: str | None, n_boot: int = 10000, seed: int = 0,
+              level: float = 0.95) -> dict:
+    """組を単位にブロックの中で再標本化・ブロック等重みの平均（old が None なら new の得点そのもの）。"""
+    arms = [new] + ([old] if old else [])
+    n = s4_common_n(data, arms)
+    if n < 2:
+        raise SystemExit(f"{arms} に共通の局が無い")
+    rng = np.random.RandomState(seed)
+    per, boots = {}, np.zeros(n_boot)
+    for o in data["opponents"]:
+        d = _s4_pairs(data, new, o, n).mean(1)
+        if old:
+            d = d - _s4_pairs(data, old, o, n).mean(1)
+        per[o] = float(d.mean())
+        boots += d[rng.randint(0, len(d), size=(n_boot, len(d)))].mean(1)
+    boots /= len(data["opponents"])
+    lo, hi = np.percentile(boots, ci_percentiles(level))
+    return {"diff": float(np.mean(list(per.values()))), "lo": float(lo), "hi": float(hi), "n_per_block": n,
+            "by_block": per}
+
+
+def s4_wdl(data: dict, arm: str) -> dict:
+    out = {}
+    for o in data["opponents"]:
+        r = [x[0] for x in data["results"].get(f"{arm}|{o}", [])]
+        out[o] = {"n": len(r), "W": r.count(1.0), "D": r.count(0.5), "L": r.count(0.0)}
+    return out
+
+
+def report_s4(args, data: dict) -> dict:
+    level = getattr(args, "level", 0.95)
+    arms = [a for a in data["arms"] if all(f"{a}|{o}" in data["results"] for o in data["opponents"])]
+    out = {"version": TOOL_VERSION, "task": "s4", "target": data["target"], "opponents": data["opponents"],
+           "seed0": data["seed0"], "level": level,
+           "scores": {a: s4_paired(data, a, None, level=level) for a in arms},
+           "wdl": {a: s4_wdl(data, a) for a in arms}, "compare": {}}
+    pairs = [(args.new, args.old)] + [tuple(p.split(":")) for p in (args.also or [])]
+    for new, old in pairs:
+        if new in arms and old in arms:
+            out["compare"][f"{new}-{old}"] = s4_paired(data, new, old, level=level)
+    path = args.out or args.inp.replace(".json", "_report.json")
+    with open(path, "w", encoding="utf-8", newline="\n") as f:
+        json.dump(out, f, ensure_ascii=False, indent=1)
+    print(json.dumps({"scores": {a: [round(v["diff"], 4), round(v["lo"], 4), round(v["hi"], 4), v["n_per_block"]]
+                                 for a, v in out["scores"].items()},
+                      "compare": {k: [round(v["diff"], 4), round(v["lo"], 4), round(v["hi"], 4), v["n_per_block"]]
+                                  for k, v in out["compare"].items()}}, ensure_ascii=False))
+    return out
+
+
 def run(args) -> dict:
+    if getattr(args, "task", "s2") == "s4":
+        return run_s4(args)
     import meicho_rs as rs
     from arena import load_deck, matchup_config
     from arena_rs import PLANNER, ensure_cards
@@ -222,6 +384,8 @@ def scores_of(data: dict, arm: str) -> list:
 def report(args) -> dict:
     with open(args.inp, encoding="utf-8") as f:
         data = json.load(f)
+    if data.get("task") == "s4":
+        return report_s4(args, data)
     games = games_of(data)
     # 全ブロックが n 局そろった候補だけを報告する。足し継ぎの途中（D-138）の候補は飛ばし、
     # 足りないブロックの数を `incomplete` に残す（前はキーの有無だけを見ていて IndexError で落ちた）。
@@ -262,6 +426,11 @@ def main(argv=None):
     r.add_argument("--out", required=True)
     r.add_argument("--import", dest="imports", action="append", default=None,
                    help="元.json:候補名 — 別ファイルの同じ候補の結果を取り込む（D-138）")
+    r.add_argument("--task", choices=["s2", "s4"], default="s2", help="s4 = 段階4 の課題（D-154 §5.1）")
+    r.add_argument("--target", default=None, help="--task s4: 対象デッキ（候補も相手もこのデッキ）")
+    r.add_argument("--opponents", default=None, help="--task s4: 相手（既定 planner,heuristic,greedy）")
+    r.add_argument("--band-kind", choices=["validate", "diag"], default="validate",
+                   help="--task s4: 帯の種類（門 S-0 だけ diag）")
     q = sub.add_parser("report")
     q.add_argument("--in", dest="inp", required=True)
     q.add_argument("--new", default="v_pf")

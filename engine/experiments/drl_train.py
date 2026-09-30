@@ -279,6 +279,51 @@ def keep_pairs(recs: Records, mod: int, rem: int) -> Records:
                    acts_flat=recs.acts_flat[flat], scores_flat=recs.scores_flat[flat])
 
 
+def subset_seeds(prefixes: str, frac: float) -> set:
+    """段階4 の「300 局の時点」（設計書 §4.3・D-154）: 組み合わせ表の各ブロックの中で、席を入れ替えた 2 局の組
+    (2k, 2k+1) をシードの小さい順に並べ、先頭から round(frac × 組の数) 組の局を残す。
+
+    ブロックは記録の manifest（`<接頭辞>.manifest.json`）の組み合わせ表で決める。塊に割った表
+    （`plan_chunks.py`）の小ブロックは `parent`（元の表のブロック番号）でまとめ直す。
+    """
+    if not 0 < frac <= 1:
+        raise SystemExit(f"--subset-frac は 0 より大きく 1 以下: {frac}")
+    groups: dict = {}
+    for mi, pre in enumerate(x.strip() for x in prefixes.split(",") if x.strip()):
+        path = pre + ".manifest.json"
+        if not os.path.isfile(path):
+            raise SystemExit(f"--subset-frac には記録の manifest が要る: {path}")
+        with open(path, encoding="utf-8") as f:
+            sch = json.load(f)["schedule"]
+        for bi, b in enumerate(sch["blocks"]):
+            key = ("parent", b["parent"]) if "parent" in b else ("block", mi, bi)
+            groups.setdefault(key, set()).update(range(int(b["seed0"]), int(b["seed0"]) + int(b["n"])))
+    keep = set()
+    for key, seeds in groups.items():
+        pairs = sorted({s // 2 for s in seeds})
+        if any((2 * k not in seeds) or (2 * k + 1 not in seeds) for k in pairs):
+            raise SystemExit(f"ブロック {key} の局が組 (2k, 2k+1) にそろっていない")
+        for k in pairs[:round(frac * len(pairs))]:
+            keep.update((2 * k, 2 * k + 1))
+    return keep
+
+
+def keep_seed_set(recs: Records, seeds: set) -> Records:
+    """`seeds` の局の決定だけを残す（記録の中の順序は保つ）。"""
+    mask = np.isin(recs.seed, np.fromiter(seeds, np.int64, len(seeds)))
+    idx = np.nonzero(mask)[0]
+    na = recs.n_acts[idx].astype(np.int64)
+    starts = recs.act_off[idx]
+    off = np.zeros(len(idx) + 1, np.int64)
+    if len(idx):
+        off[1:] = np.cumsum(na)
+    flat = (np.repeat(starts - off[:-1], na) + np.arange(off[-1])) if len(idx) else np.zeros(0, np.int64)
+    return Records(n=int(len(idx)), seed=recs.seed[idx], step=recs.step[idx], turn=recs.turn[idx],
+                   pi=recs.pi[idx], phase=recs.phase[idx], n_acts=recs.n_acts[idx], chosen=recs.chosen[idx],
+                   z=recs.z[idx], fresh=recs.fresh[idx], obs=recs.obs[idx], act_off=off,
+                   acts_flat=recs.acts_flat[flat], scores_flat=recs.scores_flat[flat])
+
+
 def parse_seed_ranges(text: str | None) -> list:
     """`"487100-488099,488100-489099"` を [(487100, 488099), ...] にする。
 
@@ -698,6 +743,16 @@ def train(args):
         # G-1（学習曲線）: 学習の記録だけを間引く。検証の記録は間引かない（物差しを変えない）
         tr_recs = keep_pairs(tr_recs, *kp)
         print(f"--keep-pairs {kp[0]}:{kp[1]}: 学習の決定 {n_read} → {tr_recs.n}")
+    args.subset_frac = getattr(args, "subset_frac", None)
+    n_subset_games = None
+    if args.subset_frac is not None:
+        if kp is not None:
+            raise SystemExit("--subset-frac と --keep-pairs は同時に使わない")
+        # 段階4（D-154 §4.3）: 学習の記録だけを各ブロックの先頭の組に絞る。検証の記録は絞らない
+        keep = subset_seeds(args.train, args.subset_frac)
+        tr_recs = keep_seed_set(tr_recs, keep)
+        n_subset_games = len(keep)
+        print(f"--subset-frac {args.subset_frac}: {n_subset_games} 局・学習の決定 {n_read} → {tr_recs.n}")
     tr = Batcher(tr_recs, vtarget=args.vtarget, league_ranges=lg)
     del tr_recs
     va = Batcher(read_records(files_of(args.valid), args.max_records),
@@ -877,6 +932,8 @@ def train(args):
             "n_fresh_used": int(tr.n_fresh_used), "wd": args.wd, "wv": args.wv, "wp": args.wp,
             "card_profile": proj_info, "n_params_trained": n_params,
             "keep_pairs": args.keep_pairs, "n_train_read": int(n_read),
+            **({"subset_frac": args.subset_frac, "n_subset_games": n_subset_games}
+               if args.subset_frac is not None else {}),
             **({"calib_form": args.calib_form} if getattr(args, "calib_form", "linear") != "linear" else {}),
             **({"n_nonargmax": int(tr.n_nonargmax)} if args.vtarget == "fresh_am" else {}),
             "n_params_exported": int(sum(w.size + b.size for w, b in net.trunk) + net.value[0].size
@@ -935,6 +992,9 @@ def main():
     ap.add_argument("--keep-pairs", default=None,
                     help="学習の記録を局のシードの対 (2k, 2k+1) を単位に間引く。M:R で k mod M == R の局だけを残す"
                          "（例 2:0 で半分・4:0 で 4 分の 1）。検証の記録は間引かない（D-144 追記 3・G-1 学習曲線）")
+    ap.add_argument("--subset-frac", type=float, default=None,
+                    help="段階4（D-154 §4.3）: 学習の記録を各ブロックの先頭 round(frac×組の数) 組の局に絞る"
+                         "（300 局の時点＝0.3）。ブロックは記録の manifest の組み合わせ表で決める。検証の記録は絞らない")
     ap.add_argument("--seed", type=int, default=0); ap.add_argument("--threads", type=int, default=2)
     ap.add_argument("--max-records", type=int, default=None)
     a = ap.parse_args()

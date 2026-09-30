@@ -27,6 +27,18 @@
   `--teacher netfree_v --value-net <パス>` で葉を V にし、V の指紋（sha256 先頭 16 桁）を表の教師に書く
   （`record_mix.py` が回す前にファイルと照合する）。`--tau` は記録の温度。
   `--merge` は教師（名前・τ・葉の V の指紋）の違う部分を混ぜると落とす。
+
+## 段階4（D-154・設計書 `GENERALIST_STAGE4_DESIGN_20261001.md` §3.1・§4.2・§8 の 1）
+
+- `--target D --per-block mirror:M,cross:C,anchor:A`: 対象デッキ D（調整デッキ）の追加学習の教材。
+  ミラー D 対 D 1 ブロック（M 局・両席を記録）／異種 D 対 学習デッキ 16 個（各 C 局・**D の席だけ**記録
+  `record: deck_a`）／錨 D 対 D で相手が H・貪欲・素 planner（各 A 局・教師の席だけ）。
+  調整デッキの残りと最終評価のデッキは出さない（検査 S4-1）
+- `--pool-only NAME --per-block mirror:M,anchor:A`: そのデッキだけの教材（S の事前学習・SD001）。ミラー 1 ブロック＋錨 3 ブロック。
+  NAME は `decklists/NAME.json`（環境デッキ群の外のデッキ・前置き無し）
+- 局数は `--per-block` でブロックごとにそのまま指定する（設計書に書いた数を写す。偶数でなければ落とす）
+- `--purpose` は表に `purpose` 欄を足す（例 `stage4_finetune`・manifest に写る）
+- どちらも付けなければ従来と同じ（D-131 の表とバイト単位で同じ・検査 S4-4）
 """
 from __future__ import annotations
 
@@ -134,6 +146,91 @@ def build(decks_block: dict, *, n_total: int, seed0: int, band_end: int, only: s
     }
 
 
+def parse_per_block(text: str, kinds: tuple) -> dict:
+    """`mirror:400,cross:24,anchor:72` を {種類: 局数} に。種類がそろわない・偶数でない・2 未満は落とす。"""
+    out = {}
+    for part in text.split(","):
+        k, _, v = part.partition(":")
+        try:
+            out[k.strip()] = int(v)
+        except ValueError:
+            raise SystemExit(f"--per-block は 種類:局数 をカンマで並べる: {text!r}")
+    if sorted(out) != sorted(kinds):
+        raise SystemExit(f"--per-block の種類は {kinds} ちょうど: {text!r}")
+    for k, v in out.items():
+        if v < 2 or v % 2:
+            raise SystemExit(f"--per-block の {k} は 2 以上の偶数（席を半々にする）: {v}")
+    return out
+
+
+def build_target(decks_block: dict, *, target: str, per: dict, seed0: int, band_end: int, name: str,
+                 teacher: dict | None = None, purpose: str | None = None) -> dict:
+    """段階4 の対象デッキの教材（設計書 §4.2）。相手の学習デッキは 16 個すべて・調整と最終評価は出さない。"""
+    if target not in decks_block:
+        raise SystemExit(f"--target {target} は環境デッキ群に無い")
+    if decks_block[target].get("split") == "final":
+        raise SystemExit(f"--target {target} は最終評価のデッキ（開けない・D-153 追記 1）")
+    if decks_block[target].get("split") == "train":
+        raise SystemExit(f"--target {target} は学習デッキ（汎用 V が学んだデッキは対象にしない）")
+    train = sorted(k for k, v in decks_block.items() if v.get("split") == "train")
+    raw = [("mirror", target, target, "teacher", "both")]
+    for d in train:
+        raw.append(("cross", target, d, "teacher", "deck_a"))
+    for opp in ANCHOR_OPPONENTS:
+        raw.append(("anchor", target, target, opp, "a"))
+    return _assemble(raw, per, decks_block, seed0=seed0, band_end=band_end, name=name, teacher=teacher,
+                     purpose=purpose, gen={"target": target, "per_block": per})
+
+
+def build_pool_only(deck: str, *, per: dict, seed0: int, band_end: int, name: str,
+                    teacher: dict | None = None, purpose: str | None = None) -> dict:
+    """1 つのデッキだけの教材（設計書 §3.1・S の事前学習）。ミラー 1 ブロック＋錨 3 ブロック。"""
+    path = os.path.join(_HERE, "..", "decklists", f"{deck}.json")
+    if not os.path.isfile(path):
+        raise SystemExit(f"--pool-only {deck}: decklists/{deck}.json が無い")
+    raw = [("mirror", deck, deck, "teacher", "both")] + \
+          [("anchor", deck, deck, opp, "a") for opp in ANCHOR_OPPONENTS]
+    return _assemble(raw, per, None, seed0=seed0, band_end=band_end, name=name, teacher=teacher,
+                     purpose=purpose, gen={"pool_only": deck, "per_block": per}, prefix="")
+
+
+def _assemble(raw: list, per: dict, decks_block: dict | None, *, seed0: int, band_end: int, name: str,
+              teacher: dict | None, purpose: str | None, gen: dict, prefix: str = PREFIX) -> dict:
+    blocks, s = [], seed0
+    for kind, a, b, opp, rec in raw:
+        n = per[kind]
+        blk = {"kind": kind, "deck_a": prefix + a, "deck_b": prefix + b, "seed0": s, "n": n, "record": rec}
+        if opp != "teacher":
+            blk["opponent"] = opp
+        blocks.append(blk)
+        s += n
+    total = s - seed0
+    if s - 1 > band_end:
+        raise SystemExit(f"シード {seed0}..{s - 1}（{total} 局）が帯の終わり {band_end} を越える")
+    for blk in blocks:
+        blk["p_planned"] = blk["n"] / total
+    decks = {}
+    for full in sorted({d for blk in blocks for d in (blk["deck_a"], blk["deck_b"])}):
+        if decks_block is None:
+            decks[full] = {"lineage": None, "group": None, "split": None}
+        else:
+            src = decks_block[full[len(prefix):]]
+            decks[full] = {"lineage": src["lineage"], "group": src["group"], "split": src["split"]}
+    out = {
+        "name": name,
+        "generator": {"tool": "experiments/make_s2_schedule.py", "version": TOOL_VERSION,
+                      "decision": "D-154", "anchor_opponents": list(ANCHOR_OPPONENTS), **gen,
+                      "band": [seed0, band_end]},
+        "n_total_actual": total,
+        "teacher": teacher or teacher_def(),
+        "decks": decks,
+        "blocks": blocks,
+    }
+    if purpose:
+        out["purpose"] = purpose
+    return out
+
+
 def split(sch: dict, k: int) -> list:
     """組み合わせ表をブロックの並びのまま k 個に分ける（D-131）。
 
@@ -225,8 +322,16 @@ def main(argv=None):
                     help="選んだ手を別の決定化で取り直す本数（記録の fresh 欄・既定 0 = 取らない・D-148 (b)）")
     ap.add_argument("--parts", type=int, default=1, help="k 個に分けて <out>.p<i>of<k>.json にも書く（D-131）")
     ap.add_argument("--merge", nargs="+", default=None, help="manifest をまとめて --out に書く（D-131）")
+    ap.add_argument("--target", default=None, help="段階4: 対象デッキ（調整デッキ）の追加学習の教材（D-154 §4.2）")
+    ap.add_argument("--pool-only", default=None, help="段階4: このデッキだけの教材（S の事前学習・D-154 §3.1）")
+    ap.add_argument("--per-block", default=None, help="--target / --pool-only のブロックごとの局数（種類:局数,…）")
+    ap.add_argument("--purpose", default=None, help="表に purpose 欄を足す（例 stage4_finetune）")
     ap.add_argument("--out", required=True)
     args = ap.parse_args(argv)
+    if args.target and args.pool_only:
+        ap.error("--target と --pool-only は同時に使わない")
+    if (args.target or args.pool_only) and not args.per_block:
+        ap.error("--target / --pool-only には --per-block が要る")
     if not args.merge and (args.seed0 is None or args.band_end is None):
         ap.error("--seed0 と --band-end が要る")
     if args.merge:
@@ -239,8 +344,18 @@ def main(argv=None):
     teacher = teacher_def(args.teacher, args.value_net, args.tau, args.reeval_samples)
     with open(args.env, encoding="utf-8") as f:
         env = json.load(f)
-    sch = build(env["decks_block"], n_total=args.n_total, seed0=args.seed0, band_end=args.band_end,
-                only=args.only, pilot_n=args.pilot_n, name=args.name, teacher=teacher)
+    if args.target:
+        sch = build_target(env["decks_block"], target=args.target,
+                           per=parse_per_block(args.per_block, ("mirror", "cross", "anchor")),
+                           seed0=args.seed0, band_end=args.band_end, name=args.name, teacher=teacher,
+                           purpose=args.purpose)
+    elif args.pool_only:
+        sch = build_pool_only(args.pool_only, per=parse_per_block(args.per_block, ("mirror", "anchor")),
+                              seed0=args.seed0, band_end=args.band_end, name=args.name, teacher=teacher,
+                              purpose=args.purpose)
+    else:
+        sch = build(env["decks_block"], n_total=args.n_total, seed0=args.seed0, band_end=args.band_end,
+                    only=args.only, pilot_n=args.pilot_n, name=args.name, teacher=teacher)
     sch["generator"]["env"] = {"path": os.path.relpath(args.env, os.path.join(_HERE, "..")).replace(os.sep, "/"),
                                "version": env.get("version")}
     os.makedirs(os.path.dirname(os.path.abspath(args.out)), exist_ok=True)

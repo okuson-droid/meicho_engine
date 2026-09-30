@@ -242,8 +242,10 @@ def check_schedule(sch: dict) -> None:
         if opp not in OPPONENTS:
             raise SystemExit(f"blocks[{i}]: 未知の相手 {opp}")
         rec = b.get("record", "both" if opp == "teacher" else "a")
-        if rec not in ("both", "a", "b"):
-            raise SystemExit(f"blocks[{i}]: record は both / a / b")
+        if rec not in ("both", "a", "b", "deck_a"):
+            raise SystemExit(f"blocks[{i}]: record は both / a / b / deck_a")
+        if rec == "deck_a" and opp != "teacher":
+            raise SystemExit(f"blocks[{i}]: record=deck_a は教師どうしのブロックだけ（錨は教師の席を a で記録する）")
         if opp != "teacher" and rec != "a":
             raise SystemExit(f"blocks[{i}]: 教師以外が相手のブロックは record を a にすること"
                              "（記録する席を教師に固定・VALUE_BOOTSTRAP_DESIGN.md §6.3）")
@@ -274,10 +276,16 @@ def run_block(i: int, b: dict, sch: dict, out: str, workers: int, max_turns: int
     t = time.time()
     # 葉の書き出し（段階3 項目 4・D-151）: 記録する決定ごとに探索が V を呼んだ局面を最大 leaf_cap 個。
     # 打ち方は変わらない（検査 L-2）。0 なら従来と同じ呼び方
-    leaf = {"leaf_dump": f"{out}.b{i}.leaf", "leaf_cap": leaf_cap} if leaf_cap else {}
+    kw = {"leaf_dump": f"{out}.b{i}.leaf", "leaf_cap": leaf_cap} if leaf_cap else {}
+    # 段階4（D-154）: record=deck_a は deck_a の席（席 0）だけを記録する。エージェントは奇数シードで席を
+    # 入れ替えるので、a（エージェント A の席）では半分の局で deck_b 側を記録してしまう
+    if rec == "deck_a":
+        if "record_seats" not in rs.features():
+            raise SystemExit("入っている meicho_rs が古い（record_seats が無い）。再ビルドすること（D-154）")
+        kw["record_seats"] = (True, False)
     res, files = rs.series_record(cfg.chara_decks, cfg.action_decks, spec_a, spec_b, seed0, n,
                                   f"{out}.b{i}", workers, max_turns, rec in ("both", "a"), rec in ("both", "b"),
-                                  opp_from_seat=True, **leaf)
+                                  opp_from_seat=True, **kw)
     sec = time.time() - t
     dec = count_decisions(files)
     # 席 0 = deck_a。偶数シードは A が席 0。
