@@ -1,0 +1,80 @@
+{
+ "name": "s4_sd001_val",
+ "generator": {
+  "tool": "experiments/make_s2_schedule.py",
+  "version": "s2sched-1",
+  "decision": "D-154",
+  "anchor_opponents": [
+   "heuristic",
+   "greedy",
+   "planner"
+  ],
+  "pool_only": "SD001",
+  "per_block": {
+   "mirror": 872,
+   "anchor": 72
+  },
+  "band": [
+   876000,
+   877999
+  ],
+  "env": {
+   "path": "results/decksim/env_v1.json",
+   "version": "decksim-3"
+  }
+ },
+ "n_total_actual": 1088,
+ "teacher": {
+  "name": "netfree",
+  "tau": 0.0
+ },
+ "decks": {
+  "SD001": {
+   "lineage": null,
+   "group": null,
+   "split": null
+  }
+ },
+ "blocks": [
+  {
+   "kind": "mirror",
+   "deck_a": "SD001",
+   "deck_b": "SD001",
+   "seed0": 876000,
+   "n": 872,
+   "record": "both",
+   "p_planned": 0.8014705882352942
+  },
+  {
+   "kind": "anchor",
+   "deck_a": "SD001",
+   "deck_b": "SD001",
+   "seed0": 876872,
+   "n": 72,
+   "record": "a",
+   "opponent": "heuristic",
+   "p_planned": 0.0661764705882353
+  },
+  {
+   "kind": "anchor",
+   "deck_a": "SD001",
+   "deck_b": "SD001",
+   "seed0": 876944,
+   "n": 72,
+   "record": "a",
+   "opponent": "greedy",
+   "p_planned": 0.0661764705882353
+  },
+  {
+   "kind": "anchor",
+   "deck_a": "SD001",
+   "deck_b": "SD001",
+   "seed0": 877016,
+   "n": 72,
+   "record": "a",
+   "opponent": "planner",
+   "p_planned": 0.0661764705882353
+  }
+ ],
+ "purpose": "stage4_sd001_pretrain"
+}
