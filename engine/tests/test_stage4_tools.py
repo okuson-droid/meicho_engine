@@ -5,8 +5,9 @@ S4-2 `record: deck_a` の記録を読み戻すと、異種ブロックの決定�
      奇数シードの局で席 1（相手デッキ）の決定が混ざる
 S4-3 §4.3 の部分集合が 314 局（ミラー 120・異種 16 × 8・錨 3 × 22）で、席を入れ替えた組を割らない。
      塊に割った表（`parent`）でも同じ局になる。`drl_train --subset-frac` の meta に局数が入る
-S4-4 既定の出力は従来どおり: `make_s2_schedule.py` は D-131 の表とバイト単位で同じ・`drl_train` の meta に
-     新しい欄が入らない・`eval_s2_repr.py report`（課題 s2）の結果は従来の報告と同じ
+S4-4 既定の出力は従来どおり: `make_s2_schedule.py` は D-131 の表とバイト単位で同じ・`record_mix.py` の既定の記録の
+     sha が道具を足す前の wheel と同じ（固定値）・`drl_train` の meta に新しい欄が入らない・
+     `eval_s2_repr.py report`（課題 s2）の結果は従来の報告と同じ
 S4-5 `--task s4` で全候補が同じシード列を使い、席が半々になる。違うシードで回った候補を同じ結果ファイルで
      比べようとすると落ちる。組を単位の対の差・局数の違う候補は共通の先頭の組だけで対にする
 S4-6 `--pool-only SD001` の配分がミラー 80%・錨 20%（10,096 局）で、SD001 以外のデッキが出ない
@@ -219,6 +220,33 @@ def test_s2_report_is_unchanged(tmp_path):
     out = tmp_path / "r.json"
     E.report(argparse.Namespace(inp=src, new=new, old=old, also=also or None, out=str(out), level=0.95))
     assert out.read_text(encoding="utf-8") == open(ref, encoding="utf-8").read()
+
+
+# 既定の record_mix の記録（record_seats を渡さない・葉を書かない）の sha256。D-151 より前の wheel・葉の書き出し口を
+# 入れた wheel（D-151）・record_seats を入れた wheel（D-154）の 3 つで同じ値だった（2026-10-01・workers 1）。
+# **rules の版やエンジンの挙動を裁定で変えたら動く**（指紋と同じ・D-091 §3）。そのときは D 番号を付けて貼り替える
+PINNED_DEFAULT_RECORDS = {
+    "b0.0": "5cf84691ae5b398ec56e4fd2cc03decdcdd6b83c350bb47bb080892cac245d71",   # SD001 ミラー 879902..879903
+    "b1.0": "059b9dfb709febb9013454aff56816d5e9e080a52c8c1f02cc61515e40e9ace9",   # 対象デッキ 対 ENV_SANGE_RF_ANKO 879904..879905
+}
+
+
+@pytest.mark.slow
+def test_default_record_mix_bytes_are_pinned(tmp_path):
+    """S4-4: 既定（record=both・葉なし）の record_mix の記録が、道具を足す前の wheel と同じバイト列（sha を固定）。"""
+    pytest.importorskip("meicho_rs")
+    import hashlib
+    import record_mix
+    sch = {"name": "pin", "teacher": {"name": "netfree", "tau": 0.0},
+           "blocks": [{"kind": "mirror", "deck_a": "SD001", "deck_b": "SD001", "seed0": 879902, "n": 2, "record": "both"},
+                      {"kind": "cross", "deck_a": f"env/{TARGET}", "deck_b": "env/ENV_SANGE_RF_ANKO", "seed0": 879904,
+                       "n": 2, "record": "both"}]}
+    p = tmp_path / "pin.json"
+    p.write_text(json.dumps(sch), encoding="utf-8")
+    man = record_mix.main(["--schedule", str(p), "--out", str(tmp_path / "r"), "--workers", "1"])
+    got = {f.rsplit(".", 2)[-2] + "." + f.rsplit(".", 1)[-1]: hashlib.sha256(open(f, "rb").read()).hexdigest()
+           for f in man["files"]}
+    assert got == PINNED_DEFAULT_RECORDS
 
 
 # ------------------------------------------------------------------ S4-5
