@@ -31,6 +31,7 @@ import glob
 import json
 import lzma
 import os
+import struct
 import sys
 
 import numpy as np
@@ -521,6 +522,281 @@ def tb(orig_files, retake_files, val_mans) -> dict:
     return out
 
 
+# ------------------------------------------------------------------ 項目 4（探索の分布・D-151）
+LEAF_FILE_HEAD = struct.Struct("<4sIII")      # "MCLF" / 版 / obs_dim / leaf_cap（Rust `write_leaves`）
+LEAF_DEC = struct.Struct("<qIHBBIH")          # seed / step / turn / pi / phase / n_calls / n_kept
+LEAF_ITEM = struct.Struct("<IHBBf")           # idx / turn / phase / pi / value
+RULE_4A = {"ratio": 1.5, "n_boot": 10000, "value_tol": 1e-5, "u_A": 0.0016, "u_A_tol": 0.0002}
+
+
+def read_leaves(paths) -> dict:
+    """葉の書き出し（`MCLF` 版 1）を読む。根は決定ごと、葉は `dec`（根の添字）つきの平らな配列。"""
+    layout, n_dec, n_leaf, od = [], 0, 0, None
+    for path in paths:
+        with open(path, "rb") as f:
+            data = f.read()
+        magic, ver, d, cap = LEAF_FILE_HEAD.unpack_from(data, 0)
+        if magic != b"MCLF" or ver != 1:
+            raise SystemExit(f"葉の書き出しではない: {path}")
+        if od is None:
+            od = d
+        if d != od:
+            raise SystemExit("obs_dim がファイルで違う")
+        pos, cnt, cl = LEAF_FILE_HEAD.size, 0, 0
+        while pos < len(data):
+            k = LEAF_DEC.unpack_from(data, pos)[6]
+            pos += LEAF_DEC.size + d + k * (LEAF_ITEM.size + d)
+            cnt += 1
+            cl += k
+        layout.append((path, cnt))
+        n_dec += cnt
+        n_leaf += cl
+    od = od or 0
+    r = {k: np.zeros(n_dec, t) for k, t in (("seed", np.int64), ("step", np.int32), ("turn", np.int32),
+                                             ("pi", np.int8), ("phase", np.int8), ("n_calls", np.int64),
+                                             ("n_kept", np.int32))}
+    r["obs"] = np.zeros((n_dec, od), np.int8)
+    lf = {k: np.zeros(n_leaf, t) for k, t in (("dec", np.int64), ("idx", np.int64), ("turn", np.int32),
+                                               ("phase", np.int8), ("pi", np.int8), ("value", np.float32))}
+    lf["obs"] = np.zeros((n_leaf, od), np.int8)
+    i = j = 0
+    for path, cnt in layout:
+        with open(path, "rb") as f:
+            data = f.read()
+        pos = LEAF_FILE_HEAD.size
+        for _ in range(cnt):
+            vals = LEAF_DEC.unpack_from(data, pos)
+            for key, v in zip(("seed", "step", "turn", "pi", "phase", "n_calls", "n_kept"), vals):
+                r[key][i] = v
+            pos += LEAF_DEC.size
+            r["obs"][i] = np.frombuffer(data, np.int8, od, pos)
+            pos += od
+            for _ in range(vals[6]):
+                ix, tu, ph, pi, v = LEAF_ITEM.unpack_from(data, pos)
+                pos += LEAF_ITEM.size
+                lf["dec"][j], lf["idx"][j], lf["turn"][j], lf["phase"][j], lf["pi"][j], lf["value"][j] = i, ix, tu, ph, pi, v
+                lf["obs"][j] = np.frombuffer(data, np.int8, od, pos)
+                pos += od
+                j += 1
+            i += 1
+    assert i == n_dec and j == n_leaf
+    return {"root": r, "leaf": lf, "obs_dim": od}
+
+
+def subset_records(recs, mask):
+    """`Records` の決定を `mask` で絞る（行動と点数の平らな配列も詰め直す）。"""
+    from meicho.drl_data import Records
+    ix = np.nonzero(mask)[0]
+    na = recs.n_acts[ix].astype(np.int64)
+    off = np.zeros(len(ix) + 1, np.int64)
+    off[1:] = np.cumsum(na)
+    take = np.concatenate([np.arange(recs.act_off[i], recs.act_off[i + 1]) for i in ix]) if len(ix) else np.zeros(0, np.int64)
+    return Records(n=len(ix), seed=recs.seed[ix], step=recs.step[ix], turn=recs.turn[ix], pi=recs.pi[ix],
+                   phase=recs.phase[ix], n_acts=recs.n_acts[ix], chosen=recs.chosen[ix], z=recs.z[ix],
+                   fresh=recs.fresh[ix], obs=recs.obs[ix], act_off=off, acts_flat=recs.acts_flat[take],
+                   scores_flat=recs.scores_flat[take])
+
+
+def parts_spread(parts: list, obs: np.ndarray) -> tuple:
+    """部品のロジットの母標準偏差（ddof = 0）と平均（束ねた V のロジット）。"""
+    lg = np.stack([net_logit(n, obs) for n in parts]).astype(np.float64)
+    return lg.std(0), lg.mean(0)
+
+
+def _wmedian_sorted(vals_sorted: np.ndarray, w: np.ndarray) -> float:
+    """整数の重み（局の再標本化の回数）つきの中央値（`np.median` と同じく偶数個なら中の 2 つの平均）。"""
+    c = np.cumsum(w)
+    tot = c[-1]
+    if tot == 0:
+        return float("nan")
+    lo = vals_sorted[np.searchsorted(c, (tot + 1) // 2)]       # (tot+1)//2 番目（1 始まり）
+    hi = vals_sorted[np.searchsorted(c, tot // 2 + 1)]         # tot//2+1 番目
+    return float((lo + hi) / 2)
+
+
+def ratio_ci(leaf_s, leaf_game, root_s, root_game, n_boot: int = RULE_4A["n_boot"], seed: int = 0,
+             leaf_games=None, root_games=None) -> dict:
+    """中央値の比（葉 ÷ 根）と、局を単位に再標本化した 95% 区間。
+
+    葉と根が同じ局の集合なら（4-a-T）、同じ局の引き方で両方を一緒に引く。違う集合なら（R_E）、それぞれを別に引く。
+    """
+    leaf_s, root_s = np.asarray(leaf_s, np.float64), np.asarray(root_s, np.float64)
+    point = float(np.median(leaf_s) / np.median(root_s))
+    rng = np.random.RandomState(seed)
+    lg_all = np.unique(leaf_game) if leaf_games is None else np.asarray(leaf_games)
+    rg_all = np.unique(root_game) if root_games is None else np.asarray(root_games)
+    shared = np.array_equal(np.sort(lg_all), np.sort(rg_all))
+    lo_ord, ro_ord = np.argsort(leaf_s, kind="mergesort"), np.argsort(root_s, kind="mergesort")
+    lv, rv = leaf_s[lo_ord], root_s[ro_ord]
+    lgi = np.searchsorted(lg_all, np.asarray(leaf_game)[lo_ord])
+    rgi = np.searchsorted(rg_all, np.asarray(root_game)[ro_ord])
+    boots = np.zeros(n_boot)
+    for k in range(n_boot):
+        cl = np.bincount(rng.randint(0, len(lg_all), len(lg_all)), minlength=len(lg_all))
+        cr = cl if shared else np.bincount(rng.randint(0, len(rg_all), len(rg_all)), minlength=len(rg_all))
+        boots[k] = _wmedian_sorted(lv, cl[lgi]) / _wmedian_sorted(rv, cr[rgi])
+    lo, hi = np.percentile(boots, [2.5, 97.5])
+    return {"ratio": point, "lo": float(lo), "hi": float(hi), "median_leaf": float(np.median(leaf_s)),
+            "median_root": float(np.median(root_s)), "n_leaf": int(len(leaf_s)), "n_root": int(len(root_s)),
+            "games_leaf": int(len(lg_all)), "games_root": int(len(rg_all)), "shared_games": bool(shared),
+            "n_boot": n_boot}
+
+
+def verdict_4a(r: dict, retest: bool = False) -> str:
+    """設計書 §3.2 の規則。追試（retest）でも境界なら点推定で決める。"""
+    th = RULE_4A["ratio"]
+    if r["lo"] >= th:
+        return "説明できる（葉が学んだ範囲の外にある）→ 腕 δ（k = 1）"
+    if r["hi"] < th:
+        return "説明できない → 腕は回さず項目 5 へ（k = 0）"
+    if not retest:
+        return "境界 → m mod 5 = 1 の局で 1 回だけ追試"
+    return ("追試も境界。点推定 ≥ 1.5 → 説明できる（腕 δ・k = 1）" if r["ratio"] >= th
+            else "追試も境界。点推定 < 1.5 → 説明できない（項目 5 へ・k = 0）")
+
+
+def _leaf_man_files(mans: list, key: str) -> list:
+    return [p for m in mans for b in m["blocks"] for p in b.get(key, [])]
+
+
+def leaf_4a(t_mans: list, orig_files: list, e_man: dict | None = None, retest: bool = False) -> dict:
+    """4-a（設計書 §3）。t_mans は 4-a-T の `record_mix.py --leaf-cap` の manifest（塊ごと）。"""
+    retake = read_records(_leaf_man_files(t_mans, "files"))
+    orig_all = read_records(orig_files)
+    seeds = np.unique(retake.seed)
+    orig = subset_records(orig_all, np.isin(orig_all.seed, seeds))
+    cmp = compare_retake(orig, retake)
+    out = {"compare": cmp, "games": int(len(seeds))}
+    lv = read_leaves(_leaf_man_files(t_mans, "leaf_files"))
+    root, leaf = lv["root"], lv["leaf"]
+    # 根の照合: 書き出した根の入力が記録の観測と一致するか（決定の鍵 (seed, pi, step)）
+    a = np.lexsort((retake.step, retake.pi, retake.seed))
+    b = np.lexsort((root["step"], root["pi"], root["seed"]))
+    same_keys = retake.n == len(root["seed"]) and all(
+        np.array_equal(getattr(retake, k)[a], root[k][b]) for k in ("seed", "pi", "step"))
+    root_obs_ok = bool(same_keys and np.array_equal(retake.obs[a], root["obs"][b]))
+    belief_nz = float((root["obs"][:, BELIEF_COLS[0]:BELIEF_COLS[1]] != 0).any(1).mean()) if len(root["seed"]) else 0.0
+    V0, V1 = load_parts("s2v_id"), load_parts("s3v1_id")
+    s0_leaf, m0_leaf = parts_spread(V0, leaf["obs"])
+    s0_root, _ = parts_spread(V0, root["obs"])
+    s1_leaf, _ = parts_spread(V1, leaf["obs"])
+    s1_root, _ = parts_spread(V1, root["obs"])
+    vdiff = float(np.abs(sigmoid(m0_leaf) - leaf["value"]).max()) if len(leaf["value"]) else 0.0
+    out["checks"] = {"root_keys_match": bool(same_keys), "root_obs_match": root_obs_ok,
+                     "belief_nonzero_frac": belief_nz, "leaf_value_maxdiff": vdiff,
+                     "leaf_value_ok": vdiff <= RULE_4A["value_tol"]}
+    ok = cmp["same"] and root_obs_ok and belief_nz > 0 and out["checks"]["leaf_value_ok"]
+    lg, rg = root["seed"][leaf["dec"]], root["seed"]
+    rt = ratio_ci(s0_leaf, lg, s0_root, rg)
+    out["R_T"] = rt
+    out["rules"] = {"threshold": RULE_4A["ratio"], "retest": retest,
+                    "verdict": verdict_4a(rt, retest) if ok else
+                    "止める（打ち直しが元の記録と一致しない／根の入力・葉の値の照合に失敗＝配線を疑う）"}
+    # ---- 添える（判定に使わない）
+    ext = {"R_T_V1": ratio_ci(s1_leaf, lg, s1_root, rg)}
+    nc = root["n_calls"]
+    ext["size"] = {"decisions": int(len(nc)), "leaves_kept": int(len(leaf["dec"])),
+                   "no_leaf_frac": float((nc == 0).mean()), "calls_mean": float(nc.mean()),
+                   "calls_p50": float(np.median(nc)), "calls_p90": float(np.percentile(nc, 90)),
+                   "kept_mean": float(root["n_kept"].mean()),
+                   "leaf_turn_ahead_mean": float((leaf["turn"] - root["turn"][leaf["dec"]]).mean()) if len(leaf["dec"]) else None,
+                   "seconds": float(sum(m["seconds"] for m in t_mans))}
+    by_phase = {}
+    for ph in sorted(set(root["phase"].tolist()) | set(leaf["phase"].tolist())):
+        ml, mr = leaf["phase"] == ph, root["phase"] == ph
+        if ml.sum() and mr.sum():
+            by_phase[PHASE_NAMES[ph]] = {"n_leaf": int(ml.sum()), "n_root": int(mr.sum()),
+                                         "ratio": float(np.median(s0_leaf[ml]) / np.median(s0_root[mr]))}
+        else:
+            by_phase[PHASE_NAMES[ph]] = {"n_leaf": int(ml.sum()), "n_root": int(mr.sum()), "ratio": None}
+    ext["by_phase"] = by_phase
+    tg = tags(retake, block_table(t_mans))
+    kind_root = np.empty(len(rg), object)
+    kind_root[b] = tg["kind"][a]
+    ext["by_kind"] = {}
+    for kd in sorted(set(tg["kind"].tolist())):
+        mr = kind_root == kd
+        ml = mr[leaf["dec"]]
+        ext["by_kind"][kd] = ratio_ci(s0_leaf[ml], lg[ml], s0_root[mr], rg[mr], n_boot=2000)
+    # 葉のばらつきと教師の誤差のつながり: 決定ごとの葉の s の平均を 4 分位に分け、分位ごとの 3-a の u
+    with open(os.path.join(MODELS, "s3v1_id_s0.meta.json"), encoding="utf-8") as f:
+        calib = json.load(f)["calibration"]
+    p_t = teacher_p(retake, calib)
+    p_v0 = sigmoid(np.mean([net_logit(n, retake.obs) for n in V0], 0))
+    cnt = np.bincount(leaf["dec"], minlength=len(rg))
+    mean_leaf_s = np.bincount(leaf["dec"], weights=s0_leaf, minlength=len(rg)) / np.maximum(cnt, 1)
+    ms = np.full(retake.n, np.nan)
+    ms[a] = np.where(cnt[b] > 0, mean_leaf_s[b], np.nan)
+    z = retake.z.astype(np.float64)
+    use = np.isfinite(ms) & np.isfinite(p_t) & np.isfinite(z)
+    q = np.quantile(ms[use], [0.25, 0.5, 0.75])
+    k = np.digitize(ms, q)
+    ext["u_by_leaf_spread"] = {"cuts": [float(x) for x in q], "quartiles": [
+        {"n": int((use & (k == j)).sum()), "u": logloss(p_v0[use & (k == j)], z[use & (k == j)])
+         - logloss(p_t[use & (k == j)], z[use & (k == j)])} for j in range(4)]}
+    if e_man is not None:
+        el = read_leaves(_leaf_man_files([e_man], "leaf_files"))
+        e_s1, _ = parts_spread(V1, el["leaf"]["obs"])
+        e_s0, _ = parts_spread(V0, el["leaf"]["obs"])
+        # 4-a-E の局はブロックごとに同じシードを使うので、局の鍵は (ブロック, シード)
+        e_keys = _e_game_keys(e_man, el)
+        ext["R_E"] = ratio_ci(e_s1, e_keys, s1_root, rg)
+        ext["R_E_V0"] = ratio_ci(e_s0, e_keys, s0_root, rg)
+        ext["E_size"] = {"leaves_kept": int(len(el["leaf"]["dec"])), "decisions": int(len(el["root"]["seed"])),
+                         "seconds": float(sum(b["seconds"] for b in e_man["blocks"]))}
+    out["extra"] = ext
+    return out
+
+
+def _e_game_keys(e_man: dict, el: dict) -> np.ndarray:
+    """4-a-E の葉の局の鍵（ブロック番号 × 10^7 ＋ シード）。ブロックごとの葉のファイルの境目から決める。"""
+    keys = []
+    for bl in e_man["blocks"]:
+        lv = read_leaves(bl["leaf_files"])
+        keys.append(bl["i"] * 10_000_000 + lv["root"]["seed"][lv["leaf"]["dec"]])
+    k = np.concatenate(keys) if keys else np.zeros(0, np.int64)
+    if len(k) != len(el["leaf"]["dec"]):
+        raise SystemExit("4-a-E の葉の数がブロックごとの読み直しと合わない")
+    return k
+
+
+def block_opponents(mans: list) -> list:
+    return sorted((int(b["seed0"]), int(b["n"]), b.get("opponent", "teacher")) for m in mans for b in m["blocks"])
+
+
+def anchor_split(val_files: list, val_mans: list, t0_res: dict) -> dict:
+    """4-b（設計書 §3.3・判定なし）と u_A の再計算（§4.4）。較正は門 T-0 の結果（学習の記録で合わせたもの）。"""
+    bm, tg, seed = batch_tagged(val_files, val_mans, "max")
+    rows = block_opponents(val_mans)
+    starts = np.array([r[0] for r in rows])
+    opp = np.array([rows[i][2] for i in np.searchsorted(starts, seed, side="right") - 1])
+    V0 = load_parts("s2v_id")
+    p_v0 = sigmoid(np.mean([net_logit(n, bm.obs) for n in V0], 0))
+    v, z = bm.vsearch.astype(np.float64), bm.z.astype(np.float64)
+    ok = np.isfinite(v)
+    cl, cg = t0_res["forms"]["linear"]["calib"], t0_res["forms"]["logit"]["calib"]
+    p_lin, p_log = np.full(len(v), np.nan), np.full(len(v), np.nan)
+    p_lin[ok], p_log[ok] = apply_calib(v[ok], cl), apply_calib(v[ok], cg)
+    anc = tg["kind"] == "anchor"
+    out = {"n_search": int(ok.sum()), "n_anchor": int((ok & anc).sum()), "by_opponent": {}}
+    for o in sorted(set(opp[ok & anc].tolist())):
+        m = ok & anc & (opp == o)
+        out["by_opponent"][o] = {"n": int(m.sum()), "win": float(z[m].mean()), "p_teacher_lin": float(p_lin[m].mean()),
+                                 "p_V0": float(p_v0[m].mean()),
+                                 "u_lin": logloss(p_v0[m], z[m]) - logloss(p_lin[m], z[m]),
+                                 "u_logit": logloss(p_v0[m], z[m]) - logloss(p_log[m], z[m]),
+                                 "auc_V0": auc(p_v0[m], z[m]), "auc_teacher": auc(p_lin[m], z[m])}
+    cna = t0_res["no_anchor"]["linear"]["calib"]
+    p_mix = p_v0.copy()
+    p_mix[ok & ~anc] = apply_calib(v[ok & ~anc], cna)
+    u_A = logloss(p_v0[ok], z[ok]) - logloss(p_mix[ok], z[ok])
+    out["u_A"] = {"value": u_A, "design": RULE_4A["u_A"], "tol": RULE_4A["u_A_tol"],
+                  "ok": abs(u_A - RULE_4A["u_A"]) < RULE_4A["u_A_tol"],
+                  "verdict": "設計書 §4.4 の算術と合う（錨の腕は置かない）" if abs(u_A - RULE_4A["u_A"]) < RULE_4A["u_A_tol"]
+                  else "止めて報告（+0.0016 から 0.0002 以上ずれた＝錨の決定の数え方が道具と合わない）"}
+    return out
+
+
 def load_parts(stem: str) -> list:
     return [Net.load(os.path.join(MODELS, f"{stem}_s{k}.json")) for k in range(3)]
 
@@ -564,7 +840,43 @@ def main(argv=None):
                     help="名前=記録の接頭辞（カンマ区切りで複数）。付けると較正の効き（calib_effect）だけを出す")
     ap.add_argument("--t0", action="store_true", help="門 T-0（(a) の門・D-148 §4.1）を回す（--work に記録を伸ばす）")
     ap.add_argument("--tb", default=None, help="門 T-b（(b) の門・D-148 §4.2）。取り直した検証の記録の接頭辞（カンマ区切り）")
+    ap.add_argument("--leaf", default=None,
+                    help="項目 4 の 4-a（D-151 §3）。4-a-T の record_mix の manifest の glob（塊ごと）")
+    ap.add_argument("--leaf-e", default=None, help="4-a-E の manifest（diag_s3_leaf.py e・添えるだけ）")
+    ap.add_argument("--leaf-retest", action="store_true", help="境界の追試の回（追試も境界なら点推定で決める）")
+    ap.add_argument("--anchor-split", action="store_true",
+                    help="4-b（錨の層を相手別に・判定なし）と u_A の再計算（D-151 §3.3・§4.4）")
     args = ap.parse_args(argv)
+    if args.leaf or args.anchor_split:
+        if not args.work:
+            raise SystemExit("--work が要る")
+        out = {"version": TOOL_VERSION, "decision": "D-151"}
+        if args.leaf:
+            t_mans = []
+            for p in sorted(glob.glob(args.leaf)):
+                with open(p, encoding="utf-8") as f:
+                    t_mans.append(json.load(f))
+            if not t_mans:
+                raise SystemExit(f"manifest が無い: {args.leaf}")
+            e_man = None
+            if args.leaf_e:
+                with open(args.leaf_e, encoding="utf-8") as f:
+                    e_man = json.load(f)
+            out["leaf"] = leaf_4a(t_mans, extract("val", args.work), e_man, args.leaf_retest)
+        if args.anchor_split:
+            with open(os.path.join(ROOT, "results", "drl", "s3_fix_t0.json"), encoding="utf-8") as f:
+                t0_res = json.load(f)["t0"]
+            out["anchor_split"] = anchor_split(extract("val", args.work), manifests("val"), t0_res)
+        brief = {}
+        if "leaf" in out:
+            brief["leaf"] = {"R_T": out["leaf"]["R_T"], "rules": out["leaf"]["rules"], "checks": out["leaf"]["checks"]}
+        if "anchor_split" in out:
+            brief["u_A"] = out["anchor_split"]["u_A"]
+        print(json.dumps(brief, ensure_ascii=False, indent=1))
+        if args.out:
+            with open(args.out, "w", encoding="utf-8", newline="\n") as f:
+                json.dump(out, f, ensure_ascii=False, indent=1)
+        return out
     if args.t0 or args.tb:
         if not args.work:
             raise SystemExit("--work が要る")

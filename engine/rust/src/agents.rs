@@ -13,6 +13,45 @@ use crate::state::{GameState, Phase, DRAW};
 use crate::worlds;
 use std::sync::Arc;
 
+/// 段階3 項目 4（D-151・4-a）: 探索が V を呼んだ局面（葉）の書き出し。
+///
+/// `series_record(..., leaf_dump=...)` が記録する決定の `act` の前後だけ `begin` / `take` で開く。
+/// 開いていないスレッドでは `push` は何もしない（既定の打ち方・記録はバイト単位で同じ）。
+/// 乱数にも探索の状態にも触れないので、開いても打ち方は変わらない（検査 L-2）。
+pub mod leaf_log {
+    use crate::state::GameState;
+    use std::cell::RefCell;
+
+    /// V を 1 回呼んだ局面。`obs` は V に入れた入力そのもの（符号化 v6・信念の要約つき）。
+    pub struct Leaf {
+        pub turn: i64,
+        pub phase: u8,
+        pub pi: u8,
+        pub value: f32,
+        pub obs: Vec<i8>,
+    }
+
+    thread_local! {
+        static SINK: RefCell<Option<Vec<Leaf>>> = const { RefCell::new(None) };
+    }
+
+    pub fn begin() {
+        SINK.with(|c| *c.borrow_mut() = Some(Vec::new()));
+    }
+
+    pub fn take() -> Vec<Leaf> {
+        SINK.with(|c| c.borrow_mut().take()).unwrap_or_default()
+    }
+
+    pub fn push(s: &GameState, pi: usize, value: f32, obs: Vec<i8>) {
+        SINK.with(|c| {
+            if let Some(v) = c.borrow_mut().as_mut() {
+                v.push(Leaf { turn: s.turn_no, phase: s.phase as u8, pi: pi as u8, value, obs });
+            }
+        });
+    }
+}
+
 // ---------------------------------------------------------------------------
 // heuristic.py
 // ---------------------------------------------------------------------------
@@ -822,8 +861,11 @@ impl Greedy {
             }
             return if o as usize == pi { 1.0 } else { 0.0 };
         }
-        let x: Vec<f32> = encode::encode_state_with(db, s, pi as u8, opp_deck).iter().map(|&v| v as f32).collect();
-        net.value(&x) as f64
+        let xi = encode::encode_state_with(db, s, pi as u8, opp_deck);
+        let x: Vec<f32> = xi.iter().map(|&v| v as f32).collect();
+        let v = net.value(&x);
+        leaf_log::push(s, pi, v, xi);
+        v as f64
     }
 
     // ---- 段 C-2（II-8・D-077）: 決定化の重み -----------------------------

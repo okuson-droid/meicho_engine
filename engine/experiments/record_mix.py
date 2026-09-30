@@ -254,7 +254,8 @@ def check_schedule(sch: dict) -> None:
         used.append((lo, hi))
 
 
-def run_block(i: int, b: dict, sch: dict, out: str, workers: int, max_turns: int, deck_cache: dict) -> dict:
+def run_block(i: int, b: dict, sch: dict, out: str, workers: int, max_turns: int, deck_cache: dict,
+              leaf_cap: int = 0) -> dict:
     for name in (b["deck_a"], b["deck_b"]):
         if name not in deck_cache:
             deck_cache[name] = load_deck_file(name)
@@ -271,9 +272,12 @@ def run_block(i: int, b: dict, sch: dict, out: str, workers: int, max_turns: int
     spec_b = opponent_spec(opp, teacher, da["action_deck"], b["deck_a"], b["deck_b"])
     seed0, n = int(b["seed0"]), int(b["n"])
     t = time.time()
+    # 葉の書き出し（段階3 項目 4・D-151）: 記録する決定ごとに探索が V を呼んだ局面を最大 leaf_cap 個。
+    # 打ち方は変わらない（検査 L-2）。0 なら従来と同じ呼び方
+    leaf = {"leaf_dump": f"{out}.b{i}.leaf", "leaf_cap": leaf_cap} if leaf_cap else {}
     res, files = rs.series_record(cfg.chara_decks, cfg.action_decks, spec_a, spec_b, seed0, n,
                                   f"{out}.b{i}", workers, max_turns, rec in ("both", "a"), rec in ("both", "b"),
-                                  opp_from_seat=True)
+                                  opp_from_seat=True, **leaf)
     sec = time.time() - t
     dec = count_decisions(files)
     # 席 0 = deck_a。偶数シードは A が席 0。
@@ -284,6 +288,7 @@ def run_block(i: int, b: dict, sch: dict, out: str, workers: int, max_turns: int
         "b_as_deck_a": dec[(1, 0)], "b_as_deck_b": dec[(0, 1)],
     }
     decided = [r[0] for r in res if r[0] is not None]
+    extra = {"leaf_files": [f"{out}.b{i}.leaf.{w}" for w in range(max(1, workers))]} if leaf_cap else {}
     return {
         "i": i, "deck_a": b["deck_a"], "deck_b": b["deck_b"], "mirror": b["deck_a"] == b["deck_b"],
         "seed0": seed0, "n": n, "p_planned": b.get("p_planned"), "record": rec, "opponent": opp,
@@ -293,7 +298,7 @@ def run_block(i: int, b: dict, sch: dict, out: str, workers: int, max_turns: int
         "a_won": (sum(decided) / len(decided) if decided else None), "decided": len(decided),
         "mean_turns": sum(r[1] for r in res) / len(res), "seconds": sec,
         "nonargmax": nonargmax_stats(files),
-        "format": record_format(files), "files": files,
+        "format": record_format(files), "files": files, **extra,
     }
 
 
@@ -335,6 +340,8 @@ def main(argv=None):
     ap.add_argument("--out", required=True)
     ap.add_argument("--workers", type=int, default=2)
     ap.add_argument("--max-turns", type=int, default=200)
+    ap.add_argument("--leaf-cap", type=int, default=0,
+                    help="葉の書き出し（D-151）: 記録する決定ごとに V を呼んだ局面を最大この数だけ <out>.b<i>.leaf.<w> に。0 = 書かない")
     args = ap.parse_args(argv)
     with open(args.schedule, "rb") as f:
         sch_raw = f.read()
@@ -343,9 +350,13 @@ def main(argv=None):
     ensure_cards()
     if "opp_from_seat" not in rs.features():
         raise SystemExit("入っている meicho_rs が古い（opp_from_seat が無い）。再ビルドすること（D-123）")
+    if args.leaf_cap and "leaf_dump" not in rs.features():
+        raise SystemExit("入っている meicho_rs が古い（leaf_dump が無い）。再ビルドすること（D-151）")
+    if args.leaf_cap < 0:
+        raise SystemExit("--leaf-cap は 0 以上")
     deck_cache: dict = {}
     t = time.time()
-    blocks = [run_block(i, b, sch, args.out, args.workers, args.max_turns, deck_cache)
+    blocks = [run_block(i, b, sch, args.out, args.workers, args.max_turns, deck_cache, args.leaf_cap)
               for i, b in enumerate(sch["blocks"])]
     files = [p for b in blocks for p in b["files"]]
     manifest = {
@@ -358,6 +369,7 @@ def main(argv=None):
         **summarize(blocks, sch, deck_cache),
         "nonargmax": _sum_nonargmax(b["nonargmax"] for b in blocks),
         "blocks": blocks, "files": files, "seconds": time.time() - t,
+        **({"leaf_cap": args.leaf_cap} if args.leaf_cap else {}),
         "regenerate": "python3 experiments/record_mix.py "
                       + " ".join(shlex.quote(a) for a in (argv if argv is not None else sys.argv[1:])),
     }
