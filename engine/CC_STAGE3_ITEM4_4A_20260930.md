@@ -24,7 +24,7 @@ L-1 既定では manifest に葉の欄が無い／L-2 書き出しあり・な�
 
 ## 2. 4-a-T（主の判定）
 
-- 課題: `results/drl/s3_item4_T_schedule.json`（反復 1 の検証の組み合わせ表 `s3_it1_val_schedule.json` から m mod 5 = 0 の 106 局・53 ブロック。同士 48・ミラー 40・錨 18 局）を `plan_chunks.py`（予算 210 秒）で 7 塊に割り、`record_mix.py --workers 4 --leaf-cap 8`。教師は元と同じ（`netfree_v`・葉 `s2v_id_ens3`・sha `2d4504e2125bc244`・τ = 0.006）。7 塊・計 881 秒（1 塊 65〜201 秒）
+- 課題: `results/drl/s3_item4_T_schedule.json`（反復 1 の検証の組み合わせ表 `s3_it1_val_schedule.json` から m mod 5 = 0 の 106 局・53 ブロック。同士 48・ミラー 40・錨 18 局）を `plan_chunks.py`（予算 210 秒）で 7 塊に割り、`record_mix.py --workers 4 --leaf-cap 8`。教師は元と同じ（`netfree_v`・葉 `s2v_id_ens3`・sha `2d4504e2125bc244`・τ = 0.006）。7 塊・manifest の合計 876.6 秒（1 塊 約 65〜200 秒。起動を含めた壁時計では計 881 秒）
 - **配線の確認（止める規則）**: 打ち直した記録は元の検証の記録の同じ 106 局と全件一致（13,084 決定・seed・step・turn・pi・phase・n_acts・chosen・z・obs・行動・点数のずれ 0）。書き出した根の入力は記録の観測と全件一致、信念の要約は全決定で非 0、葉の値の再現差 2.6e-7 → 止めない
 - **主の比 R_T（V_0 の部品 3 本のロジットの母標準偏差の中央値・葉 ÷ 根）= 0.965 [0.941, 0.991]**（葉 92,404・根 13,084・106 局を単位に 10,000 回）。中央値は葉 0.168・根 0.174
 - **規則: 上端 0.991 < 1.5 → 「説明できない」→ 腕は回さず項目 5 へ（k = 0）**。追試は要らない
@@ -59,6 +59,14 @@ L-1 既定では manifest に葉の欄が無い／L-2 書き出しあり・な�
 - 設計書 §3.4・判断 6 の推しどおり、**項目 5（容量）へ自動で進む**。5-a の学びの引数は §9 に書いていないので、回す前に D-152 §2 で固定した（S5 の引数から `--init` を外し `--hidden 512`／`256`・乱数 0・1・2）
 - 出力: `results/drl/s3_item4_4a.json`（4-a・4-b の集計）・`results/drl/s3_item4_rec/`（4-a-T の塊の manifest 7 つと 4-a-E の manifest）・`results/drl/s3_item4_T_schedule.json`・`s3_item4_T_chunks.json`
 
+### 5.1 実行したコマンド（`<W>` は作業領域 `scratchpad/work4a`・`<R>` は記録を伸ばした置き場）
+
+- 4-a-T の表: `python3 experiments/diag_s3_leaf.py subset --schedule results/drl/s3_it1_val_schedule.json --keep-pairs 5:0 --out results/drl/s3_item4_T_schedule.json`
+- 塊: `python3 experiments/plan_chunks.py plan --schedule results/drl/s3_item4_T_schedule.json --out results/drl/s3_item4_T_chunks.json --budget-sec 210`
+- 各塊 k = 0..6: `python3 experiments/plan_chunks.py emit --schedule results/drl/s3_item4_T_schedule.json --chunks results/drl/s3_item4_T_chunks.json --k <k> --out <W>/T.c00<k>.schedule.json` → `python3 experiments/record_mix.py --schedule <W>/T.c00<k>.schedule.json --out <W>/T.c00<k> --workers 4 --leaf-cap 8`（manifest の `regenerate` にも入っている）
+- 4-a-E（予算で 2 回に分けて同じコマンドで再開）: `python3 experiments/diag_s3_leaf.py e --value-net results/models/s3v1_id_ens3.json --seed0 860000 --n 7 --out <W>/E --workers 4 --budget-sec 300`
+- 集計: `python3 experiments/diag_s3_desk.py --work <R> --leaf "<W>/T.c*.manifest.json" --leaf-e <W>/E.manifest.json --anchor-split --out results/drl/s3_item4_4a.json`
+
 ## 6. 採点役
 
 道具の区切り: **PASS**。進む前に片づけるよう言われた 3 点は次のとおり扱った。
@@ -66,6 +74,8 @@ L-1 既定では manifest に葉の欄が無い／L-2 書き出しあり・な�
 1. 葉の無い局があると、再標本化が黙って別々の引き方に切り替わる → 直した（局の集合を明示して渡す・検査を 1 行足した）
 2. 報告書・全検査 → 本書と §7
 3. 設計書と違う実装 2 つ → §1 に書いた
+
+4-a・4-b の区切り: **PASS**。数字の照合・規則の当てはめ・5-a の引数の固定（§9 の規則は変えず、書いていない部分を S5 と同じ値で埋めた）・帯に問題なし。進む前に片づけるよう言われた点は、集計と 4-a-E のコマンドを書くこと → §5.1 に書いた（塊の秒数の書き方も manifest の値に直した）。
 
 ## 7. 全検査
 
