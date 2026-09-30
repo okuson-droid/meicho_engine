@@ -1,0 +1,85 @@
+# 段階3 項目 4（探索の分布）——道具と 4-a・4-b（2026-09-30・クラウドの Claude Code）
+
+D-151（設計書 `GENERALIST_STAGE3_ITEM4_DESIGN_20260930.md`・マスター裁定「全て推しを採用」）の便。機械 `cc-cloud-4`。打ち方・符号化・champion は変えていない（Rust に足したのは既定オフの書き出し口だけ・§1）。結論は **4-a は「説明できない」（R_T = 0.965 [0.941, 0.991]）→ 腕 δ は回さず（k = 0）項目 5 へ**（D-152）。
+
+## 1. 道具（コードはこのブランチ・PR で `main` へ）
+
+- **Rust の葉の書き出し口**（`rust/src/agents.rs` の `leaf_log`・`rust/src/lib.rs` の `series_record(..., leaf_dump=None, leaf_cap=8)`）: V を呼ぶ唯一の口 `Greedy::net_value` で、スレッドごとの受け皿が開いているときだけ入力（符号化 v6）と値を積む。受け皿は記録する決定の `act` の前後だけ開く。1 決定あたり、`leaf_key`（splitmix64・局のシード・手数・席・呼んだ順）の小さい順に最大 8 個を `MCLF` 版 1 で書く。対局の乱数は使わない。根の入力は記録の観測と同じ作り方（`encode_state_with(..., opp_pool())`）。wheel の札に `leaf_dump` を足した
+- `experiments/record_mix.py --leaf-cap`（既定 0 = 従来どおり・manifest にも欄を足さない）
+- `experiments/diag_s3_leaf.py`: `subset`（局の対 (2m, 2m+1) で m mod M == R の局を 2 局ずつ抜いた組み合わせ表）・`e`（4-a-E の実行・kind=diag の帯でだけ回る）
+- `experiments/diag_s3_desk.py`: `read_leaves`・`ratio_ci`（局を単位の再標本化。4-a-T では局の集合を明示して葉と根を一緒に引く）・`verdict_4a`（下端 ≥ 1.5／上端 < 1.5／境界は追試・追試も境界なら点推定）・`leaf_4a`（全件照合・根の照合・葉の値の再現・R_T と添えるもの）・`anchor_split`（4-b と u_A）。CLI `--leaf`・`--leaf-e`・`--leaf-retest`・`--anchor-split`
+- 帯: 860000..860999（kind=diag）を登録（`next_free` 861000）。857000 帯の説明に 4-a-T の打ち直しを追記した（回す前）
+
+設計書と違う実装が 2 つある（採点役は要件を損なわないとした）: 葉の「根からの深さ」はターン差（と呼んだ順）で代用した（判定にも添えるものにも使っていない）／葉の中央値は残した葉を平らにした中央値（設計書 §7.2 が書いている性質そのもの）。
+
+### 1.1 検査（`tests/test_stage3_item4.py`・16 件）
+
+L-1 既定では manifest に葉の欄が無い／L-2 書き出しあり・なしで記録がバイト単位で同じ・digest（毎手の手）と勝敗が `NETFREE`＋V と champion の両方で一致／L-3 champion の指紋／L-4 根の入力が記録の観測と一致・信念の要約が非 0／L-5 葉の入力を V に通し直すと 1e-5 以内／L-6 上限 4 の葉は上限 8 の葉の部分集合／L-7 重みつき中央値・母標準偏差・局の再標本化・判定の境目・書式の読み／L-8 `subset` が M 通りで重ならず全部を覆う／L-9 錨の相手別の決定数の和 6,087・u_A。`python3 -m pytest tests/test_stage3_item4.py -q -rfs --run-slow` で 16 件通過（2 分 50 秒）。検査の対局は 860900.. の帯。
+
+### 1.2 手で確かめたこと
+
+- **旧 wheel と新 wheel で記録がバイト単位で同じ**: 直す前の wheel（`rust/target/wheels` にあった 2026-09-27 の版）を入れ直し、`record_mix.py`（教師 `netfree_v`・葉 `s2v_id_ens3`・SD001 ミラー 2 局・シード 860900・workers 2）の記録 2 ファイルを新 wheel の記録と `cmp` で比べて一致。新 wheel では書き出し 0・8・4 の 3 通りも一致
+- **champion の指紋**: `scripts/check_champion_fingerprint.py` → 期待 `f4b80b25c35cfa77`・実測 `f4b80b25c35cfa77`・一致
+- 葉の値の再現: 上の 2 局で最大差 2.3e-7（束ねた V・部品のロジットの平均の両方）。本番の 4-a-T では 2.6e-7
+
+## 2. 4-a-T（主の判定）
+
+- 課題: `results/drl/s3_item4_T_schedule.json`（反復 1 の検証の組み合わせ表 `s3_it1_val_schedule.json` から m mod 5 = 0 の 106 局・53 ブロック。同士 48・ミラー 40・錨 18 局）を `plan_chunks.py`（予算 210 秒）で 7 塊に割り、`record_mix.py --workers 4 --leaf-cap 8`。教師は元と同じ（`netfree_v`・葉 `s2v_id_ens3`・sha `2d4504e2125bc244`・τ = 0.006）。7 塊・manifest の合計 876.6 秒（1 塊 約 65〜200 秒。起動を含めた壁時計では計 881 秒）
+- **配線の確認（止める規則）**: 打ち直した記録は元の検証の記録の同じ 106 局と全件一致（13,084 決定・seed・step・turn・pi・phase・n_acts・chosen・z・obs・行動・点数のずれ 0）。書き出した根の入力は記録の観測と全件一致、信念の要約は全決定で非 0、葉の値の再現差 2.6e-7 → 止めない
+- **主の比 R_T（V_0 の部品 3 本のロジットの母標準偏差の中央値・葉 ÷ 根）= 0.965 [0.941, 0.991]**（葉 92,404・根 13,084・106 局を単位に 10,000 回）。中央値は葉 0.168・根 0.174
+- **規則: 上端 0.991 < 1.5 → 「説明できない」→ 腕は回さず項目 5 へ（k = 0）**。追試は要らない
+
+添える（判定に使わない）:
+
+- R_T の V_1 版 0.910 [0.887, 0.931]
+- 組み合わせの種類別の R_T: 錨 0.966 [0.924, 1.027]・同士 0.959 [0.931, 0.992]・ミラー 0.968 [0.925, 0.999]（区間は 2,000 回）
+- フェイズ別: 葉はほぼすべて ACTION のフェイズ（92,395 / 92,404）で、根の ACTION（4,170 決定）と比べた比は 1.048。根は ACTION のほかに選択 5,370・対抗 2,204・ラッシュ 904 などを含む。フェイズをそろえても 1.5 には遠い
+- 書き出しの大きさ: 1 決定あたり V を呼ぶ回数は平均 71.5・中央 16・90% 点 140、V を 1 回も呼ばない決定 6.3%。残した葉は平均 7.06 個。葉は根より平均 1.13 ターン先。記録の本体と葉は作業領域だけに置いた（葉 約 220 MB）
+- 葉のばらつきと教師の誤差: 決定ごとの葉の s の平均を 4 分位にした 3-a の u（linear・S5 の較正）は −0.0083・+0.0009・−0.0005・+0.0076（各 約 3,065 決定）。葉が不確かな決定ほど教師が悪い、という形にはなっていない（最上位の分位はむしろ教師が良い）
+- 所要: 1 局 8.3 秒（書き出しあり・workers 4）。書き出しの上乗せは、煙試験の 2 局で書き出し 0／8／4 がどれも 12.1〜12.2 秒で、測れる差は無かった
+
+## 3. 4-a-E（固定文どおりの比・判定に使わない）
+
+- 調整デッキ 16 ブロック × 7 局（860000..860006・全ブロックで同じシード）。候補 `NETFREE`＋葉 V_1（`s3v1_id_ens3`・sha `55383ec461a8b056`）対 素 planner・τ = 0・候補の席だけ記録。474 秒・6,904 決定・葉 47,144
+- **R_E（4-a-E の葉・V_1 の部品 ÷ 4-a-T の根・V_1 の部品）= 1.137 [1.080, 1.196]**・V_0 版 1.105 [1.045, 1.172]（葉と根は別の局の集合なので別々に再標本化）。見たことのない調整デッキの葉では根より 1 割ほど不確かだが、1.5 には届かない
+
+## 4. 4-b 錨の分解（判定なし）
+
+検証の記録の錨の層（探索値のある 6,087 決定）を相手別に。較正は門 T-0 のもの（学習の記録で合わせた linear・logit）。
+
+- H（2,058 決定）: 教師の席の勝率 0.945・教師 p の平均 0.659・V_0 0.738・u linear −0.098・logit −0.131・AUC V_0 0.771／教師 0.737
+- 貪欲（2,142）: 0.823・0.638・0.712・−0.060・−0.076・0.732／0.728
+- 素 planner（1,887）: 0.635・0.587・0.634・**+0.006**・+0.025・0.604／0.636
+- 錨の局で教師が悪いのは H と貪欲の局に集まり、素 planner の局では教師がわずかに良い。教師の探索は H・貪欲に対する大きな勝ちを映していない。機構は確かめていない（設計書 §3.3）
+- **u_A の再計算: +0.00155**（錨でない決定に錨を除いて合わせた linear の較正、錨の決定に V_0）。設計書の +0.0016 と許容 0.0002 の内で一致 → 錨の腕は置かない（設計どおり）
+
+## 5. k と次
+
+- **k = 0**（腕は無い）。δ の口（`record_mix.py` の δ・教師に δ を重ねる Rust の口）は作らなかった（4-a が「説明できる」ときだけ要るもので、設計書 §6 の順）。δ 局の帯の説明にも追記していない
+- 設計書 §3.4・判断 6 の推しどおり、**項目 5（容量）へ自動で進む**。5-a の学びの引数は §9 に書いていないので、回す前に D-152 §2 で固定した（S5 の引数から `--init` を外し `--hidden 512`／`256`・乱数 0・1・2）
+- 出力: `results/drl/s3_item4_4a.json`（4-a・4-b の集計）・`results/drl/s3_item4_rec/`（4-a-T の塊の manifest 7 つと 4-a-E の manifest）・`results/drl/s3_item4_T_schedule.json`・`s3_item4_T_chunks.json`
+
+### 5.1 実行したコマンド（`<W>` は作業領域 `scratchpad/work4a`・`<R>` は記録を伸ばした置き場）
+
+- 4-a-T の表: `python3 experiments/diag_s3_leaf.py subset --schedule results/drl/s3_it1_val_schedule.json --keep-pairs 5:0 --out results/drl/s3_item4_T_schedule.json`
+- 塊: `python3 experiments/plan_chunks.py plan --schedule results/drl/s3_item4_T_schedule.json --out results/drl/s3_item4_T_chunks.json --budget-sec 210`
+- 各塊 k = 0..6: `python3 experiments/plan_chunks.py emit --schedule results/drl/s3_item4_T_schedule.json --chunks results/drl/s3_item4_T_chunks.json --k <k> --out <W>/T.c00<k>.schedule.json` → `python3 experiments/record_mix.py --schedule <W>/T.c00<k>.schedule.json --out <W>/T.c00<k> --workers 4 --leaf-cap 8`（manifest の `regenerate` にも入っている）
+- 4-a-E（予算で 2 回に分けて同じコマンドで再開）: `python3 experiments/diag_s3_leaf.py e --value-net results/models/s3v1_id_ens3.json --seed0 860000 --n 7 --out <W>/E --workers 4 --budget-sec 300`
+- 集計: `python3 experiments/diag_s3_desk.py --work <R> --leaf "<W>/T.c*.manifest.json" --leaf-e <W>/E.manifest.json --anchor-split --out results/drl/s3_item4_4a.json`
+
+## 6. 採点役
+
+道具の区切り: **PASS**。進む前に片づけるよう言われた 3 点は次のとおり扱った。
+
+1. 葉の無い局があると、再標本化が黙って別々の引き方に切り替わる → 直した（局の集合を明示して渡す・検査を 1 行足した）
+2. 報告書・全検査 → 本書と §7
+3. 設計書と違う実装 2 つ → §1 に書いた
+
+4-a・4-b の区切り: **PASS**。数字の照合・規則の当てはめ・5-a の引数の固定（§9 の規則は変えず、書いていない部分を S5 と同じ値で埋めた）・帯に問題なし。進む前に片づけるよう言われた点は、集計と 4-a-E のコマンドを書くこと → §5.1 に書いた（塊の秒数の書き方も manifest の値に直した）。
+
+## 7. 全検査
+
+- `python3 -m pytest tests/<ファイル> -q -rfs --run-slow`（容器が遅くなったので**ファイルごとに別のプロセス**で・`CC_STAGE3_FIX_T0_20260930.md` §8 の作法）: **1,385 通過・9 失敗・7 skip**。前回（D-150 の便）の 1,369 通過に今回の 16 件を足した数
+- 失敗 9 件は 1 件ずつ読んだ。前回と同じ顔ぶれ: `cards/` が git に無いため 8 件（`test_bp01.py` 4 件・`test_card_images.py` 4 件）と、前からある `test_d065.py::test_distil_makes_the_student_agree_with_the_teacher`
+- skip 7 件も同じ（`cards/cards_structured.csv` が無い 5 件・段階2 の記録が無い 1 件・移行したネットが無い 1 件）
+- **この便の変更による失敗は無い**。検査の組（`tests/test_sets.json`）は作り直していない（クラウドの結果から作ると資材の違いで組がずれる・D-145 の報告 §5 と同じ理由）

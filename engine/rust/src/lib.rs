@@ -1175,7 +1175,7 @@ fn run_series(d: &Arc<CardDb>, cd: &[Vec<u16>; 2], ad: &[Vec<u16>; 2], sa: &Agen
 /// fresh は「選んだ手を別の決定化で取り直した値」（D-065 A-3 (i)・`reeval_samples=0` なら NaN）。
 /// 版 2（fresh 無し）の記録も読み側（`meicho/drl_data.py`）はそのまま読める。
 fn run_one_record(d: &CardDb, cd: &[Vec<u16>; 2], ad: &[Vec<u16>; 2], seed: i64, ags: &mut [AnyAgent; 2],
-                  max_turns: i64, buf: &mut Vec<u8>, record_seats: [bool; 2])
+                  max_turns: i64, buf: &mut Vec<u8>, record_seats: [bool; 2], mut leaf: Option<(&mut Vec<u8>, usize)>)
                   -> (Option<i8>, i64, i64, i64, bool, bool, i64, u64) {
     let mut s = engine::initial_state(d, cd, ad, seed);
     let mut steps = 0i64;
@@ -1195,7 +1195,17 @@ fn run_one_record(d: &CardDb, cd: &[Vec<u16>; 2], ad: &[Vec<u16>; 2], seed: i64,
         let mut acts: Vec<(u8, Action)> = Vec::with_capacity(need.len());
         for &pi in &need {
             let legal = engine::legal_actions(d, &s, pi);
+            let dump = leaf.is_some() && record_seats[pi as usize] && legal.len() > 1;
+            if dump {
+                agents::leaf_log::begin();
+            }
             let a = ags[pi as usize].act(d, &s, pi);
+            if dump {
+                let leaves = agents::leaf_log::take();
+                let (lb, cap) = leaf.as_mut().unwrap();
+                let root = encode::encode_state_with(d, &s, pi, ags[pi as usize].opp_pool());
+                write_leaves(lb, seed, steps, pi, &s, &root, leaves, *cap);
+            }
             if record_seats[pi as usize] && legal.len() > 1 {
                 let scores = ags[pi as usize].last_scores();
                 let chosen = legal.iter().position(|x| *x == a).unwrap_or(255) as u8;
@@ -1245,6 +1255,47 @@ fn run_one_record(d: &CardDb, cd: &[Vec<u16>; 2], ad: &[Vec<u16>; 2], seed: i64,
     (if draw { None } else { o }, s.turn_no, s.players[0].life, s.players[1].life, draw, false, steps, digest)
 }
 
+/// 葉の抜き方の鍵（splitmix64）。対局の乱数を使わない（`leaf_cap` を変えても打ち方が変わらない・検査 L-6）。
+fn leaf_key(seed: i64, step: i64, pi: u8, idx: u32) -> u64 {
+    let mut z = (seed as u64).wrapping_mul(0x9E37_79B9_7F4A_7C15)
+        ^ (step as u64).wrapping_mul(0xBF58_476D_1CE4_E5B9)
+        ^ ((pi as u64) << 40) ^ (idx as u64);
+    z = (z ^ (z >> 30)).wrapping_mul(0xBF58_476D_1CE4_E5B9);
+    z = (z ^ (z >> 27)).wrapping_mul(0x94D0_49BB_1331_11EB);
+    z ^ (z >> 31)
+}
+
+/// 1 決定ぶんの葉の書き出し（リトルエンディアン・`MCLF` 版 1）:
+///   seed i64 / step u32 / turn u16 / pi u8 / phase u8 / n_calls u32 / n_kept u16 /
+///   root_obs i8[obs_dim]（記録の obs と同じ作り方）/
+///   n_kept 個の { idx u32（V を呼んだ順）/ turn u16 / phase u8 / pi u8 / value f32 / obs i8[obs_dim] }（idx の昇順）
+/// 残す葉は `leaf_key` の小さい順に最大 `cap` 個。
+fn write_leaves(buf: &mut Vec<u8>, seed: i64, step: i64, pi: u8, s: &GameState, root: &[i8],
+                leaves: Vec<agents::leaf_log::Leaf>, cap: usize) {
+    let n_calls = leaves.len();
+    let mut ix: Vec<usize> = (0..n_calls).collect();
+    ix.sort_by_key(|&i| (leaf_key(seed, step, pi, i as u32), i));
+    ix.truncate(cap);
+    ix.sort_unstable();
+    buf.extend_from_slice(&seed.to_le_bytes());
+    buf.extend_from_slice(&(step as u32).to_le_bytes());
+    buf.extend_from_slice(&(s.turn_no.clamp(0, 65535) as u16).to_le_bytes());
+    buf.push(pi);
+    buf.push(encode_phase(s.phase));
+    buf.extend_from_slice(&(n_calls as u32).to_le_bytes());
+    buf.extend_from_slice(&(ix.len() as u16).to_le_bytes());
+    buf.extend(root.iter().map(|&v| v as u8));
+    for i in ix {
+        let l = &leaves[i];
+        buf.extend_from_slice(&(i as u32).to_le_bytes());
+        buf.extend_from_slice(&(l.turn.clamp(0, 65535) as u16).to_le_bytes());
+        buf.push(l.phase);
+        buf.push(l.pi);
+        buf.extend_from_slice(&l.value.to_le_bytes());
+        buf.extend(l.obs.iter().map(|&v| v as u8));
+    }
+}
+
 fn encode_phase(p: state::Phase) -> u8 {
     match p {
         state::Phase::SetupChara => 0,
@@ -1262,7 +1313,8 @@ fn encode_phase(p: state::Phase) -> u8 {
 /// 戻り値は各シードの (a_won, turns, steps, fired_a, digest) と、書いたファイルの一覧。
 fn run_series_record(d: &Arc<CardDb>, cd: &[Vec<u16>; 2], ad: &[Vec<u16>; 2], sa: &AgentSpec, sb: &AgentSpec,
                      seed0: i64, n: i64, workers: usize, max_turns: i64, out_path: &str,
-                     record_a: bool, record_b: bool, opp_from_seat: bool) -> std::io::Result<(Vec<(Option<bool>, i64, i64, u64, u64)>, Vec<String>)> {
+                     record_a: bool, record_b: bool, opp_from_seat: bool, leaf: Option<(&str, usize)>)
+                     -> std::io::Result<(Vec<(Option<bool>, i64, i64, u64, u64)>, Vec<String>)> {
     use std::io::Write;
     let seeds: Vec<i64> = (seed0..seed0 + n).collect();
     let workers = workers.max(1);
@@ -1273,11 +1325,11 @@ fn run_series_record(d: &Arc<CardDb>, cd: &[Vec<u16>; 2], ad: &[Vec<u16>; 2], sa
         f.write_all(&(encode::ACT_CODE_LEN as u32).to_le_bytes())?;
         Ok(())
     };
-    let job = |seed: i64, buf: &mut Vec<u8>| -> (Option<bool>, i64, i64, u64, u64) {
+    let job = |seed: i64, buf: &mut Vec<u8>, lb: Option<(&mut Vec<u8>, usize)>| -> (Option<bool>, i64, i64, u64, u64) {
         let flip = seed % 2 == 1;
         let mut ags: [AnyAgent; 2] = seat_agents(ad, sa, sb, seed, flip, opp_from_seat);
         let rec = if flip { [record_b, record_a] } else { [record_a, record_b] };
-        let (winner, turns, _l0, _l1, draw, aborted, steps, digest) = run_one_record(d, cd, ad, seed, &mut ags, max_turns, buf, rec);
+        let (winner, turns, _l0, _l1, draw, aborted, steps, digest) = run_one_record(d, cd, ad, seed, &mut ags, max_turns, buf, rec, lb);
         let a_seat: usize = if flip { 1 } else { 0 };
         let fired = ags[a_seat].fired();
         if aborted || draw {
@@ -1287,19 +1339,42 @@ fn run_series_record(d: &Arc<CardDb>, cd: &[Vec<u16>; 2], ad: &[Vec<u16>; 2], sa
     };
     let chunks: Vec<Vec<i64>> = (0..workers).map(|w| seeds.iter().copied().filter(|s| ((s - seed0) as usize) % workers == w).collect()).collect();
     let paths: Vec<String> = (0..workers).map(|w| format!("{out_path}.{w}")).collect();
+    let leaf_header = |f: &mut std::fs::File, cap: usize| -> std::io::Result<()> {
+        f.write_all(b"MCLF")?;
+        f.write_all(&1u32.to_le_bytes())?;      // 葉の書き出し 版 1（D-151）
+        f.write_all(&(encode::obs_dim(d) as u32).to_le_bytes())?;
+        f.write_all(&(cap as u32).to_le_bytes())?;
+        Ok(())
+    };
     let results: Vec<std::io::Result<Vec<(i64, (Option<bool>, i64, i64, u64, u64))>>> = std::thread::scope(|sc| {
-        let handles: Vec<_> = chunks.iter().zip(paths.iter()).map(|(ch, path)| sc.spawn(move || {
+        let handles: Vec<_> = chunks.iter().zip(paths.iter()).enumerate().map(|(w, (ch, path))| sc.spawn(move || {
             let mut f = std::fs::File::create(path)?;
             header(&mut f)?;
+            let mut lf = match leaf {
+                Some((lp, cap)) => {
+                    let mut g = std::fs::File::create(format!("{lp}.{w}"))?;
+                    leaf_header(&mut g, cap)?;
+                    Some((g, cap))
+                }
+                None => None,
+            };
             let mut out = Vec::with_capacity(ch.len());
             let mut buf: Vec<u8> = Vec::with_capacity(1 << 20);
+            let mut lbuf: Vec<u8> = Vec::new();
             for &s in ch {
                 buf.clear();
-                let r = job(s, &mut buf);
+                lbuf.clear();
+                let r = job(s, &mut buf, lf.as_ref().map(|(_, cap)| (&mut lbuf, *cap)));
                 f.write_all(&buf)?;
+                if let Some((g, _)) = lf.as_mut() {
+                    g.write_all(&lbuf)?;
+                }
                 out.push((s, r));
             }
             f.flush()?;
+            if let Some((g, _)) = lf.as_mut() {
+                g.flush()?;
+            }
             Ok(out)
         })).collect();
         handles.into_iter().map(|h| h.join().unwrap()).collect()
@@ -1358,17 +1433,25 @@ fn series_digest(py: Python<'_>, chara_decks: Vec<Vec<String>>, action_decks: Ve
 
 /// 記録つき自己対戦（DRL 段階 0）。`series_digest` と同じ戻り値に加えて、書いたファイルの一覧を返す。
 /// 各決定（合法手が 2 つ以上のもの）を `out_path.<worker>` にバイナリで書く（形式は `run_one_record`）。
+///
+/// `leaf_dump`（段階3 項目 4・D-151）を渡すと、記録する決定ごとに探索が V を呼んだ局面から最大 `leaf_cap` 個を
+/// `leaf_dump.<worker>` に書く（形式は `write_leaves`）。渡さなければ従来とバイト単位で同じ。
 #[pyfunction]
-#[pyo3(signature = (chara_decks, action_decks, spec_a, spec_b, seed0, n, out_path, workers=1, max_turns=200, record_a=true, record_b=true, opp_from_seat=false))]
+#[pyo3(signature = (chara_decks, action_decks, spec_a, spec_b, seed0, n, out_path, workers=1, max_turns=200, record_a=true, record_b=true, opp_from_seat=false, leaf_dump=None, leaf_cap=8))]
 fn series_record(py: Python<'_>, chara_decks: Vec<Vec<String>>, action_decks: Vec<Vec<String>>,
                  spec_a: &Bound<'_, PyDict>, spec_b: &Bound<'_, PyDict>, seed0: i64, n: i64, out_path: String,
-                 workers: usize, max_turns: i64, record_a: bool, record_b: bool, opp_from_seat: bool)
+                 workers: usize, max_turns: i64, record_a: bool, record_b: bool, opp_from_seat: bool,
+                 leaf_dump: Option<String>, leaf_cap: usize)
                  -> PyResult<(Vec<(Option<bool>, i64, i64, u64, u64)>, Vec<String>)> {
     let d = db()?;
     let sa = spec_from_py(&d, spec_a)?;
     let sb = spec_from_py(&d, spec_b)?;
     let (cd, ad) = decks_from_py(&d, &chara_decks, &action_decks)?;
-    py.allow_threads(|| run_series_record(&d, &cd, &ad, &sa, &sb, seed0, n, workers, max_turns, &out_path, record_a, record_b, opp_from_seat))
+    if leaf_dump.is_some() && !(1..=65535).contains(&leaf_cap) {
+        return Err(PyValueError::new_err("leaf_cap は 1..65535"));
+    }
+    let leaf = leaf_dump.as_deref().map(|p| (p, leaf_cap));
+    py.allow_threads(|| run_series_record(&d, &cd, &ad, &sa, &sb, seed0, n, workers, max_turns, &out_path, record_a, record_b, opp_from_seat, leaf))
         .map_err(|e| PyRuntimeError::new_err(e.to_string()))
 }
 
@@ -1391,6 +1474,7 @@ fn features() -> Vec<String> {
         "opp_from_seat".to_string(),              // 段階 1C-b（D-123）: series 系の相手デッキ表を席ごとに相手の行動デッキにする
         "encoding_v6".to_string(),                // 段階 1C-c（D-124）: 符号化 v6（信念の要約・統一した hand_known）
         "te13_switched_scope".to_string(),        // TE-13（D-134）: 【切り替え】は入れ替わった 2 枠だけが誘発する
+        "leaf_dump".to_string(),                  // 段階3 項目 4（D-151）: series_record の leaf_dump（V を呼んだ局面の書き出し・既定オフ）
     ]
 }
 
