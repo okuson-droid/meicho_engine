@@ -1,0 +1,819 @@
+{
+ "tool": "experiments/diag_s3_leaf.py e",
+ "version": "s3leaf-1",
+ "decision": "D-151",
+ "decks": [
+  "env/ENV_SANGE_RF_TSUBAKI",
+  "env/ENV_SANGE_RM_TSUBAKI",
+  "env/ENV_YANG_RF_TSUBAKI",
+  "env/ENV_YANG_RM_TSUBAKI"
+ ],
+ "seed0": 860000,
+ "n": 7,
+ "leaf_cap": 8,
+ "value_net": "results/models/s3v1_id_ens3.json",
+ "value_net_sha16": "55383ec461a8b056",
+ "opponent": "planner",
+ "blocks": [
+  {
+   "i": 0,
+   "deck_a": "env/ENV_SANGE_RF_TSUBAKI",
+   "deck_b": "env/ENV_SANGE_RF_TSUBAKI",
+   "seed0": 860000,
+   "n": 7,
+   "files": [
+    "/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/work4a/E.b0.0",
+    "/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/work4a/E.b0.1",
+    "/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/work4a/E.b0.2",
+    "/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/work4a/E.b0.3"
+   ],
+   "leaf_files": [
+    "/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/work4a/E.b0.leaf.0",
+    "/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/work4a/E.b0.leaf.1",
+    "/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/work4a/E.b0.leaf.2",
+    "/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/work4a/E.b0.leaf.3"
+   ],
+   "results": [
+    [
+     true,
+     9
+    ],
+    [
+     true,
+     16
+    ],
+    [
+     false,
+     13
+    ],
+    [
+     true,
+     9
+    ],
+    [
+     false,
+     14
+    ],
+    [
+     false,
+     15
+    ],
+    [
+     false,
+     12
+    ]
+   ],
+   "seconds": 44.18331217765808
+  },
+  {
+   "i": 1,
+   "deck_a": "env/ENV_SANGE_RF_TSUBAKI",
+   "deck_b": "env/ENV_SANGE_RM_TSUBAKI",
+   "seed0": 860000,
+   "n": 7,
+   "files": [
+    "/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/work4a/E.b1.0",
+    "/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/work4a/E.b1.1",
+    "/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/work4a/E.b1.2",
+    "/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/work4a/E.b1.3"
+   ],
+   "leaf_files": [
+    "/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/work4a/E.b1.leaf.0",
+    "/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/work4a/E.b1.leaf.1",
+    "/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/work4a/E.b1.leaf.2",
+    "/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/work4a/E.b1.leaf.3"
+   ],
+   "results": [
+    [
+     true,
+     11
+    ],
+    [
+     true,
+     10
+    ],
+    [
+     true,
+     9
+    ],
+    [
+     true,
+     8
+    ],
+    [
+     true,
+     9
+    ],
+    [
+     true,
+     10
+    ],
+    [
+     false,
+     14
+    ]
+   ],
+   "seconds": 33.14349818229675
+  },
+  {
+   "i": 2,
+   "deck_a": "env/ENV_SANGE_RF_TSUBAKI",
+   "deck_b": "env/ENV_YANG_RF_TSUBAKI",
+   "seed0": 860000,
+   "n": 7,
+   "files": [
+    "/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/work4a/E.b2.0",
+    "/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/work4a/E.b2.1",
+    "/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/work4a/E.b2.2",
+    "/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/work4a/E.b2.3"
+   ],
+   "leaf_files": [
+    "/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/work4a/E.b2.leaf.0",
+    "/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/work4a/E.b2.leaf.1",
+    "/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/work4a/E.b2.leaf.2",
+    "/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/work4a/E.b2.leaf.3"
+   ],
+   "results": [
+    [
+     true,
+     11
+    ],
+    [
+     true,
+     13
+    ],
+    [
+     false,
+     12
+    ],
+    [
+     true,
+     10
+    ],
+    [
+     false,
+     10
+    ],
+    [
+     false,
+     12
+    ],
+    [
+     true,
+     15
+    ]
+   ],
+   "seconds": 28.834270000457764
+  },
+  {
+   "i": 3,
+   "deck_a": "env/ENV_SANGE_RF_TSUBAKI",
+   "deck_b": "env/ENV_YANG_RM_TSUBAKI",
+   "seed0": 860000,
+   "n": 7,
+   "files": [
+    "/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/work4a/E.b3.0",
+    "/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/work4a/E.b3.1",
+    "/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/work4a/E.b3.2",
+    "/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/work4a/E.b3.3"
+   ],
+   "leaf_files": [
+    "/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/work4a/E.b3.leaf.0",
+    "/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/work4a/E.b3.leaf.1",
+    "/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/work4a/E.b3.leaf.2",
+    "/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/work4a/E.b3.leaf.3"
+   ],
+   "results": [
+    [
+     true,
+     9
+    ],
+    [
+     false,
+     7
+    ],
+    [
+     false,
+     9
+    ],
+    [
+     true,
+     12
+    ],
+    [
+     true,
+     10
+    ],
+    [
+     false,
+     11
+    ],
+    [
+     true,
+     8
+    ]
+   ],
+   "seconds": 18.265008211135864
+  },
+  {
+   "i": 4,
+   "deck_a": "env/ENV_SANGE_RM_TSUBAKI",
+   "deck_b": "env/ENV_SANGE_RF_TSUBAKI",
+   "seed0": 860000,
+   "n": 7,
+   "files": [
+    "/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/work4a/E.b4.0",
+    "/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/work4a/E.b4.1",
+    "/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/work4a/E.b4.2",
+    "/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/work4a/E.b4.3"
+   ],
+   "leaf_files": [
+    "/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/work4a/E.b4.leaf.0",
+    "/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/work4a/E.b4.leaf.1",
+    "/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/work4a/E.b4.leaf.2",
+    "/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/work4a/E.b4.leaf.3"
+   ],
+   "results": [
+    [
+     true,
+     9
+    ],
+    [
+     false,
+     11
+    ],
+    [
+     true,
+     9
+    ],
+    [
+     true,
+     10
+    ],
+    [
+     true,
+     11
+    ],
+    [
+     true,
+     18
+    ],
+    [
+     true,
+     11
+    ]
+   ],
+   "seconds": 55.294084787368774
+  },
+  {
+   "i": 5,
+   "deck_a": "env/ENV_SANGE_RM_TSUBAKI",
+   "deck_b": "env/ENV_SANGE_RM_TSUBAKI",
+   "seed0": 860000,
+   "n": 7,
+   "files": [
+    "/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/work4a/E.b5.0",
+    "/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/work4a/E.b5.1",
+    "/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/work4a/E.b5.2",
+    "/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/work4a/E.b5.3"
+   ],
+   "leaf_files": [
+    "/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/work4a/E.b5.leaf.0",
+    "/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/work4a/E.b5.leaf.1",
+    "/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/work4a/E.b5.leaf.2",
+    "/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/work4a/E.b5.leaf.3"
+   ],
+   "results": [
+    [
+     false,
+     12
+    ],
+    [
+     true,
+     8
+    ],
+    [
+     false,
+     10
+    ],
+    [
+     false,
+     7
+    ],
+    [
+     true,
+     11
+    ],
+    [
+     false,
+     11
+    ],
+    [
+     true,
+     7
+    ]
+   ],
+   "seconds": 26.626610279083252
+  },
+  {
+   "i": 6,
+   "deck_a": "env/ENV_SANGE_RM_TSUBAKI",
+   "deck_b": "env/ENV_YANG_RF_TSUBAKI",
+   "seed0": 860000,
+   "n": 7,
+   "files": [
+    "/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/work4a/E.b6.0",
+    "/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/work4a/E.b6.1",
+    "/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/work4a/E.b6.2",
+    "/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/work4a/E.b6.3"
+   ],
+   "leaf_files": [
+    "/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/work4a/E.b6.leaf.0",
+    "/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/work4a/E.b6.leaf.1",
+    "/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/work4a/E.b6.leaf.2",
+    "/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/work4a/E.b6.leaf.3"
+   ],
+   "results": [
+    [
+     true,
+     9
+    ],
+    [
+     false,
+     10
+    ],
+    [
+     true,
+     9
+    ],
+    [
+     true,
+     10
+    ],
+    [
+     false,
+     12
+    ],
+    [
+     true,
+     16
+    ],
+    [
+     true,
+     12
+    ]
+   ],
+   "seconds": 35.3109347820282
+  },
+  {
+   "i": 7,
+   "deck_a": "env/ENV_SANGE_RM_TSUBAKI",
+   "deck_b": "env/ENV_YANG_RM_TSUBAKI",
+   "seed0": 860000,
+   "n": 7,
+   "files": [
+    "/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/work4a/E.b7.0",
+    "/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/work4a/E.b7.1",
+    "/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/work4a/E.b7.2",
+    "/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/work4a/E.b7.3"
+   ],
+   "leaf_files": [
+    "/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/work4a/E.b7.leaf.0",
+    "/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/work4a/E.b7.leaf.1",
+    "/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/work4a/E.b7.leaf.2",
+    "/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/work4a/E.b7.leaf.3"
+   ],
+   "results": [
+    [
+     true,
+     8
+    ],
+    [
+     false,
+     7
+    ],
+    [
+     true,
+     10
+    ],
+    [
+     true,
+     6
+    ],
+    [
+     true,
+     10
+    ],
+    [
+     true,
+     11
+    ],
+    [
+     true,
+     16
+    ]
+   ],
+   "seconds": 18.21378779411316
+  },
+  {
+   "i": 8,
+   "deck_a": "env/ENV_YANG_RF_TSUBAKI",
+   "deck_b": "env/ENV_SANGE_RF_TSUBAKI",
+   "seed0": 860000,
+   "n": 7,
+   "files": [
+    "/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/work4a/E.b8.0",
+    "/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/work4a/E.b8.1",
+    "/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/work4a/E.b8.2",
+    "/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/work4a/E.b8.3"
+   ],
+   "leaf_files": [
+    "/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/work4a/E.b8.leaf.0",
+    "/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/work4a/E.b8.leaf.1",
+    "/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/work4a/E.b8.leaf.2",
+    "/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/work4a/E.b8.leaf.3"
+   ],
+   "results": [
+    [
+     false,
+     6
+    ],
+    [
+     true,
+     11
+    ],
+    [
+     true,
+     11
+    ],
+    [
+     true,
+     11
+    ],
+    [
+     true,
+     11
+    ],
+    [
+     true,
+     19
+    ],
+    [
+     true,
+     15
+    ]
+   ],
+   "seconds": 29.335182905197144
+  },
+  {
+   "i": 9,
+   "deck_a": "env/ENV_YANG_RF_TSUBAKI",
+   "deck_b": "env/ENV_SANGE_RM_TSUBAKI",
+   "seed0": 860000,
+   "n": 7,
+   "files": [
+    "/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/work4a/E.b9.0",
+    "/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/work4a/E.b9.1",
+    "/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/work4a/E.b9.2",
+    "/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/work4a/E.b9.3"
+   ],
+   "leaf_files": [
+    "/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/work4a/E.b9.leaf.0",
+    "/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/work4a/E.b9.leaf.1",
+    "/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/work4a/E.b9.leaf.2",
+    "/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/work4a/E.b9.leaf.3"
+   ],
+   "results": [
+    [
+     true,
+     11
+    ],
+    [
+     false,
+     9
+    ],
+    [
+     false,
+     10
+    ],
+    [
+     false,
+     8
+    ],
+    [
+     false,
+     12
+    ],
+    [
+     true,
+     10
+    ],
+    [
+     true,
+     9
+    ]
+   ],
+   "seconds": 25.396689891815186
+  },
+  {
+   "i": 10,
+   "deck_a": "env/ENV_YANG_RF_TSUBAKI",
+   "deck_b": "env/ENV_YANG_RF_TSUBAKI",
+   "seed0": 860000,
+   "n": 7,
+   "files": [
+    "/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/work4a/E.b10.0",
+    "/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/work4a/E.b10.1",
+    "/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/work4a/E.b10.2",
+    "/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/work4a/E.b10.3"
+   ],
+   "leaf_files": [
+    "/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/work4a/E.b10.leaf.0",
+    "/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/work4a/E.b10.leaf.1",
+    "/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/work4a/E.b10.leaf.2",
+    "/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/work4a/E.b10.leaf.3"
+   ],
+   "results": [
+    [
+     false,
+     12
+    ],
+    [
+     true,
+     8
+    ],
+    [
+     true,
+     10
+    ],
+    [
+     true,
+     8
+    ],
+    [
+     true,
+     11
+    ],
+    [
+     true,
+     14
+    ],
+    [
+     true,
+     11
+    ]
+   ],
+   "seconds": 32.05805230140686
+  },
+  {
+   "i": 11,
+   "deck_a": "env/ENV_YANG_RF_TSUBAKI",
+   "deck_b": "env/ENV_YANG_RM_TSUBAKI",
+   "seed0": 860000,
+   "n": 7,
+   "files": [
+    "/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/work4a/E.b11.0",
+    "/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/work4a/E.b11.1",
+    "/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/work4a/E.b11.2",
+    "/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/work4a/E.b11.3"
+   ],
+   "leaf_files": [
+    "/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/work4a/E.b11.leaf.0",
+    "/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/work4a/E.b11.leaf.1",
+    "/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/work4a/E.b11.leaf.2",
+    "/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/work4a/E.b11.leaf.3"
+   ],
+   "results": [
+    [
+     true,
+     11
+    ],
+    [
+     true,
+     13
+    ],
+    [
+     true,
+     7
+    ],
+    [
+     true,
+     6
+    ],
+    [
+     true,
+     7
+    ],
+    [
+     true,
+     10
+    ],
+    [
+     false,
+     13
+    ]
+   ],
+   "seconds": 30.868860006332397
+  },
+  {
+   "i": 12,
+   "deck_a": "env/ENV_YANG_RM_TSUBAKI",
+   "deck_b": "env/ENV_SANGE_RF_TSUBAKI",
+   "seed0": 860000,
+   "n": 7,
+   "files": [
+    "/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/work4a/E.b12.0",
+    "/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/work4a/E.b12.1",
+    "/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/work4a/E.b12.2",
+    "/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/work4a/E.b12.3"
+   ],
+   "leaf_files": [
+    "/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/work4a/E.b12.leaf.0",
+    "/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/work4a/E.b12.leaf.1",
+    "/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/work4a/E.b12.leaf.2",
+    "/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/work4a/E.b12.leaf.3"
+   ],
+   "results": [
+    [
+     false,
+     14
+    ],
+    [
+     true,
+     18
+    ],
+    [
+     false,
+     14
+    ],
+    [
+     false,
+     6
+    ],
+    [
+     true,
+     11
+    ],
+    [
+     true,
+     14
+    ],
+    [
+     true,
+     9
+    ]
+   ],
+   "seconds": 33.970152139663696
+  },
+  {
+   "i": 13,
+   "deck_a": "env/ENV_YANG_RM_TSUBAKI",
+   "deck_b": "env/ENV_SANGE_RM_TSUBAKI",
+   "seed0": 860000,
+   "n": 7,
+   "files": [
+    "/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/work4a/E.b13.0",
+    "/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/work4a/E.b13.1",
+    "/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/work4a/E.b13.2",
+    "/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/work4a/E.b13.3"
+   ],
+   "leaf_files": [
+    "/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/work4a/E.b13.leaf.0",
+    "/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/work4a/E.b13.leaf.1",
+    "/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/work4a/E.b13.leaf.2",
+    "/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/work4a/E.b13.leaf.3"
+   ],
+   "results": [
+    [
+     false,
+     10
+    ],
+    [
+     true,
+     8
+    ],
+    [
+     true,
+     10
+    ],
+    [
+     true,
+     10
+    ],
+    [
+     true,
+     9
+    ],
+    [
+     false,
+     7
+    ],
+    [
+     true,
+     9
+    ]
+   ],
+   "seconds": 24.719886302947998
+  },
+  {
+   "i": 14,
+   "deck_a": "env/ENV_YANG_RM_TSUBAKI",
+   "deck_b": "env/ENV_YANG_RF_TSUBAKI",
+   "seed0": 860000,
+   "n": 7,
+   "files": [
+    "/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/work4a/E.b14.0",
+    "/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/work4a/E.b14.1",
+    "/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/work4a/E.b14.2",
+    "/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/work4a/E.b14.3"
+   ],
+   "leaf_files": [
+    "/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/work4a/E.b14.leaf.0",
+    "/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/work4a/E.b14.leaf.1",
+    "/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/work4a/E.b14.leaf.2",
+    "/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/work4a/E.b14.leaf.3"
+   ],
+   "results": [
+    [
+     true,
+     7
+    ],
+    [
+     true,
+     15
+    ],
+    [
+     true,
+     15
+    ],
+    [
+     true,
+     12
+    ],
+    [
+     true,
+     13
+    ],
+    [
+     false,
+     11
+    ],
+    [
+     true,
+     5
+    ]
+   ],
+   "seconds": 22.35252571105957
+  },
+  {
+   "i": 15,
+   "deck_a": "env/ENV_YANG_RM_TSUBAKI",
+   "deck_b": "env/ENV_YANG_RM_TSUBAKI",
+   "seed0": 860000,
+   "n": 7,
+   "files": [
+    "/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/work4a/E.b15.0",
+    "/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/work4a/E.b15.1",
+    "/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/work4a/E.b15.2",
+    "/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/work4a/E.b15.3"
+   ],
+   "leaf_files": [
+    "/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/work4a/E.b15.leaf.0",
+    "/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/work4a/E.b15.leaf.1",
+    "/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/work4a/E.b15.leaf.2",
+    "/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/work4a/E.b15.leaf.3"
+   ],
+   "results": [
+    [
+     false,
+     10
+    ],
+    [
+     true,
+     8
+    ],
+    [
+     false,
+     9
+    ],
+    [
+     false,
+     11
+    ],
+    [
+     false,
+     13
+    ],
+    [
+     false,
+     17
+    ],
+    [
+     true,
+     8
+    ]
+   ],
+   "seconds": 14.937862634658813
+  }
+ ]
+}

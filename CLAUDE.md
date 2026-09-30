@@ -35,7 +35,7 @@
 | rules 版 | `engine/rules_draft.md` の版。**現在 v0.19**。**実装より先に版を上げ、`meicho/version.py` の `RULES_VERSION` も同時に上げる**（番人 `tests/test_versions.py`・D-117）。経緯は decisions.md |
 | 符号化 | 観測・行動の符号化の版。**現在 v6**（D-124）。`meicho_rs.encoding_info()` = `(ENCODING_VERSION, OBS_DIM, ACT_DIM)` = **`(6, 1923, 317)`**（v5 の 1,825 列の末尾に信念の要約 20＋`hand_known` 78）、`ACT_CODE_LEN` 13。**`load_cards()` を先に呼ばないと `RuntimeError`** |
 | A-n / B-n / R-n | 公式ルールと実装の差異の番号と、その裁定の番号（`engine/official_rules/OFFICIAL_RULE_RECHECK_20260917.md`・D-092）。12 件すべて閉じた |
-| D-番号 | `engine/decisions.md` の設計判断の番号。**正本は `decisions.md` の末尾**（最新 D-151・次に使えるのは D-152）。**振るのはエンジンの持ち場だけ**（`LANES.md` §3）。アプリの決定は APP-番号で `engine/app/DECISIONS_APP.md` |
+| D-番号 | `engine/decisions.md` の設計判断の番号。**正本は `decisions.md` の末尾**（最新 D-152・次に使えるのは D-153）。**振るのはエンジンの持ち場だけ**（`LANES.md` §3）。アプリの決定は APP-番号で `engine/app/DECISIONS_APP.md` |
 | SD001 / SD02 | カードプール（構築済みデッキ）。学習した AI があるのは SD001 のみ |
 | V / π₀ / 代打ち π | 葉の価値関数／相手モデルの方策／先読み中の代打ち方策 |
 | 塊 | クラウドの Claude Code の実行単位。10 分以内・塊ごとに push（D-137） |
@@ -43,7 +43,7 @@
 ## Projects（動いている線だけ。閉じた線は decisions.md と TASKS.md の Done）
 | Name | What |
 |------|------|
-| **汎用 AI（段階3）** | 設計書 `engine/GENERALIST_STAGE3_DESIGN.md`（D-138）。反復 1 は V_1 を採らず止めた（D-144）。診断（案 M・`engine/GENERALIST_STAGE3_DIAG_COMPARE_20260929.md`・道具 D-145）は**項目 3（教師の較正）で説明できた**（D-146）。直し方の設計書 `engine/GENERALIST_STAGE3_TEACHER_FIX_DESIGN_20260930.md`（D-148）で (a)〜(c) を試したが**直らなかった**（(a) 相談で回さず・(b) 門 T-b で回さず・(c) V_c − V_0 = −0.125・D-149・D-150）。項目 4（探索の分布）の設計書 `engine/GENERALIST_STAGE3_ITEM4_DESIGN_20260930.md` を採った（D-151）。次は道具（葉の書き出しの口・δ の口）→ 4-a（葉の読み）。**最終評価の 4 デッキ（SK 系）はまだ開けない** |
+| **汎用 AI（段階3）** | 設計書 `engine/GENERALIST_STAGE3_DESIGN.md`（D-138）。反復 1 は V_1 を採らず止めた（D-144）。診断（案 M・`engine/GENERALIST_STAGE3_DIAG_COMPARE_20260929.md`・道具 D-145）は**項目 3（教師の較正）で説明できた**（D-146）。直し方の設計書 `engine/GENERALIST_STAGE3_TEACHER_FIX_DESIGN_20260930.md`（D-148）で (a)〜(c) を試したが**直らなかった**（(a) 相談で回さず・(b) 門 T-b で回さず・(c) V_c − V_0 = −0.125・D-149・D-150）。項目 4（探索の分布・D-151）は 4-a が「説明できない」（葉 ÷ 根のばらつき比 R_T = 0.965・D-152）。次は項目 5（容量）の 5-a。**最終評価の 4 デッキ（SK 系）はまだ開けない** |
 | **環境デッキ群とデッキ類似度** | 設計書 `engine/DECK_SIMILARITY_DESIGN.md`（D-126）。環境デッキ 24 種 `decklists/env/`（D-128）。割り振りは学習 16・調整 4・最終評価 4（`results/decksim/env_v1_split.json`） |
 | **開発の流れ（devflow）** | `engine/DEVFLOW_PLAN_20260925.md`（D-136・D-137）。段 6 進行盤 `engine/board/`（`PROGRESS_BOARD_DESIGN_20260929.md`・1 日 3 回の定期実行が db に写す） |
 | **自走化の規約** | `engine/AUTONOMY_20260929.md`（D-147 で採用）。採点役・`STEER.md`・脱線の兆候・`check_done.py`（Stop hook・まず測定の便・**未実装**＝PC の Claude Code が作る） |

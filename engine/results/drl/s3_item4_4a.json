@@ -1,0 +1,257 @@
+{
+ "version": "s3desk-1",
+ "decision": "D-151",
+ "leaf": {
+  "compare": {
+   "n_orig": 13084,
+   "n_retake": 13084,
+   "mismatch": {
+    "seed": 0,
+    "step": 0,
+    "turn": 0,
+    "pi": 0,
+    "phase": 0,
+    "n_acts": 0,
+    "chosen": 0,
+    "z": 0,
+    "obs": 0,
+    "actions": 0,
+    "scores": 0
+   },
+   "fresh_finite": {
+    "orig": 0,
+    "retake": 0
+   },
+   "same": true
+  },
+  "games": 106,
+  "checks": {
+   "root_keys_match": true,
+   "root_obs_match": true,
+   "belief_nonzero_frac": 1.0,
+   "leaf_value_maxdiff": 2.5819323046238907e-07,
+   "leaf_value_ok": true
+  },
+  "R_T": {
+   "ratio": 0.9649606162185747,
+   "lo": 0.9410159651354241,
+   "hi": 0.9905410686436132,
+   "median_leaf": 0.167865249291839,
+   "median_root": 0.17396072593061723,
+   "n_leaf": 92404,
+   "n_root": 13084,
+   "games_leaf": 106,
+   "games_root": 106,
+   "shared_games": true,
+   "n_boot": 10000
+  },
+  "rules": {
+   "threshold": 1.5,
+   "retest": false,
+   "verdict": "説明できない → 腕は回さず項目 5 へ（k = 0）"
+  },
+  "extra": {
+   "R_T_V1": {
+    "ratio": 0.9096879336008337,
+    "lo": 0.8874635109482084,
+    "hi": 0.9311265449553802,
+    "median_leaf": 0.11575235890403612,
+    "median_root": 0.12724403020918562,
+    "n_leaf": 92404,
+    "n_root": 13084,
+    "games_leaf": 106,
+    "games_root": 106,
+    "shared_games": true,
+    "n_boot": 10000
+   },
+   "size": {
+    "decisions": 13084,
+    "leaves_kept": 92404,
+    "no_leaf_frac": 0.06282482421277896,
+    "calls_mean": 71.52208804646897,
+    "calls_p50": 16.0,
+    "calls_p90": 140.0,
+    "kept_mean": 7.062366248853562,
+    "leaf_turn_ahead_mean": 1.1278083199861477,
+    "seconds": 876.6154518127441
+   },
+   "by_phase": {
+    "setup": {
+     "n_leaf": 0,
+     "n_root": 194,
+     "ratio": null
+    },
+    "mulligan": {
+     "n_leaf": 0,
+     "n_root": 194,
+     "ratio": null
+    },
+    "action": {
+     "n_leaf": 92395,
+     "n_root": 4170,
+     "ratio": 1.0477465193714135
+    },
+    "clash": {
+     "n_leaf": 0,
+     "n_root": 2204,
+     "ratio": null
+    },
+    "choice": {
+     "n_leaf": 6,
+     "n_root": 5370,
+     "ratio": 1.162253890724168
+    },
+    "rush": {
+     "n_leaf": 3,
+     "n_root": 904,
+     "ratio": 0.7945243656624141
+    },
+    "discard": {
+     "n_leaf": 0,
+     "n_root": 48,
+     "ratio": null
+    }
+   },
+   "by_kind": {
+    "anchor": {
+     "ratio": 0.9662154344539079,
+     "lo": 0.9241545929289272,
+     "hi": 1.0271491765693683,
+     "median_leaf": 0.1347936775905246,
+     "median_root": 0.13950685611507355,
+     "n_leaf": 7496,
+     "n_root": 1122,
+     "games_leaf": 18,
+     "games_root": 18,
+     "shared_games": true,
+     "n_boot": 2000
+    },
+    "cross": {
+     "ratio": 0.9588681406444973,
+     "lo": 0.9309758916015826,
+     "hi": 0.991679008641243,
+     "median_leaf": 0.1773759904001743,
+     "median_root": 0.18498475742551224,
+     "n_leaf": 45917,
+     "n_root": 6512,
+     "games_leaf": 48,
+     "games_root": 48,
+     "shared_games": true,
+     "n_boot": 2000
+    },
+    "mirror": {
+     "ratio": 0.9676464465926411,
+     "lo": 0.9245724191872167,
+     "hi": 0.9989791364266611,
+     "median_leaf": 0.16478653926057235,
+     "median_root": 0.1702962273471191,
+     "n_leaf": 38991,
+     "n_root": 5450,
+     "games_leaf": 40,
+     "games_root": 40,
+     "shared_games": true,
+     "n_boot": 2000
+    }
+   },
+   "u_by_leaf_spread": {
+    "cuts": [
+     0.12272709502280732,
+     0.17206540567539244,
+     0.2395339079743339
+    ],
+    "quartiles": [
+     {
+      "n": 3066,
+      "u": -0.00826192803744863
+     },
+     {
+      "n": 3065,
+      "u": 0.0008690823712105278
+     },
+     {
+      "n": 3065,
+      "u": -0.0004716088318569289
+     },
+     {
+      "n": 3066,
+      "u": 0.007573512727989784
+     }
+    ]
+   },
+   "R_E": {
+    "ratio": 1.1371784009472745,
+    "lo": 1.080436944529859,
+    "hi": 1.1960154242064116,
+    "median_leaf": 0.1446991628033684,
+    "median_root": 0.12724403020918562,
+    "n_leaf": 47144,
+    "n_root": 13084,
+    "games_leaf": 112,
+    "games_root": 106,
+    "shared_games": false,
+    "n_boot": 10000
+   },
+   "R_E_V0": {
+    "ratio": 1.104894723908658,
+    "lo": 1.0445862932361505,
+    "hi": 1.171546101957921,
+    "median_leaf": 0.19220828824805902,
+    "median_root": 0.17396072593061723,
+    "n_leaf": 47144,
+    "n_root": 13084,
+    "games_leaf": 112,
+    "games_root": 106,
+    "shared_games": false,
+    "n_boot": 10000
+   },
+   "E_size": {
+    "leaves_kept": 47144,
+    "decisions": 6904,
+    "seconds": 473.5107181072235
+   }
+  }
+ },
+ "anchor_split": {
+  "n_search": 61786,
+  "n_anchor": 6087,
+  "by_opponent": {
+   "greedy": {
+    "n": 2142,
+    "win": 0.823062558356676,
+    "p_teacher_lin": 0.6375506084031104,
+    "p_V0": 0.7116696857196587,
+    "u_lin": -0.05971456266658759,
+    "u_logit": -0.07641691198557954,
+    "auc_V0": 0.7318584746257354,
+    "auc_teacher": 0.7278153842469884
+   },
+   "heuristic": {
+    "n": 2058,
+    "win": 0.9450923226433431,
+    "p_teacher_lin": 0.6591828440707886,
+    "p_V0": 0.7379858848951724,
+    "u_lin": -0.09838554784384557,
+    "u_logit": -0.13119831088494388,
+    "auc_V0": 0.7707168369087972,
+    "auc_teacher": 0.7365516300020475
+   },
+   "planner": {
+    "n": 1887,
+    "win": 0.634870164281929,
+    "p_teacher_lin": 0.587440533543216,
+    "p_V0": 0.6335475682203202,
+    "u_lin": 0.006311349130727284,
+    "u_logit": 0.024812099285974942,
+    "auc_V0": 0.6037081638240803,
+    "auc_teacher": 0.6359783238149698
+   }
+  },
+  "u_A": {
+   "value": 0.0015547821564318998,
+   "design": 0.0016,
+   "tol": 0.0002,
+   "ok": true,
+   "verdict": "設計書 §4.4 の算術と合う（錨の腕は置かない）"
+  }
+ }
+}
