@@ -79,4 +79,7 @@ L-1 既定では manifest に葉の欄が無い／L-2 書き出しあり・な�
 
 ## 7. 全検査
 
-（全検査の結果は回し終えてから書き足す）
+- `python3 -m pytest tests/<ファイル> -q -rfs --run-slow`（容器が遅くなったので**ファイルごとに別のプロセス**で・`CC_STAGE3_FIX_T0_20260930.md` §8 の作法）: **1,385 通過・9 失敗・7 skip**。前回（D-150 の便）の 1,369 通過に今回の 16 件を足した数
+- 失敗 9 件は 1 件ずつ読んだ。前回と同じ顔ぶれ: `cards/` が git に無いため 8 件（`test_bp01.py` 4 件・`test_card_images.py` 4 件）と、前からある `test_d065.py::test_distil_makes_the_student_agree_with_the_teacher`
+- skip 7 件も同じ（`cards/cards_structured.csv` が無い 5 件・段階2 の記録が無い 1 件・移行したネットが無い 1 件）
+- **この便の変更による失敗は無い**。検査の組（`tests/test_sets.json`）は作り直していない（クラウドの結果から作ると資材の違いで組がずれる・D-145 の報告 §5 と同じ理由）
