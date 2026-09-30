@@ -43,7 +43,7 @@
 ## Projects（動いている線だけ。閉じた線は decisions.md と TASKS.md の Done）
 | Name | What |
 |------|------|
-| **汎用 AI（段階3）** | 設計書 `engine/GENERALIST_STAGE3_DESIGN.md`（D-138）。反復 1 は V_1 を採らず止めた（D-144）。診断（案 M・`engine/GENERALIST_STAGE3_DIAG_COMPARE_20260929.md`・道具 D-145）は**項目 3（教師の較正）で説明できた**（D-146）。直し方の設計書 `engine/GENERALIST_STAGE3_TEACHER_FIX_DESIGN_20260930.md`（D-148）で (a)〜(c) を試したが**直らなかった**（(a) 相談で回さず・(b) 門 T-b で回さず・(c) V_c − V_0 = −0.125・D-149・D-150）。次の一手は裁定待ち。**最終評価の 4 デッキ（SK 系）はまだ開けない** |
+| **汎用 AI（段階3）** | 設計書 `engine/GENERALIST_STAGE3_DESIGN.md`（D-138）。反復 1 は V_1 を採らず止めた（D-144）。診断（案 M・`engine/GENERALIST_STAGE3_DIAG_COMPARE_20260929.md`・道具 D-145）は**項目 3（教師の較正）で説明できた**（D-146）。直し方の設計書 `engine/GENERALIST_STAGE3_TEACHER_FIX_DESIGN_20260930.md`（D-148）で (a)〜(c) を試したが**直らなかった**（(a) 相談で回さず・(b) 門 T-b で回さず・(c) V_c − V_0 = −0.125・D-149・D-150）。次は項目 4（探索の分布）の設計を Cowork が書く（D-150 追記 1）。**最終評価の 4 デッキ（SK 系）はまだ開けない** |
 | **環境デッキ群とデッキ類似度** | 設計書 `engine/DECK_SIMILARITY_DESIGN.md`（D-126）。環境デッキ 24 種 `decklists/env/`（D-128）。割り振りは学習 16・調整 4・最終評価 4（`results/decksim/env_v1_split.json`） |
 | **開発の流れ（devflow）** | `engine/DEVFLOW_PLAN_20260925.md`（D-136・D-137）。段 6 進行盤 `engine/board/`（`PROGRESS_BOARD_DESIGN_20260929.md`・1 日 3 回の定期実行が db に写す） |
 | **自走化の規約** | `engine/AUTONOMY_20260929.md`（D-147 で採用）。採点役・`STEER.md`・脱線の兆候・`check_done.py`（Stop hook・まず測定の便・**未実装**＝PC の Claude Code が作る） |
