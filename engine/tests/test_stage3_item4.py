@@ -212,6 +212,11 @@ def test_ratio_ci_resamples_games_together():
     root2 = root * (1 + games / 10.0)
     r2 = D.ratio_ci(root2 * 1.6, games, root, games, n_boot=500)
     assert r2["lo"] < r2["ratio"] < r2["hi"]
+    # 葉の無い局があっても、局の集合を明示すれば一緒に引く（葉の側では重み 0 の局になるだけ）
+    keep = games != 0
+    g = np.unique(games)
+    r3 = D.ratio_ci((root * 2.0)[keep], games[keep], root, games, n_boot=200, leaf_games=g, root_games=g)
+    assert r3["shared_games"]
 
 
 def test_verdict_edges():

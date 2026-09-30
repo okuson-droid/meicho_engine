@@ -687,13 +687,15 @@ def leaf_4a(t_mans: list, orig_files: list, e_man: dict | None = None, retest: b
                      "leaf_value_ok": vdiff <= RULE_4A["value_tol"]}
     ok = cmp["same"] and root_obs_ok and belief_nz > 0 and out["checks"]["leaf_value_ok"]
     lg, rg = root["seed"][leaf["dec"]], root["seed"]
-    rt = ratio_ci(s0_leaf, lg, s0_root, rg)
+    # 葉と根は同じ局から一緒に引く（§3.2）。葉が 1 つも残らない局があっても引き方が変わらないよう、局の集合を明示する
+    games = np.unique(rg)
+    rt = ratio_ci(s0_leaf, lg, s0_root, rg, leaf_games=games, root_games=games)
     out["R_T"] = rt
     out["rules"] = {"threshold": RULE_4A["ratio"], "retest": retest,
                     "verdict": verdict_4a(rt, retest) if ok else
                     "止める（打ち直しが元の記録と一致しない／根の入力・葉の値の照合に失敗＝配線を疑う）"}
     # ---- 添える（判定に使わない）
-    ext = {"R_T_V1": ratio_ci(s1_leaf, lg, s1_root, rg)}
+    ext = {"R_T_V1": ratio_ci(s1_leaf, lg, s1_root, rg, leaf_games=games, root_games=games)}
     nc = root["n_calls"]
     ext["size"] = {"decisions": int(len(nc)), "leaves_kept": int(len(leaf["dec"])),
                    "no_leaf_frac": float((nc == 0).mean()), "calls_mean": float(nc.mean()),
@@ -717,7 +719,8 @@ def leaf_4a(t_mans: list, orig_files: list, e_man: dict | None = None, retest: b
     for kd in sorted(set(tg["kind"].tolist())):
         mr = kind_root == kd
         ml = mr[leaf["dec"]]
-        ext["by_kind"][kd] = ratio_ci(s0_leaf[ml], lg[ml], s0_root[mr], rg[mr], n_boot=2000)
+        gk = np.unique(rg[mr])
+        ext["by_kind"][kd] = ratio_ci(s0_leaf[ml], lg[ml], s0_root[mr], rg[mr], n_boot=2000, leaf_games=gk, root_games=gk)
     # 葉のばらつきと教師の誤差のつながり: 決定ごとの葉の s の平均を 4 分位に分け、分位ごとの 3-a の u
     with open(os.path.join(MODELS, "s3v1_id_s0.meta.json"), encoding="utf-8") as f:
         calib = json.load(f)["calibration"]
