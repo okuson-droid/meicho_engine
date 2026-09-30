@@ -8,7 +8,7 @@ D-149 追記 2（(a) は回さない・腕は (c) の 1 本・k = 1・95% 区間
 
 ## 1. 学び直し（設計書 §4.3）
 
-- S5 と同じ引数（`--init s2v_id_s{0,1,2}.json`・6 エポック・幹 256 × 2・学習率 1e-3・バッチ 1,024・`--vtarget max`・`--calib-scale bulk`・`--select best_v`・学習と検証の記録は反復 1 のもの）から **`--lam 0.3` だけ**を変えた。スクリプトは作業領域の `armc_train.sh`（コマンドは各 `.log` の先頭と meta の引数）
+- S5 と同じ引数（`--init s2v_id_s{0,1,2}.json`・6 エポック・幹 256 × 2・学習率 1e-3・バッチ 1,024・`--vtarget max`・`--calib-scale bulk`・`--select best_v`・学習と検証の記録は反復 1 のもの）から **`--lam 0.3` だけ**を変えた。回したスクリプトは `results/drl/s3_fix_c_scripts/armc_train.sh`（引数は各 meta で確かめられる）
 - 出力: `results/models/s3vc_id_s{0,1,2}.json`（＋`.meta.json`・`.log`）。1 本 約 15 分
 - 3 本ともエポック 1 が最良。検証 v_logloss（エポック 1）0.6449・0.6476・0.6502（V_1 は 0.6279・0.6271・0.6277・V_0 の部品は 0.639〜0.640）。エポック 2 以降は 0.69〜0.74 に悪化し、基準「常に平均勝率」0.685 より悪くなった。教師 p の広がり 0.194（止める基準 0.05 未満には当たらない）
 - 束ね: `ensemble_net.py` → `s3vc_id_ens3`（sha `1b4007b197eb3441`・部品 `2b36efa40a15afbc`・`089277082073e7a0`・`991b19cfe71286bd`）。本体は上げず `.meta.json` だけ
@@ -16,7 +16,7 @@ D-149 追記 2（(a) は回さない・腕は (c) の 1 本・k = 1・95% 区間
 ## 2. 強さの評価（設計書 §4.3）
 
 - 課題: 調整デッキ 16 ブロック × 300 局・シード 841000..841299・候補は `NETFREE`＋葉の V・相手は素 planner。V_0（`s2v_id_ens3`）と V_1（`s3v1_id_ens3`）は `s3_it1_select.json` から `--import`（回し直していない）。V_c だけ 150 局 → 300 局に足し継いで回した
-- コマンド: `eval_s2_repr.py run --arm vc=results/models/s3vc_id_ens3.json --n 150 --seed0 841000 --out results/drl/s3_fix_c_select.json --workers 4 --budget-sec 300` を繰り返し、次に `--arm vc=… --arm v1=results/models/s3v1_id_ens3.json --arm v_ens3=results/models/s2v_id_ens3.json --n 300 --import results/drl/s3_it1_select.json:v1 --import results/drl/s3_it1_select.json:v_ens3` を繰り返した（作業領域の `armc_eval.sh`）。集計 `eval_s2_repr.py report --in results/drl/s3_fix_c_select.json --new vc --old v_ens3 --also vc:v1 --level 0.95`
+- コマンド: `eval_s2_repr.py run --arm vc=results/models/s3vc_id_ens3.json --n 150 --seed0 841000 --out results/drl/s3_fix_c_select.json --workers 4 --budget-sec 300` を繰り返し、次に `--arm vc=… --arm v1=results/models/s3v1_id_ens3.json --arm v_ens3=results/models/s2v_id_ens3.json --n 300 --import results/drl/s3_it1_select.json:v1 --import results/drl/s3_it1_select.json:v_ens3` を繰り返した（`results/drl/s3_fix_c_scripts/armc_eval.sh`）。集計 `eval_s2_repr.py report --in results/drl/s3_fix_c_select.json --new vc --old v_ens3 --also vc:v1 --level 0.95`
 - 出力: `results/drl/s3_fix_c_select.json`・`s3_fix_c_select_report.json`
 - 所要: 05:52〜11:11 UTC（約 5 時間 20 分・1 局 約 3.6 秒）。裏の実行の上限（約 30 分）に当たるたびに続きから回した。途中で一度だけ同じ評価を 2 本立ち上げてしまい、ブロックを書き終える前の片方を止めた（結果には入っていない）
 
@@ -38,6 +38,7 @@ D-149 追記 2（(a) は回さない・腕は (c) の 1 本・k = 1・95% 区間
 - 通った腕 0 本 →「項目 3 は説明できたが、(a)〜(c) では直らなかった」として止めて相談する。D-144・D-146 は遡って変えない
 - 相談の候補（推しは D-150 §2）
 
-## 6. 採点役
+## 6. 検査と採点役
 
-- （このあと点検する）
+- この便でコードは変えていない（コードの最後の変更は `f5dc848`）。その時点の全検査（`--run-slow`・ファイルごと）は 1,369 通過・9 失敗（前からある顔ぶれ）・7 skip（`CC_STAGE3_FIX_T0_20260930.md` §8）
+- 採点役（範囲 55a1c75..77865ff）: **PASS**・指摘なし。k = 1 の固定が評価より前・学び直しは S5 から `lam` だけ違う・課題と取り込み元の sha が同じ・数字の再計算の一致・帯を確かめた。参考の 2 点（全検査の記載・スクリプトの置き場）はこの節と §1・§2 で直した
