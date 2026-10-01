@@ -687,7 +687,39 @@
    "purpose": "段階4 便 4-A（D-154・`GENERALIST_STAGE4_DESIGN_20261001.md` §9）: 門 S-0（SD001 ミラー・対 素 planner 400 局・879000..879399）と配線の確かめ・検査 879900..879949（`tests/test_stage4_tools.py`）。**学習にも強さの評価にも使用禁止**",
    "owner": "experiments/make_s2_schedule.py / record_mix.py / eval_s2_repr.py",
    "date": "2026-10-01"
+  },
+  {
+   "start": 880000,
+   "end": 882999,
+   "kind": "train",
+   "purpose": "段階4 便 4-A2（D-156・`GENERALIST_STAGE4_4A2_DESIGN_20261002.md` §3） 問い 1: 対象デッキ `ENV_SANGE_RM_TSUBAKI` の追加の教材 2,000 局（教師 netfree・`make_s2_schedule.py --target ENV_SANGE_RM_TSUBAKI --per-block mirror:800,cross:48,anchor:144`・purpose stage4_finetune）。使うのは 880000..881999・予備はその後。**評価に使用禁止**。汎用 V の系統には使わない",
+   "owner": "experiments/make_s2_schedule.py / record_mix.py / eval_s2_repr.py",
+   "date": "2026-10-02"
+  },
+  {
+   "start": 883000,
+   "end": 884999,
+   "kind": "validate",
+   "purpose": "段階4 便 4-A2（D-156・`GENERALIST_STAGE4_4A2_DESIGN_20261002.md` §3） 問い 1 の評価（課題 s4・対象デッキのミラー）。主比較: 素 planner 883000..884599（1,600 局・S@3,000 と S@1,000 で同じシード）／添える: G@0 と netfree の素 planner 883000..883399（400 局）・S@3,000 の H・貪欲 883000..883199（各 200 局）。**学習に使用禁止**",
+   "owner": "experiments/make_s2_schedule.py / record_mix.py / eval_s2_repr.py",
+   "date": "2026-10-02"
+  },
+  {
+   "start": 885000,
+   "end": 885999,
+   "kind": "validate",
+   "purpose": "段階4 便 4-A2（D-156・`GENERALIST_STAGE4_4A2_DESIGN_20261002.md` §3） 問い 2 の評価（課題 s4・調整デッキ 3 つのミラー・素 planner・G@0 と S@0）。885000..885399 を 3 デッキ・2 候補で同じに使う。**学習に使用禁止**",
+   "owner": "experiments/make_s2_schedule.py / record_mix.py / eval_s2_repr.py",
+   "date": "2026-10-02"
+  },
+  {
+   "start": 886000,
+   "end": 886999,
+   "kind": "diag",
+   "purpose": "段階4 便 4-A2（D-156・`GENERALIST_STAGE4_4A2_DESIGN_20261002.md` §3） 配線の確かめ・下見（勝敗は読まない）",
+   "owner": "experiments/make_s2_schedule.py / record_mix.py / eval_s2_repr.py",
+   "date": "2026-10-02"
   }
  ],
- "next_free": 880000
+ "next_free": 887000
 }
