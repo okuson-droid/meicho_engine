@@ -1,0 +1,21 @@
+{
+ "version": "ensnet-1",
+ "decision": "D-133",
+ "combine": "mean_logit",
+ "members": [
+  {
+   "path": "s4R1000_s0.json",
+   "sha": "e0e37becc8ba28d3"
+  },
+  {
+   "path": "s4R1000_s1.json",
+   "sha": "63e095ef716f1696"
+  },
+  {
+   "path": "s4R1000_s2.json",
+   "sha": "15caa700435685f8"
+  }
+ ],
+ "hidden": 768,
+ "sha": "5db3e95dabfe605e"
+}

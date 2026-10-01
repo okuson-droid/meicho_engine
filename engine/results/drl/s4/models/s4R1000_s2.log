@@ -1,0 +1,19 @@
+train 80488 decisions / valid 17041 decisions  (read 3s)  chance acc: train 0.266 valid 0.263
+探索値の較正[bulk]: p = sigmoid(1.592·clip(v,±10.189)/10.189 + -0.257)  n=77688  番兵の割合 0.181
+  較正後の対数損失 0.6068 vs 「常に平均勝率」0.6798 → 探索値は勝敗の情報を持つ
+  教師 p の広がり（75%点−25%点） 0.305
+学習する重みの数 632,194（書き出すネットは射影の有無によらず同じ形）
+ep 1: loss 2.0245 | valid v_logloss 0.6337 v_acc 0.625 | t_logloss 0.6545 | p_logloss 1.2384 p_acc 0.523 | 22s
+   by phase: {'setup': '1.000(284)', 'mulligan': '1.000(284)', 'action': '0.360(5295)', 'clash': '0.605(2776)', 'choice': '0.613(6703)', 'rush': '0.385(1648)', 'discard': '0.353(51)'}
+ep 2: loss 1.7963 | valid v_logloss 0.6273 v_acc 0.633 | t_logloss 0.6482 | p_logloss 1.1572 p_acc 0.545 | 21s
+   by phase: {'setup': '1.000(284)', 'mulligan': '1.000(284)', 'action': '0.369(5295)', 'clash': '0.615(2776)', 'choice': '0.635(6703)', 'rush': '0.478(1648)', 'discard': '0.333(51)'}
+ep 3: loss 1.7202 | valid v_logloss 0.6238 v_acc 0.628 | t_logloss 0.6467 | p_logloss 1.1104 p_acc 0.566 | 21s
+   by phase: {'setup': '1.000(284)', 'mulligan': '1.000(284)', 'action': '0.408(5295)', 'clash': '0.639(2776)', 'choice': '0.639(6703)', 'rush': '0.509(1648)', 'discard': '0.353(51)'}
+ep 4: loss 1.6741 | valid v_logloss 0.6277 v_acc 0.628 | t_logloss 0.6482 | p_logloss 1.0860 p_acc 0.568 | 21s
+   by phase: {'setup': '1.000(284)', 'mulligan': '1.000(284)', 'action': '0.419(5295)', 'clash': '0.635(2776)', 'choice': '0.638(6703)', 'rush': '0.507(1648)', 'discard': '0.373(51)'}
+ep 5: loss 1.6466 | valid v_logloss 0.6271 v_acc 0.628 | t_logloss 0.6476 | p_logloss 1.0755 p_acc 0.573 | 21s
+   by phase: {'setup': '1.000(284)', 'mulligan': '1.000(284)', 'action': '0.431(5295)', 'clash': '0.640(2776)', 'choice': '0.639(6703)', 'rush': '0.502(1648)', 'discard': '0.373(51)'}
+ep 6: loss 1.6326 | valid v_logloss 0.6273 v_acc 0.628 | t_logloss 0.6477 | p_logloss 1.0712 p_acc 0.573 | 22s
+   by phase: {'setup': '1.000(284)', 'mulligan': '1.000(284)', 'action': '0.434(5295)', 'clash': '0.638(2776)', 'choice': '0.638(6703)', 'rush': '0.508(1648)', 'discard': '0.373(51)'}
+--select best_v: エポック 3 の版を保存する（検証 v_logloss 0.6238・最後は 0.6273）
+saved /tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/s4/models/s4R1000_s2.json (137s)
