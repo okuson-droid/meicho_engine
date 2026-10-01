@@ -10385,3 +10385,9 @@ Rust を変えたので PC の wheel は直す前のままである。依頼は 
    - **推し: 別の小さな便で直す**（前の検査が変えた torch のスレッド数を、この検査の中で固定する）。ファイルごとに回す全検査では出ないので、急がない
 
 次に使える D-番号は **D-156**。
+
+### D-155 追記 1 裁定——2・3 は推し・1 は Cowork の意見を聞いてから（2026-10-01・マスター）
+
+1. **次に何をするか（§2 の 1）は保留。**Cowork（クロエ）の意見を聞いてからマスターが決める。それまで 4-B・4-C・4-D には入らない。最終評価の 4 デッキはまだ開かない
+2. 道具の PR [okuson-droid/meicho_engine#13](https://github.com/okuson-droid/meicho_engine/pull/13) を `main` に取り込む（早送り）。PC でこの口を使う日は Rust の再ビルドが要る
+3. 前からある検査の順序依存（`test_stage3_teacherfix.py::test_calib_default_matches_s5_meta`）は別の小さな便で直す
