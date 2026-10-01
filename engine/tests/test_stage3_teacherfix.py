@@ -58,8 +58,17 @@ def it1_train(tmp_path_factory):
 def test_calib_default_matches_s5_meta(it1_train):
     """F-1: 既定の形で反復 1 の学習の記録に合わせると、S5 の meta の較正と同じ値になり、`form` 欄は足さない。"""
     T = _T()
+    import torch
     b = T.Batcher(read_records(it1_train), vtarget="max")
-    got = T.calibrate_vsearch(b.vsearch, b.z, scale="bulk")
+    # 較正の当てはめ（torch）は、スレッド数で丸めが変わり a・b が小数 4 桁目でずれる。S5 は `--threads 4` で
+    # 学んだので 4 に固定する。前の検査（`drl_train.train`・threads=2）が同じプロセスで数を変えていても
+    # 落ちないように（D-155 追記 1 の 3）
+    saved = torch.get_num_threads()
+    torch.set_num_threads(4)
+    try:
+        got = T.calibrate_vsearch(b.vsearch, b.z, scale="bulk")
+    finally:
+        torch.set_num_threads(saved)
     ref = json.load(open(os.path.join(MODELS, "s3v1_id_s0.meta.json"), encoding="utf-8"))["calibration"]
     assert "form" not in got
     assert json.dumps(got, sort_keys=True) == json.dumps(ref, sort_keys=True)
