@@ -1,0 +1,59 @@
+{
+ "version": "s2eval-1",
+ "task": "s4",
+ "target": "env/ENV_SANGE_RF_TSUBAKI",
+ "opponents": [
+  "planner"
+ ],
+ "seed0": 885000,
+ "level": 0.983,
+ "scores": {
+  "G0": {
+   "diff": 0.7425,
+   "lo": 0.69,
+   "hi": 0.7925,
+   "n_per_block": 400,
+   "by_block": {
+    "planner": 0.7425
+   }
+  },
+  "S0": {
+   "diff": 0.5125,
+   "lo": 0.4525,
+   "hi": 0.5725,
+   "n_per_block": 400,
+   "by_block": {
+    "planner": 0.5125
+   }
+  }
+ },
+ "wdl": {
+  "G0": {
+   "planner": {
+    "n": 400,
+    "W": 297,
+    "D": 0,
+    "L": 103
+   }
+  },
+  "S0": {
+   "planner": {
+    "n": 400,
+    "W": 205,
+    "D": 0,
+    "L": 195
+   }
+  }
+ },
+ "compare": {
+  "G0-S0": {
+   "diff": 0.23,
+   "lo": 0.1575,
+   "hi": 0.3,
+   "n_per_block": 400,
+   "by_block": {
+    "planner": 0.23
+   }
+  }
+ }
+}
