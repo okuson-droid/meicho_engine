@@ -5,7 +5,9 @@ A3-2 `--freeze trunk` で学ぶと、学習の前後で幹の重みが 1 ビッ�
      書き出すネットの形は凍結の有無によらず同じ（葉の V として読める）。meta に `freeze` と学習した重みの数が入る。
      壊し方: 凍結を外すと幹が動く（同じ検査で落ちる）
 A3-3 既定（`freeze` を付けない・`None`）では、口を足す前と同じ出力: `freeze` の属性が無い args と `None` で
-     ネットのバイトと meta（所要時間の欄を除く）が同じで、meta に `freeze` の欄が入らない
+     ネットのバイトと meta（所要時間の欄を除く）が同じで、meta に `freeze` の欄が入らない。さらに口を足す前の
+     `drl_train.py`（commit `1d4faee`）を git から取り出して同じ引数で回し、ネットのバイトと meta が同じ
+     （git か commit が無い環境では skip）
 A3-4 `diag_s4_move.py`: 同じネットどうしで M = 0・違うネットで M > 0／部品の v_logloss が学習の記録
      （`.meta.json`）の選んだエポックの値と 1e-4 で一致／束ねた V はロジットの平均
 A3-5 便の検証の記録（対象デッキの 204 局）が容器にあれば、決定数が 17,041（無ければ skip）
@@ -128,6 +130,39 @@ def test_default_output_is_unchanged(recs, init_net):
     assert m0 == m1 and "freeze" not in m0
     full = sum(w.size + b.size for w, b in __import__("meicho.drlnet", fromlist=["Net"]).Net.load(init_net).trunk)
     assert m0["n_params_trained"] > full                         # 既定は幹も数える（従来どおり）
+
+
+PRE_FREEZE_COMMIT = "1d4faee"          # `--freeze` の口を足す前（D-158 の台帳の commit）
+
+
+def test_default_output_matches_pre_freeze_code(recs, init_net, tmp_path):
+    """壊し方: 既定の経路（Adam に渡す重み・数え方・meta の欄）を変えると、旧版とバイトが合わなくなる。"""
+    import importlib.util
+    import subprocess
+    import drl_train as T
+    stem, d = recs
+    try:
+        src = subprocess.run(["git", "show", f"{PRE_FREEZE_COMMIT}:engine/experiments/drl_train.py"], cwd=ROOT,
+                             capture_output=True, check=True).stdout
+    except (OSError, subprocess.CalledProcessError):
+        pytest.skip(f"git か commit {PRE_FREEZE_COMMIT} が無い")
+    old_py = tmp_path / "drl_train_pre_freeze.py"
+    old_py.write_bytes(src)
+    spec = importlib.util.spec_from_file_location("drl_train_pre_freeze", old_py)
+    old = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(old)
+    outs = {}
+    for tag, mod in (("old", old), ("new", T)):
+        for init in (None, init_net):
+            out = str(tmp_path / f"{tag}_{init is not None}.json")
+            mod.train(_args(stem, out, init=init, epochs=2, select="best_v", calib_scale="bulk"))
+            m = _meta(out)
+            for row in m["log"]:
+                row.pop("sec")
+            outs[(tag, init is not None)] = (open(out, "rb").read(), m)
+    for k in (False, True):
+        assert outs[("old", k)][0] == outs[("new", k)][0]
+        assert outs[("old", k)][1] == outs[("new", k)][1]
 
 
 # ------------------------------------------------------------------ A3-4
