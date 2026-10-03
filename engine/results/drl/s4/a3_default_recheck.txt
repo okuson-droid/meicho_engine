@@ -1,0 +1,7 @@
+# 便 4-A3 道具（D-158 §6）: --freeze を付けない既定の学び直しが、口を足す前と同じ出力になるかの実物の確かめ
+# 4-A の S@1,000 乱数 0（s4S1000_s0）を、口を足した drl_train.py で同じ引数のまま学び直した
+python3 experiments/drl_train.py --train <R>/target_train.c000 --valid <R>/target_val.c000 --out <W>/recheck_S1000_s0.json \
+  --init <M>/s4S_s0.json --epochs 6 --hidden 256 --depth 2 --phead 128 --lr 1e-3 --bs 1024 --lam 0.7 --vtarget max \
+  --calib-scale bulk --select best_v --threads 2 --seed 0
+ネット本体: cmp で一致（sha256 先頭 cf0c9a1828500b1f・4-A の s4S1000_s0.json と同じ）
+meta: 学習の記録の所要時間（log[].sec）を除いて全欄一致（freeze の欄は入らない）
