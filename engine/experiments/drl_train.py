@@ -737,6 +737,11 @@ def train(args):
         raise SystemExit(f"--league-mode {args.league_mode} には --league-seeds が要る")
     args.keep_pairs = getattr(args, "keep_pairs", None)
     kp = parse_keep_pairs(args.keep_pairs)
+    # 段階4 便 4-A3（D-158・設計書 §6）: 幹を凍結して頭だけ学ぶ。ランダムな幹を凍結しても意味が無いので
+    # `--init` を要る。既定（None）では従来と 1 ビットも変わらない
+    args.freeze = getattr(args, "freeze", None)
+    if args.freeze is not None and not args.init:
+        raise SystemExit("--freeze trunk には --init が要る（ランダムな幹を凍結しても意味が無い）")
     tr_recs = read_records(files_of(args.train), args.max_records)
     n_read = tr_recs.n
     if kp is not None:
@@ -853,7 +858,11 @@ def train(args):
         print(f"init from {args.init}")
     else:
         model = TwoHead(args.hidden, args.depth, args.phead, scale, proj=proj, proj_scale=proj_scale)
-    n_params = int(sum(p_.numel() for p_ in model.parameters()))
+    if args.freeze == "trunk":
+        for prm in model.trunk.parameters():
+            prm.requires_grad_(False)
+        print("--freeze trunk: 幹の重みは動かさず、価値の頭と方策の頭だけを学ぶ")
+    n_params = int(sum(p_.numel() for p_ in model.parameters() if p_.requires_grad))
     print(f"学習する重みの数 {n_params:,}（書き出すネットは射影の有無によらず同じ形）")
     teacher = None
     if args.distil_from:
@@ -865,7 +874,9 @@ def train(args):
         teacher.eval()
         print(f"蒸留: 先生 = {args.distil_from}（幹 {teacher.trunk[0].out_features}・"
               f"π 頭 {teacher.p1.out_features}） → 生徒 幹 {args.hidden}・π 頭 {args.phead}")
-    opt = torch.optim.Adam(model.parameters(), lr=args.lr, weight_decay=args.wd)
+    opt = torch.optim.Adam(model.parameters() if args.freeze is None
+                           else [p_ for p_ in model.parameters() if p_.requires_grad],
+                           lr=args.lr, weight_decay=args.wd)
     sched = torch.optim.lr_scheduler.CosineAnnealingLR(opt, T_max=max(1, args.epochs))
     rng = np.random.RandomState(args.seed)
     log = []
@@ -934,6 +945,7 @@ def train(args):
             "keep_pairs": args.keep_pairs, "n_train_read": int(n_read),
             **({"subset_frac": args.subset_frac, "n_subset_games": n_subset_games}
                if args.subset_frac is not None else {}),
+            **({"freeze": args.freeze} if args.freeze is not None else {}),
             **({"calib_form": args.calib_form} if getattr(args, "calib_form", "linear") != "linear" else {}),
             **({"n_nonargmax": int(tr.n_nonargmax)} if args.vtarget == "fresh_am" else {}),
             "n_params_exported": int(sum(w.size + b.size for w, b in net.trunk) + net.value[0].size
@@ -941,6 +953,7 @@ def train(args):
     with open(args.out.replace(".json", ".meta.json"), "w", encoding="utf-8") as f:
         json.dump(meta, f, ensure_ascii=False, indent=1)
     print(f"saved {args.out} ({time.time()-t0:.0f}s)")
+    return model
 
 
 def main():
@@ -995,6 +1008,8 @@ def main():
     ap.add_argument("--subset-frac", type=float, default=None,
                     help="段階4（D-154 §4.3）: 学習の記録を各ブロックの先頭 round(frac×組の数) 組の局に絞る"
                          "（300 局の時点＝0.3）。ブロックは記録の manifest の組み合わせ表で決める。検証の記録は絞らない")
+    ap.add_argument("--freeze", choices=["trunk"], default=None,
+                    help="段階4 便 4-A3（D-158）: 幹を凍結して価値の頭と方策の頭だけを学ぶ（--init が要る・既定は凍結しない）")
     ap.add_argument("--seed", type=int, default=0); ap.add_argument("--threads", type=int, default=2)
     ap.add_argument("--max-records", type=int, default=None)
     a = ap.parse_args()

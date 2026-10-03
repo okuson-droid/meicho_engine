@@ -719,7 +719,23 @@
    "purpose": "段階4 便 4-A2（D-156・`GENERALIST_STAGE4_4A2_DESIGN_20261002.md` §3） 配線の確かめ・下見（勝敗は読まない）",
    "owner": "experiments/make_s2_schedule.py / record_mix.py / eval_s2_repr.py",
    "date": "2026-10-02"
+  },
+  {
+   "start": 887000,
+   "end": 888999,
+   "kind": "validate",
+   "purpose": "段階4 便 4-A3（D-158・`GENERALIST_STAGE4_GLEARN_DESIGN_20261003.md` §5） G 側の学び方の評価（課題 s4・対象デッキのミラー）。素 planner のブロック 887000..888599（1,600 局・G@3,000・G@0・S@3,000・段 2 の腕で同じシード）／H・貪欲のブロック 887000..887199（G@3,000 だけ・各 200 局）。**学習に使用禁止**",
+   "owner": "experiments/drl_train.py / eval_s2_repr.py",
+   "date": "2026-10-03"
+  },
+  {
+   "start": 889000,
+   "end": 889999,
+   "kind": "diag",
+   "purpose": "段階4 便 4-A3（D-158・`GENERALIST_STAGE4_GLEARN_DESIGN_20261003.md` §5） 配線の確かめ・検査（`tests/test_stage4_a3_tools.py` の記録 889900..889903 など・勝敗は読まない）",
+   "owner": "tests/test_stage4_a3_tools.py",
+   "date": "2026-10-03"
   }
  ],
- "next_free": 887000
+ "next_free": 890000
 }
