@@ -86,7 +86,7 @@ from meicho.version import RULES_VERSION                        # noqa: E402
 NETFREE = {"extra_turns": 1, "choice_phases": True, "solo_samples": 4, "known_hand": True,
            "endgame_enum": 64, "draw_buckets": 1}
 
-OPPONENTS = ("teacher", "heuristic", "greedy", "planner")
+OPPONENTS = ("teacher", "heuristic", "greedy", "planner", "netfree")
 NET_KEYS = ("value_net", "opp_policy_net", "policy_net")
 REC_HEAD_V3 = struct.Struct("<qIHBBBBff")
 
@@ -154,6 +154,9 @@ def opponent_spec(kind: str, teacher: dict, pool: list, deck_a: str, deck_b: str
         return GREEDY(pool)
     if kind == "planner":
         return PLANNER(pool)
+    if kind == "netfree":
+        # 段階4 便 4-A4（D-161）: 教師を替えた教材で、異種のブロックの相手の席だけ従来の教師（netfree）にする
+        return PLANNER(pool, **NETFREE)
     raise SystemExit(f"未知の相手: {kind}（{OPPONENTS} のどれか）")
 
 
@@ -249,6 +252,11 @@ def check_schedule(sch: dict) -> None:
         if opp != "teacher" and rec != "a":
             raise SystemExit(f"blocks[{i}]: 教師以外が相手のブロックは record を a にすること"
                              "（記録する席を教師に固定・VALUE_BOOTSTRAP_DESIGN.md §6.3）")
+        if b.get("agents_follow_decks") is not None and not (opp != "teacher" and b["deck_a"] != b["deck_b"]):
+            raise SystemExit(f"blocks[{i}]: agents_follow_decks は教師以外が相手の異種のブロックだけ")
+        if opp == "netfree" and b["deck_a"] != b["deck_b"] and b.get("agents_follow_decks") is not True:
+            raise SystemExit(f"blocks[{i}]: 相手 netfree の異種のブロックは agents_follow_decks: true が要る"
+                             "（無いと奇数シードで教師が deck_b を打つ・D-161）")
         lo, hi = int(b["seed0"]), int(b["seed0"]) + int(b["n"]) - 1
         for j, (l2, h2) in enumerate(used):
             if lo <= h2 and l2 <= hi:
@@ -283,6 +291,13 @@ def run_block(i: int, b: dict, sch: dict, out: str, workers: int, max_turns: int
         if "record_seats" not in rs.features():
             raise SystemExit("入っている meicho_rs が古い（record_seats が無い）。再ビルドすること（D-154）")
         kw["record_seats"] = (True, False)
+    # 段階4 便 4-A4（D-161）: 教師以外が相手の異種のブロックでは、奇数シードでデッキも席ごと入れ替え、
+    # 教師（A）が常に deck_a を打つ。既定のブロックでは引数を渡さない（従来と同じ呼び方）
+    follow = bool(b.get("agents_follow_decks"))
+    if follow:
+        if "agents_follow_decks" not in rs.features():
+            raise SystemExit("入っている meicho_rs が古い（agents_follow_decks が無い）。再ビルドすること（D-161）")
+        kw["agents_follow_decks"] = True
     res, files = rs.series_record(cfg.chara_decks, cfg.action_decks, spec_a, spec_b, seed0, n,
                                   f"{out}.b{i}", workers, max_turns, rec in ("both", "a"), rec in ("both", "b"),
                                   opp_from_seat=True, **kw)
@@ -291,15 +306,24 @@ def run_block(i: int, b: dict, sch: dict, out: str, workers: int, max_turns: int
     # 席 0 = deck_a。偶数シードは A が席 0。
     games = {"a_seat0": sum(1 for s in range(seed0, seed0 + n) if s % 2 == 0)}
     games["a_seat1"] = n - games["a_seat0"]
-    decisions = {
-        "a_as_deck_a": dec[(0, 0)], "a_as_deck_b": dec[(1, 1)],
-        "b_as_deck_a": dec[(1, 0)], "b_as_deck_b": dec[(0, 1)],
-    }
+    if follow:
+        # A は常に deck_a。奇数シードでは A が席 1 に座り、席 1 のデッキが deck_a になる
+        decisions = {
+            "a_as_deck_a": dec[(0, 0)] + dec[(1, 1)], "a_as_deck_b": 0,
+            "b_as_deck_a": 0, "b_as_deck_b": dec[(0, 1)] + dec[(1, 0)],
+        }
+        games["a_as_deck_a"], games["a_as_deck_b"] = n, 0
+    else:
+        decisions = {
+            "a_as_deck_a": dec[(0, 0)], "a_as_deck_b": dec[(1, 1)],
+            "b_as_deck_a": dec[(1, 0)], "b_as_deck_b": dec[(0, 1)],
+        }
     decided = [r[0] for r in res if r[0] is not None]
     extra = {"leaf_files": [f"{out}.b{i}.leaf.{w}" for w in range(max(1, workers))]} if leaf_cap else {}
     return {
         "i": i, "deck_a": b["deck_a"], "deck_b": b["deck_b"], "mirror": b["deck_a"] == b["deck_b"],
         "seed0": seed0, "n": n, "p_planned": b.get("p_planned"), "record": rec, "opponent": opp,
+        **({"agents_follow_decks": True} if follow else {}),
         "teacher": teacher, "spec_a": strip_paths(spec_a), "spec_b": strip_paths(spec_b),
         "nets": {**net_fingerprints(spec_a), **net_fingerprints(spec_b)},
         "games": games, "decisions": decisions, "decisions_total": sum(dec.values()),
@@ -319,8 +343,12 @@ def summarize(blocks: list, sch: dict, deck_cache: dict) -> dict:
     per_deck: dict = {}
     for b in blocks:
         teacher_b = b["opponent"] == "teacher"
-        for side, key_a, key_b, a_seats in (("deck_a", "a_as_deck_a", "b_as_deck_a", b["games"]["a_seat0"]),
-                                            ("deck_b", "a_as_deck_b", "b_as_deck_b", b["games"]["a_seat1"])):
+        # A（教師）がそのデッキを打った局数。既定は席で決まる（偶数シードは A が席 0 = deck_a）。
+        # agents_follow_decks のブロック（D-161）は A が常に deck_a
+        ga = b["games"].get("a_as_deck_a", b["games"]["a_seat0"])
+        gb = b["games"].get("a_as_deck_b", b["games"]["a_seat1"])
+        for side, key_a, key_b, a_seats in (("deck_a", "a_as_deck_a", "b_as_deck_a", ga),
+                                            ("deck_b", "a_as_deck_b", "b_as_deck_b", gb)):
             d = per_deck.setdefault(b[side], {"games": 0, "seat_games": 0, "seat_games_teacher": 0,
                                               "decisions_recorded": 0})
             d["seat_games"] += b["n"]

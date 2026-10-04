@@ -735,7 +735,39 @@
    "purpose": "段階4 便 4-A3（D-158・`GENERALIST_STAGE4_GLEARN_DESIGN_20261003.md` §5） 配線の確かめ・検査（`tests/test_stage4_a3_tools.py` の記録 889900..889903 など・勝敗は読まない）",
    "owner": "tests/test_stage4_a3_tools.py",
    "date": "2026-10-03"
+  },
+  {
+   "start": 890000,
+   "end": 893999,
+   "kind": "train",
+   "purpose": "段階4 便 4-A4（D-161・`GENERALIST_STAGE4_TEACHER_DESIGN_20261005.md` §5） 対象デッキ `ENV_SANGE_RM_TSUBAKI` の強い教師（netfree_v・葉 S@3,000）の教材 3,000 局（890000..892999・purpose `stage4_finetune_teacher`）。予備 893000..893999。汎用 V の系統には使わない。**評価に使用禁止**",
+   "owner": "experiments/make_s2_schedule.py / record_mix.py",
+   "date": "2026-10-05"
+  },
+  {
+   "start": 894000,
+   "end": 895999,
+   "kind": "validate",
+   "purpose": "段階4 便 4-A4（D-161・`GENERALIST_STAGE4_TEACHER_DESIGN_20261005.md` §5） 評価（課題 s4・対象デッキのミラー）。素 planner 894000..895599（1,600 局・G_T@3,000・G@3,000・S@3,000 で同じシード）／G@0 894000..894399（400 局）／G_T@3,000 の H・貪欲 894000..894199（各 200 局）。**学習に使用禁止**",
+   "owner": "experiments/eval_s2_repr.py",
+   "date": "2026-10-05"
+  },
+  {
+   "start": 896000,
+   "end": 896999,
+   "kind": "validate",
+   "purpose": "段階4 便 4-A4（D-161・`GENERALIST_STAGE4_TEACHER_DESIGN_20261005.md` §5） 門 T（教師 対 netfree・対象デッキのミラー）。T-s 896000..896399／T-v0 896400..896799／T-b 896800..896999（200 局）。**学習に使用禁止**",
+   "owner": "experiments/eval_s3_h2h.py",
+   "date": "2026-10-05"
+  },
+  {
+   "start": 897000,
+   "end": 897999,
+   "kind": "diag",
+   "purpose": "段階4 便 4-A4（D-161・`GENERALIST_STAGE4_TEACHER_DESIGN_20261005.md` §5） 配線の確かめ・検査（`tests/test_stage4_a4_tools.py` の局 897900.. など・勝敗は読まない）",
+   "owner": "tests/test_stage4_a4_tools.py",
+   "date": "2026-10-05"
   }
  ],
- "next_free": 890000
+ "next_free": 898000
 }

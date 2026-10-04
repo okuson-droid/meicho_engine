@@ -23,6 +23,14 @@
 - 添えるもの: 挑戦と null の生の勝率と区間（null の区間が 0.5 を含まなければ配線を疑って止める）、A のデッキ別の d、
   「挑戦だけ勝った／null だけ勝った」の局数
 
+## 門 T（段階4 便 4-A4・D-161）
+
+- `--target D` を付けると、そのデッキのミラー 1 ブロックだけを回す（既定は調整デッキ 4 つの 16 ブロック）。
+  最終評価のデッキは落とす
+- 組の片側に `netfree` と書くと、その席は葉の V を持たない `record_mix.NETFREE` そのものになる
+- `report --gate 組` は、その組の A 席の得点と 95% 区間（局の組 (2k, 2k+1) を単位に 10,000 回）と、
+  「下端 > 0.5 → 門を越える」を出す（挑戦と null の対は作らない）
+
 ## 局数の足し継ぎ
 
 - 同じ `--out` に大きい `--n` で打ち直すと、各ブロックの足りない局だけを回して後ろに足す（`eval_s2_repr.py` と同じ作法）
@@ -56,6 +64,13 @@ def sha16(path: str) -> str:
         return hashlib.sha256(f.read()).hexdigest()[:16]
 
 
+NETFREE_SIDE = "netfree"               # 組の片側に書くと葉の V なしの NETFREE（D-161）
+
+
+def side_sha(path: str):
+    return None if path == NETFREE_SIDE else sha16(path)
+
+
 def parse_pair(text: str) -> tuple:
     name, _, rest = text.partition("=")
     a, sep, b = rest.partition(":")
@@ -67,7 +82,19 @@ def parse_pair(text: str) -> tuple:
 def _spec(path: str, pool: list) -> dict:
     from arena_rs import PLANNER
     from record_mix import NETFREE
+    if path == NETFREE_SIDE:
+        return PLANNER(pool, **NETFREE)
     return PLANNER(pool, **NETFREE, value_net=os.path.abspath(path))
+
+
+def target_decks(target: str, env: dict) -> list:
+    """門 T の 1 ブロック（そのデッキのミラー）。最終評価のデッキは開けない（D-153 追記 1）。"""
+    from eval_s2_repr import resolve_deck
+    full = resolve_deck(target)
+    key = full[len("env/"):] if full.startswith("env/") else full
+    if env["decks_block"].get(key, {}).get("split") == "final":
+        raise SystemExit(f"--target {target} は最終評価のデッキ（開けない）")
+    return [full]
 
 
 def run(args, decks: list | None = None) -> dict:
@@ -77,6 +104,8 @@ def run(args, decks: list | None = None) -> dict:
     from arena_rs import ensure_cards
     check_eval_band(args.seed0, args.n)
     ensure_cards()
+    if decks is None and getattr(args, "target", None):
+        decks = target_decks(args.target, load_env(args.env))
     decks = decks or tune_decks(load_env(args.env))
     data = {"version": TOOL_VERSION, "decision": "D-144 追記 3", "decks": decks, "n": args.n, "seed0": args.seed0,
             "pairs": {}, "results": {}}
@@ -92,7 +121,7 @@ def run(args, decks: list | None = None) -> dict:
     pairs = {}
     for text in args.pair:
         name, a, b = parse_pair(text)
-        rec = {"a": {"path": a, "sha": sha16(a)}, "b": {"path": b, "sha": sha16(b)}}
+        rec = {"a": {"path": a, "sha": side_sha(a)}, "b": {"path": b, "sha": side_sha(b)}}
         prev = data["pairs"].get(name)
         if prev is not None and (prev["a"]["sha"], prev["b"]["sha"]) != (rec["a"]["sha"], rec["b"]["sha"]):
             raise SystemExit(f"組 {name} のネットが前回と違う。別の名前にすること")
@@ -185,6 +214,27 @@ def report(data: dict, ch: str, nl: str, n_boot: int = 10000) -> dict:
     return out
 
 
+def gate(data: dict, name: str, n_boot: int = 10000, seed: int = 0) -> dict:
+    """門 T: 組 `name` の A 席の得点と 95% 区間（局の組を単位・ブロック等重み）。下端 > 0.5 → 門を越える。"""
+    if name not in data["pairs"]:
+        raise SystemExit(f"組 {name} が無い")
+    rng = np.random.RandomState(seed)
+    boots, means, n_games = np.zeros(n_boot), [], 0
+    for a, b in blocks(data["decks"]):
+        sc = np.array([x[0] for x in data["results"].get(f"{name}|{a}|{b}", [])], float)
+        if len(sc) != data["n"]:
+            raise SystemExit(f"{name}|{a}|{b} の局数 {len(sc)} が n = {data['n']} と違う（足し継ぎの途中）")
+        pairs = sc[:len(sc) - len(sc) % 2].reshape(-1, 2).mean(1)
+        boots += pairs[rng.randint(0, len(pairs), size=(n_boot, len(pairs)))].mean(1)
+        means.append(sc.mean())
+        n_games += len(sc)
+    boots /= len(means)
+    lo, hi = np.percentile(boots, [2.5, 97.5])
+    return {"version": TOOL_VERSION, "gate": name, "pair": data["pairs"][name], "n_games": n_games,
+            "score": float(np.mean(means)), "lo": float(lo), "hi": float(hi),
+            "verdict": "門を越える" if lo > 0.5 else "門を越えない（止めて相談）"}
+
+
 def main(argv=None):
     ap = argparse.ArgumentParser()
     sub = ap.add_subparsers(dest="cmd", required=True)
@@ -196,17 +246,24 @@ def main(argv=None):
     r.add_argument("--workers", type=int, default=4)
     r.add_argument("--budget-sec", type=float, default=480.0)
     r.add_argument("--env", default=DEFAULT_ENV)
+    r.add_argument("--target", default=None, help="門 T（D-161）: このデッキのミラー 1 ブロックだけを回す")
     p = sub.add_parser("report")
     p.add_argument("--in", dest="inp", required=True)
-    p.add_argument("--challenge", required=True)
-    p.add_argument("--null", required=True)
+    p.add_argument("--challenge", default=None)
+    p.add_argument("--null", default=None)
+    p.add_argument("--gate", default=None, help="門 T（D-161）: この組の A 席の得点と「下端 > 0.5」")
     p.add_argument("--out", default=None)
     args = ap.parse_args(argv)
     if args.cmd == "run":
         return run(args)
     with open(args.inp, encoding="utf-8") as f:
         data = json.load(f)
-    out = report(data, args.challenge, args.null)
+    if args.gate:
+        out = gate(data, args.gate)
+    else:
+        if not (args.challenge and args.null):
+            raise SystemExit("report には --challenge と --null（または --gate）が要る")
+        out = report(data, args.challenge, args.null)
     print(json.dumps(out, ensure_ascii=False, indent=1))
     if args.out:
         with open(args.out, "w", encoding="utf-8", newline="\n") as f:

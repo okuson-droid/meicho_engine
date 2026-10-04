@@ -54,6 +54,7 @@ DEFAULT_ENV = os.path.join(_HERE, "..", "results", "decksim", "env_v1.json")
 PREFIX = "env/"
 SHARES = {"mirror": 0.4, "cross": 0.4, "anchor": 0.2}
 ANCHOR_OPPONENTS = ("heuristic", "greedy", "planner")
+CROSS_OPPONENTS = ("teacher", "netfree")         # --target の異種のブロックの相手の席（D-161）
 TOOL_VERSION = "s2sched-1"
 TEACHERS = ("netfree", "netfree_v")
 
@@ -164,7 +165,7 @@ def parse_per_block(text: str, kinds: tuple) -> dict:
 
 
 def build_target(decks_block: dict, *, target: str, per: dict, seed0: int, band_end: int, name: str,
-                 teacher: dict | None = None, purpose: str | None = None) -> dict:
+                 teacher: dict | None = None, purpose: str | None = None, cross_opponent: str = "teacher") -> dict:
     """段階4 の対象デッキの教材（設計書 §4.2）。相手の学習デッキは 16 個すべて・調整と最終評価は出さない。"""
     if target not in decks_block:
         raise SystemExit(f"--target {target} は環境デッキ群に無い")
@@ -173,13 +174,20 @@ def build_target(decks_block: dict, *, target: str, per: dict, seed0: int, band_
     if decks_block[target].get("split") == "train":
         raise SystemExit(f"--target {target} は学習デッキ（汎用 V が学んだデッキは対象にしない）")
     train = sorted(k for k, v in decks_block.items() if v.get("split") == "train")
+    if cross_opponent not in CROSS_OPPONENTS:
+        raise SystemExit(f"--cross-opponent は {CROSS_OPPONENTS} のどれか")
     raw = [("mirror", target, target, "teacher", "both")]
     for d in train:
-        raw.append(("cross", target, d, "teacher", "deck_a"))
+        # 段階4 便 4-A4（D-161）: --cross-opponent netfree では異種の相手の席だけ netfree にし、教師の席（deck_a）を記録する
+        raw.append(("cross", target, d, "teacher", "deck_a") if cross_opponent == "teacher"
+                   else ("cross", target, d, cross_opponent, "a"))
     for opp in ANCHOR_OPPONENTS:
         raw.append(("anchor", target, target, opp, "a"))
+    gen = {"target": target, "per_block": per}
+    if cross_opponent != "teacher":
+        gen["cross_opponent"] = cross_opponent      # 既定は欄を足さない＝従来の表とバイト単位で同じ
     return _assemble(raw, per, decks_block, seed0=seed0, band_end=band_end, name=name, teacher=teacher,
-                     purpose=purpose, gen={"target": target, "per_block": per})
+                     purpose=purpose, gen=gen)
 
 
 def build_pool_only(deck: str, *, per: dict, seed0: int, band_end: int, name: str,
@@ -202,6 +210,9 @@ def _assemble(raw: list, per: dict, decks_block: dict | None, *, seed0: int, ban
         blk = {"kind": kind, "deck_a": prefix + a, "deck_b": prefix + b, "seed0": s, "n": n, "record": rec}
         if opp != "teacher":
             blk["opponent"] = opp
+            if a != b:
+                # 教師以外が相手の異種のブロック: 教師（A）が常に deck_a を打つ（D-161・record_mix の規則）
+                blk["agents_follow_decks"] = True
         blocks.append(blk)
         s += n
     total = s - seed0
@@ -325,6 +336,8 @@ def main(argv=None):
     ap.add_argument("--target", default=None, help="段階4: 対象デッキ（調整デッキ）の追加学習の教材（D-154 §4.2）")
     ap.add_argument("--pool-only", default=None, help="段階4: このデッキだけの教材（S の事前学習・D-154 §3.1）")
     ap.add_argument("--per-block", default=None, help="--target / --pool-only のブロックごとの局数（種類:局数,…）")
+    ap.add_argument("--cross-opponent", default="teacher", choices=list(CROSS_OPPONENTS),
+                    help="--target: 異種のブロックの相手の席（既定 teacher＝従来どおり／netfree＝教師を替えた教材で相手だけ netfree・D-161）")
     ap.add_argument("--purpose", default=None, help="表に purpose 欄を足す（例 stage4_finetune）")
     ap.add_argument("--out", required=True)
     args = ap.parse_args(argv)
@@ -348,7 +361,7 @@ def main(argv=None):
         sch = build_target(env["decks_block"], target=args.target,
                            per=parse_per_block(args.per_block, ("mirror", "cross", "anchor")),
                            seed0=args.seed0, band_end=args.band_end, name=args.name, teacher=teacher,
-                           purpose=args.purpose)
+                           purpose=args.purpose, cross_opponent=args.cross_opponent)
     elif args.pool_only:
         sch = build_pool_only(args.pool_only, per=parse_per_block(args.per_block, ("mirror", "anchor")),
                               seed0=args.seed0, band_end=args.band_end, name=args.name, teacher=teacher,

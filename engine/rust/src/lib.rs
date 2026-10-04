@@ -1314,7 +1314,7 @@ fn encode_phase(p: state::Phase) -> u8 {
 fn run_series_record(d: &Arc<CardDb>, cd: &[Vec<u16>; 2], ad: &[Vec<u16>; 2], sa: &AgentSpec, sb: &AgentSpec,
                      seed0: i64, n: i64, workers: usize, max_turns: i64, out_path: &str,
                      record_a: bool, record_b: bool, opp_from_seat: bool, leaf: Option<(&str, usize)>,
-                     record_seats: Option<[bool; 2]>)
+                     record_seats: Option<[bool; 2]>, agents_follow_decks: bool)
                      -> std::io::Result<(Vec<(Option<bool>, i64, i64, u64, u64)>, Vec<String>)> {
     use std::io::Write;
     let seeds: Vec<i64> = (seed0..seed0 + n).collect();
@@ -1328,6 +1328,16 @@ fn run_series_record(d: &Arc<CardDb>, cd: &[Vec<u16>; 2], ad: &[Vec<u16>; 2], sa
     };
     let job = |seed: i64, buf: &mut Vec<u8>, lb: Option<(&mut Vec<u8>, usize)>| -> (Option<bool>, i64, i64, u64, u64) {
         let flip = seed % 2 == 1;
+        // 段階4 便 4-A4（D-161）: `agents_follow_decks` なら奇数シードでデッキも席ごと入れ替え、
+        // A が常に deck_a（席を入れ替える前の席 0 のデッキ）を、B が常に deck_b を打つ。先攻・後攻は従来どおり交互
+        let (cd_sw, ad_sw);
+        let (cd, ad): (&[Vec<u16>; 2], &[Vec<u16>; 2]) = if agents_follow_decks && flip {
+            cd_sw = [cd[1].clone(), cd[0].clone()];
+            ad_sw = [ad[1].clone(), ad[0].clone()];
+            (&cd_sw, &ad_sw)
+        } else {
+            (cd, ad)
+        };
         let mut ags: [AnyAgent; 2] = seat_agents(ad, sa, sb, seed, flip, opp_from_seat);
         let rec = match record_seats {
             Some(seats) => seats,
@@ -1444,12 +1454,18 @@ fn series_digest(py: Python<'_>, chara_decks: Vec<Vec<String>>, action_decks: Ve
 /// `record_seats`（段階4・D-154）を渡すと、`record_a` / `record_b`（エージェントで選ぶ）の代わりに
 /// **席で**記録する側を選ぶ（席 0 = deck_a）。エージェントは奇数シードで席を入れ替えるので、
 /// 「deck_a の席だけ」を記録するにはこちらを使う。渡さなければ従来どおり。
+///
+/// `agents_follow_decks`（段階4 便 4-A4・D-161・既定オフ）を真にすると、奇数シードでデッキも席ごと入れ替え、
+/// **A が常に deck_a を、B が常に deck_b を打つ**（先攻・後攻は従来どおりシードの偶奇で交互）。
+/// A と B が別の探索器で、デッキも違うブロック（教師 対 netfree の異種）で使う。`record_seats` とは同時に使えない
+/// （記録する側は `record_a` / `record_b` で選ぶ）。偽なら従来とバイト単位で同じ。
 #[pyfunction]
-#[pyo3(signature = (chara_decks, action_decks, spec_a, spec_b, seed0, n, out_path, workers=1, max_turns=200, record_a=true, record_b=true, opp_from_seat=false, leaf_dump=None, leaf_cap=8, record_seats=None))]
+#[pyo3(signature = (chara_decks, action_decks, spec_a, spec_b, seed0, n, out_path, workers=1, max_turns=200, record_a=true, record_b=true, opp_from_seat=false, leaf_dump=None, leaf_cap=8, record_seats=None, agents_follow_decks=false))]
 fn series_record(py: Python<'_>, chara_decks: Vec<Vec<String>>, action_decks: Vec<Vec<String>>,
                  spec_a: &Bound<'_, PyDict>, spec_b: &Bound<'_, PyDict>, seed0: i64, n: i64, out_path: String,
                  workers: usize, max_turns: i64, record_a: bool, record_b: bool, opp_from_seat: bool,
-                 leaf_dump: Option<String>, leaf_cap: usize, record_seats: Option<(bool, bool)>)
+                 leaf_dump: Option<String>, leaf_cap: usize, record_seats: Option<(bool, bool)>,
+                 agents_follow_decks: bool)
                  -> PyResult<(Vec<(Option<bool>, i64, i64, u64, u64)>, Vec<String>)> {
     let d = db()?;
     let sa = spec_from_py(&d, spec_a)?;
@@ -1460,7 +1476,10 @@ fn series_record(py: Python<'_>, chara_decks: Vec<Vec<String>>, action_decks: Ve
     }
     let leaf = leaf_dump.as_deref().map(|p| (p, leaf_cap));
     let seats = record_seats.map(|(x, y)| [x, y]);
-    py.allow_threads(|| run_series_record(&d, &cd, &ad, &sa, &sb, seed0, n, workers, max_turns, &out_path, record_a, record_b, opp_from_seat, leaf, seats))
+    if agents_follow_decks && seats.is_some() {
+        return Err(PyValueError::new_err("agents_follow_decks と record_seats は同時に使えない（記録する側は record_a / record_b で選ぶ）"));
+    }
+    py.allow_threads(|| run_series_record(&d, &cd, &ad, &sa, &sb, seed0, n, workers, max_turns, &out_path, record_a, record_b, opp_from_seat, leaf, seats, agents_follow_decks))
         .map_err(|e| PyRuntimeError::new_err(e.to_string()))
 }
 
@@ -1484,7 +1503,8 @@ fn features() -> Vec<String> {
         "encoding_v6".to_string(),                // 段階 1C-c（D-124）: 符号化 v6（信念の要約・統一した hand_known）
         "te13_switched_scope".to_string(),        // TE-13（D-134）: 【切り替え】は入れ替わった 2 枠だけが誘発する
         "leaf_dump".to_string(),
-        "record_seats".to_string(),               // 段階4（D-154）: series_record の record_seats（記録する側を席で選ぶ）                  // 段階3 項目 4（D-151）: series_record の leaf_dump（V を呼んだ局面の書き出し・既定オフ）
+        "record_seats".to_string(),               // 段階4（D-154）: series_record の record_seats（記録する側を席で選ぶ）
+        "agents_follow_decks".to_string(),        // 段階4 便 4-A4（D-161）: series_record の agents_follow_decks（A が常に deck_a を打つ・既定オフ）
     ]
 }
 
