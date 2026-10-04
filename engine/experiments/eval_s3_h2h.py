@@ -27,7 +27,8 @@
 
 - `--target D` を付けると、そのデッキのミラー 1 ブロックだけを回す（既定は調整デッキ 4 つの 16 ブロック）。
   最終評価のデッキは落とす
-- 組の片側に `netfree` と書くと、その席は葉の V を持たない `record_mix.NETFREE` そのものになる
+- 組の片側に `netfree` と書くと、その席は葉の V を持たない `record_mix.NETFREE` そのものになる。
+  `netfree_b` は予算を増やした netfree（`solo_samples` 4 → 16・`endgame_enum` 64 → 256・設計書 §2.2 の T-b）
 - `report --gate 組` は、その組の A 席の得点と 95% 区間（局の組 (2k, 2k+1) を単位に 10,000 回）と、
   「下端 > 0.5 → 門を越える」を出す（挑戦と null の対は作らない）
 
@@ -65,10 +66,12 @@ def sha16(path: str) -> str:
 
 
 NETFREE_SIDE = "netfree"               # 組の片側に書くと葉の V なしの NETFREE（D-161）
+NETFREE_B_SIDE = "netfree_b"           # 予算を増やした netfree（設計書 §2.2 の T-b・D-161）
+NETFREE_B = {"solo_samples": 16, "endgame_enum": 256}
 
 
 def side_sha(path: str):
-    return None if path == NETFREE_SIDE else sha16(path)
+    return None if path in (NETFREE_SIDE, NETFREE_B_SIDE) else sha16(path)
 
 
 def parse_pair(text: str) -> tuple:
@@ -84,6 +87,8 @@ def _spec(path: str, pool: list) -> dict:
     from record_mix import NETFREE
     if path == NETFREE_SIDE:
         return PLANNER(pool, **NETFREE)
+    if path == NETFREE_B_SIDE:
+        return PLANNER(pool, **dict(NETFREE, **NETFREE_B))
     return PLANNER(pool, **NETFREE, value_net=os.path.abspath(path))
 
 

@@ -8,7 +8,7 @@ A4-3 `record_mix`: 相手 `netfree` は葉の V なしの `NETFREE` そのもの
      `agents_follow_decks: true` が無いと落ちる。付けたブロックの manifest は A（教師）の決定がすべて deck_a 側に数わる
 A4-4 `make_s2_schedule --cross-opponent netfree`: 異種のブロックだけ相手が netfree・記録は a・`agents_follow_decks`。
      ミラーと錨は既定と同じ。既定（付けない）は従来の表とバイト単位で同じ
-A4-5 `eval_s3_h2h`: `--target` はミラー 1 ブロック・最終評価のデッキは落とす。`netfree` の側は葉の V なし・指紋 None。
+A4-5 `eval_s3_h2h`: `--target` はミラー 1 ブロック・最終評価のデッキは落とす。`netfree` の側は葉の V なし・指紋 None（`netfree_b` は予算を増やした netfree）。
      `report --gate` は A 席の得点と組を単位の区間・「下端 > 0.5」
 
 検査の対局は 897900..897999（kind=diag・D-161 で登録）で回す。
@@ -167,6 +167,12 @@ def test_h2h_target_and_netfree_side(env):
     assert H.side_sha("netfree") is None
     sp = H._spec("netfree", [])
     assert "value_net" not in sp
+    from record_mix import NETFREE
+    from arena_rs import PLANNER
+    assert sp == PLANNER([], **NETFREE)
+    spb = H._spec("netfree_b", [])
+    assert spb == PLANNER([], **dict(NETFREE, solo_samples=16, endgame_enum=256)) and spb != sp
+    assert H.side_sha("netfree_b") is None
 
 
 def test_h2h_gate():
