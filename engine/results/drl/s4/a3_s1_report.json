@@ -1,0 +1,94 @@
+{
+ "version": "s2eval-1",
+ "task": "s4",
+ "target": "env/ENV_SANGE_RM_TSUBAKI",
+ "opponents": [
+  "planner"
+ ],
+ "seed0": 887000,
+ "level": 0.95,
+ "scores": {
+  "G0": {
+   "diff": 0.668125,
+   "lo": 0.644984375,
+   "hi": 0.69125,
+   "n_per_block": 1600,
+   "by_block": {
+    "planner": 0.668125
+   }
+  },
+  "S3000": {
+   "diff": 0.745,
+   "lo": 0.723125,
+   "hi": 0.76625,
+   "n_per_block": 1600,
+   "by_block": {
+    "planner": 0.745
+   }
+  },
+  "G3000": {
+   "diff": 0.695,
+   "lo": 0.6725,
+   "hi": 0.716875,
+   "n_per_block": 1600,
+   "by_block": {
+    "planner": 0.695
+   }
+  }
+ },
+ "wdl": {
+  "G0": {
+   "planner": {
+    "n": 1600,
+    "W": 1069,
+    "D": 0,
+    "L": 531
+   }
+  },
+  "S3000": {
+   "planner": {
+    "n": 1600,
+    "W": 1192,
+    "D": 0,
+    "L": 408
+   }
+  },
+  "G3000": {
+   "planner": {
+    "n": 1600,
+    "W": 1112,
+    "D": 0,
+    "L": 488
+   }
+  }
+ },
+ "compare": {
+  "G3000-G0": {
+   "diff": 0.026875,
+   "lo": -0.00375,
+   "hi": 0.058125,
+   "n_per_block": 1600,
+   "by_block": {
+    "planner": 0.026875
+   }
+  },
+  "G3000-S3000": {
+   "diff": -0.05,
+   "lo": -0.079375,
+   "hi": -0.020625,
+   "n_per_block": 1600,
+   "by_block": {
+    "planner": -0.05
+   }
+  },
+  "S3000-G0": {
+   "diff": 0.076875,
+   "lo": 0.045625,
+   "hi": 0.1075,
+   "n_per_block": 1600,
+   "by_block": {
+    "planner": 0.076875
+   }
+  }
+ }
+}

@@ -1,0 +1,88 @@
+# 便 4-A3 全検査（ファイルごとに別のプロセス・python3 -m pytest tests/<file> -q -rfs --run-slow -p no:cacheprovider）2026-10-03
+# 合計 1,412 passed・9 failed・7 skipped（61 ファイル）
+
+## ファイルごとの最後の行
+test_action_value: 5 passed in 5.88s
+test_bp01: 4 failed, 13 passed in 14.05s
+test_bp01_k2: 15 passed in 0.04s
+test_bp01_k3: 135 passed in 15.32s
+test_bp01_k4: 28 passed in 2.79s
+test_bp01_k5: 9 passed in 0.02s
+test_c1_features: 9 passed in 2.34s
+test_card_images: 4 failed, 16 passed in 0.31s
+test_card_profile_proj: 5 passed, 1 warning in 2.23s
+test_card_space: 5 passed in 0.04s
+test_cards_folder: 5 skipped in 0.03s
+test_champion_vc4: 10 passed in 498.72s (0:08:18)
+test_d065: 1 failed, 52 passed in 279.20s (0:04:39)
+test_deck_similarity: 22 passed in 1.00s
+test_discovery: 22 passed in 1065.69s (0:17:45)
+test_dist: 11 passed in 0.67s
+test_drl: 20 passed, 1 skipped in 42.29s
+test_drl_data_reader: 4 passed in 0.27s
+test_encoding_v6: 10 passed, 1 skipped in 1.74s
+test_engine: 101 passed in 37.50s
+test_ensemble_v: 6 passed in 1.28s
+test_env_decks: 174 passed in 0.30s
+test_eval_s2_repr: 4 passed in 0.19s
+test_gendata: 10 passed in 5.45s
+test_horizon: 3 passed in 14.53s
+test_known_hand_1ca: 5 passed in 0.97s
+test_ladder: 23 passed in 3.53s
+test_lit_a: 12 passed in 105.26s (0:01:45)
+test_lit_a2: 18 passed in 824.91s (0:13:44)
+test_lit_c: 33 passed in 1961.63s (0:32:41)
+test_lit_d: 25 passed in 185.98s (0:03:05)
+test_lit_d2: 24 passed in 31.88s
+test_lit_m: 10 passed in 2.59s
+test_official_a12: 9 passed in 0.02s
+test_official_a3b9: 12 passed in 0.04s
+test_official_a4b4: 4 passed in 0.02s
+test_official_a5b7: 10 passed in 0.02s
+test_official_a6: 7 passed in 0.02s
+test_official_b123: 13 passed in 0.03s
+test_persistent_feature: 3 passed in 0.18s
+test_plan_chunks: 12 passed in 0.43s
+test_play_profile: 7 passed in 1.22s
+test_record_mix_1cb: 11 passed in 2.72s
+test_rush_lv2: 4 passed in 8.23s
+test_rust_agents: 80 passed in 24.08s
+test_rust_engine: 148 passed in 29.90s
+test_s2_schedule: 18 passed in 0.15s
+test_stage1a_choices: 8 passed in 0.04s
+test_stage1b_encoding: 5 passed in 2.65s
+test_stage3_diag: 18 passed in 90.79s (0:01:30)
+test_stage3_item4: 16 passed in 192.08s (0:03:12)
+test_stage3_teacherfix: 12 passed in 61.24s (0:01:01)
+test_stage3_tools: 19 passed in 47.82s
+test_stage4_a3_tools: 8 passed in 13.54s
+test_stage4_tools: 19 passed in 15.31s
+test_te13_switched_scope: 41 passed in 4.55s
+test_trace_m1: 19 passed in 2.41s
+test_value_bootstrap: 29 passed in 93.59s (0:01:33)
+test_valuenet: 8 passed in 15.25s
+test_versions: 5 passed in 0.92s
+test_webapp: 28 passed in 7.85s
+
+## 失敗と skip
+FAILED tests/test_bp01.py::test_unlisted_list_is_empty_because_the_three_were_published
+FAILED tests/test_bp01.py::test_every_bp01_number_is_registered - FileNotFoun...
+FAILED tests/test_bp01.py::test_unregistered_set_is_a_subset_of_the_k0_ledger
+FAILED tests/test_bp01.py::test_no_image_allowlist_is_consistent - AssertionE...
+FAILED tests/test_card_images.py::test_every_implemented_card_has_an_image - ...
+FAILED tests/test_card_images.py::test_url_for_returns_none_when_there_is_no_image
+FAILED tests/test_card_images.py::test_view_carries_an_image_url_without_dropping_the_engine_text
+FAILED tests/test_card_images.py::test_chara_card_carries_an_image - Assertio...
+SKIPPED [1] tests/test_cards_folder.py:25: cards/cards_structured.csv が無い (/home/user/meicho_engine/cards/cards_structured.csv)
+SKIPPED [1] tests/test_cards_folder.py:35: cards/cards_structured.csv が無い (/home/user/meicho_engine/cards/cards_structured.csv)
+SKIPPED [1] tests/test_cards_folder.py:51: cards/cards_structured.csv が無い (/home/user/meicho_engine/cards/cards_structured.csv)
+SKIPPED [1] tests/test_cards_folder.py:63: cards/cards_structured.csv が無い (/home/user/meicho_engine/cards/cards_structured.csv)
+SKIPPED [1] tests/test_cards_folder.py:80: cards/cards_structured.csv が無い (/home/user/meicho_engine/cards/cards_structured.csv)
+FAILED tests/test_d065.py::test_distil_makes_the_student_agree_with_the_teacher
+FAILED tests/test_d065.py::test_distil_makes_the_student_agree_with_the_teacher
+SKIPPED [1] tests/test_drl.py:414: 段階 2 の記録が無い環境
+SKIPPED [1] tests/test_encoding_v6.py:187: 移行したネットが無い環境
+
+## test_d065 の回し直し（壊し方の確かめで drl_train.py を約 20 秒書き換えた時間と重なったため）
+FAILED tests/test_d065.py::test_distil_makes_the_student_agree_with_the_teacher
+1 failed, 52 passed in 267.78s (0:04:27)
