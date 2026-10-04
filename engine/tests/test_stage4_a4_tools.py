@@ -7,7 +7,7 @@ A4-2 `agents_follow_decks=False` を明示しても既定と記録のバイト�
 A4-3 `record_mix`: 相手 `netfree` は葉の V なしの `NETFREE` そのもの。相手 `netfree` の異種のブロックは
      `agents_follow_decks: true` が無いと落ちる。付けたブロックの manifest は A（教師）の決定がすべて deck_a 側に数わる
 A4-4 `make_s2_schedule --cross-opponent netfree`: 異種のブロックだけ相手が netfree・記録は a・`agents_follow_decks`。
-     ミラーと錨は既定と同じ。既定（付けない）は従来の表とバイト単位で同じ
+     ミラーと錨は既定と同じ。既定（付けない）は 4-A・4-A2 の表 3 本とバイト単位で同じ
 A4-5 `eval_s3_h2h`: `--target` はミラー 1 ブロック・最終評価のデッキは落とす。`netfree` の側は葉の V なし・指紋 None（`netfree_b` は予算を増やした netfree）。
      `report --gate` は A 席の得点と組を単位の区間・「下端 > 0.5」
 
@@ -155,6 +155,20 @@ def test_cross_opponent_netfree_schedule(env):
 
 def test_default_target_schedule_is_unchanged(env):
     assert _target(env) == _target(env, cross_opponent="teacher")
+
+
+@pytest.mark.parametrize("stem", ["target_train_schedule", "a2_target_train2000_schedule", "target_val_schedule"])
+def test_default_target_schedule_matches_4a_bytes(stem, tmp_path):
+    """既定（--cross-opponent を付けない）は 4-A・4-A2 の表とバイト単位で同じ（設計書 §6 の 2）。"""
+    src = os.path.join(ROOT, "results", "drl", "s4", f"{stem}.json")
+    with open(src, encoding="utf-8") as f:
+        old = json.load(f)
+    g = old["generator"]
+    per = ",".join(f"{k}:{v}" for k, v in g["per_block"].items())
+    out = tmp_path / f"{stem}.json"
+    M.main(["--target", g["target"], "--per-block", per, "--seed0", str(g["band"][0]),
+            "--band-end", str(g["band"][1]), "--name", old["name"], "--purpose", old["purpose"], "--out", str(out)])
+    assert out.read_bytes() == open(src, "rb").read()
 
 
 # ------------------------------------------------------------------ A4-5
