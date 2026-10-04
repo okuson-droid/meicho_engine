@@ -1,0 +1,19 @@
+{
+ "version": "s3h2h-1",
+ "gate": "Tb",
+ "pair": {
+  "a": {
+   "path": "netfree_b",
+   "sha": null
+  },
+  "b": {
+   "path": "netfree",
+   "sha": null
+  }
+ },
+ "n_games": 200,
+ "score": 0.525,
+ "lo": 0.455,
+ "hi": 0.595,
+ "verdict": "門を越えない（止めて相談）"
+}
