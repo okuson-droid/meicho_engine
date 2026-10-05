@@ -799,7 +799,23 @@
    "purpose": "段階4 待ち時間の測定 W-2（D-161 追記 1・添える扱い）: 評価（課題 s4・対象 `ENV_SANGE_RM_TSUBAKI` のミラー・素 planner 904000..905599 の 1,600 局・R@3,000 と G@3,000 で同じシード）。**学習に使用禁止**",
    "owner": "experiments/eval_s2_repr.py",
    "date": "2026-10-05"
+  },
+  {
+   "start": 906000,
+   "end": 908999,
+   "kind": "train",
+   "purpose": "段階4 待ち時間の測定 W-3（D-161 追記 1・添える扱い）: 対象デッキ `ENV_SANGE_RM_TSUBAKI` の netfree の教材を 3,000 局足す（906000..908999・mirror:1200,cross:72,anchor:216）。4-A・4-A2 の 3,000 局と合わせて 6,000 局。**評価に使用禁止**",
+   "owner": "experiments/make_s2_schedule.py / record_mix.py",
+   "date": "2026-10-05"
+  },
+  {
+   "start": 909000,
+   "end": 910999,
+   "kind": "validate",
+   "purpose": "段階4 待ち時間の測定 W-3（D-161 追記 1・添える扱い）: 評価（課題 s4・素 planner 909000..910599 の 1,600 局・G@6,000 と G@3,000 で同じシード）。**学習に使用禁止**",
+   "owner": "experiments/eval_s2_repr.py",
+   "date": "2026-10-05"
   }
  ],
- "next_free": 906000
+ "next_free": 911000
 }
