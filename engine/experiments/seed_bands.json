@@ -823,7 +823,23 @@
    "purpose": "待ち時間の測定 W4（D-162 追記 1・添える扱い）: 評価（課題 s4・素 planner 911000..912599 の 1,600 局・候補は同じシード）。**学習に使用禁止**",
    "owner": "experiments/eval_s2_repr.py",
    "date": "2026-10-05"
+  },
+  {
+   "start": 913000,
+   "end": 918999,
+   "kind": "train",
+   "purpose": "待ち時間の測定 W5（D-162 追記 1・添える扱い）: 対象デッキ `ENV_SANGE_RM_TSUBAKI` の netfree の教材 6000 局（wl_add6000・4-A と同じ配分）。**評価に使用禁止**",
+   "owner": "experiments/make_s2_schedule.py / record_mix.py",
+   "date": "2026-10-05"
+  },
+  {
+   "start": 919000,
+   "end": 920999,
+   "kind": "validate",
+   "purpose": "待ち時間の測定 W5（D-162 追記 1・添える扱い）: 評価（課題 s4・素 planner 919000..920599 の 1,600 局・候補は同じシード）。**学習に使用禁止**",
+   "owner": "experiments/eval_s2_repr.py",
+   "date": "2026-10-05"
   }
  ],
- "next_free": 913000
+ "next_free": 921000
 }
