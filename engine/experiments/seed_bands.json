@@ -767,7 +767,31 @@
    "purpose": "段階4 便 4-A4（D-161・`GENERALIST_STAGE4_TEACHER_DESIGN_20261005.md` §5） 配線の確かめ・検査（`tests/test_stage4_a4_tools.py` の局 897900.. など・勝敗は読まない）",
    "owner": "tests/test_stage4_a4_tools.py",
    "date": "2026-10-05"
+  },
+  {
+   "start": 898000,
+   "end": 900999,
+   "kind": "train",
+   "purpose": "段階4 待ち時間の測定 W-1（D-161 追記 1・添える扱い）: 調整デッキ `ENV_YANG_RM_TSUBAKI` の netfree の教材 3,000 局（4-A・4-A2 と同じ配分 mirror:1200,cross:72,anchor:216）。**評価に使用禁止**",
+   "owner": "experiments/make_s2_schedule.py / record_mix.py",
+   "date": "2026-10-05"
+  },
+  {
+   "start": 901000,
+   "end": 901999,
+   "kind": "train",
+   "purpose": "段階4 待ち時間の測定 W-1（D-161 追記 1・添える扱い）: `ENV_YANG_RM_TSUBAKI` の検証の記録（204 局・mirror:80,cross:4,anchor:20・`--select best_v` と机上にだけ使う）。**評価に使用禁止**",
+   "owner": "experiments/make_s2_schedule.py / record_mix.py",
+   "date": "2026-10-05"
+  },
+  {
+   "start": 902000,
+   "end": 903999,
+   "kind": "validate",
+   "purpose": "段階4 待ち時間の測定 W-1（D-161 追記 1・添える扱い）: 評価（課題 s4・対象 `ENV_YANG_RM_TSUBAKI` のミラー・素 planner 902000..903599 の 1,600 局・G@3,000 と S@3,000 で同じシード）。**学習に使用禁止**",
+   "owner": "experiments/eval_s2_repr.py",
+   "date": "2026-10-05"
   }
  ],
- "next_free": 898000
+ "next_free": 904000
 }
