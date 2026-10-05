@@ -815,7 +815,15 @@
    "purpose": "段階4 待ち時間の測定 W-3（D-161 追記 1・添える扱い）: 評価（課題 s4・素 planner 909000..910599 の 1,600 局・G@6,000 と G@3,000 で同じシード）。**学習に使用禁止**",
    "owner": "experiments/eval_s2_repr.py",
    "date": "2026-10-05"
+  },
+  {
+   "start": 911000,
+   "end": 912999,
+   "kind": "validate",
+   "purpose": "待ち時間の測定 W4（D-162 追記 1・添える扱い）: 評価（課題 s4・素 planner 911000..912599 の 1,600 局・候補は同じシード）。**学習に使用禁止**",
+   "owner": "experiments/eval_s2_repr.py",
+   "date": "2026-10-05"
   }
  ],
- "next_free": 911000
+ "next_free": 913000
 }
