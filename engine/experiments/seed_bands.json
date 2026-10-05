@@ -791,7 +791,15 @@
    "purpose": "段階4 待ち時間の測定 W-1（D-161 追記 1・添える扱い）: 評価（課題 s4・対象 `ENV_YANG_RM_TSUBAKI` のミラー・素 planner 902000..903599 の 1,600 局・G@3,000 と S@3,000 で同じシード）。**学習に使用禁止**",
    "owner": "experiments/eval_s2_repr.py",
    "date": "2026-10-05"
+  },
+  {
+   "start": 904000,
+   "end": 905999,
+   "kind": "validate",
+   "purpose": "段階4 待ち時間の測定 W-2（D-161 追記 1・添える扱い）: 評価（課題 s4・対象 `ENV_SANGE_RM_TSUBAKI` のミラー・素 planner 904000..905599 の 1,600 局・R@3,000 と G@3,000 で同じシード）。**学習に使用禁止**",
+   "owner": "experiments/eval_s2_repr.py",
+   "date": "2026-10-05"
   }
  ],
- "next_free": 904000
+ "next_free": 906000
 }
