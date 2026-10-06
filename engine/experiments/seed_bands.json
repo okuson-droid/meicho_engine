@@ -863,7 +863,15 @@
    "purpose": "待ち時間の測定 W6（D-162 追記 1・添える扱い）: 評価（課題 s4・素 planner 933000..934599 の 1,600 局・候補は同じシード）。**学習に使用禁止**",
    "owner": "experiments/eval_s2_repr.py",
    "date": "2026-10-05"
+  },
+  {
+   "start": 935000,
+   "end": 935999,
+   "kind": "diag",
+   "purpose": "汎用 AI の壁を越える案（D-163・`GENERALIST_WALL_DESIGN_20261006.md`）の道具の検査（`tests/test_wall_tools.py` の記録など・勝敗は読まない）",
+   "owner": "tests/test_wall_tools.py",
+   "date": "2026-10-07"
   }
  ],
- "next_free": 935000
+ "next_free": 936000
 }

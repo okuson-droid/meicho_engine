@@ -407,11 +407,72 @@ def is_argmax(scores: np.ndarray, chosen: int) -> bool:
     return int(np.nonzero(fin & (scores == m))[0][0]) == chosen
 
 
+ACTION_PHASE = PHASE_NAMES.index("action")
+
+
+def next_turn_index(seed, pi, turn, step, phase, turn_flag) -> np.ndarray:
+    """腕 B（D-163・`GENERALIST_WALL_DESIGN_20261006.md` §3.1）: 行動フェイズの記録 r（席 i・手番 T）ごとに、
+    「その席の次の自分の手番の始まりの局面」s₁ の記録の添字を返す（行動フェイズ以外と、s₁ が無い記録は -1）。
+
+    s₁ = 同じ局・同じ席で、手番が T より後かつ「自分の手番」の欄が 1 の記録のうち、いちばん早い手番 T' のもの。
+    その手番に行動フェイズの記録があれば、その最初（step 順）を、無ければその手番の最初の記録を使う。"""
+    n = len(seed)
+    out = np.full(n, -1, np.int64)
+    order = np.lexsort((step, turn, pi, seed))
+    s_, p_, t_ = seed[order], pi[order], turn[order]
+    own = turn_flag[order] != 0
+    ph = phase[order]
+    bounds = np.nonzero((np.diff(s_) != 0) | (np.diff(p_) != 0))[0] + 1
+    for g in np.split(np.arange(n), bounds):
+        if not len(g):
+            continue
+        tg, og, pg = t_[g], own[g], ph[g]
+        # 手番ごとの s₁ の候補（自分の手番の記録の、行動フェイズの最初・無ければ最初）
+        first_of_turn = {}
+        for k in range(len(g)):
+            if not og[k]:
+                continue
+            t = int(tg[k])
+            cur = first_of_turn.get(t)
+            if cur is None or (pg[cur] != ACTION_PHASE and pg[k] == ACTION_PHASE):
+                first_of_turn[t] = k
+        turns = np.array(sorted(first_of_turn), np.int64)
+        for k in range(len(g)):
+            if pg[k] != ACTION_PHASE:
+                continue
+            j = np.searchsorted(turns, int(tg[k]), side="right")
+            if j < len(turns):
+                out[order[g[k]]] = order[g[first_of_turn[int(turns[j])]]]
+    return out
+
+
+def next_turn_values(seed, pi, turn, step, phase, obs, z, net) -> tuple:
+    """腕 B: 行動フェイズの記録ごとの v_next（s₁ の V_0・束ねた網のロジットを sigmoid）と、s₁ が無い記録の数。
+    s₁ が無い記録は決着の値（その局の z: 勝ち 1・負け 0・引き分け 0.5）。行動フェイズ以外は NaN。"""
+    nxt = next_turn_index(seed, pi, turn, step, phase, obs[:, TURN_FLAG_COL])
+    act = phase == ACTION_PHASE
+    v = np.full(len(seed), np.nan, np.float32)
+    has = nxt >= 0
+    if has.any():
+        h = obs[nxt[has]].astype(np.float32)
+        lg = np.zeros(len(h), np.float32)
+        w, b = net.value
+        for s0 in range(0, len(h), 8192):
+            x = h[s0:s0 + 8192]
+            for tw, tb in net.trunk:
+                x = np.maximum(x @ tw.T + tb, 0.0).astype(np.float32)
+            lg[s0:s0 + 8192] = (x @ w.T + b)[:, 0]
+        v[has] = 1.0 / (1.0 + np.exp(-lg.astype(np.float64)))
+    term = act & ~has
+    v[term] = z[term]
+    return v, int(term.sum())
+
+
 class Batcher:
     """記録を固定長の配列に詰め替える（行動は MAX_ACTS に詰めてマスク）。"""
 
     def __init__(self, recs: Records, lam: float = 0.0, calib: dict = None,
-                 vtarget: str = "max", league_ranges: list = None):
+                 vtarget: str = "max", league_ranges: list = None, next_net=None):
         n = recs.n
         keep = ~np.isnan(recs.z)
         # リーグ（対 H・対貪欲）の局面かどうか。**シードで見分ける**（D-067）。
@@ -426,9 +487,18 @@ class Batcher:
         m = len(idx)
         acts = np.full((m, MAX_ACTS, ACT_CODE_LEN), -1, np.int8)
         vsearch = np.full(m, np.nan, np.float32)
-        if vtarget not in ("chosen", "max", "fresh", "fresh_am"):
+        if vtarget not in ("chosen", "max", "fresh", "fresh_am", "next_turn"):
             raise SystemExit(f"未対応の --vtarget: {vtarget!r}")
         self.vtarget = vtarget
+        # 腕 B（D-163）: next_turn では探索値は max のまま持ち（較正は従来と同じ）、行動フェイズの記録だけ
+        # 目標の 0.7 の側を較正(v_next) に替える（`set_next`）。v_next は s₁ の V_0
+        self.vnext, self.vnext_calib, self.n_next_terminal = None, None, 0
+        if vtarget == "next_turn":
+            if next_net is None:
+                raise SystemExit("--vtarget next_turn には --next-net（s₁ を採点する束ねた V）が要る")
+            self.vnext, self.n_next_terminal = next_turn_values(
+                recs.seed[keep], recs.pi[keep], recs.turn[keep], recs.step[keep], recs.phase[keep],
+                self.obs, self.z, next_net)
         self.n_nonargmax = 0
         # 層の鍵（phase × 自分のターンか）。`--calib-by phase_turn` のときだけ使う。
         self.stratum = strata_of(self.phase, self.obs)
@@ -455,7 +525,9 @@ class Batcher:
                 continue
             if not len(sc):
                 continue
-            if vtarget in ("max", "fresh", "fresh_am"):
+            if vtarget == "next_turn" and self.phase[j] == ACTION_PHASE and not is_argmax(sc, int(recs.chosen[i])):
+                self.n_nonargmax += 1                 # 腕 B の報告に添える（τ の寄り道をした行動フェイズの決定）
+            if vtarget in ("max", "fresh", "fresh_am", "next_turn"):
                 # `fresh` が NaN の決定（版 2 の記録・探索していない決定）はここに落ちる
                 # 局面の価値 = 「そこから最善を尽くしたときの価値」（D-064 §3.3）。
                 # 記録時は温度 τ で探索的な手も選ぶので、**選んだ手の値**を教師にすると
@@ -489,6 +561,15 @@ class Batcher:
         p = apply_calibration(self.vsearch, calib, self.stratum)
         ok = np.isfinite(p)
         self.target[ok] = ((1 - lam) * self.z[ok] + lam * p[ok]).astype(np.float32)
+        if self.vnext_calib is not None:
+            # 腕 B: 行動フェイズの記録だけ、0.7 の側を較正(v_next) にする（較正の形は同じ線形・別に当てはめたもの）
+            q = _sigmoid_calib(self.vnext, self.vnext_calib)
+            okn = np.isfinite(self.vnext)
+            self.target[okn] = ((1 - lam) * self.z[okn] + lam * q[okn]).astype(np.float32)
+
+    def set_next(self, calib_next: dict) -> None:
+        """腕 B: v_next の較正を渡す（`set_lam` の前に呼ぶ）。"""
+        self.vnext_calib = calib_next
 
     def batch(self, ids):
         return (torch.from_numpy(self.obs[ids].astype(np.float32)),
@@ -758,10 +839,21 @@ def train(args):
         tr_recs = keep_seed_set(tr_recs, keep)
         n_subset_games = len(keep)
         print(f"--subset-frac {args.subset_frac}: {n_subset_games} 局・学習の決定 {n_read} → {tr_recs.n}")
-    tr = Batcher(tr_recs, vtarget=args.vtarget, league_ranges=lg)
+    args.next_net = getattr(args, "next_net", None)
+    next_net = None
+    if args.vtarget == "next_turn":
+        # 腕 B（D-163）: s₁ を採点する束ねた V（V_0）。λ > 0 で、較正は線形のときだけ（設計書 §3.1）
+        if not args.next_net:
+            raise SystemExit("--vtarget next_turn には --next-net が要る")
+        if args.lam <= 0 or getattr(args, "calib_form", "linear") != "linear" or args.calib_by != "none":
+            raise SystemExit("--vtarget next_turn は --lam > 0・--calib-form linear・--calib-by none とだけ組める")
+        next_net = Net.load(args.next_net)
+    elif args.next_net:
+        raise SystemExit("--next-net は --vtarget next_turn のときだけ使う")
+    tr = Batcher(tr_recs, vtarget=args.vtarget, league_ranges=lg, next_net=next_net)
     del tr_recs
     va = Batcher(read_records(files_of(args.valid), args.max_records),
-                 vtarget=args.vtarget, league_ranges=lg)
+                 vtarget=args.vtarget, league_ranges=lg, next_net=next_net)
     print(f"train {tr.n} decisions / valid {va.n} decisions  (read {time.time()-t0:.0f}s)  chance acc: "
           f"train {chance_accuracy(tr):.3f} valid {chance_accuracy(va):.3f}")
 
@@ -825,6 +917,30 @@ def train(args):
                  if calib["spread"] < 0.05 else ""))
         if not calib["useful"]:
             raise SystemExit("較正が基準を下回らない。--lam 0 で回すこと（D-059）")
+        if args.vtarget == "next_turn":
+            # 腕 B: 行動フェイズの記録の v_next だけで、同じ形（線形・同じ目盛りの取り方）の較正を当てはめる
+            okn = np.isfinite(tr.vnext)
+            calib_next = calibrate_vsearch(tr.vnext[okn], tr.z[okn], seed=args.seed, scale=args.calib_scale,
+                                           form="linear")
+            q = _sigmoid_calib(tr.vnext[okn], calib_next)
+            p_old = apply_calibration(tr.vsearch[okn], calib, tr.stratum[okn])
+            fin = np.isfinite(p_old)
+            dec = np.quantile(q, np.linspace(0, 1, 11)) if len(q) else []
+            next_info = {
+                "next_net": args.next_net, "n_action": int(okn.sum()), "n_terminal": int(tr.n_next_terminal),
+                "terminal_frac": float(tr.n_next_terminal / max(1, int(okn.sum()))),
+                "calib": {k: calib_next[k] for k in ("a", "b", "c", "logloss", "base", "spread", "n")},
+                "range": [float(q.min()), float(q.max())] if len(q) else None,
+                "n_nonargmax_action": int(tr.n_nonargmax),
+                "corr_with_p": float(np.corrcoef(q[fin], p_old[fin])[0, 1]) if fin.sum() > 2 else None,
+                "deciles_q": [float(x) for x in dec],
+                "deciles_p": [float(x) for x in np.quantile(p_old[fin], np.linspace(0, 1, 11))] if fin.any() else [],
+            }
+            print(f"腕 B（next_turn）: 行動フェイズの記録 {next_info['n_action']}・s₁ 無し {next_info['n_terminal']}"
+                  f"（{next_info['terminal_frac']:.3f}）・較正 a {calib_next['a']:.3f} b {calib_next['b']:.3f} "
+                  f"c {calib_next['c']:.3f}・範囲 {next_info['range']}・p との相関 {next_info['corr_with_p']}")
+            tr.set_next(calib_next)
+            va.set_next(calib_next)
         tr.set_lam(args.lam, calib)
         # 検証側にも**学習側の較正をそのまま当てる**（valid で取り直さない・D-065 §4.1）。
         # 取り直すと「検証データに合わせた変換」で採点することになり、版の選び方が甘くなる。
@@ -946,6 +1062,7 @@ def train(args):
             **({"subset_frac": args.subset_frac, "n_subset_games": n_subset_games}
                if args.subset_frac is not None else {}),
             **({"freeze": args.freeze} if args.freeze is not None else {}),
+            **({"next_turn": next_info} if args.vtarget == "next_turn" else {}),
             **({"calib_form": args.calib_form} if getattr(args, "calib_form", "linear") != "linear" else {}),
             **({"n_nonargmax": int(tr.n_nonargmax)} if args.vtarget == "fresh_am" else {}),
             "n_params_exported": int(sum(w.size + b.size for w, b in net.trunk) + net.value[0].size
@@ -966,7 +1083,9 @@ def main():
     ap.add_argument("--phead", type=int, default=128)
     ap.add_argument("--wv", type=float, default=1.0); ap.add_argument("--wp", type=float, default=1.0)
     ap.add_argument("--lam", type=float, default=0.0)
-    ap.add_argument("--vtarget", choices=["chosen", "max", "fresh", "fresh_am"], default="max",
+    ap.add_argument("--next-net", default=None,
+                    help="腕 B（D-163）: --vtarget next_turn のとき s₁（次の自分の手番の始まり）を採点する束ねた V（V_0）")
+    ap.add_argument("--vtarget", choices=["chosen", "max", "fresh", "fresh_am", "next_turn"], default="max",
                     help="V の教師に使う探索値（既定 max）。max = その決定で探索が付けた値の最大値"
                          "＝「そこから最善を尽くしたときの価値」。chosen = 実際に選んだ手の値（旧既定）。"
                          "fresh = 選んだ手を別の決定化で取り直した値（楽観の偏りを持たない・"
