@@ -10,6 +10,13 @@ WB-4 既定（`--vtarget` を渡さない）は、口を足す前の `drl_train.
 WB-5 `--vtarget next_turn` は `--next-net`・`--lam > 0` を要り、meta に `next_turn` の報告（s₁ の無い割合・較正・相関・
      十分位・τ の寄り道の数）が入る。`--next-net` だけを渡すと止める
 
+評価の口（§5.1・§5.2）:
+WE-1 `eval_s3_h2h report` の既定（`--rule s3`）は、口を足す前の報告（`results/drl/s3_diag_h2h_report.json`）と同じ
+WE-2 `--rule wall` の判定（下端 > 0 伸びた・上端 < 0 悪くなった・点推定 > 0 で 0 をまたげば境界・それ以外は伸びていない）と、
+     98.3% の区間が 95% より広いこと。`--rule s3` に `--level` を渡すと止める
+WE-3 `eval_s2_repr run --opponent heuristic|greedy`（課題 s2 の錨）: 相手が記録に残り、別の相手で足し継ぐと止める。
+     既定（planner）は口を足す前（commit `fcb46e3`）と同じ結果。`--task s4` に `--opponent` を渡すと止める
+
 検査の対局は 935000..935999（kind=diag・D-163 で登録）で回す。
 """
 from __future__ import annotations
@@ -195,3 +202,79 @@ def test_next_turn_train_meta_and_refusals(recs, tmp_path):
     assert info["n_action"] > 0 and 0 <= info["terminal_frac"] <= 1
     assert set(info["calib"]) >= {"a", "b", "c", "spread"} and len(info["deciles_q"]) == 11
     assert "n_nonargmax_action" in info and m["vtarget"] == "next_turn"
+
+
+# ------------------------------------------------------------------ WE-1・WE-2
+def _h2h():
+    import eval_s3_h2h
+    return eval_s3_h2h
+
+
+def test_h2h_default_report_unchanged():
+    H = _h2h()
+    base = os.path.join(ROOT, "results", "drl")
+    data = json.load(open(os.path.join(base, "s3_diag_h2h.json"), encoding="utf-8"))
+    want = json.load(open(os.path.join(base, "s3_diag_h2h_report.json"), encoding="utf-8"))
+    got = H.report(data, want["challenge"], want["null"])
+    assert json.loads(json.dumps(got)) == want
+
+
+def test_h2h_wall_rule_and_level():
+    H = _h2h()
+    assert H.verdict_wall(0.02, 0.001, 0.04) == "伸びた"
+    assert H.verdict_wall(-0.02, -0.04, -0.001) == "悪くなった"
+    assert H.verdict_wall(0.01, -0.01, 0.03).startswith("境界")
+    assert H.verdict_wall(0.0, -0.02, 0.02) == "伸びていない"
+    assert H.verdict_wall(-0.005, -0.03, 0.02) == "伸びていない"
+    data = json.load(open(os.path.join(ROOT, "results", "drl", "s3_diag_h2h.json"), encoding="utf-8"))
+    ch, nl = "ch", "null"
+    if ch not in data["pairs"]:
+        ch, nl = sorted(data["pairs"])[:2]
+    a = H.report(data, ch, nl)
+    w95 = H.report(data, ch, nl, rule="wall", level=0.95)
+    w983 = H.report(data, ch, nl, rule="wall", level=0.983)
+    assert (w95["main"]["lo"], w95["main"]["hi"]) == (a["main"]["lo"], a["main"]["hi"])
+    assert w983["main"]["lo"] < w95["main"]["lo"] and w983["main"]["hi"] > w95["main"]["hi"]
+    assert w983["raw"] == a["raw"] and w983["level"] == 0.983 and w983["rule"] == "wall"
+    with pytest.raises(SystemExit):
+        H.report(data, ch, nl, level=0.983)
+
+
+# ------------------------------------------------------------------ WE-3
+@pytest.mark.slow
+def test_s2_opponent_anchor(tmp_path, monkeypatch):
+    pytest.importorskip("meicho_rs")
+    import importlib.util
+    import subprocess
+    import eval_s2_repr as E
+    monkeypatch.setattr(E, "check_eval_band", lambda s, n: None)        # 検査は diag の帯で回す
+    out = str(tmp_path / "h.json")
+    base = ["run", "--arm", "a", "--n", "1", "--seed0", str(SEED0 + 80), "--workers", "4"]
+    E.main(base + ["--opponent", "heuristic", "--out", out])
+    d = json.load(open(out, encoding="utf-8"))
+    assert d["opponent"] == "heuristic" and all(len(v) == 1 for v in d["results"].values())
+    with pytest.raises(AssertionError):
+        E.main(base + ["--opponent", "greedy", "--out", out])          # 別の相手で足し継がない
+    with pytest.raises(SystemExit):
+        E.main(["run", "--task", "s4", "--target", TARGET, "--opponent", "heuristic", "--arm", "a", "--n", "1",
+                "--seed0", str(SEED0 + 80), "--band-kind", "diag", "--out", str(tmp_path / "s4.json")])
+    # 既定（planner）は口を足す前と同じ
+    try:
+        src = subprocess.run(["git", "show", f"{PRE_COMMIT}:engine/experiments/eval_s2_repr.py"], cwd=ROOT,
+                             capture_output=True, check=True).stdout
+    except (OSError, subprocess.CalledProcessError):
+        pytest.skip(f"git か commit {PRE_COMMIT} が無い")
+    old_py = os.path.join(ROOT, "experiments", "_eval_s2_repr_pre_wall.py")
+    try:
+        with open(old_py, "wb") as f:
+            f.write(src)
+        spec = importlib.util.spec_from_file_location("_eval_s2_repr_pre_wall", old_py)
+        old = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(old)
+    finally:
+        os.remove(old_py)
+    monkeypatch.setattr(old, "check_eval_band", lambda s, n: None)
+    po, pn = str(tmp_path / "po.json"), str(tmp_path / "pn.json")
+    old.main(base + ["--out", po])
+    E.main(base + ["--out", pn])
+    assert open(po, "rb").read() == open(pn, "rb").read()

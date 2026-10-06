@@ -870,7 +870,7 @@
    "kind": "diag",
    "purpose": "汎用 AI の壁を越える案（D-163・`GENERALIST_WALL_DESIGN_20261006.md`）の道具の検査（`tests/test_wall_tools.py` の記録など・勝敗は読まない）",
    "owner": "tests/test_wall_tools.py",
-   "date": "2026-10-07"
+   "date": "2026-10-06"
   }
  ],
  "next_free": 936000

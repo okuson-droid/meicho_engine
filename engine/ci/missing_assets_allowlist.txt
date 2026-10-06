@@ -14,12 +14,10 @@ test_card_images.py::test_every_implemented_card_has_an_image
 test_card_images.py::test_url_for_returns_none_when_there_is_no_image
 test_card_images.py::test_view_carries_an_image_url_without_dropping_the_engine_text
 test_value_bootstrap.py::test_vb_record_delta_manifest
-# 2026-10-07（D-164 §2）: results/models/s2v_id_ens3.json は .gitignore（約 39 MB）。Release に置くまでの間（2 便目で外す）
+# 2026-10-06（D-164 §2）: results/models/s2v_id_ens3.json は .gitignore（約 39 MB）。Release に置くまでの間（2 便目で外す）
 test_stage3_item4.py::test_default_manifest_has_no_leaf_keys
 test_stage3_item4.py::test_leaf_dump_keeps_records
 test_stage3_item4.py::test_leaf_value_reproduces
 test_stage3_item4.py::test_play_unchanged_with_leaf_dump
 test_stage3_item4.py::test_root_matches_record_and_belief_nonzero
 test_stage3_item4.py::test_smaller_cap_is_subset
-# 2026-10-07: 既知の失敗（torch のある環境で前から落ちる・TASKS の「検査の順序依存」とは別件）。torch の組でだけ回る
-test_d065.py::test_distil_makes_the_student_agree_with_the_teacher

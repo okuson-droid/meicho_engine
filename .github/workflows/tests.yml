@@ -164,7 +164,7 @@ jobs:
           PYTHONUTF8: "1"
         run: |
           set -o pipefail
-          python -m pytest tests/test_drl.py tests/test_d065.py tests/test_stage3_teacherfix.py tests/test_stage3_item4.py tests/test_stage4_tools.py tests/test_stage4_a3_tools.py tests/test_stage4_a4_tools.py -q -rfs --junitxml=../pytest_torch.xml 2>&1 | tee ../pytest_torch_output.txt
+          python -m pytest tests/test_drl.py tests/test_d065.py tests/test_stage3_teacherfix.py tests/test_stage3_item4.py tests/test_stage4_tools.py tests/test_stage4_a3_tools.py tests/test_stage4_a4_tools.py tests/test_wall_tools.py -q -rfs --junitxml=../pytest_torch.xml 2>&1 | tee ../pytest_torch_output.txt
         continue-on-error: true
 
       - name: Fail only on failures the allowlist does not explain

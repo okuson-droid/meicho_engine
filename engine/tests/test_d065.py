@@ -1182,16 +1182,18 @@ def test_distil_makes_the_student_agree_with_the_teacher():
     _needs_torch()
     import torch
     import torch.nn.functional as F
-    from experiments.drl_train import Batcher, TwoHead, distil_loss
+    from experiments.drl_train import MAX_ACTS, Batcher, TwoHead, distil_loss
     r = _fake_records(n=512, seed=53, n_acts=4)
     b = Batcher(r)
     torch.manual_seed(1)
-    teacher = TwoHead(hidden=32, depth=1, phead=16)
     student = TwoHead(hidden=16, depth=1, phead=8)
     obs, codes, n_acts, chosen, target, z, phase = b.batch(np.arange(b.n))
-    with torch.no_grad():
-        t_logits = teacher(obs, codes, n_acts)[1]
-        t_best = t_logits.argmax(-1)
+    # 先生のロジットは観測の線形の写しにする。偽の記録はどの決定も同じ 4 つの行動の符号を持つので、
+    # 初期化したての網を先生にすると一番手が全決定で同じになり、学習前から一致率 1.000 で検査が成り立たない
+    proj = torch.randn(obs.shape[1], MAX_ACTS, generator=torch.Generator().manual_seed(2))
+    t_logits = obs @ proj
+    t_logits[torch.arange(MAX_ACTS)[None, :] >= n_acts[:, None]] = -1e9
+    t_best = t_logits.argmax(-1)
 
     def agree():
         with torch.no_grad():

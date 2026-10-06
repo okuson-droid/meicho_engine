@@ -168,6 +168,8 @@ def _opp_spec(kind: str, pool: list) -> dict:
 
 def run_s4(args) -> dict:
     """課題 s4（D-154 §5.1）。候補は A 席・デッキは D どうし・相手は opponents のブロック。"""
+    if getattr(args, "opponent", "planner") != "planner":
+        raise SystemExit("--task s4 の相手は --opponents で渡す（--opponent は --task s2 だけ）")
     import hashlib
     import meicho_rs as rs
     from arena import load_deck, matchup_config
@@ -299,12 +301,16 @@ def run(args) -> dict:
     for a in args.arm:
         name, _, path = a.partition("=")
         arms[name] = path or None
+    opp = getattr(args, "opponent", "planner")
+    if opp not in S4_OPPONENTS:
+        raise SystemExit(f"--opponent は {S4_OPPONENTS} から: {opp}")
     data = {"version": TOOL_VERSION, "decision": "D-132", "decks": decks, "n": args.n, "seed0": args.seed0,
-            "opponent": "planner", "arms": {}, "results": {}}
+            "opponent": opp, "arms": {}, "results": {}}
     if os.path.exists(args.out):
         with open(args.out, encoding="utf-8") as f:
             data = json.load(f)
         assert (data["seed0"], data["decks"]) == (args.seed0, decks), "条件が違う（別の --out に）"
+        assert data.get("opponent", "planner") == opp, "相手が違う（別の --out に）"
         assert data["n"] <= args.n, "局数を減らして打ち直さない（別の --out に）"
         data["n"] = args.n                       # 局数を増やすのは足し継ぎ（D-138）
     import hashlib
@@ -331,7 +337,8 @@ def run(args) -> dict:
             cfg.validate()
             t = time.time()
             res = rs.series(cfg.chara_decks, cfg.action_decks, _arm_spec(name, path, db["action_deck"]),
-                            PLANNER(da["action_deck"]), args.seed0 + have, args.n - have, args.workers, 200, True)
+                            PLANNER(da["action_deck"]) if opp == "planner" else _opp_spec(opp, da["action_deck"]),
+                            args.seed0 + have, args.n - have, args.workers, 200, True)
             data["results"][key] = data["results"].get(key, []) + \
                 [[(0.5 if r[0] is None else float(bool(r[0]))), int(r[1])] for r in res]
             with open(args.out, "w", encoding="utf-8", newline="\n") as f:
@@ -348,6 +355,8 @@ def import_arm(data: dict, spec: str, decks: list) -> None:
         src = json.load(f)
     if (src["seed0"], src["decks"]) != (data["seed0"], decks):
         raise SystemExit(f"取り込み元 {src_path} のシード・デッキが違う（seed0 {src['seed0']} → {data['seed0']}）")
+    if src.get("opponent", "planner") != data.get("opponent", "planner"):
+        raise SystemExit(f"取り込み元 {src_path} の相手が違う（{src.get('opponent')} → {data.get('opponent')}）")
     if src["n"] > data["n"]:
         raise SystemExit(f"取り込み元 {src_path} の局数 {src['n']} が取り込み先 {data['n']} より多い")
     if arm not in src["arms"] or arm not in data["arms"]:
@@ -429,6 +438,8 @@ def main(argv=None):
     r.add_argument("--task", choices=["s2", "s4"], default="s2", help="s4 = 段階4 の課題（D-154 §5.1）")
     r.add_argument("--target", default=None, help="--task s4: 対象デッキ（候補も相手もこのデッキ）")
     r.add_argument("--opponents", default=None, help="--task s4: 相手（既定 planner,heuristic,greedy）")
+    r.add_argument("--opponent", default="planner", choices=list(S4_OPPONENTS),
+                   help="--task s2: 相手（既定 planner。heuristic・greedy は壁を越える案の錨・D-163 §5.2）")
     r.add_argument("--band-kind", choices=["validate", "diag"], default="validate",
                    help="--task s4: 帯の種類（門 S-0 だけ diag）")
     q = sub.add_parser("report")

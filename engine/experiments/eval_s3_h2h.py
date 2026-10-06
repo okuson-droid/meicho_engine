@@ -32,6 +32,12 @@
 - `report --gate 組` は、その組の A 席の得点と 95% 区間（局の組 (2k, 2k+1) を単位に 10,000 回）と、
   「下端 > 0.5 → 門を越える」を出す（挑戦と null の対は作らない）
 
+## 壁を越える案（D-163・設計書 `GENERALIST_WALL_DESIGN_20261006.md` §5.1）
+
+- `report --rule wall --level 0.983` は、主比較の区間を 98.3%（V の腕の家族・1 − 0.05/3）で出し、0 を基準に判定する:
+  下端 > 0 → 伸びた／上端 < 0 → 悪くなった／点推定 > 0 で 0 をまたぐ → 境界（新しい帯で 16 × 150 を 1 回だけ追試）／
+  それ以外 → 伸びていない。生の得点と null の 0.5 の確かめは 95% のまま。既定（`--rule s3`）は従来とバイトで同じ
+
 ## 局数の足し継ぎ
 
 - 同じ `--out` に大きい `--n` で打ち直すと、各ブロックの足りない局だけを回して後ろに足す（`eval_s2_repr.py` と同じ作法）
@@ -54,7 +60,7 @@ _HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.join(_HERE, ".."))
 sys.path.insert(0, _HERE)
 
-from eval_s2_repr import DEFAULT_ENV, blocks, cand_deck, check_eval_band, load_env, tune_decks   # noqa: E402
+from eval_s2_repr import DEFAULT_ENV, blocks, cand_deck, check_eval_band, ci_percentiles, load_env, tune_decks   # noqa: E402
 
 TOOL_VERSION = "s3h2h-1"
 RULE = {"up": 0.01, "down": -0.01}
@@ -173,15 +179,15 @@ def check_paired(data: dict, ch: str, nl: str) -> None:
                 raise SystemExit(f"{p}|{a}|{b} の局数 {got} が n = {data['n']} と違う（足し継ぎの途中）")
 
 
-def paired_blocks(d_by_block: list, n_boot: int = 10000, seed: int = 0) -> dict:
-    """ブロックごとの局の差の列から、ブロック内で局を再標本化・ブロック等重みで平均した差と 95% 区間。"""
+def paired_blocks(d_by_block: list, n_boot: int = 10000, seed: int = 0, level: float = 0.95) -> dict:
+    """ブロックごとの局の差の列から、ブロック内で局を再標本化・ブロック等重みで平均した差と区間（既定 95%）。"""
     rng = np.random.RandomState(seed)
     boots = np.zeros(n_boot)
     for d in d_by_block:
         d = np.asarray(d, float)
         boots += d[rng.randint(0, len(d), size=(n_boot, len(d)))].mean(1)
     boots /= len(d_by_block)
-    lo, hi = np.percentile(boots, [2.5, 97.5])
+    lo, hi = np.percentile(boots, ci_percentiles(level))
     return {"diff": float(np.mean([np.mean(d) for d in d_by_block])), "lo": float(lo), "hi": float(hi)}
 
 
@@ -193,7 +199,24 @@ def verdict(lo: float) -> str:
     return "境界（別帯で追試）"
 
 
-def report(data: dict, ch: str, nl: str, n_boot: int = 10000) -> dict:
+def verdict_wall(diff: float, lo: float, hi: float) -> str:
+    """壁を越える案（D-163・設計書 §5.1）の判定。0 を基準に、下端・上端・点推定で読む。"""
+    if lo > 0:
+        return "伸びた"
+    if hi < 0:
+        return "悪くなった"
+    if diff > 0:
+        return "境界（新しい帯で 16 × 150 を 1 回だけ追試し、追試だけで判定）"
+    return "伸びていない"
+
+
+def report(data: dict, ch: str, nl: str, n_boot: int = 10000, rule: str = "s3", level: float = 0.95) -> dict:
+    """`rule="s3"`（既定）は段階3 の判定（±0.01・95%）。`rule="wall"` は D-163 §5.1 の判定で、
+    主比較の区間だけを `level`（V の腕は 98.3%）で出す（生の得点と null の 0.5 の確かめは 95% のまま）。"""
+    if rule not in ("s3", "wall"):
+        raise SystemExit(f"未対応の --rule: {rule!r}")
+    if rule == "s3" and level != 0.95:
+        raise SystemExit("--level は --rule wall のときだけ使う")
     check_paired(data, ch, nl)
     d_blocks, rows = [], []
     for a, b in blocks(data["decks"]):
@@ -203,9 +226,12 @@ def report(data: dict, ch: str, nl: str, n_boot: int = 10000) -> dict:
         for i in range(data["n"]):
             deck, seat = cand_deck(a, b, data["seed0"] + i)
             rows.append((deck, seat, sc[i], sn[i]))
-    main = paired_blocks(d_blocks, n_boot)
+    main = paired_blocks(d_blocks, n_boot, level=level)
+    v = verdict(main["lo"]) if rule == "s3" else verdict_wall(main["diff"], main["lo"], main["hi"])
     out = {"version": TOOL_VERSION, "challenge": ch, "null": nl, "n_per_block": data["n"],
-           "n_games": len(rows), "main": dict(main, verdict=verdict(main["lo"])), "raw": {}, "by_deck": {}}
+           "n_games": len(rows), "main": dict(main, verdict=v), "raw": {}, "by_deck": {}}
+    if rule == "wall":
+        out["rule"], out["level"] = "wall", level
     for p, col in ((ch, 2), (nl, 3)):
         r = paired_blocks([[x[col] for x in rows[k * data["n"]:(k + 1) * data["n"]]] for k in range(len(d_blocks))],
                           n_boot)
@@ -258,6 +284,9 @@ def main(argv=None):
     p.add_argument("--null", default=None)
     p.add_argument("--gate", default=None, help="門 T（D-161）: この組の A 席の得点と「下端 > 0.5」")
     p.add_argument("--out", default=None)
+    p.add_argument("--rule", default="s3", choices=["s3", "wall"],
+                   help="wall = 壁を越える案（D-163 §5.1）の判定（0 を基準・主比較の区間は --level）")
+    p.add_argument("--level", type=float, default=0.95, help="--rule wall の主比較の区間の水準（V の腕は 0.983）")
     args = ap.parse_args(argv)
     if args.cmd == "run":
         return run(args)
@@ -268,7 +297,7 @@ def main(argv=None):
     else:
         if not (args.challenge and args.null):
             raise SystemExit("report には --challenge と --null（または --gate）が要る")
-        out = report(data, args.challenge, args.null)
+        out = report(data, args.challenge, args.null, rule=args.rule, level=args.level)
     print(json.dumps(out, ensure_ascii=False, indent=1))
     if args.out:
         with open(args.out, "w", encoding="utf-8", newline="\n") as f:
