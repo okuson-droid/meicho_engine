@@ -1,0 +1,20 @@
+train 973308 decisions / valid 17041 decisions  (read 30s)  chance acc: train 0.265 valid 0.263
+探索値の較正[bulk]: p = sigmoid(1.643·clip(v,±10.179)/10.179 + -0.257)  n=939708  番兵の割合 0.182
+  較正後の対数損失 0.6013 vs 「常に平均勝率」0.6781 → 探索値は勝敗の情報を持つ
+  教師 p の広がり（75%点−25%点） 0.315
+init from /tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/s4/models/s4S_s1.json
+学習する重みの数 632,194（書き出すネットは射影の有無によらず同じ形）
+ep 1: loss 1.5438 | valid v_logloss 0.5878 v_acc 0.655 | t_logloss 0.6197 | p_logloss 0.8748 p_acc 0.652 | 159s
+   by phase: {'setup': '1.000(284)', 'mulligan': '1.000(284)', 'action': '0.516(5295)', 'clash': '0.729(2776)', 'choice': '0.715(6703)', 'rush': '0.590(1648)', 'discard': '0.392(51)'}
+ep 2: loss 1.4593 | valid v_logloss 0.5901 v_acc 0.657 | t_logloss 0.6204 | p_logloss 0.8485 p_acc 0.664 | 148s
+   by phase: {'setup': '1.000(284)', 'mulligan': '1.000(284)', 'action': '0.532(5295)', 'clash': '0.742(2776)', 'choice': '0.721(6703)', 'rush': '0.617(1648)', 'discard': '0.510(51)'}
+ep 3: loss 1.4259 | valid v_logloss 0.5912 v_acc 0.659 | t_logloss 0.6213 | p_logloss 0.8301 p_acc 0.670 | 151s
+   by phase: {'setup': '1.000(284)', 'mulligan': '1.000(284)', 'action': '0.540(5295)', 'clash': '0.751(2776)', 'choice': '0.726(6703)', 'rush': '0.609(1648)', 'discard': '0.529(51)'}
+ep 4: loss 1.3985 | valid v_logloss 0.5859 v_acc 0.664 | t_logloss 0.6189 | p_logloss 0.8221 p_acc 0.669 | 151s
+   by phase: {'setup': '1.000(284)', 'mulligan': '1.000(284)', 'action': '0.544(5295)', 'clash': '0.746(2776)', 'choice': '0.722(6703)', 'rush': '0.617(1648)', 'discard': '0.510(51)'}
+ep 5: loss 1.3747 | valid v_logloss 0.5841 v_acc 0.668 | t_logloss 0.6190 | p_logloss 0.8180 p_acc 0.669 | 151s
+   by phase: {'setup': '1.000(284)', 'mulligan': '1.000(284)', 'action': '0.540(5295)', 'clash': '0.748(2776)', 'choice': '0.721(6703)', 'rush': '0.630(1648)', 'discard': '0.569(51)'}
+ep 6: loss 1.3583 | valid v_logloss 0.5846 v_acc 0.666 | t_logloss 0.6189 | p_logloss 0.8157 p_acc 0.672 | 148s
+   by phase: {'setup': '1.000(284)', 'mulligan': '1.000(284)', 'action': '0.546(5295)', 'clash': '0.749(2776)', 'choice': '0.724(6703)', 'rush': '0.629(1648)', 'discard': '0.588(51)'}
+--select best_v: エポック 5 の版を保存する（検証 v_logloss 0.5841・最後は 0.5846）
+saved /tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/s4/models/wlS12000_s1.json (957s)
