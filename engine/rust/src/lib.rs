@@ -820,7 +820,7 @@ enum AgentSpec {
               value_net: Option<std::sync::Arc<net::Net>>, policy_net: Option<std::sync::Arc<net::Net>>,
               opp_policy_net: Option<std::sync::Arc<net::Net>>, opp_policy_root_only: bool, tau: f64,
               /// D-065 便 1 のつまみ（すべて既定で無効）。真実源は Python の `greedy.py`／`planner.py`。
-              policy_scope: u8, choice_phases: bool, solo_samples: usize,
+              policy_scope: u8, policy_belief: bool, choice_phases: bool, solo_samples: usize,
               align_leaves: bool, align_rollout: usize, align_stop: u8, reeval_samples: usize,
               opp_mix: f64, nash_delta: f64, lethal_uniform: f64, known_hand: bool,
               endgame_enum: usize, endgame_eval: usize, endgame_conf: f64,
@@ -976,6 +976,8 @@ fn spec_from_py(d: &CardDb, spec: &Bound<'_, PyDict>) -> PyResult<AgentSpec> {
                     other => return Err(PyValueError::new_err(format!("unknown policy_scope {other}"))),
                 }
             },
+            // 壁を越える案 腕 A（D-163 §2.1）: 代打ちの π に席から見た相手のデッキ表を渡す（既定オフ）
+            policy_belief: num!("policy_belief", false),
             choice_phases: num!("choice_phases", false),
             solo_samples: num!("solo_samples", 1usize),
             align_leaves: num!("align_leaves", false),
@@ -1018,6 +1020,12 @@ fn spec_from_py(d: &CardDb, spec: &Bound<'_, PyDict>) -> PyResult<AgentSpec> {
     // 便 A の判断①（D-071 裁定・便 E-0）: `lethal_uniform` は `value_net` と組でしか意味を持たない。
     // **測定は spec の道を通る**（`series` / `series_record`）ので、クラス（`PyPlanner`）だけ塞いでも
     // 穴は残る。ここでも同じ文言で弾く。
+    if let AgentSpec::Planner { policy_belief: true, policy_net, pool, .. } = &spec {
+        if policy_net.is_none() || pool.is_none() {
+            return Err(PyValueError::new_err(
+                "policy_belief は policy_net と opp_decklist と組でしか使えない（π に渡すデッキ表が要るため・D-163）"));
+        }
+    }
     if let AgentSpec::Planner { lethal_uniform, value_net, .. } = &spec {
         if *lethal_uniform > 0.0 && value_net.is_none() {
             return Err(PyValueError::new_err(
@@ -1040,7 +1048,7 @@ fn build_agent(spec: &AgentSpec, seed: i64) -> AnyAgent {
         AgentSpec::Planner { w, params, pool, samples, rollout_depth, charge_candidates, leaf_budget, turn_rollout,
                              plan_samples, use_history, prior_strength, race_after, extra_turns, deltas,
                              value_net, policy_net, opp_policy_net, opp_policy_root_only, tau,
-                             policy_scope, choice_phases, solo_samples, align_leaves, align_rollout,
+                             policy_scope, policy_belief, choice_phases, solo_samples, align_leaves, align_rollout,
                              align_stop, reeval_samples, opp_mix, nash_delta, lethal_uniform, known_hand,
                              endgame_enum, endgame_eval, endgame_conf,
                              world_weight, weight_temp, weight_floor, weight_lookback,
@@ -1057,6 +1065,7 @@ fn build_agent(spec: &AgentSpec, seed: i64) -> AnyAgent {
             p.g.set_choice_phases(*choice_phases);
             p.g.solo_samples = *solo_samples;
             p.g.align_leaves = *align_leaves;
+            p.g.policy_belief = *policy_belief;
             p.g.align_rollout = *align_rollout;
             p.g.align_stop = *align_stop;
             p.g.reeval_samples = *reeval_samples;
@@ -1127,13 +1136,53 @@ fn with_opp_pool(spec: &AgentSpec, opp_deck: &[u16]) -> AgentSpec {
 
 /// 1 局ぶんのエージェント 2 体を席順に作る（`series` 系の共通部分）。
 /// `flip` なら A が席 1。`opp_from_seat` なら各自の `pool` を相手の席の行動デッキにする。
+/// 腕 A（D-163）: `policy_belief` のとき、自分のデッキ表（その席の行動デッキ）を持たせる。
+fn set_own_deck(ag: &mut AnyAgent, deck: &[u16]) {
+    let g = match ag {
+        AnyAgent::Greedy(g) => g,
+        AnyAgent::Planner(p) => &mut p.g,
+        AnyAgent::Challenger(c) => &mut c.planner.g,
+        _ => return,
+    };
+    if g.policy_belief {
+        g.own_decklist = Some(deck.to_vec());
+    }
+}
+
 fn seat_agents(ad: &[Vec<u16>; 2], sa: &AgentSpec, sb: &AgentSpec, seed: i64, flip: bool, opp_from_seat: bool) -> [AnyAgent; 2] {
     let (s0, s1) = if flip { (sb, sa) } else { (sa, sb) };
-    if opp_from_seat {
+    let mut ags = if opp_from_seat {
         [build_agent(&with_opp_pool(s0, &ad[1]), seed * 2), build_agent(&with_opp_pool(s1, &ad[0]), seed * 2 + 1)]
     } else {
         [build_agent(s0, seed * 2), build_agent(s1, seed * 2 + 1)]
+    };
+    set_own_deck(&mut ags[0], &ad[0]);
+    set_own_deck(&mut ags[1], &ad[1]);
+    ags
+}
+
+/// 腕 A の検査用（D-163 §2.2 A-0）: `series` 系と同じ道（`seat_agents`）で A/B を席に着け、席 `seat` の
+/// エージェントが席 q の手を π に選ばせるときに渡すデッキ表（カード名の列・None はデッキ表なし）を返す。
+#[pyfunction]
+#[pyo3(signature = (action_decks, spec_a, spec_b, seed, seat, q, opp_from_seat=true))]
+fn policy_belief_deck(action_decks: Vec<Vec<String>>, spec_a: &Bound<'_, PyDict>, spec_b: &Bound<'_, PyDict>,
+                      seed: i64, seat: usize, q: u8, opp_from_seat: bool) -> PyResult<Option<Vec<String>>> {
+    let d = db()?;
+    if action_decks.len() != 2 || seat > 1 || q > 1 {
+        return Err(PyValueError::new_err("action_decks は 2 つ・seat と q は 0 か 1"));
     }
+    let ids = |v: &Vec<String>| -> PyResult<Vec<u16>> { Ok(decklist_from_py(&d, Some(v.clone()))?.unwrap_or_default()) };
+    let ad: [Vec<u16>; 2] = [ids(&action_decks[0])?, ids(&action_decks[1])?];
+    let (sa, sb) = (spec_from_py(&d, spec_a)?, spec_from_py(&d, spec_b)?);
+    let ags = seat_agents(&ad, &sa, &sb, seed, seed % 2 == 1, opp_from_seat);
+    let g = match &ags[seat] {
+        AnyAgent::Greedy(g) => g,
+        AnyAgent::Planner(p) => &p.g,
+        AnyAgent::Challenger(c) => &c.planner.g,
+        _ => return Ok(None),
+    };
+    Ok(agents::Greedy::belief_deck(g.policy_belief, &g.opp_decklist, &g.own_decklist, q, seat as u8)
+        .map(|v| v.iter().map(|&c| d.action[c as usize].card_id.clone()).collect()))
 }
 
 /// `series` / `series_digest` の中身。各シードの (a_won, turns, steps, fired_a, digest)。
@@ -1505,6 +1554,7 @@ fn features() -> Vec<String> {
         "leaf_dump".to_string(),
         "record_seats".to_string(),               // 段階4（D-154）: series_record の record_seats（記録する側を席で選ぶ）
         "agents_follow_decks".to_string(),        // 段階4 便 4-A4（D-161）: series_record の agents_follow_decks（A が常に deck_a を打つ・既定オフ）
+        "policy_belief".to_string(),              // 壁を越える案 腕 A（D-163）: 代打ちの π に席から見た相手のデッキ表（既定オフ）
     ]
 }
 
@@ -1518,6 +1568,7 @@ fn meicho_rs(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(solve_bundled, m)?)?;
     m.add_function(wrap_pyfunction!(features, m)?)?;
     m.add_function(wrap_pyfunction!(series_record, m)?)?;
+    m.add_function(wrap_pyfunction!(policy_belief_deck, m)?)?;
     m.add_class::<PyGameState>()?;
     m.add_function(wrap_pyfunction!(load_cards, m)?)?;
     m.add_function(wrap_pyfunction!(initial_state, m)?)?;

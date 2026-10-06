@@ -17,6 +17,13 @@ WE-2 `--rule wall` の判定（下端 > 0 伸びた・上端 < 0 悪くなった
 WE-3 `eval_s2_repr run --opponent heuristic|greedy`（課題 s2 の錨）: 相手が記録に残り、別の相手で足し継ぐと止める。
      既定（planner）は口を足す前（commit `fcb46e3`）と同じ結果。`--task s4` に `--opponent` を渡すと止める
 
+腕 A（§2.1・§2.2 A-0）の Rust の口 `policy_belief`:
+WA-1 `series` 系と同じ道で席に着けたとき、π に渡すデッキ表は「q = 自分なら相手の席の行動デッキ、q ≠ 自分なら自分の席の
+     行動デッキ」（両席・偶奇のシード）。記録の観測（その席の `opp_decklist`＝相手の席の行動デッキ・`opp_from_seat`）と同じ
+     デッキ表になる。オフなら None
+WA-2 `policy_belief` は `policy_net` と `opp_decklist` が無いと止める
+WA-3 オフ（鍵なし・False）は打ち方がバイトで同じ（`series_digest`）。オンは打ち方が変わる（口が繋がっている）
+
 検査の対局は 935000..935999（kind=diag・D-163 で登録）で回す。
 """
 from __future__ import annotations
@@ -278,3 +285,79 @@ def test_s2_opponent_anchor(tmp_path, monkeypatch):
     old.main(base + ["--out", po])
     E.main(base + ["--out", pn])
     assert open(po, "rb").read() == open(pn, "rb").read()
+
+
+# ------------------------------------------------------------------ WA-1〜3
+PI_NET = os.path.join(ROOT, "results", "models", "s2v_id_s0.json")     # v6 で学んだ方策の頭を持つ網（検査の π）
+
+
+def _two_decks():
+    from arena import load_deck
+    import eval_s2_repr as E
+    a, b = E.tune_decks()[:2]
+    return load_deck(a), load_deck(b)
+
+
+def _pi_spec(pool, **kw):
+    from arena_rs import PLANNER
+    from record_mix import NETFREE
+    return PLANNER(pool, **NETFREE, policy_net=PI_NET, policy_scope="proxy", **kw)
+
+
+def test_policy_belief_deck_by_seat():
+    rs = pytest.importorskip("meicho_rs")
+    if "policy_belief" not in rs.features():
+        pytest.skip("wheel が古い")
+    from arena_rs import ensure_cards
+    ensure_cards()
+    da, db = _two_decks()
+    ad = [da["action_deck"], db["action_deck"]]
+    on, off = _pi_spec(db["action_deck"], policy_belief=True), _pi_spec(db["action_deck"])
+    for seed in (10, 11):
+        for seat in (0, 1):
+            for q in (0, 1):
+                want = ad[1 - seat] if q == seat else ad[seat]
+                got = rs.policy_belief_deck(ad, on, on, seed, seat, q)
+                assert sorted(got) == sorted(want), (seed, seat, q)
+                assert rs.policy_belief_deck(ad, off, off, seed, seat, q) is None
+    # q = 自分のときは、記録の観測が渡すデッキ表（その席の opp_decklist）と同じ
+    for seat in (0, 1):
+        assert sorted(rs.policy_belief_deck(ad, on, on, 10, seat, seat)) == sorted(ad[1 - seat])
+
+
+def test_policy_belief_requires_net_and_pool():
+    rs = pytest.importorskip("meicho_rs")
+    if "policy_belief" not in rs.features():
+        pytest.skip("wheel が古い")
+    from arena_rs import ensure_cards
+    ensure_cards()
+    from arena_rs import PLANNER
+    from record_mix import NETFREE
+    da, db = _two_decks()
+    ad = [da["action_deck"], db["action_deck"]]
+    with pytest.raises(ValueError):
+        rs.policy_belief_deck(ad, PLANNER(db["action_deck"], **NETFREE, policy_belief=True), _pi_spec(None), 0, 0, 0)
+    with pytest.raises(ValueError):
+        rs.policy_belief_deck(ad, PLANNER(None, **NETFREE, policy_net=PI_NET, policy_belief=True), _pi_spec(None),
+                              0, 0, 0)
+
+
+@pytest.mark.slow
+def test_policy_belief_off_unchanged_on_changes_play():
+    rs = pytest.importorskip("meicho_rs")
+    if "policy_belief" not in rs.features():
+        pytest.skip("wheel が古い")
+    from arena_rs import ensure_cards
+    ensure_cards()
+    from arena import matchup_config
+    from arena_rs import PLANNER
+    da, db = _two_decks()
+    cfg = matchup_config(da, db)
+    opp = PLANNER(da["action_deck"])
+
+    def dig(spec):
+        return [r[4] for r in rs.series_digest(cfg.chara_decks, cfg.action_decks, spec, opp, SEED0 + 60, 2, 2, 200,
+                                               True)]
+    base = dig(_pi_spec(db["action_deck"]))
+    assert dig(_pi_spec(db["action_deck"], policy_belief=False)) == base
+    assert dig(_pi_spec(db["action_deck"], policy_belief=True)) != base
