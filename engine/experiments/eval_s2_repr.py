@@ -45,6 +45,7 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import os
 import sys
@@ -131,11 +132,28 @@ def score_ci(games: list, s: list, n_boot: int = 10000, seed: int = 0, level: fl
             "by_deck": {k: v["diff"] for k, v in r["by_deck"].items()}}
 
 
+PI_SEP = "+pi="                         # 腕 A（D-163 §2.1）: `--arm 名前=葉の V のパス+pi=代打ちの π のパス`
+
+
 def _arm_spec(arm: str, path: str | None, pool: list) -> dict:
     from arena_rs import PLANNER
-    from record_mix import NETFREE
-    extra = {"value_net": os.path.abspath(path)} if path else {}
+    from record_mix import NETFREE, NETFREE_VP
+    v, sep, pi = (path or "").partition(PI_SEP)
+    if sep and not (v and pi):
+        raise SystemExit(f"代打ちの π は葉の V のある候補にだけ付ける: {arm}={path}")
+    extra = {"value_net": os.path.abspath(v)} if v else {}
+    if pi:
+        extra.update(NETFREE_VP(os.path.abspath(pi)))
     return PLANNER(pool, **NETFREE, **extra)
+
+
+def arm_sha(path: str | None):
+    """候補の指紋。π つきは `V の指紋+pi=π の指紋`（腕 A）。"""
+    if not path:
+        return None
+    v, sep, pi = path.partition(PI_SEP)
+    h = lambda p: hashlib.sha256(open(p, "rb").read()).hexdigest()[:16]
+    return h(v) if not sep else f"{h(v)}+pi={h(pi)}"
 
 
 S4_OPPONENTS = ("planner", "heuristic", "greedy")
@@ -196,7 +214,7 @@ def run_s4(args) -> dict:
     for a in args.arm:
         name, _, path = a.partition("=")
         arms[name] = path or None
-        fp = hashlib.sha256(open(path, "rb").read()).hexdigest()[:16] if path else None
+        fp = arm_sha(path)
         prev = data["arms"].get(name)
         if prev is not None and prev["sha"] != fp:
             raise SystemExit(f"候補 {name} のネットが前回と違う（{prev['sha']} → {fp}）。別の名前にすること")
@@ -315,7 +333,7 @@ def run(args) -> dict:
         data["n"] = args.n                       # 局数を増やすのは足し継ぎ（D-138）
     import hashlib
     for name, path in arms.items():
-        fp = hashlib.sha256(open(path, "rb").read()).hexdigest()[:16] if path else None
+        fp = arm_sha(path)
         prev = data["arms"].get(name)
         if prev is not None and prev["sha"] != fp:
             raise SystemExit(f"候補 {name} のネットが前回と違う（{prev['sha']} → {fp}）。別の名前にすること")

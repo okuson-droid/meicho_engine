@@ -40,7 +40,10 @@
 - `teacher.name`: `"netfree"`（既定・ネットを使わない計画探索・下の `NETFREE`）／`"planner"`（素）／
   `"champion"`（そのプールの現 champion。**ネットが SD001 専用なので SD001 のミラーだけ**許す）／
   `"netfree_v"`（段階3・D-138: `NETFREE` の葉を `value_net` にしたもの。`value_net` は engine/ からの
-  相対パスか絶対パス。`value_net_sha16`（sha256 の先頭 16 桁）を書けば、回す前にファイルと照合する）
+  相対パスか絶対パス。`value_net_sha16`（sha256 の先頭 16 桁）を書けば、回す前にファイルと照合する）／
+  `"netfree_vp"`（壁を越える案 腕 A・D-163 §2.1: `netfree_v` の代打ちを `policy_net` の π にしたもの。
+  `policy_scope: proxy`・`policy_belief` オン（π に席から見た相手のデッキ表）・相手モデル π₀ は H のまま。
+  `policy_net_sha16` で照合できる）
 - `teacher.tau`: 記録の温度（既定 0）。manifest には「argmax 以外を選んだ決定の割合」（`nonargmax`・
   D-064 §6.2 の τ の下見の尺度）をブロックごとと全体で書く
 - シード帯は各ブロックごとに `seed_bands.json` で検査する（評価帯・未登録の帯は落とす）。
@@ -86,6 +89,13 @@ from meicho.version import RULES_VERSION                        # noqa: E402
 NETFREE = {"extra_turns": 1, "choice_phases": True, "solo_samples": 4, "known_hand": True,
            "endgame_enum": 64, "draw_buckets": 1}
 
+
+
+def NETFREE_VP(policy_net: str) -> dict:
+    """腕 A（D-163 §2.1）の代打ち: π は代打ちだけ（`proxy`）・席から見た相手のデッキ表つき。π₀ は設定しない。"""
+    return {"policy_net": policy_net, "policy_scope": "proxy", "policy_belief": True}
+
+
 OPPONENTS = ("teacher", "heuristic", "greedy", "planner", "netfree")
 NET_KEYS = ("value_net", "opp_policy_net", "policy_net")
 REC_HEAD_V3 = struct.Struct("<qIHBBBBff")
@@ -102,21 +112,23 @@ def load_deck_file(name: str) -> tuple[dict, str]:
     return json.loads(raw.decode("utf-8")), hashlib.sha256(raw).hexdigest()
 
 
-def resolve_value_net(teacher: dict) -> str:
-    """教師 `netfree_v` の葉の V のパスを絶対パスに直し、有無と指紋を確かめる（D-138）。"""
-    rel = teacher.get("value_net")
+def resolve_value_net(teacher: dict, key: str = "value_net") -> str:
+    """教師 `netfree_v` の葉の V（`key="policy_net"` なら `netfree_vp` の代打ちの π）のパスを絶対パスに直し、
+    有無と指紋を確かめる（D-138）。"""
+    rel = teacher.get(key)
     if not rel:
-        raise SystemExit("教師 netfree_v には value_net（葉の V のパス）が要る")
+        raise SystemExit(f"教師 {teacher.get('name')} には {key}（{'葉の V' if key == 'value_net' else '代打ちの π'} "
+                         "のパス）が要る")
     path = rel if os.path.isabs(rel) else os.path.join(_HERE, "..", rel)
     path = os.path.abspath(path)
     if not os.path.isfile(path):
-        raise SystemExit(f"教師 netfree_v の value_net が無い: {rel}")
-    want = teacher.get("value_net_sha16")
+        raise SystemExit(f"教師 {teacher.get('name')} の {key} が無い: {rel}")
+    want = teacher.get(f"{key}_sha16")
     if want:
         with open(path, "rb") as f:
             got = hashlib.sha256(f.read()).hexdigest()[:16]
         if got != want:
-            raise SystemExit(f"教師 netfree_v の value_net の指紋が組み合わせ表と違う（{want} → {got}）: {rel}")
+            raise SystemExit(f"教師 {teacher.get('name')} の {key} の指紋が組み合わせ表と違う（{want} → {got}）: {rel}")
     return path
 
 
@@ -135,6 +147,9 @@ def teacher_spec(teacher: dict, pool: list, deck_a: str, deck_b: str) -> dict:
         return PLANNER(pool, **NETFREE, **extra)
     if name == "netfree_v":
         return PLANNER(pool, **NETFREE, value_net=resolve_value_net(teacher), **extra)
+    if name == "netfree_vp":
+        return PLANNER(pool, **NETFREE, value_net=resolve_value_net(teacher),
+                       **NETFREE_VP(resolve_value_net(teacher, "policy_net")), **extra)
     if name == "planner":
         return PLANNER(pool, **extra)
     if name == "champion":
@@ -230,8 +245,11 @@ def check_schedule(sch: dict) -> None:
     if not blocks:
         raise SystemExit("blocks が空")
     for t in [sch.get("teacher") or {}] + [b.get("teacher") or {} for b in blocks]:
-        if dict(sch.get("teacher") or {}, **t).get("name") == "netfree_v":
-            resolve_value_net(dict(sch.get("teacher") or {}, **t))
+        tt = dict(sch.get("teacher") or {}, **t)
+        if tt.get("name") in ("netfree_v", "netfree_vp"):
+            resolve_value_net(tt)
+        if tt.get("name") == "netfree_vp":
+            resolve_value_net(tt, "policy_net")
     used = []
     for i, b in enumerate(blocks):
         for k in ("deck_a", "deck_b", "seed0", "n"):

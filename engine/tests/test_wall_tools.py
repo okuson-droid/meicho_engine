@@ -12,7 +12,8 @@ WB-5 `--vtarget next_turn` は `--next-net`・`--lam > 0` を要り、meta に `
 
 評価の口（§5.1・§5.2）:
 WE-1 `eval_s3_h2h report` の既定（`--rule s3`）は、口を足す前の報告（`results/drl/s3_diag_h2h_report.json`）と同じ
-WE-2 `--rule wall` の判定（下端 > 0 伸びた・上端 < 0 悪くなった・点推定 > 0 で 0 をまたげば境界・それ以外は伸びていない）と、
+WE-2 `--rule wall` の判定（下端 > 0 伸びた・上端 < 0 悪くなった・点推定 > 0 で 0 をまたげば境界・それ以外は伸びていない・
+     `--retest` は下端 > 0 だけで伸びた）と、
      98.3% の区間が 95% より広いこと。`--rule s3` に `--level` を渡すと止める
 WE-3 `eval_s2_repr run --opponent heuristic|greedy`（課題 s2 の錨）: 相手が記録に残り、別の相手で足し継ぐと止める。
      既定（planner）は口を足す前（commit `fcb46e3`）と同じ結果。`--task s4` に `--opponent` を渡すと止める
@@ -25,6 +26,9 @@ WA-2 `policy_belief` は `policy_net` と `opp_decklist` が無いと止める
 WA-3 オフ（鍵なし・False）は打ち方がバイトで同じ（`series_digest`）。オンは打ち方が変わる（口が繋がっている）
 WA-4 `drl_train --policy-target argmax`: π の答えは探索の点数が最大の手（同点は最初）・点数の無い決定は -100（除く）。
      検証の指標は答えのある決定だけで割る。学習が回り meta に除いた数が入る。既定は WB-4 が見る
+WA-5 π を持つ打ち手の口: `record_mix` の教師 `netfree_vp`・`make_s2_schedule --teacher netfree_vp --policy-net`・
+     `eval_s3_h2h` の席 `V+pi=π`・`eval_s2_repr --arm 名前=V+pi=π` が、どれも NETFREE＋葉 V＋代打ち π（proxy・
+     policy_belief）の同じ spec になり、指紋に π が入る。π だけ・V なしの π は止める。π の候補で 2 局回る
 
 検査の対局は 935000..935999（kind=diag・D-163 で登録）で回す。
 """
@@ -235,6 +239,8 @@ def test_h2h_wall_rule_and_level():
     assert H.verdict_wall(0.01, -0.01, 0.03).startswith("境界")
     assert H.verdict_wall(0.0, -0.02, 0.02) == "伸びていない"
     assert H.verdict_wall(-0.005, -0.03, 0.02) == "伸びていない"
+    assert H.verdict_wall(0.01, -0.01, 0.03, retest=True) == "伸びていない"       # 追試は追試だけで判定
+    assert H.verdict_wall(0.02, 0.001, 0.04, retest=True) == "伸びた"
     data = json.load(open(os.path.join(ROOT, "results", "drl", "s3_diag_h2h.json"), encoding="utf-8"))
     ch, nl = "ch", "null"
     if ch not in data["pairs"]:
@@ -247,6 +253,9 @@ def test_h2h_wall_rule_and_level():
     assert w983["raw"] == a["raw"] and w983["level"] == 0.983 and w983["rule"] == "wall"
     with pytest.raises(SystemExit):
         H.report(data, ch, nl, level=0.983)
+    with pytest.raises(SystemExit):
+        H.report(data, ch, nl, retest=True)
+    assert H.report(data, ch, nl, rule="wall", level=0.983, retest=True)["retest"] is True
 
 
 # ------------------------------------------------------------------ WE-3
@@ -394,3 +403,46 @@ def test_policy_target_argmax(recs, tmp_path):
     m = json.load(open(out.replace(".json", ".meta.json"), encoding="utf-8"))
     assert m["policy_target"]["train_excluded"] == b.n_policy_excluded
     assert m["log"][-1]["valid"]["n_p"] == int((b.chosen >= 0).sum())
+
+
+# ------------------------------------------------------------------ WA-5
+V0 = os.path.join(ROOT, "results", "models", "s3v1_id_s0.json")      # 検査の葉の V（git にある網なら何でもよい）
+
+
+def test_pi_player_specs_agree():
+    T()
+    import eval_s2_repr as E
+    import eval_s3_h2h as H
+    import make_s2_schedule as M
+    import record_mix as R
+    pool = ["x"]
+    want = dict(R.NETFREE, kind="planner", opp_decklist=pool, value_net=os.path.abspath(V0),
+                policy_net=os.path.abspath(PI_NET), policy_scope="proxy", policy_belief=True)
+    t = M.teacher_def("netfree_vp", value_net=V0, policy_net=PI_NET, tau=0.006)
+    assert t["policy_net_sha16"] == H.sha16(PI_NET) and t["value_net_sha16"] == H.sha16(V0)
+    assert R.teacher_spec(t, pool, "a", "a") == dict(want, tau=0.006)
+    assert H._spec(f"{V0}+pi={PI_NET}", pool) == want
+    assert E._arm_spec("x", f"{V0}+pi={PI_NET}", pool) == want
+    assert H.side_sha(f"{V0}+pi={PI_NET}") == E.arm_sha(f"{V0}+pi={PI_NET}") == f"{H.sha16(V0)}+pi={H.sha16(PI_NET)}"
+    assert H.side_sha(V0) == E.arm_sha(V0) == H.sha16(V0)                 # π なしは従来どおり
+    assert "policy_net" not in H._spec(V0, pool) and "policy_net" not in E._arm_spec("x", V0, pool)
+    for bad in (lambda: M.teacher_def("netfree_vp", value_net=V0),
+                lambda: M.teacher_def("netfree_v", value_net=V0, policy_net=PI_NET),
+                lambda: R.teacher_spec({"name": "netfree_vp", "value_net": V0}, pool, "a", "a"),
+                lambda: H.split_side(f"netfree+pi={PI_NET}"),
+                lambda: E._arm_spec("x", f"+pi={PI_NET}", pool),
+                lambda: R.teacher_spec(dict(t, policy_net_sha16="0" * 16), pool, "a", "a")):
+        with pytest.raises(SystemExit):
+            bad()
+
+
+@pytest.mark.slow
+def test_pi_arm_plays(tmp_path):
+    pytest.importorskip("meicho_rs")
+    import eval_s2_repr as E
+    out = str(tmp_path / "pi.json")
+    E.main(["run", "--task", "s4", "--target", TARGET, "--opponents", "heuristic", "--band-kind", "diag",
+            "--workers", "2", "--out", out, "--arm", f"vp={V0}+pi={PI_NET}", "--n", "2", "--seed0", str(SEED0 + 90)])
+    d = json.load(open(out, encoding="utf-8"))
+    assert len(d["results"]["vp|heuristic"]) == 2
+    assert d["arms"]["vp"]["sha"].endswith("+pi=" + E.arm_sha(PI_NET))

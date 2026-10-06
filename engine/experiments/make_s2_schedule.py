@@ -56,7 +56,7 @@ SHARES = {"mirror": 0.4, "cross": 0.4, "anchor": 0.2}
 ANCHOR_OPPONENTS = ("heuristic", "greedy", "planner")
 CROSS_OPPONENTS = ("teacher", "netfree")         # --target の異種のブロックの相手の席（D-161）
 TOOL_VERSION = "s2sched-1"
-TEACHERS = ("netfree", "netfree_v")
+TEACHERS = ("netfree", "netfree_v", "netfree_vp")
 
 
 def _even(x: float) -> int:
@@ -64,26 +64,36 @@ def _even(x: float) -> int:
     return max(2, 2 * int(x / 2 + 0.5))
 
 
+def _net_entry(out: dict, key: str, rel: str, flag: str) -> None:
+    path = rel if os.path.isabs(rel) else os.path.join(_HERE, "..", rel)
+    if not os.path.isfile(path):
+        raise SystemExit(f"{flag} のファイルが無い: {rel}")
+    with open(path, "rb") as f:
+        out[key] = rel
+        out[f"{key}_sha16"] = hashlib.sha256(f.read()).hexdigest()[:16]
+
+
 def teacher_def(teacher: str = "netfree", value_net: str | None = None, tau: float = 0.0,
-                reeval_samples: int = 0) -> dict:
-    """組み合わせ表の教師の定義（D-138）。既定は D-131 と同じ `{"name": "netfree", "tau": 0.0}`。"""
+                reeval_samples: int = 0, policy_net: str | None = None) -> dict:
+    """組み合わせ表の教師の定義（D-138）。既定は D-131 と同じ `{"name": "netfree", "tau": 0.0}`。
+
+    `netfree_vp`（壁を越える案 腕 A・D-163 §2.1）は `netfree_v` の代打ちを `policy_net` の π にしたもの。"""
     if teacher not in TEACHERS:
         raise SystemExit(f"--teacher は {TEACHERS} のどれか")
-    if teacher == "netfree_v" and not value_net:
-        raise SystemExit("--teacher netfree_v には --value-net（葉の V のパス）が要る")
-    if teacher != "netfree_v" and value_net:
-        raise SystemExit("--value-net は --teacher netfree_v のときだけ使う")
+    if teacher in ("netfree_v", "netfree_vp") and not value_net:
+        raise SystemExit(f"--teacher {teacher} には --value-net（葉の V のパス）が要る")
+    if teacher not in ("netfree_v", "netfree_vp") and value_net:
+        raise SystemExit("--value-net は --teacher netfree_v / netfree_vp のときだけ使う")
+    if (teacher == "netfree_vp") != bool(policy_net):
+        raise SystemExit("--policy-net は --teacher netfree_vp のときだけ使い、そのときは必ず要る")
     out = {"name": teacher, "tau": float(tau)}
     if reeval_samples:
         # 既定（0）は欄を足さない＝従来の組み合わせ表とバイト単位で同じ（D-148 (b)）
         out["reeval_samples"] = int(reeval_samples)
     if value_net:
-        path = value_net if os.path.isabs(value_net) else os.path.join(_HERE, "..", value_net)
-        if not os.path.isfile(path):
-            raise SystemExit(f"--value-net のファイルが無い: {value_net}")
-        with open(path, "rb") as f:
-            out["value_net"] = value_net
-            out["value_net_sha16"] = hashlib.sha256(f.read()).hexdigest()[:16]
+        _net_entry(out, "value_net", value_net, "--value-net")
+    if policy_net:
+        _net_entry(out, "policy_net", policy_net, "--policy-net")
     return out
 
 
@@ -326,8 +336,10 @@ def main(argv=None):
     ap.add_argument("--only", default=None)
     ap.add_argument("--pilot-n", type=int, default=None)
     ap.add_argument("--name", default="s2")
-    ap.add_argument("--teacher", default="netfree", help="netfree（既定）／netfree_v（葉を V に・D-138）")
+    ap.add_argument("--teacher", default="netfree",
+                    help="netfree（既定）／netfree_v（葉を V に・D-138）／netfree_vp（＋代打ち π・D-163）")
     ap.add_argument("--value-net", default=None, help="--teacher netfree_v の葉の V（engine/ からの相対パス）")
+    ap.add_argument("--policy-net", default=None, help="--teacher netfree_vp の代打ちの π（腕 A・D-163）")
     ap.add_argument("--tau", type=float, default=0.0, help="記録の温度（D-064 §6.2 の下見で決める）")
     ap.add_argument("--reeval-samples", type=int, default=0,
                     help="選んだ手を別の決定化で取り直す本数（記録の fresh 欄・既定 0 = 取らない・D-148 (b)）")
@@ -354,7 +366,7 @@ def main(argv=None):
         print(json.dumps({"out": args.out, "games": idx["games"], "decisions": idx["decisions_recorded"],
                           "parts": len(idx["parts"])}, ensure_ascii=False))
         return idx
-    teacher = teacher_def(args.teacher, args.value_net, args.tau, args.reeval_samples)
+    teacher = teacher_def(args.teacher, args.value_net, args.tau, args.reeval_samples, args.policy_net)
     with open(args.env, encoding="utf-8") as f:
         env = json.load(f)
     if args.target:
