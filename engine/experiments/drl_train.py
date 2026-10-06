@@ -472,7 +472,7 @@ class Batcher:
     """記録を固定長の配列に詰め替える（行動は MAX_ACTS に詰めてマスク）。"""
 
     def __init__(self, recs: Records, lam: float = 0.0, calib: dict = None,
-                 vtarget: str = "max", league_ranges: list = None, next_net=None):
+                 vtarget: str = "max", league_ranges: list = None, next_net=None, policy_target: str = "chosen"):
         n = recs.n
         keep = ~np.isnan(recs.z)
         # リーグ（対 H・対貪欲）の局面かどうか。**シードで見分ける**（D-067）。
@@ -539,6 +539,25 @@ class Batcher:
                 vsearch[j] = sc[recs.chosen[i]]
         self.acts = acts
         self.n_acts = np.minimum(self.n_acts, MAX_ACTS)
+        # 腕 A（D-163 §2.1）: π の答えを「探索の点数が最大の手」にする（τ の寄り道を真似させない）。
+        # 探索の点数が無い決定（H の落とし先）と、最大の手が MAX_ACTS に入らない決定は除く（-100＝損失で無視）
+        if policy_target not in ("chosen", "argmax"):
+            raise SystemExit(f"未対応の --policy-target: {policy_target!r}")
+        self.policy_target = policy_target
+        self.n_policy_excluded, self.n_policy_changed = 0, 0
+        if policy_target == "argmax":
+            pt = np.full(m, -100, np.int64)
+            for j, i in enumerate(idx):
+                sc = recs.scores_of(i)
+                fin = np.isfinite(sc) if len(sc) else np.zeros(0, bool)
+                if not fin.any():
+                    continue
+                k = int(np.nonzero(fin & (sc == sc[fin].max()))[0][0])
+                if k < MAX_ACTS:
+                    pt[j] = k
+            self.n_policy_excluded = int((pt < 0).sum())
+            self.n_policy_changed = int(((pt >= 0) & (pt != self.chosen)).sum())
+            self.chosen = pt
         self.vsearch = vsearch
         self.n = m
         # V の損失にかける重み。案 B（`--league-mode drop`）ではリーグの局面を 0 にする。
@@ -748,18 +767,30 @@ def evaluate(model, data: Batcher, bs: int = 4096, teacher=None) -> dict:
         tot["t_logloss"] += float((-(target * torch.log(p + eps)
                                      + (1 - target) * torch.log(1 - p + eps))).sum())
         lp = F.log_softmax(sc, -1)
-        tot["p_logloss"] += float((-lp.gather(1, chosen.unsqueeze(1))).sum())
-        hit = (sc.argmax(-1) == chosen)
+        if data.policy_target == "argmax":
+            # 腕 A: 答えの無い決定（-100）は π の指標から外し、分母も答えのある決定の数にする
+            pm = chosen >= 0
+            tot["p_logloss"] += float((-lp.gather(1, chosen.clamp(min=0).unsqueeze(1)))[pm].sum())
+            hit = (sc.argmax(-1) == chosen) & pm
+            tot["n_p"] = tot.get("n_p", 0) + int(pm.sum())
+        else:
+            tot["p_logloss"] += float((-lp.gather(1, chosen.unsqueeze(1))).sum())
+            hit = (sc.argmax(-1) == chosen)
         tot["p_acc"] += float(hit.float().sum())
         if teacher is not None:
             t_sc = teacher(obs, codes, n_acts)[1]
             tot["t_agree"] = tot.get("t_agree", 0.0) + float((sc.argmax(-1) == t_sc.argmax(-1)).float().sum())
         for k in range(8):
             m = phase == k
+            if data.policy_target == "argmax":
+                m = m & pm
             per_phase[k][0] += int(hit[m].sum()); per_phase[k][1] += int(m.sum())
         tot["n"] += len(ids)
     n = max(1, tot["n"])
+    n_p = tot.pop("n_p", None)
     out = {k: (v / n if k != "n" else v) for k, v in tot.items()}
+    if n_p is not None:
+        out["p_logloss"], out["p_acc"], out["n_p"] = tot["p_logloss"] / max(1, n_p), tot["p_acc"] / max(1, n_p), n_p
     out["p_acc_by_phase"] = {PHASE_NAMES[k]: (c / t if t else None, t) for k, (c, t) in per_phase.items() if t}
     model.train()
     return out
@@ -850,10 +881,14 @@ def train(args):
         next_net = Net.load(args.next_net)
     elif args.next_net:
         raise SystemExit("--next-net は --vtarget next_turn のときだけ使う")
-    tr = Batcher(tr_recs, vtarget=args.vtarget, league_ranges=lg, next_net=next_net)
+    ptg = getattr(args, "policy_target", "chosen")
+    tr = Batcher(tr_recs, vtarget=args.vtarget, league_ranges=lg, next_net=next_net, policy_target=ptg)
     del tr_recs
     va = Batcher(read_records(files_of(args.valid), args.max_records),
-                 vtarget=args.vtarget, league_ranges=lg, next_net=next_net)
+                 vtarget=args.vtarget, league_ranges=lg, next_net=next_net, policy_target=ptg)
+    if ptg == "argmax":
+        print(f"腕 A（--policy-target argmax）: 学習の決定 {tr.n} のうち答えなし {tr.n_policy_excluded}・"
+              f"選んだ手と違う {tr.n_policy_changed}／検証 {va.n} のうち答えなし {va.n_policy_excluded}")
     print(f"train {tr.n} decisions / valid {va.n} decisions  (read {time.time()-t0:.0f}s)  chance acc: "
           f"train {chance_accuracy(tr):.3f} valid {chance_accuracy(va):.3f}")
 
@@ -1017,6 +1052,9 @@ def train(args):
                 with torch.no_grad():
                     t_sc = teacher(obs, codes, n_acts)[1]
                 l_p = distil_loss(sc, t_sc, n_acts)
+            elif tr.policy_target == "argmax":
+                pm = chosen >= 0                       # 腕 A: 答えの無い決定は無視（全部無ければ 0）
+                l_p = F.cross_entropy(sc[pm], chosen[pm]) if bool(pm.any()) else sc.sum() * 0.0
             else:
                 l_p = F.cross_entropy(sc, chosen)
             loss = args.wv * l_v + args.wp * l_p
@@ -1065,6 +1103,9 @@ def train(args):
             **({"next_turn": next_info} if args.vtarget == "next_turn" else {}),
             **({"calib_form": args.calib_form} if getattr(args, "calib_form", "linear") != "linear" else {}),
             **({"n_nonargmax": int(tr.n_nonargmax)} if args.vtarget == "fresh_am" else {}),
+            **({"policy_target": {"kind": "argmax", "train_excluded": tr.n_policy_excluded,
+                                  "train_changed": tr.n_policy_changed, "valid_excluded": va.n_policy_excluded}}
+               if ptg == "argmax" else {}),
             "n_params_exported": int(sum(w.size + b.size for w, b in net.trunk) + net.value[0].size
                                      + net.value[1].size + sum(w.size + b.size for w, b in net.policy))}
     with open(args.out.replace(".json", ".meta.json"), "w", encoding="utf-8") as f:
@@ -1083,6 +1124,9 @@ def main():
     ap.add_argument("--phead", type=int, default=128)
     ap.add_argument("--wv", type=float, default=1.0); ap.add_argument("--wp", type=float, default=1.0)
     ap.add_argument("--lam", type=float, default=0.0)
+    ap.add_argument("--policy-target", choices=["chosen", "argmax"], default="chosen",
+                    help="π の答え。chosen = 選んだ手（既定）。argmax = 探索の点数が最大の手（腕 A・D-163 §2.1・"
+                         "探索の点数が無い決定は除く）")
     ap.add_argument("--next-net", default=None,
                     help="腕 B（D-163）: --vtarget next_turn のとき s₁（次の自分の手番の始まり）を採点する束ねた V（V_0）")
     ap.add_argument("--vtarget", choices=["chosen", "max", "fresh", "fresh_am", "next_turn"], default="max",

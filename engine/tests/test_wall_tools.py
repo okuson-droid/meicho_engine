@@ -23,6 +23,8 @@ WA-1 `series` 系と同じ道で席に着けたとき、π に渡すデッキ表
      デッキ表になる。オフなら None
 WA-2 `policy_belief` は `policy_net` と `opp_decklist` が無いと止める
 WA-3 オフ（鍵なし・False）は打ち方がバイトで同じ（`series_digest`）。オンは打ち方が変わる（口が繋がっている）
+WA-4 `drl_train --policy-target argmax`: π の答えは探索の点数が最大の手（同点は最初）・点数の無い決定は -100（除く）。
+     検証の指標は答えのある決定だけで割る。学習が回り meta に除いた数が入る。既定は WB-4 が見る
 
 検査の対局は 935000..935999（kind=diag・D-163 で登録）で回す。
 """
@@ -361,3 +363,34 @@ def test_policy_belief_off_unchanged_on_changes_play():
     base = dig(_pi_spec(db["action_deck"]))
     assert dig(_pi_spec(db["action_deck"], policy_belief=False)) == base
     assert dig(_pi_spec(db["action_deck"], policy_belief=True)) != base
+
+
+# ------------------------------------------------------------------ WA-4
+@pytest.mark.slow
+def test_policy_target_argmax(recs, tmp_path):
+    D = T()
+    from meicho.drl_data import read_records
+    stem, _ = recs
+    r = read_records(D.files_of(stem))
+    b0 = D.Batcher(r)
+    b = D.Batcher(r, policy_target="argmax")
+    keep = np.nonzero(~np.isnan(r.z))[0]
+    n_ex = 0
+    for j, i in enumerate(keep):
+        sc = r.scores_of(i)
+        fin = np.isfinite(sc) if len(sc) else np.zeros(0, bool)
+        if not fin.any():
+            assert b.chosen[j] == -100
+            n_ex += 1
+            continue
+        want = int(np.nonzero(fin & (sc == sc[fin].max()))[0][0])
+        assert b.chosen[j] == (want if want < D.MAX_ACTS else -100)
+    assert b.n_policy_excluded >= n_ex > 0                    # 探索しない決定（H の落とし先）がある
+    assert b.n_policy_changed == int(((b.chosen >= 0) & (b.chosen != b0.chosen)).sum()) > 0   # τ の寄り道
+    with pytest.raises(SystemExit):
+        D.Batcher(r, policy_target="best")
+    out = str(tmp_path / "pa.json")
+    D.train(_args(stem, out, policy_target="argmax", wv=0.0, lam=0.0, select="best_p", hidden=8, phead=4))
+    m = json.load(open(out.replace(".json", ".meta.json"), encoding="utf-8"))
+    assert m["policy_target"]["train_excluded"] == b.n_policy_excluded
+    assert m["log"][-1]["valid"]["n_p"] == int((b.chosen >= 0).sum())
