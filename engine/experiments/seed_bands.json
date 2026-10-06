@@ -871,7 +871,39 @@
    "purpose": "汎用 AI の壁を越える案（D-163・`GENERALIST_WALL_DESIGN_20261006.md`）の道具の検査（`tests/test_wall_tools.py` の記録など・勝敗は読まない）",
    "owner": "tests/test_wall_tools.py",
    "date": "2026-10-06"
+  },
+  {
+   "start": 936000,
+   "end": 936099,
+   "kind": "validate",
+   "purpose": "壁を越える案 腕 B（D-163 §5.1・B-1）の主比較: V_B 対 V_0 と null（V_0 対 V_0）・調整デッキ 16 ブロック × 75 局（936000..936074）・同じシード。**学習に使用禁止**",
+   "owner": "experiments/eval_s3_h2h.py",
+   "date": "2026-10-06"
+  },
+  {
+   "start": 936100,
+   "end": 936199,
+   "kind": "validate",
+   "purpose": "壁を越える案 腕 B（D-163 §5.2）の錨: 対 素 planner・16 ブロック × 100 局（候補と基準は同じシード）。**学習に使用禁止**",
+   "owner": "experiments/eval_s2_repr.py",
+   "date": "2026-10-06"
+  },
+  {
+   "start": 936200,
+   "end": 936299,
+   "kind": "validate",
+   "purpose": "壁を越える案 腕 B（D-163 §5.2）の錨: 対 H・16 ブロック × 25 局（936200..936224・候補と基準は同じシード）。**学習に使用禁止**",
+   "owner": "experiments/eval_s2_repr.py",
+   "date": "2026-10-06"
+  },
+  {
+   "start": 936300,
+   "end": 936399,
+   "kind": "validate",
+   "purpose": "壁を越える案 腕 B（D-163 §5.2）の錨: 対 貪欲・16 ブロック × 25 局（936300..936324・候補と基準は同じシード）。**学習に使用禁止**",
+   "owner": "experiments/eval_s2_repr.py",
+   "date": "2026-10-06"
   }
  ],
- "next_free": 936000
+ "next_free": 936400
 }
