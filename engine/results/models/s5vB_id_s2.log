@@ -1,0 +1,21 @@
+train 587665 decisions / valid 63706 decisions  (read 30s)  chance acc: train 0.279 valid 0.280
+探索値の較正[bulk]: p = sigmoid(3.751·clip(v,±0.917)/0.917 + -2.645)  n=570001  番兵の割合 0.000
+  較正後の対数損失 0.6392 vs 「常に平均勝率」0.6845 → 探索値は勝敗の情報を持つ
+  教師 p の広がり（75%点−25%点） 0.194
+腕 B（next_turn）: 行動フェイズの記録 186106・s₁ 無し 30648（0.165）・較正 a 5.247 b -3.734 c 0.896・範囲 [0.023344723507761955, 0.8195347189903259]・p との相関 0.4633641821755227
+init from results/models/s2v_id_s2.json
+学習する重みの数 632,194（書き出すネットは射影の有無によらず同じ形）
+ep 1: loss 1.6947 | valid v_logloss 0.6265 v_acc 0.633 | t_logloss 0.6522 | p_logloss 1.0242 p_acc 0.574 | 78s
+   by phase: {'setup': '1.000(960)', 'mulligan': '0.982(960)', 'action': '0.491(20104)', 'clash': '0.551(10681)', 'choice': '0.615(26433)', 'rush': '0.592(4345)', 'discard': '0.283(223)'}
+ep 2: loss 1.6375 | valid v_logloss 0.6294 v_acc 0.631 | t_logloss 0.6565 | p_logloss 1.0144 p_acc 0.578 | 74s
+   by phase: {'setup': '1.000(960)', 'mulligan': '0.982(960)', 'action': '0.491(20104)', 'clash': '0.553(10681)', 'choice': '0.621(26433)', 'rush': '0.604(4345)', 'discard': '0.318(223)'}
+ep 3: loss 1.6015 | valid v_logloss 0.6299 v_acc 0.630 | t_logloss 0.6580 | p_logloss 1.0131 p_acc 0.578 | 76s
+   by phase: {'setup': '1.000(960)', 'mulligan': '0.982(960)', 'action': '0.493(20104)', 'clash': '0.556(10681)', 'choice': '0.619(26433)', 'rush': '0.600(4345)', 'discard': '0.354(223)'}
+ep 4: loss 1.5679 | valid v_logloss 0.6359 v_acc 0.625 | t_logloss 0.6635 | p_logloss 1.0126 p_acc 0.580 | 72s
+   by phase: {'setup': '1.000(960)', 'mulligan': '0.982(960)', 'action': '0.497(20104)', 'clash': '0.559(10681)', 'choice': '0.619(26433)', 'rush': '0.603(4345)', 'discard': '0.327(223)'}
+ep 5: loss 1.5383 | valid v_logloss 0.6355 v_acc 0.626 | t_logloss 0.6630 | p_logloss 1.0147 p_acc 0.580 | 74s
+   by phase: {'setup': '1.000(960)', 'mulligan': '0.982(960)', 'action': '0.494(20104)', 'clash': '0.562(10681)', 'choice': '0.623(26433)', 'rush': '0.600(4345)', 'discard': '0.300(223)'}
+ep 6: loss 1.5173 | valid v_logloss 0.6359 v_acc 0.626 | t_logloss 0.6636 | p_logloss 1.0155 p_acc 0.581 | 76s
+   by phase: {'setup': '1.000(960)', 'mulligan': '0.982(960)', 'action': '0.497(20104)', 'clash': '0.562(10681)', 'choice': '0.622(26433)', 'rush': '0.600(4345)', 'discard': '0.309(223)'}
+--select best_v: エポック 1 の版を保存する（検証 v_logloss 0.6265・最後は 0.6359）
+saved results/models/s5vB_id_s2.json (497s)
