@@ -1,0 +1,192 @@
+............F...FF...F.................................................. [  4%]
+........................................................................ [  9%]
+........................................................................ [ 14%]
+..F.........FF.F................sssss................................... [ 19%]
+........................................................................ [ 24%]
+.............................s................s......................... [ 29%]
+........................................................................ [ 34%]
+........................................................................ [ 39%]
+........................................................................ [ 44%]
+........................................................................ [ 49%]
+........................................................................ [ 54%]
+........................................................................ [ 59%]
+........................................................................ [ 64%]
+........................................................................ [ 69%]
+........................................................................ [ 74%]
+........................................................................ [ 79%]
+........................................................................ [ 84%]
+........................................................................ [ 89%]
+........................................................................ [ 94%]
+........................................................................ [ 98%]
+...............                                                          [100%]
+=================================== FAILURES ===================================
+_________ test_unlisted_list_is_empty_because_the_three_were_published _________
+
+    def test_unlisted_list_is_empty_because_the_three_were_published():
+        """公式未掲載だった 3 番号が、掲載されて正本に入ったこと。
+    
+        2026-09-10 の時点では `BP01-049` `BP01-057` `BP01-062` の 3 つが
+        公式サイトのカード検索に無かった（D-078）。**2026-09-12 に掲載され、
+        3 枚とも取得して `cards/cards_structured.json` に入れた**ので、
+        未掲載の一覧は空になる。`resolved` 欄に 3 番号が残っているのは経緯の記録である。
+    
+        ここが空でなくなったら、公式に新しい欠番が出たということなので、
+        `cards/OFFICIAL_FETCH_*.md` に経緯を書いてから足すこと。
+        """
+>       with open(UNLISTED_PATH, encoding="utf-8") as f:
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       FileNotFoundError: [Errno 2] No such file or directory: '/home/user/meicho_engine/cards/BP01_UNLISTED.json'
+
+tests/test_bp01.py:244: FileNotFoundError
+_____________________ test_every_bp01_number_is_registered _____________________
+
+    def test_every_bp01_number_is_registered():
+        """`cards/` にある番号がすべて `cards.py` に在ること（T-K-4）。
+    
+        K-0 では `xfail(strict=True)` で置いた。K-1 で 68 番号＋3 枠を一度に登録した時点で
+        「予想外に通った」で落ちたので、設計どおり旗を外した（D-079 追記 2）。
+    
+        **通る段が K-4 から K-1 に前倒しになったのは D-079 判断 1（登録を 1 回にまとめる）の
+        帰結である。** 以後この検査が守るのは「登録簿が痩せていないこと」で、
+        効果（`skills`）が埋まっているかは見ない。そちらは段ごとの検査が担う。
+        """
+        import reconcile_cards
+        from meicho.cards import ACTION_CARDS, CHARA_CARDS
+        known = set(ACTION_CARDS) | set(CHARA_CARDS)
+>       missing = sorted(c for c in reconcile_cards.load_cards_csv() if c not in known)
+                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_bp01.py:340: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+path = '/home/user/meicho_engine/cards/cards_structured.csv'
+
+    def load_cards_csv(path: str = CSV_PATH) -> dict:
+        """code → 行。レアリティ違いの重複行は1つに畳む（性能は同じ）。"""
+>       with open(path, encoding="utf-8-sig", newline="") as f:
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       FileNotFoundError: [Errno 2] No such file or directory: '/home/user/meicho_engine/cards/cards_structured.csv'
+
+scripts/reconcile_cards.py:64: FileNotFoundError
+______________ test_unregistered_set_is_a_subset_of_the_k0_ledger ______________
+
+    def test_unregistered_set_is_a_subset_of_the_k0_ledger():
+        """未登録の顔ぶれが K-0 の台帳の 68 番号から**増えない**こと。
+    
+        減るのは正しい（段が進んだ）。増えたら `cards/` に新しい番号が入ったのに
+        実装が追いついていない、という取りこぼしである。
+        """
+        import reconcile_cards
+        from meicho.cards import ACTION_CARDS, CHARA_CARDS
+        known = set(ACTION_CARDS) | set(CHARA_CARDS)
+>       missing = sorted(c for c in reconcile_cards.load_cards_csv() if c not in known)
+                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_bp01.py:353: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+path = '/home/user/meicho_engine/cards/cards_structured.csv'
+
+    def load_cards_csv(path: str = CSV_PATH) -> dict:
+        """code → 行。レアリティ違いの重複行は1つに畳む（性能は同じ）。"""
+>       with open(path, encoding="utf-8-sig", newline="") as f:
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       FileNotFoundError: [Errno 2] No such file or directory: '/home/user/meicho_engine/cards/cards_structured.csv'
+
+scripts/reconcile_cards.py:64: FileNotFoundError
+____________________ test_no_image_allowlist_is_consistent _____________________
+
+    def test_no_image_allowlist_is_consistent():
+        """画像の許容リストが、登録済みで画像を持たない番号だけを指していること。
+    
+        マスター裁定 2026-09-10 により BP01 の画像は取得しない。そこで
+        「画像が無い」を**承知の分**と**取りこぼし**に分けた（引継ぎ書 §0.3 (6)）。
+        リストが実態とずれると、その区別が意味を失う。
+    
+        画像が 1 枚も無い環境（エンジンだけ切り出した場合・作業環境）では
+        `stale_allowlist` は必ず空になるので、そこは素通りする。
+        """
+        from meicho.cards import ACTION_CARDS, CHARA_CARDS
+        from webapp import images
+    
+        # **「空でないこと」を読めた証拠にしてはいけない。** 2026-09-13 に全番号へ画像が
+        # 揃って許容リストが空になった（D-084 追記 1）ため、`assert allow` は
+        # 「読めているのに落ちる」検査になっていた。`no_image_allowlist()` は
+        # ファイルが無くても空集合を返すので、**読めたかどうかはファイルを直に見て確かめる**。
+>       assert os.path.exists(images.NO_IMAGE_PATH), \
+            f"cards/BP01_NO_IMAGE.json が無い: {images.NO_IMAGE_PATH}"
+E       AssertionError: cards/BP01_NO_IMAGE.json が無い: /home/user/meicho_engine/cards/BP01_NO_IMAGE.json
+E       assert False
+E        +  where False = <function exists at 0x7f6fc270b560>('/home/user/meicho_engine/cards/BP01_NO_IMAGE.json')
+E        +    where <function exists at 0x7f6fc270b560> = <module 'posixpath' (frozen)>.exists
+E        +      where <module 'posixpath' (frozen)> = os.path
+E        +    and   '/home/user/meicho_engine/cards/BP01_NO_IMAGE.json' = <module 'webapp.images' from '/home/user/meicho_engine/engine/tests/../webapp/images.py'>.NO_IMAGE_PATH
+
+tests/test_bp01.py:504: AssertionError
+___________________ test_every_implemented_card_has_an_image ___________________
+
+    def test_every_implemented_card_has_an_image():
+        """実装しているカードすべてに画像がある（UI_DESIGN.md §2）。
+    
+        落ちたら「カードを足したのに画像を置いていない」か、その逆である。
+        どちらも画面に穴が開くので、**気付けること**が目的。
+        """
+        st = images.status()
+>       assert st["missing"] == [], f"画像が無い実装カード: {st['missing']}"
+E       AssertionError: 画像が無い実装カード: ['BP01-001', 'BP01-002', 'BP01-003', 'BP01-004', 'BP01-005', 'BP01-006', 'BP01-007', 'BP01-008', 'BP01-009', 'BP01-010', 'BP01-011', 'BP01-012', 'BP01-013', 'BP01-014', 'BP01-015', 'BP01-016', 'BP01-017', 'BP01-018', 'BP01-019', 'BP01-020', 'BP01-021', 'BP01-022', 'BP01-023', 'BP01-024', 'BP01-025', 'BP01-026', 'BP01-027', 'BP01-028', 'BP01-029', 'BP01-030', 'BP01-031', 'BP01-032', 'BP01-033', 'BP01-034', 'BP01-035', 'BP01-036', 'BP01-037', 'BP01-038', 'BP01-039', 'BP01-040', 'BP01-041', 'BP01-042', 'BP01-043', 'BP01-044', 'BP01-045', 'BP01-046', 'BP01-047', 'BP01-048', 'BP01-049', 'BP01-050', 'BP01-051', 'BP01-052', 'BP01-053', 'BP01-054', 'BP01-055', 'BP01-056', 'BP01-057', 'BP01-058', 'BP01-059', 'BP01-060', 'BP01-061', 'BP01-062', 'BP01-063', 'BP01-064', 'BP01-065', 'BP01-066', 'BP01-067', 'BP01-068', 'BP01-069', 'BP01-070', 'BP01-071', 'BP01-072', 'BP01-073', 'BP01-074', 'BP01-075', 'BP01-076', 'BP01-077', 'SD01-001', 'SD01-002', 'SD01-003', 'SD01-004', 'SD01-005', 'SD01-006', 'SD01-007', 'SD01-008', 'SD01-009', 'SD01-010', 'SD01-011', 'SD01-012', 'SD01-013', 'SD01-014', 'SD01-015', 'SD01-016', 'SD01-017', 'SD01-018', 'SD01-019', 'SD01-020', 'SD01-021', 'SD01-022', 'SD01-023', 'SD02-001', 'SD02-002', 'SD02-003', 'SD02-004', 'SD02-005', 'SD02-006', 'SD02-007', 'SD02-008', 'SD02-009', 'SD02-010', 'SD02-011', 'SD02-012', 'SD02-013', 'SD02-014', 'SD02-015', 'SD02-016', 'SD02-017', 'SD02-018', 'SD02-019', 'SD02-020', 'SD02-021', 'SD02-022', 'SD02-023']
+E       assert ['BP01-001', ...P01-006', ...] == []
+E         
+E         Left contains 123 more items, first extra item: 'BP01-001'
+E         Use -v to get more diff
+
+tests/test_card_images.py:36: AssertionError
+_______________ test_url_for_returns_none_when_there_is_no_image _______________
+
+    def test_url_for_returns_none_when_there_is_no_image():
+        assert images.url_for("NOPE-999") is None
+>       any_id = next(iter(images.get_index()))
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       StopIteration
+
+tests/test_card_images.py:120: StopIteration
+_______ test_view_carries_an_image_url_without_dropping_the_engine_text ________
+
+    def test_view_carries_an_image_url_without_dropping_the_engine_text():
+        """画像を足しても**エンジンのオペコード言い換え文は消えない**（§P4）。"""
+        cid = next(iter(ACTION_CARDS))
+        c = view.action_card(cid)
+>       assert c["img"] == "/card/" + cid + ".png"
+E       AssertionError: assert None == (('/card/' + 'SD02-017') + '.png')
+
+tests/test_card_images.py:130: AssertionError
+_______________________ test_chara_card_carries_an_image _______________________
+
+    def test_chara_card_carries_an_image():
+        cid = next(iter(CHARA_CARDS))
+>       assert view.chara_card(cid)["img"] == "/card/" + cid + ".png"
+E       AssertionError: assert None == (('/card/' + 'BP01-021') + '.png')
+
+tests/test_card_images.py:144: AssertionError
+=============================== warnings summary ===============================
+tests/test_card_profile_proj.py::test_fold_is_exact
+  /home/user/meicho_engine/engine/experiments/drl_train.py:633: UserWarning: Sparse CSR tensor support is in beta state. If you miss a functionality in the sparse tensor support, please submit a feature request to https://github.com/pytorch/pytorch/issues. (Triggered internally at /__w/pytorch/pytorch/aten/src/ATen/SparseCsrTensorImpl.cpp:49.)
+    self._proj_t = self.proj.t().contiguous().to_sparse_csr()
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/test_bp01.py::test_unlisted_list_is_empty_because_the_three_were_published
+FAILED tests/test_bp01.py::test_every_bp01_number_is_registered - FileNotFoun...
+FAILED tests/test_bp01.py::test_unregistered_set_is_a_subset_of_the_k0_ledger
+FAILED tests/test_bp01.py::test_no_image_allowlist_is_consistent - AssertionE...
+FAILED tests/test_card_images.py::test_every_implemented_card_has_an_image - ...
+FAILED tests/test_card_images.py::test_url_for_returns_none_when_there_is_no_image
+FAILED tests/test_card_images.py::test_view_carries_an_image_url_without_dropping_the_engine_text
+FAILED tests/test_card_images.py::test_chara_card_carries_an_image - Assertio...
+SKIPPED [1] tests/test_cards_folder.py:25: cards/cards_structured.csv が無い (/home/user/meicho_engine/cards/cards_structured.csv)
+SKIPPED [1] tests/test_cards_folder.py:35: cards/cards_structured.csv が無い (/home/user/meicho_engine/cards/cards_structured.csv)
+SKIPPED [1] tests/test_cards_folder.py:51: cards/cards_structured.csv が無い (/home/user/meicho_engine/cards/cards_structured.csv)
+SKIPPED [1] tests/test_cards_folder.py:63: cards/cards_structured.csv が無い (/home/user/meicho_engine/cards/cards_structured.csv)
+SKIPPED [1] tests/test_cards_folder.py:80: cards/cards_structured.csv が無い (/home/user/meicho_engine/cards/cards_structured.csv)
+SKIPPED [1] tests/test_drl.py:414: 段階 2 の記録が無い環境
+SKIPPED [1] tests/test_encoding_v6.py:187: 移行したネットが無い環境
+8 failed, 1440 passed, 7 skipped, 1 warning in 2581.15s (0:43:01)
