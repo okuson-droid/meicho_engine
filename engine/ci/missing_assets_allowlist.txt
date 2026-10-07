@@ -21,3 +21,4 @@ test_stage3_item4.py::test_leaf_value_reproduces
 test_stage3_item4.py::test_play_unchanged_with_leaf_dump
 test_stage3_item4.py::test_root_matches_record_and_belief_nonzero
 test_stage3_item4.py::test_smaller_cap_is_subset
+test_stage3_item4.py::test_play_unchanged_with_leaf_dump[netfree_v]

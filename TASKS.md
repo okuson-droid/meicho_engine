@@ -12,7 +12,7 @@
 
 ## Active
 
-- [ ] **★CI を物差しに戻す 1 便目（D-164 §2）** - 資材の一覧・concurrency・途中経過に `[skip ci]`・ubuntu-24.04・torch の組。2 便目は大きいネットを Release に
+- [ ] **★CI を物差しに戻す 1 便目（D-164 §2）** - 資材の一覧・concurrency・途中経過に `[skip ci]`・ubuntu-24.04・torch の組。2 便目は大きいネットを Release に。**2026-10-07: ブランチの既定の組が 72c988e から赤**。torch を塞いだまっさらな作業ツリーで再現し、一覧で説明できない失敗 3 件を直した（`test_gendata` の「未登録の帯」が固定の 900000 を使っていて、帯 898000..900999 の登録で登録済みになっていた → `next_free` より先の値に／`test_stage4_a3_tools::test_target_valid_has_17041_decisions` が torch なしで `drl_train` を読み込んでいた → `importorskip`／`test_stage3_item4::test_play_unchanged_with_leaf_dump[netfree_v]` は `s2v_id_ens3.json` が無いため → 一覧に足した）。新しい検査 `test_wall_tools.py` は torch の組で回る
 - [ ] **★腕 B（D-163）** - `drl_train.py --vtarget next_turn`（検査先行）→ V_B の学び直し → B-1（直接対決＋null・98.3%・錨）
 - [ ] **★腕 A（D-163）** - Rust `policy_belief`（既定オフ）・`--policy-target argmax`・`record_mix`／`eval_s3_h2h`／`eval_s2_repr` の口・小さい π → A-0〜A-2
 - [ ] 腕 C（D-163）- `--aux`（B-1 のあと）
