@@ -4,7 +4,7 @@ S=/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/sc
 E=/home/user/meicho_engine/engine; R=$E/results/drl/wall_a2; W=$S/a2rec
 cd $E; mkdir -p $W
 export PYTHONPATH=$PWD MEICHO_HOST=cc-cloud-4
-push() { cd /home/user/meicho_engine; git add engine/results/drl/wall_a2 engine/results/drl/wall_a2_gate.json 2>/dev/null
+push() { cd /home/user/meicho_engine; git add engine/results/drl/wall_a2; [ -f engine/results/drl/wall_a2_gate.json ] && git add engine/results/drl/wall_a2_gate.json
   git commit -q -m "[skip ci] 腕 A（A-2）: $1
 
 Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
