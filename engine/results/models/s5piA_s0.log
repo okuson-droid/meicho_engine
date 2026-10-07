@@ -1,0 +1,25 @@
+腕 A（--policy-target argmax）: 学習の決定 587665 のうち答えなし 17664・選んだ手と違う 134654／検証 63706 のうち答えなし 1920
+train 587665 decisions / valid 63706 decisions  (read 22s)  chance acc: train 0.279 valid 0.280
+学習する重みの数 139,618（書き出すネットは射影の有無によらず同じ形）
+ep 1: loss 1.2308 | valid v_logloss 0.7014 v_acc 0.463 | t_logloss 0.7014 | p_logloss 1.1296 p_acc 0.561 | 47s
+   by phase: {'action': '0.464(20104)', 'clash': '0.488(10681)', 'choice': '0.659(26433)', 'rush': '0.602(4345)', 'discard': '0.318(223)'}
+ep 2: loss 1.1024 | valid v_logloss 0.7020 v_acc 0.469 | t_logloss 0.7020 | p_logloss 1.0709 p_acc 0.583 | 44s
+   by phase: {'action': '0.485(20104)', 'clash': '0.531(10681)', 'choice': '0.671(26433)', 'rush': '0.636(4345)', 'discard': '0.354(223)'}
+ep 3: loss 1.0496 | valid v_logloss 0.7023 v_acc 0.465 | t_logloss 0.7023 | p_logloss 1.0336 p_acc 0.597 | 42s
+   by phase: {'action': '0.494(20104)', 'clash': '0.571(10681)', 'choice': '0.679(26433)', 'rush': '0.652(4345)', 'discard': '0.390(223)'}
+ep 4: loss 1.0137 | valid v_logloss 0.7032 v_acc 0.465 | t_logloss 0.7032 | p_logloss 1.0151 p_acc 0.604 | 43s
+   by phase: {'action': '0.497(20104)', 'clash': '0.586(10681)', 'choice': '0.685(26433)', 'rush': '0.656(4345)', 'discard': '0.377(223)'}
+ep 5: loss 0.9908 | valid v_logloss 0.7040 v_acc 0.460 | t_logloss 0.7040 | p_logloss 1.0051 p_acc 0.609 | 43s
+   by phase: {'action': '0.500(20104)', 'clash': '0.602(10681)', 'choice': '0.688(26433)', 'rush': '0.662(4345)', 'discard': '0.377(223)'}
+ep 6: loss 0.9751 | valid v_logloss 0.7033 v_acc 0.464 | t_logloss 0.7033 | p_logloss 1.0011 p_acc 0.609 | 45s
+   by phase: {'action': '0.501(20104)', 'clash': '0.599(10681)', 'choice': '0.688(26433)', 'rush': '0.658(4345)', 'discard': '0.363(223)'}
+ep 7: loss 0.9633 | valid v_logloss 0.7033 v_acc 0.462 | t_logloss 0.7033 | p_logloss 0.9981 p_acc 0.611 | 43s
+   by phase: {'action': '0.501(20104)', 'clash': '0.605(10681)', 'choice': '0.691(26433)', 'rush': '0.656(4345)', 'discard': '0.372(223)'}
+ep 8: loss 0.9548 | valid v_logloss 0.7038 v_acc 0.461 | t_logloss 0.7038 | p_logloss 0.9970 p_acc 0.611 | 45s
+   by phase: {'action': '0.502(20104)', 'clash': '0.601(10681)', 'choice': '0.691(26433)', 'rush': '0.660(4345)', 'discard': '0.363(223)'}
+ep 9: loss 0.9492 | valid v_logloss 0.7037 v_acc 0.461 | t_logloss 0.7037 | p_logloss 0.9963 p_acc 0.611 | 45s
+   by phase: {'action': '0.502(20104)', 'clash': '0.604(10681)', 'choice': '0.690(26433)', 'rush': '0.661(4345)', 'discard': '0.386(223)'}
+ep 10: loss 0.9460 | valid v_logloss 0.7038 v_acc 0.461 | t_logloss 0.7038 | p_logloss 0.9962 p_acc 0.611 | 39s
+   by phase: {'action': '0.501(20104)', 'clash': '0.605(10681)', 'choice': '0.691(26433)', 'rush': '0.659(4345)', 'discard': '0.372(223)'}
+--select best_p: エポック 10 の版を保存する（検証 p_logloss 0.9962・最後は 0.9962）
+saved results/models/s5piA_s0.json (473s)
