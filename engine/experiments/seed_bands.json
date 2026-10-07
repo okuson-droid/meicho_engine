@@ -911,7 +911,39 @@
    "purpose": "壁を越える案 腕 A（D-163 §2.2 A-0）の速さ: AI_A（葉 V_0＋代打ち π）対 AI_0 と AI_0 対 AI_0 を同じシードで 50 局ずつ（対象デッキ ENV_SANGE_RM_TSUBAKI のミラー・936400..936449）。勝敗は判定に使わない。**学習に使用禁止**",
    "owner": "experiments/eval_s3_h2h.py",
    "date": "2026-10-07"
+  },
+  {
+   "start": 936500,
+   "end": 936599,
+   "kind": "validate",
+   "purpose": "壁を越える案 腕 A（D-166・A-1）の主比較: AI_A 対 AI_0 と null（AI_0 対 AI_0）・調整デッキ 16 ブロック × 75 局（936500..936574）・同じシード。**学習に使用禁止**",
+   "owner": "experiments/eval_s3_h2h.py",
+   "date": "2026-10-07"
+  },
+  {
+   "start": 936600,
+   "end": 936699,
+   "kind": "validate",
+   "purpose": "腕 A（A-1）の錨: 対 素 planner・16 ブロック × 100 局（候補と基準は同じシード）。**学習に使用禁止**",
+   "owner": "experiments/eval_s2_repr.py",
+   "date": "2026-10-07"
+  },
+  {
+   "start": 936700,
+   "end": 936799,
+   "kind": "validate",
+   "purpose": "腕 A（A-1）の錨: 対 H・16 ブロック × 25 局（936700..936724）。**学習に使用禁止**",
+   "owner": "experiments/eval_s2_repr.py",
+   "date": "2026-10-07"
+  },
+  {
+   "start": 936800,
+   "end": 936899,
+   "kind": "validate",
+   "purpose": "腕 A（A-1）の錨: 対 貪欲・16 ブロック × 25 局（936800..936824）。**学習に使用禁止**",
+   "owner": "experiments/eval_s2_repr.py",
+   "date": "2026-10-07"
   }
  ],
- "next_free": 936500
+ "next_free": 936900
 }
