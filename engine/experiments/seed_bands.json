@@ -943,7 +943,15 @@
    "purpose": "腕 A（A-1）の錨: 対 貪欲・16 ブロック × 25 局（936800..936824）。**学習に使用禁止**",
    "owner": "experiments/eval_s2_repr.py",
    "date": "2026-10-07"
+  },
+  {
+   "start": 936900,
+   "end": 938899,
+   "kind": "train",
+   "purpose": "壁を越える案 腕 A（D-163 §2.2 A-2・D-166）の教師の門の記録: AI_A（netfree_vp・葉 V_0＋代打ち π s5piA_s0・τ = 0.006）を教師に、反復 1 の検証と同じ生成器 `--n-total 500` で 528 局（936900..937427）を 16 塊で。予備 937428..938899。**学習にも強さの評価にも使用禁止**（u_A の机上の集計だけ）",
+   "owner": "experiments/make_s2_schedule.py / record_mix.py",
+   "date": "2026-10-07"
   }
  ],
- "next_free": 936900
+ "next_free": 938900
 }
