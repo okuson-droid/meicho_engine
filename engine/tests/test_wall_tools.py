@@ -24,6 +24,8 @@ WA-1 `series` 系と同じ道で席に着けたとき、π に渡すデッキ表
      デッキ表になる。オフなら None
 WA-2 `policy_belief` は `policy_net` と `opp_decklist` が無いと止める
 WA-3 オフ（鍵なし・False）は打ち方がバイトで同じ（`series_digest`）。オンは打ち方が変わる（口が繋がっている）
+WA-7 A-2 の門（`diag_s3_desk.py --a2`）: u と局を単位の区間（同じ予測なら 0・手計算と一致・区間は点を含む）、
+     判定（u ≥ 0.002 で越える・下端 ≤ 0 なら弱い通過）、記録に通すと線形・logit・isotonic の u と AUC が出る
 WA-6 π つき（`policy_belief` なし）の `series_record` の記録が、口を足す前の wheel（commit `7f36ffb` から作った）と
      バイトで同じ（その wheel で出した sha を固定・2 局・両席を記録）
 WA-4 `drl_train --policy-target argmax`: π の答えは探索の点数が最大の手（同点は最初）・点数の無い決定は -100（除く）。
@@ -477,3 +479,37 @@ def test_record_with_pi_unchanged_from_pre_policy_belief(tmp_path):
     for f in sorted(x for x in os.listdir(tmp_path) if x.startswith("r.")):
         h.update((tmp_path / f).read_bytes())
     assert h.hexdigest()[:16] == REC_SHA_PRE_A
+
+
+# ------------------------------------------------------------------ WA-7
+def test_a2_uplift_and_verdict():
+    import diag_s3_desk as K
+    r = np.random.RandomState(3)
+    z = (r.rand(400) < 0.5).astype(float)
+    game = np.repeat(np.arange(40), 10)
+    p0 = np.clip(0.5 + 0.2 * (z - 0.5) + r.normal(0, 0.1, 400), 0.05, 0.95)
+    same = K.uplift_ci(p0, p0, z, game, n_boot=500)
+    assert same["u"] == same["lo"] == same["hi"] == 0 and same["n_games"] == 40
+    pt = np.clip(p0 + 0.1 * (z - 0.5), 0.05, 0.95)                       # 勝敗に寄せた教師
+    got = K.uplift_ci(p0, pt, z, game, n_boot=2000)
+    want = float(np.mean(K._ll_each(p0, z) - K._ll_each(pt, z)))
+    assert got["u"] == pytest.approx(want) and got["lo"] <= got["u"] <= got["hi"] and got["u"] > 0
+    assert K.verdict_a2(0.001, -0.01).startswith("門を越えない")
+    assert K.verdict_a2(0.003, -0.001) == "門を越える（弱い通過・区間の下端 ≤ 0）"
+    assert K.verdict_a2(0.003, 0.001) == "門を越える"
+
+
+@pytest.mark.slow
+def test_a2_gate_on_records(recs):
+    T()
+    import diag_s3_desk as K
+    import glob as G
+    stem, d = recs
+    from drl_train import files_of
+    mans = [json.load(open(p, encoding="utf-8")) for p in sorted(G.glob(stem + "*.manifest.json"))]
+    out = K.gate_a2(files_of(stem), mans)
+    a = out["A"]
+    assert set(a["forms"]) == {"linear", "logit", "iso"} and a["n_searched"] > 0
+    assert "u" in a["forms"]["iso"]                       # 検査の記録は葉の V なし＝探索値が [−1, 1] の外で logit は飛ぶ
+    assert out["u_A"] == a["forms"]["linear"]["u"] and out["verdict"] == K.verdict_a2(out["u_A"], out["lo"])
+    assert out["lo"] <= out["u_A"] <= out["hi"]
