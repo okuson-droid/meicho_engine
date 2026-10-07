@@ -903,7 +903,15 @@
    "purpose": "壁を越える案 腕 B（D-163 §5.2）の錨: 対 貪欲・16 ブロック × 25 局（936300..936324・候補と基準は同じシード）。**学習に使用禁止**",
    "owner": "experiments/eval_s2_repr.py",
    "date": "2026-10-06"
+  },
+  {
+   "start": 936400,
+   "end": 936499,
+   "kind": "validate",
+   "purpose": "壁を越える案 腕 A（D-163 §2.2 A-0）の速さ: AI_A（葉 V_0＋代打ち π）対 AI_0 と AI_0 対 AI_0 を同じシードで 50 局ずつ（対象デッキ ENV_SANGE_RM_TSUBAKI のミラー・936400..936449）。勝敗は判定に使わない。**学習に使用禁止**",
+   "owner": "experiments/eval_s3_h2h.py",
+   "date": "2026-10-07"
   }
  ],
- "next_free": 936400
+ "next_free": 936500
 }
