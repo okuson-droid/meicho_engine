@@ -24,6 +24,8 @@ WA-1 `series` 系と同じ道で席に着けたとき、π に渡すデッキ表
      デッキ表になる。オフなら None
 WA-2 `policy_belief` は `policy_net` と `opp_decklist` が無いと止める
 WA-3 オフ（鍵なし・False）は打ち方がバイトで同じ（`series_digest`）。オンは打ち方が変わる（口が繋がっている）
+WA-6 π つき（`policy_belief` なし）の `series_record` の記録が、口を足す前の wheel（commit `7f36ffb` から作った）と
+     バイトで同じ（その wheel で出した sha を固定・2 局・両席を記録）
 WA-4 `drl_train --policy-target argmax`: π の答えは探索の点数が最大の手（同点は最初）・点数の無い決定は -100（除く）。
      検証の指標は答えのある決定だけで割る。学習が回り meta に除いた数が入る。既定は WB-4 が見る
 WA-5 π を持つ打ち手の口: `record_mix` の教師 `netfree_vp`・`make_s2_schedule --teacher netfree_vp --policy-net`・
@@ -325,15 +327,18 @@ def test_policy_belief_deck_by_seat():
     ad = [da["action_deck"], db["action_deck"]]
     on, off = _pi_spec(db["action_deck"], policy_belief=True), _pi_spec(db["action_deck"])
     for seed in (10, 11):
+        a_seat = seed % 2                                    # 奇数シードで A が席 1 に入れ替わる
         for seat in (0, 1):
             for q in (0, 1):
-                want = ad[1 - seat] if q == seat else ad[seat]
-                got = rs.policy_belief_deck(ad, on, on, seed, seat, q)
-                assert sorted(got) == sorted(want), (seed, seat, q)
-                assert rs.policy_belief_deck(ad, off, off, seed, seat, q) is None
-    # q = 自分のときは、記録の観測が渡すデッキ表（その席の opp_decklist）と同じ
-    for seat in (0, 1):
-        assert sorted(rs.policy_belief_deck(ad, on, on, 10, seat, seat)) == sorted(ad[1 - seat])
+                # A（オン）と B（オフ）を別の指定にして、入れ替わりを見分ける
+                got = rs.policy_belief_deck(ad, on, off, seed, seat, q)
+                if seat != a_seat:
+                    assert got is None, (seed, seat, q)
+                    continue
+                # 席 q の記録の観測は、その席の opp_decklist＝相手の席の行動デッキ ad[1 - q] で作られる
+                # （opp_from_seat・D-123）。π に渡すデッキ表がそれと同じなら、同じ encode で観測も一致する
+                assert sorted(got) == sorted(ad[1 - q]), (seed, seat, q)
+                assert sorted(got) == sorted(ad[1 - seat] if q == seat else ad[seat])
 
 
 def test_policy_belief_requires_net_and_pool():
@@ -446,3 +451,29 @@ def test_pi_arm_plays(tmp_path):
     d = json.load(open(out, encoding="utf-8"))
     assert len(d["results"]["vp|heuristic"]) == 2
     assert d["arms"]["vp"]["sha"].endswith("+pi=" + E.arm_sha(PI_NET))
+
+
+# ------------------------------------------------------------------ WA-6
+REC_SHA_PRE_A = "b5b435dfff92de43"     # commit 7f36ffb の wheel で同じ記録を出したときの sha256 先頭 16 桁（2026-10-07）
+
+
+@pytest.mark.slow
+def test_record_with_pi_unchanged_from_pre_policy_belief(tmp_path):
+    import hashlib
+    rs = pytest.importorskip("meicho_rs")
+    from arena import load_deck, matchup_config
+    from arena_rs import PLANNER, ensure_cards
+    from record_mix import NETFREE
+    ensure_cards()
+    da, db = load_deck(f"env/{TARGET}"), load_deck("env/ENV_YANG_RM_CHIXIA")       # どちらも最終評価ではない
+    cfg = matchup_config(da, db)
+
+    def sp(pool):
+        return PLANNER(pool, **NETFREE, value_net=V0, policy_net=PI_NET, policy_scope="proxy")
+    out = str(tmp_path / "r")
+    rs.series_record(cfg.chara_decks, cfg.action_decks, sp(db["action_deck"]), sp(da["action_deck"]),
+                     935970, 2, out, 2, 200, True, True, True)
+    h = hashlib.sha256()
+    for f in sorted(x for x in os.listdir(tmp_path) if x.startswith("r.")):
+        h.update((tmp_path / f).read_bytes())
+    assert h.hexdigest()[:16] == REC_SHA_PRE_A
