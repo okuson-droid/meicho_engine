@@ -959,7 +959,39 @@
    "purpose": "壁を越える案 腕 A（A-1・D-166）の境界の追試（設計書 §5.1）: AI_A 対 AI_0 と null・調整デッキ 16 ブロック × 150 局（938900..939049）・同じシード。追試だけで判定する。**学習に使用禁止**",
    "owner": "experiments/eval_s3_h2h.py",
    "date": "2026-10-07"
+  },
+  {
+   "start": 939100,
+   "end": 939199,
+   "kind": "validate",
+   "purpose": "壁を越える案 腕 C（D-163 §4.2・C-1）の主比較: V_C 対 V_0 と null（V_0 対 V_0）・調整デッキ 16 ブロック × 75 局（939100..939174）・同じシード。**学習に使用禁止**",
+   "owner": "experiments/eval_s3_h2h.py",
+   "date": "2026-10-08"
+  },
+  {
+   "start": 939200,
+   "end": 939299,
+   "kind": "validate",
+   "purpose": "腕 C（C-1）の錨: 対 素 planner・16 ブロック × 100 局（候補と基準は同じシード）。**学習に使用禁止**",
+   "owner": "experiments/eval_s2_repr.py",
+   "date": "2026-10-08"
+  },
+  {
+   "start": 939300,
+   "end": 939399,
+   "kind": "validate",
+   "purpose": "腕 C（C-1）の錨: 対 H・16 ブロック × 25 局（939300..939324）。**学習に使用禁止**",
+   "owner": "experiments/eval_s2_repr.py",
+   "date": "2026-10-08"
+  },
+  {
+   "start": 939400,
+   "end": 939499,
+   "kind": "validate",
+   "purpose": "腕 C（C-1）の錨: 対 貪欲・16 ブロック × 25 局（939400..939424）。**学習に使用禁止**",
+   "owner": "experiments/eval_s2_repr.py",
+   "date": "2026-10-08"
   }
  ],
- "next_free": 939100
+ "next_free": 939500
 }
