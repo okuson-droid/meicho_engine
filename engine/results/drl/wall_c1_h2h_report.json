@@ -1,0 +1,54 @@
+{
+ "version": "s3h2h-1",
+ "challenge": "ch",
+ "null": "null",
+ "n_per_block": 75,
+ "n_games": 1200,
+ "main": {
+  "diff": 0.041666666666666664,
+  "lo": -0.004166666666666668,
+  "hi": 0.08916666666666666,
+  "verdict": "境界（新しい帯で 16 × 150 を 1 回だけ追試し、追試だけで判定）"
+ },
+ "raw": {
+  "ch": {
+   "score": 0.5533333333333333,
+   "lo": 0.525,
+   "hi": 0.5808333333333332
+  },
+  "null": {
+   "score": 0.5116666666666666,
+   "lo": 0.48416666666666663,
+   "hi": 0.54,
+   "contains_half": true
+  }
+ },
+ "by_deck": {
+  "env/ENV_SANGE_RF_TSUBAKI": {
+   "n": 300,
+   "diff": 0.023333333333333334,
+   "challenge_only": 79,
+   "null_only": 72
+  },
+  "env/ENV_SANGE_RM_TSUBAKI": {
+   "n": 300,
+   "diff": 0.06,
+   "challenge_only": 83,
+   "null_only": 65
+  },
+  "env/ENV_YANG_RF_TSUBAKI": {
+   "n": 300,
+   "diff": 0.013333333333333334,
+   "challenge_only": 74,
+   "null_only": 70
+  },
+  "env/ENV_YANG_RM_TSUBAKI": {
+   "n": 300,
+   "diff": 0.07,
+   "challenge_only": 75,
+   "null_only": 54
+  }
+ },
+ "rule": "wall",
+ "level": 0.983
+}
