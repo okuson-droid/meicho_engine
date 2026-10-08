@@ -272,7 +272,7 @@ def report(data: dict, ch: str, nl: str, n_boot: int = 10000, rule: str = "s3", 
     return out
 
 
-def merge_runs(datas: list, ch: str, nl: str) -> dict:
+def merge_runs(datas: list, ch: str, nl: str | None) -> dict:
     """足し継ぎの追試（D-169）: 別々の帯で回した同じ組の結果を 1 つにまとめる。デッキ・組の指紋が同じで、
     シードが重ならないことを確かめ、ブロックごとに局を後ろへつなぐ（`seeds` に局ごとのシードを持つ）。"""
     if len(datas) == 1:
@@ -281,11 +281,13 @@ def merge_runs(datas: list, ch: str, nl: str) -> dict:
     seeds = []
     out = {"version": TOOL_VERSION, "decks": base["decks"], "pairs": {}, "results": {}, "n": 0,
            "seed0": None, "merged_from": []}
+    names = [ch] if nl is None else [ch, nl]
     for d in datas:
-        check_paired(d, ch, nl)
+        if nl is not None:
+            check_paired(d, ch, nl)
         if d["decks"] != base["decks"]:
             raise SystemExit("足し継ぐ結果のデッキが違う")
-        for p in (ch, nl):
+        for p in names:
             if (d["pairs"][p]["a"]["sha"], d["pairs"][p]["b"]["sha"]) != \
                     (base["pairs"][p]["a"]["sha"], base["pairs"][p]["b"]["sha"]):
                 raise SystemExit(f"足し継ぐ結果で組 {p} のネットが違う")
@@ -295,8 +297,11 @@ def merge_runs(datas: list, ch: str, nl: str) -> dict:
             raise SystemExit("足し継ぐ結果のシードが重なる")
         seeds += s
         for a, b in blocks(d["decks"]):
-            for p in (ch, nl):
-                out["results"].setdefault(f"{p}|{a}|{b}", []).extend(d["results"][f"{p}|{a}|{b}"])
+            for p in names:
+                got = d["results"].get(f"{p}|{a}|{b}", [])
+                if len(got) != d["n"]:
+                    raise SystemExit(f"{p}|{a}|{b} の局数 {len(got)} が n = {d['n']} と違う（足し継ぎの途中）")
+                out["results"].setdefault(f"{p}|{a}|{b}", []).extend(got)
         out["n"] += d["n"]
         out["merged_from"].append({"seed0": d["seed0"], "n": d["n"]})
     out["seeds"] = seeds
@@ -316,6 +321,43 @@ def direct_score(data: dict, ch: str, level: float = 0.95, n_boot: int = 10000, 
     boots /= len(means)
     lo, hi = np.percentile(boots, ci_percentiles(level))
     return {"diff": float(np.mean(means) - 0.5), "lo": float(lo - 0.5), "hi": float(hi - 0.5), "level": level}
+
+
+RULE_DIRECT = {"futility": 0.02}
+
+
+def verdict_direct(diff: float, lo: float, hi: float) -> str:
+    """D-170 の判定: 下端 > 0 → 伸びた／上端 < 0 → 悪くなった／上端 < +0.02 → 区別できない（+2% 以上は否定）／
+    それ以外 → 区別できない（上端 … は否定できない・D-169 の足し継ぎを続ける）。"""
+    if lo > 0:
+        return "伸びた"
+    if hi < 0:
+        return "悪くなった"
+    if hi < RULE_DIRECT["futility"]:
+        return "区別できない（+2% 以上の改善は否定）"
+    return f"区別できない（上端 {hi:+.3f} は否定できない・足し継ぐ）"
+
+
+def report_direct(data: dict, ch: str, level: float, null_data: dict | None = None, nl: str = "null") -> dict:
+    """D-170 の主比較: 挑戦の A 席の得点 − 0.5（null を引かない）。null は配線の確かめ（95% 区間が 0.5 を含むか）。"""
+    for a, b in blocks(data["decks"]):
+        if len(data["results"].get(f"{ch}|{a}|{b}", [])) != data["n"]:
+            raise SystemExit(f"{ch}|{a}|{b} の局数が n = {data['n']} と違う（足し継ぎの途中）")
+    m = direct_score(data, ch, level=level)
+    out = {"version": TOOL_VERSION, "rule": "direct", "decision": "D-170", "challenge": ch, "level": level,
+           "n_per_block": data["n"], "n_games": data["n"] * len(blocks(data["decks"])),
+           "pair": data["pairs"][ch], "main": dict(m, verdict=verdict_direct(m["diff"], m["lo"], m["hi"])),
+           "by_block": {f"{a}|{b}": float(np.mean([x[0] for x in data["results"][f"{ch}|{a}|{b}"]]) - 0.5)
+                        for a, b in blocks(data["decks"])}}
+    if data.get("merged_from"):
+        out["merged_from"] = data["merged_from"]
+    if null_data is not None:
+        w = direct_score(null_data, nl, level=0.95)
+        if null_data["pairs"][nl]["b"]["sha"] != data["pairs"][ch]["b"]["sha"]:
+            raise SystemExit("null の B 席の V が挑戦と違う")
+        out["null"] = dict(w, n_games=null_data["n"] * len(blocks(null_data["decks"])),
+                           contains_half=bool(w["lo"] <= 0 <= w["hi"]))
+    return out
 
 
 def gate(data: dict, name: str, n_boot: int = 10000, seed: int = 0) -> dict:
@@ -362,6 +404,9 @@ def main(argv=None):
                    help="wall = 壁を越える案（D-163 §5.1）の判定（0 を基準・主比較の区間は --level）")
     p.add_argument("--level", type=float, default=0.95, help="--rule wall の主比較の区間の水準（V の腕は 0.983）")
     p.add_argument("--retest", action="store_true", help="--rule wall: 境界のあとの追試（追試だけで判定・§5.1）")
+    p.add_argument("--direct", default=None,
+                   help="D-170: この組の挑戦の得点 − 0.5 で判定（null を引かない）。--in を複数渡すと足し継ぐ")
+    p.add_argument("--null-in", default=None, help="--direct: 配線の確かめの null の結果（組 null・0.5 を含むか）")
     args = ap.parse_args(argv)
     if args.cmd == "run":
         return run(args)
@@ -370,6 +415,15 @@ def main(argv=None):
         with open(path, encoding="utf-8") as f:
             datas.append(json.load(f))
     data = datas[0]
+    if args.direct:
+        data = merge_runs(datas, args.direct, None) if len(datas) > 1 else data
+        nd = json.load(open(args.null_in, encoding="utf-8")) if args.null_in else None
+        out = report_direct(data, args.direct, args.level, nd)
+        print(json.dumps(out, ensure_ascii=False, indent=1))
+        if args.out:
+            with open(args.out, "w", encoding="utf-8", newline="\n") as f:
+                json.dump(out, f, ensure_ascii=False, indent=1)
+        return out
     if args.gate:
         out = gate(data, args.gate)
     else:

@@ -17,6 +17,7 @@ WE-2 `--rule wall` の判定（下端 > 0 伸びた・上端 < 0 悪くなった
      98.3% の区間が 95% より広いこと。`--rule s3` に `--level` を渡すと止める
 WE-4 足し継ぎの追試（D-169）: 1 つの結果を前後半の 2 つに分けて `merge_runs` で合わせると、元の 1 つの報告と同じ。
      シードが重なる・組のネットが違う結果は止める。直接の得点（挑戦 − 0.5）を添える
+WE-5 D-170 の直接の得点の判定（`report --direct`）: 判定の 4 つの言葉、前後半に分けて合わせても同じ、null の確かめ
 WE-3 `eval_s2_repr run --opponent heuristic|greedy`（課題 s2 の錨）: 相手が記録に残り、別の相手で足し継ぐと止める。
      既定（planner）は口を足す前（commit `fcb46e3`）と同じ結果。`--task s4` に `--opponent` を渡すと止める
 
@@ -598,3 +599,25 @@ def test_h2h_merge_runs_equals_single():
         H.merge_runs([a, c], "ch", "null")
     d = H.direct_score(m, "ch", level=0.95)
     assert d["lo"] <= d["diff"] <= d["hi"]
+
+
+# ------------------------------------------------------------------ WE-5
+def test_h2h_direct_report():
+    import copy
+    H = _h2h()
+    assert H.verdict_direct(0.03, 0.001, 0.06) == "伸びた"
+    assert H.verdict_direct(-0.03, -0.06, -0.001) == "悪くなった"
+    assert H.verdict_direct(0.0, -0.02, 0.019).startswith("区別できない（+2% 以上")
+    assert "否定できない" in H.verdict_direct(0.01, -0.01, 0.03)
+    data = json.load(open(os.path.join(ROOT, "results", "drl", "s3_diag_h2h.json"), encoding="utf-8"))
+    r = H.report_direct(data, "ch", 0.983, null_data=data, nl="null")
+    d = H.direct_score(data, "ch", level=0.983)
+    assert r["main"]["diff"] == d["diff"] and r["main"]["lo"] == d["lo"] and r["n_games"] == 16 * data["n"]
+    assert "contains_half" in r["null"]
+    h = data["n"] // 2
+    a, b = copy.deepcopy(data), copy.deepcopy(data)
+    a["n"], b["n"], b["seed0"] = h, data["n"] - h, data["seed0"] + h
+    for k in data["results"]:
+        a["results"][k], b["results"][k] = data["results"][k][:h], data["results"][k][h:]
+    m = H.merge_runs([a, b], "ch", None)
+    assert H.report_direct(m, "ch", 0.983)["main"]["diff"] == pytest.approx(r["main"]["diff"])
