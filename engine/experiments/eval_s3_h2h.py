@@ -242,13 +242,14 @@ def report(data: dict, ch: str, nl: str, n_boot: int = 10000, rule: str = "s3", 
     if rule == "s3" and (level != 0.95 or retest):
         raise SystemExit("--level と --retest は --rule wall のときだけ使う")
     check_paired(data, ch, nl)
+    seeds = data.get("seeds") or [data["seed0"] + i for i in range(data["n"])]
     d_blocks, rows = [], []
     for a, b in blocks(data["decks"]):
         sc = np.array([x[0] for x in data["results"][f"{ch}|{a}|{b}"]])
         sn = np.array([x[0] for x in data["results"][f"{nl}|{a}|{b}"]])
         d_blocks.append(sc - sn)
         for i in range(data["n"]):
-            deck, seat = cand_deck(a, b, data["seed0"] + i)
+            deck, seat = cand_deck(a, b, seeds[i])
             rows.append((deck, seat, sc[i], sn[i]))
     main = paired_blocks(d_blocks, n_boot, level=level)
     v = verdict(main["lo"]) if rule == "s3" else verdict_wall(main["diff"], main["lo"], main["hi"], retest)
@@ -269,6 +270,52 @@ def report(data: dict, ch: str, nl: str, n_boot: int = 10000, rule: str = "s3", 
         out["by_deck"][deck] = {"n": len(sub), "diff": float(d.mean()),
                                 "challenge_only": int((d > 0).sum()), "null_only": int((d < 0).sum())}
     return out
+
+
+def merge_runs(datas: list, ch: str, nl: str) -> dict:
+    """足し継ぎの追試（D-169）: 別々の帯で回した同じ組の結果を 1 つにまとめる。デッキ・組の指紋が同じで、
+    シードが重ならないことを確かめ、ブロックごとに局を後ろへつなぐ（`seeds` に局ごとのシードを持つ）。"""
+    if len(datas) == 1:
+        return datas[0]
+    base = datas[0]
+    seeds = []
+    out = {"version": TOOL_VERSION, "decks": base["decks"], "pairs": {}, "results": {}, "n": 0,
+           "seed0": None, "merged_from": []}
+    for d in datas:
+        check_paired(d, ch, nl)
+        if d["decks"] != base["decks"]:
+            raise SystemExit("足し継ぐ結果のデッキが違う")
+        for p in (ch, nl):
+            if (d["pairs"][p]["a"]["sha"], d["pairs"][p]["b"]["sha"]) != \
+                    (base["pairs"][p]["a"]["sha"], base["pairs"][p]["b"]["sha"]):
+                raise SystemExit(f"足し継ぐ結果で組 {p} のネットが違う")
+            out["pairs"][p] = base["pairs"][p]
+        s = [d["seed0"] + i for i in range(d["n"])]
+        if set(s) & set(seeds):
+            raise SystemExit("足し継ぐ結果のシードが重なる")
+        seeds += s
+        for a, b in blocks(d["decks"]):
+            for p in (ch, nl):
+                out["results"].setdefault(f"{p}|{a}|{b}", []).extend(d["results"][f"{p}|{a}|{b}"])
+        out["n"] += d["n"]
+        out["merged_from"].append({"seed0": d["seed0"], "n": d["n"]})
+    out["seeds"] = seeds
+    return out
+
+
+def direct_score(data: dict, ch: str, level: float = 0.95, n_boot: int = 10000, seed: int = 0) -> dict:
+    """添える（D-169・判定には使わない）: 挑戦の A 席の得点 − 0.5（null を引かない）。局の組 (2k, 2k+1) を単位に
+    ブロックの中で再標本化・ブロック等重み。"""
+    rng = np.random.RandomState(seed)
+    boots, means = np.zeros(n_boot), []
+    for a, b in blocks(data["decks"]):
+        sc = np.array([x[0] for x in data["results"][f"{ch}|{a}|{b}"]], float)
+        pairs = sc[:len(sc) - len(sc) % 2].reshape(-1, 2).mean(1)
+        boots += pairs[rng.randint(0, len(pairs), size=(n_boot, len(pairs)))].mean(1)
+        means.append(sc.mean())
+    boots /= len(means)
+    lo, hi = np.percentile(boots, ci_percentiles(level))
+    return {"diff": float(np.mean(means) - 0.5), "lo": float(lo - 0.5), "hi": float(hi - 0.5), "level": level}
 
 
 def gate(data: dict, name: str, n_boot: int = 10000, seed: int = 0) -> dict:
@@ -305,7 +352,8 @@ def main(argv=None):
     r.add_argument("--env", default=DEFAULT_ENV)
     r.add_argument("--target", default=None, help="門 T（D-161）: このデッキのミラー 1 ブロックだけを回す")
     p = sub.add_parser("report")
-    p.add_argument("--in", dest="inp", required=True)
+    p.add_argument("--in", dest="inp", required=True, action="append",
+                   help="結果のファイル。2 つ以上渡すと足し継ぎの追試として合わせる（D-169）")
     p.add_argument("--challenge", default=None)
     p.add_argument("--null", default=None)
     p.add_argument("--gate", default=None, help="門 T（D-161）: この組の A 席の得点と「下端 > 0.5」")
@@ -317,14 +365,22 @@ def main(argv=None):
     args = ap.parse_args(argv)
     if args.cmd == "run":
         return run(args)
-    with open(args.inp, encoding="utf-8") as f:
-        data = json.load(f)
+    datas = []
+    for path in args.inp:
+        with open(path, encoding="utf-8") as f:
+            datas.append(json.load(f))
+    data = datas[0]
     if args.gate:
         out = gate(data, args.gate)
     else:
         if not (args.challenge and args.null):
             raise SystemExit("report には --challenge と --null（または --gate）が要る")
+        if len(datas) > 1:
+            data = merge_runs(datas, args.challenge, args.null)
         out = report(data, args.challenge, args.null, rule=args.rule, level=args.level, retest=args.retest)
+        if len(datas) > 1:
+            out["merged_from"] = data["merged_from"]
+            out["direct"] = direct_score(data, args.challenge, level=args.level)
     print(json.dumps(out, ensure_ascii=False, indent=1))
     if args.out:
         with open(args.out, "w", encoding="utf-8", newline="\n") as f:

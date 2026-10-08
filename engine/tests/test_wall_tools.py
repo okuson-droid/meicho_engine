@@ -15,6 +15,8 @@ WE-1 `eval_s3_h2h report` の既定（`--rule s3`）は、口を足す前の報�
 WE-2 `--rule wall` の判定（下端 > 0 伸びた・上端 < 0 悪くなった・点推定 > 0 で 0 をまたげば境界・それ以外は伸びていない・
      `--retest` は下端 > 0 だけで伸びた）と、
      98.3% の区間が 95% より広いこと。`--rule s3` に `--level` を渡すと止める
+WE-4 足し継ぎの追試（D-169）: 1 つの結果を前後半の 2 つに分けて `merge_runs` で合わせると、元の 1 つの報告と同じ。
+     シードが重なる・組のネットが違う結果は止める。直接の得点（挑戦 − 0.5）を添える
 WE-3 `eval_s2_repr run --opponent heuristic|greedy`（課題 s2 の錨）: 相手が記録に残り、別の相手で足し継ぐと止める。
      既定（planner）は口を足す前（commit `fcb46e3`）と同じ結果。`--task s4` に `--opponent` を渡すと止める
 
@@ -571,3 +573,28 @@ def test_aux_train_meta(recs, tmp_path):
     a, b = Net.load(o1), Net.load(o2)
     assert [w.shape for w, _ in a.trunk] == [w.shape for w, _ in b.trunk] and a.value[0].shape == b.value[0].shape
     assert "aux" not in json.load(open(o1.replace(".json", ".meta.json"), encoding="utf-8"))
+
+
+# ------------------------------------------------------------------ WE-4
+def test_h2h_merge_runs_equals_single():
+    import copy
+    H = _h2h()
+    data = json.load(open(os.path.join(ROOT, "results", "drl", "s3_diag_h2h.json"), encoding="utf-8"))
+    n, h = data["n"], data["n"] // 2
+    a, b = copy.deepcopy(data), copy.deepcopy(data)
+    a["n"], b["n"], b["seed0"] = h, n - h, data["seed0"] + h
+    for k in data["results"]:
+        a["results"][k] = data["results"][k][:h]
+        b["results"][k] = data["results"][k][h:]
+    m = H.merge_runs([a, b], "ch", "null")
+    want = H.report(data, "ch", "null", rule="wall", level=0.983)
+    got = H.report(m, "ch", "null", rule="wall", level=0.983)
+    assert got["main"] == want["main"] and got["by_deck"] == want["by_deck"] and got["raw"] == want["raw"]
+    with pytest.raises(SystemExit):
+        H.merge_runs([a, a], "ch", "null")                     # シードが重なる
+    c = copy.deepcopy(b)
+    c["pairs"]["ch"]["a"]["sha"] = "0" * 16
+    with pytest.raises(SystemExit):
+        H.merge_runs([a, c], "ch", "null")
+    d = H.direct_score(m, "ch", level=0.95)
+    assert d["lo"] <= d["diff"] <= d["hi"]
