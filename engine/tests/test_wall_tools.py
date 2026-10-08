@@ -34,6 +34,11 @@ WA-5 π を持つ打ち手の口: `record_mix` の教師 `netfree_vp`・`make_s2
      `eval_s3_h2h` の席 `V+pi=π`・`eval_s2_repr --arm 名前=V+pi=π` が、どれも NETFREE＋葉 V＋代打ち π（proxy・
      policy_belief）の同じ spec になり、指紋に π が入る。π だけ・V なしの π は止める。π の候補で 2 局回る
 
+腕 C（§4.2 C-0）:
+WC-1 `aux_targets`: c1 は全フェイズの記録に引いた s₁ のライフ差 / 20（s₁ が無ければ NaN）、c2 は log(1 + 局の最後の手番 − いまの手番)
+WC-2 補助の頭を足した網の書き出しは補助の頭を持たず、足す前と同じ形・同じ重みで、葉の値は同じ入力で学習中の網と一致する
+WC-3 `--aux` の学習が回り、meta に補助の目標の要約が入り、書き出した網は `--aux` なしと同じ形。既定は WB-4 が見る
+
 検査の対局は 935000..935999（kind=diag・D-163 で登録）で回す。
 """
 from __future__ import annotations
@@ -513,3 +518,56 @@ def test_a2_gate_on_records(recs):
     assert "u" in a["forms"]["iso"]                       # 検査の記録は葉の V なし＝探索値が [−1, 1] の外で logit は飛ぶ
     assert out["u_A"] == a["forms"]["linear"]["u"] and out["verdict"] == K.verdict_a2(out["u_A"], out["lo"])
     assert out["lo"] <= out["u_A"] <= out["hi"]
+
+
+# ------------------------------------------------------------------ WC-1〜3
+def test_aux_targets_by_hand():
+    D = T()
+    from meicho.encode import OBS_DIM
+    A, C = D.ACTION_PHASE, D.PHASE_NAMES.index("clash")
+    # (seed, pi, turn, step, phase, 自分の手番か, 自分のライフ, 相手のライフ)
+    rows = [(1, 0, 1, 0, A, 1, 20, 20), (1, 1, 1, 1, C, 0, 20, 20), (1, 1, 2, 2, A, 1, 18, 15),
+            (1, 0, 2, 3, C, 0, 15, 18), (1, 0, 3, 4, A, 1, 12, 9), (2, 0, 1, 0, A, 1, 20, 20)]
+    a = np.array(rows)
+    obs = np.zeros((len(rows), OBS_DIM), np.int8)
+    obs[:, D.TURN_FLAG_COL] = a[:, 5]
+    obs[:, D.LIFE_COLS[0]], obs[:, D.LIFE_COLS[1]] = a[:, 6], a[:, 7]
+    c1, c2 = D.aux_targets(a[:, 0], a[:, 1], a[:, 2], a[:, 3], a[:, 4], obs)
+    # 席 0 の手番 1 と手番 2（相手の手番の対抗）の s₁ は席 0 の手番 3（#4: 12 − 9）。席 1 の手番 1 の対抗の s₁ は席 1 の手番 2（#2）
+    assert np.allclose(c1[[0, 3]], 3 / 20) and np.isclose(c1[1], 3 / 20)
+    assert np.isnan(c1[2]) and np.isnan(c1[4]) and np.isnan(c1[5])
+    assert np.allclose(c2, np.log1p([2, 2, 1, 1, 0, 0]))
+
+
+def test_aux_head_not_exported():
+    T()
+    import torch
+    import drl_train as D
+    from meicho.encode import OBS_DIM
+    torch.manual_seed(0)
+    m = D.TwoHead(hidden=16, depth=2, phead=8)
+    before = m.export()
+    m.add_aux()
+    after = m.export()
+    assert [w.tobytes() for w, b in after.trunk] == [w.tobytes() for w, b in before.trunk]
+    assert after.value[0].tobytes() == before.value[0].tobytes() and len(after.policy) == len(before.policy)
+    x = np.random.RandomState(1).randint(-3, 4, (5, OBS_DIM)).astype(np.float32)
+    with torch.no_grad():
+        h = m.trunk(torch.from_numpy(x) / m.scale)
+        v = torch.sigmoid(m.value(h)).squeeze(-1).numpy()
+    assert np.allclose([after.value_of(r) for r in x], v, atol=1e-5)
+
+
+@pytest.mark.slow
+def test_aux_train_meta(recs, tmp_path):
+    D = T()
+    from meicho.drlnet import Net
+    stem, _ = recs
+    o1, o2 = str(tmp_path / "plain.json"), str(tmp_path / "aux.json")
+    D.train(_args(stem, o1))
+    D.train(_args(stem, o2, aux=True))
+    m = json.load(open(o2.replace(".json", ".meta.json"), encoding="utf-8"))
+    assert m["aux"]["w"] == 0.25 and m["aux"]["n_c1"] > 0 and m["aux"]["exported"] is False
+    a, b = Net.load(o1), Net.load(o2)
+    assert [w.shape for w, _ in a.trunk] == [w.shape for w, _ in b.trunk] and a.value[0].shape == b.value[0].shape
+    assert "aux" not in json.load(open(o1.replace(".json", ".meta.json"), encoding="utf-8"))

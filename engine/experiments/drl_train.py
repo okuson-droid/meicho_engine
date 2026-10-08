@@ -410,7 +410,7 @@ def is_argmax(scores: np.ndarray, chosen: int) -> bool:
 ACTION_PHASE = PHASE_NAMES.index("action")
 
 
-def next_turn_index(seed, pi, turn, step, phase, turn_flag) -> np.ndarray:
+def next_turn_index(seed, pi, turn, step, phase, turn_flag, all_phases: bool = False) -> np.ndarray:
     """腕 B（D-163・`GENERALIST_WALL_DESIGN_20261006.md` §3.1）: 行動フェイズの記録 r（席 i・手番 T）ごとに、
     「その席の次の自分の手番の始まりの局面」s₁ の記録の添字を返す（行動フェイズ以外と、s₁ が無い記録は -1）。
 
@@ -438,7 +438,7 @@ def next_turn_index(seed, pi, turn, step, phase, turn_flag) -> np.ndarray:
                 first_of_turn[t] = k
         turns = np.array(sorted(first_of_turn), np.int64)
         for k in range(len(g)):
-            if pg[k] != ACTION_PHASE:
+            if pg[k] != ACTION_PHASE and not all_phases:          # 腕 C（`all_phases`）は全フェイズの記録に s₁ を引く
                 continue
             j = np.searchsorted(turns, int(tg[k]), side="right")
             if j < len(turns):
@@ -468,11 +468,35 @@ def next_turn_values(seed, pi, turn, step, phase, obs, z, net) -> tuple:
     return v, int(term.sum())
 
 
+LIFE_COLS = (0, 1)        # 観測の「自分のライフ」「相手のライフ」の欄（`meicho/encode.py` の scal の先頭 2 つ）
+AUX_LIFE_SCALE = 20.0
+
+
+def aux_targets(seed, pi, turn, step, phase, obs) -> tuple:
+    """腕 C（D-163・設計書 §4.1）の補助の目標。
+    c1 = 次の自分の手番の始まり s₁（腕 B と同じ定義・全フェイズの記録に引く）のライフ差（自分 − 相手）/ 20。s₁ が無い記録は NaN（外す）
+    c2 = log(1 + その局の最後の記録の手番 − いまの手番)"""
+    nxt = next_turn_index(seed, pi, turn, step, phase, obs[:, TURN_FLAG_COL], all_phases=True)
+    c1 = np.full(len(seed), np.nan, np.float32)
+    has = nxt >= 0
+    s1 = obs[nxt[has]]
+    c1[has] = (s1[:, LIFE_COLS[0]].astype(np.float32) - s1[:, LIFE_COLS[1]].astype(np.float32)) / AUX_LIFE_SCALE
+    order = np.argsort(seed, kind="stable")
+    last = np.zeros(len(seed), np.int64)
+    ss, tt = seed[order], turn[order].astype(np.int64)
+    bounds = np.nonzero(np.diff(ss) != 0)[0] + 1
+    for g in np.split(np.arange(len(seed)), bounds):
+        last[order[g]] = tt[g].max()
+    c2 = np.log1p(np.maximum(0, last - turn.astype(np.int64))).astype(np.float32)
+    return c1, c2
+
+
 class Batcher:
     """記録を固定長の配列に詰め替える（行動は MAX_ACTS に詰めてマスク）。"""
 
     def __init__(self, recs: Records, lam: float = 0.0, calib: dict = None,
-                 vtarget: str = "max", league_ranges: list = None, next_net=None, policy_target: str = "chosen"):
+                 vtarget: str = "max", league_ranges: list = None, next_net=None, policy_target: str = "chosen",
+                 aux: bool = False):
         n = recs.n
         keep = ~np.isnan(recs.z)
         # リーグ（対 H・対貪欲）の局面かどうか。**シードで見分ける**（D-067）。
@@ -499,6 +523,11 @@ class Batcher:
             self.vnext, self.n_next_terminal = next_turn_values(
                 recs.seed[keep], recs.pi[keep], recs.turn[keep], recs.step[keep], recs.phase[keep],
                 self.obs, self.z, next_net)
+        # 腕 C（D-163 §4.1）: 補助の目標（`--aux` のときだけ）
+        self.c1 = self.c2 = None
+        if aux:
+            self.c1, self.c2 = aux_targets(recs.seed[keep], recs.pi[keep], recs.turn[keep], recs.step[keep],
+                                           recs.phase[keep], self.obs)
         self.n_nonargmax = 0
         # 層の鍵（phase × 自分のターンか）。`--calib-by phase_turn` のときだけ使う。
         self.stratum = strata_of(self.phase, self.obs)
@@ -614,6 +643,18 @@ def expand_codes(codes: torch.Tensor) -> torch.Tensor:
 
 
 # ---------------------------------------------------------------------- モデル
+AUX_W = 0.25               # 腕 C の補助の目標の重み（各・設計書 §4.1 で固定）
+
+
+def aux_loss(out, c1, c2):
+    """補助の頭の損失: AUX_W·MSE(c1)（c1 が NaN の決定は外す）＋ AUX_W·MSE(c2)。"""
+    c1 = torch.from_numpy(np.asarray(c1)); c2 = torch.from_numpy(np.asarray(c2))
+    m = torch.isfinite(c1)
+    l1 = ((out[m, 0] - c1[m]) ** 2).mean() if bool(m.any()) else out.sum() * 0.0
+    l2 = ((out[:, 1] - c2) ** 2).mean()
+    return AUX_W * l1 + AUX_W * l2
+
+
 class TwoHead(nn.Module):
     def __init__(self, hidden: int = 256, depth: int = 2, phead: int = 128, scale=None,
                  proj=None, proj_scale=None):
@@ -641,8 +682,14 @@ class TwoHead(nn.Module):
         self.p2 = nn.Linear(phead, 1)
         # 入力のスケール（学習中は割る。書き出し時に第 1 層へ畳み込む）
         self.register_buffer("scale", torch.ones(OBS_DIM) if scale is None else torch.as_tensor(scale, dtype=torch.float32))
+        self.aux = None            # 腕 C の補助の頭（`add_aux`・書き出しでは捨てる）
 
-    def forward(self, obs, codes, n_acts):
+    def add_aux(self, n_out: int = 2) -> None:
+        """腕 C（D-163 §4.1）: 幹の上に補助の頭（c1・c2）を足す。乱数で初期化し、`export` には載せない。"""
+        hidden = self.value.in_features
+        self.aux = nn.Linear(hidden, n_out)
+
+    def forward(self, obs, codes, n_acts, return_h: bool = False):
         x = obs / self.scale
         if self.proj is not None:
             x = torch.cat([x, self.apply_proj(x) / self.proj_scale], -1)
@@ -653,6 +700,8 @@ class TwoHead(nn.Module):
         s = self.p2(F.relu(self.p1(torch.cat([hk, a], -1)))).squeeze(-1)   # [B,K]
         mask = torch.arange(a.shape[1]).unsqueeze(0) < n_acts.unsqueeze(1)
         s = s.masked_fill(~mask, -1e9)
+        if return_h:
+            return v, s, h
         return v, s
 
     def apply_proj(self, x):
@@ -882,7 +931,8 @@ def train(args):
     elif args.next_net:
         raise SystemExit("--next-net は --vtarget next_turn のときだけ使う")
     ptg = getattr(args, "policy_target", "chosen")
-    tr = Batcher(tr_recs, vtarget=args.vtarget, league_ranges=lg, next_net=next_net, policy_target=ptg)
+    tr = Batcher(tr_recs, vtarget=args.vtarget, league_ranges=lg, next_net=next_net, policy_target=ptg,
+                 aux=bool(getattr(args, "aux", False)))
     del tr_recs
     va = Batcher(read_records(files_of(args.valid), args.max_records),
                  vtarget=args.vtarget, league_ranges=lg, next_net=next_net, policy_target=ptg)
@@ -1009,6 +1059,11 @@ def train(args):
         print(f"init from {args.init}")
     else:
         model = TwoHead(args.hidden, args.depth, args.phead, scale, proj=proj, proj_scale=proj_scale)
+    use_aux = bool(getattr(args, "aux", False))
+    if use_aux:
+        model.add_aux()
+        print(f"腕 C（--aux）: 補助の頭 c1（次の自分の手番の始まりのライフ差 / 20・s₁ のある決定 {int(np.isfinite(tr.c1).sum())}"
+              f" / {tr.n}）と c2（log(1 + 決着までの手番数)）・重み各 {AUX_W}・書き出しでは捨てる")
     if args.freeze == "trunk":
         for prm in model.trunk.parameters():
             prm.requires_grad_(False)
@@ -1039,7 +1094,10 @@ def train(args):
         for s in range(0, tr.n, args.bs):
             ids = perm[s:s + args.bs]
             obs, codes, n_acts, chosen, target, z, phase = tr.batch(ids)
-            v, sc = model(obs, codes, n_acts)
+            if use_aux:
+                v, sc, h = model(obs, codes, n_acts, return_h=True)
+            else:
+                v, sc = model(obs, codes, n_acts)
             if args.league_mode == "drop":
                 # **平均の分母も重みの合計にする**。0 埋めして全件で割ると、
                 # 外した件数のぶんだけ V の勾配が縮んで「重みを下げた」のと同じになる。
@@ -1058,6 +1116,8 @@ def train(args):
             else:
                 l_p = F.cross_entropy(sc, chosen)
             loss = args.wv * l_v + args.wp * l_p
+            if use_aux:
+                loss = loss + aux_loss(model.aux(h), tr.c1[ids], tr.c2[ids])
             opt.zero_grad(); loss.backward(); opt.step()
             acc_l += float(loss.detach()) * len(ids); cnt += len(ids)
         sched.step()
@@ -1101,6 +1161,10 @@ def train(args):
                if args.subset_frac is not None else {}),
             **({"freeze": args.freeze} if args.freeze is not None else {}),
             **({"next_turn": next_info} if args.vtarget == "next_turn" else {}),
+            **({"aux": {"w": AUX_W, "life_scale": AUX_LIFE_SCALE, "n_c1": int(np.isfinite(tr.c1).sum()),
+                        "c1_mean": float(np.nanmean(tr.c1)), "c1_sd": float(np.nanstd(tr.c1)),
+                        "c2_mean": float(tr.c2.mean()), "c2_sd": float(tr.c2.std()), "exported": False}}
+               if use_aux else {}),
             **({"calib_form": args.calib_form} if getattr(args, "calib_form", "linear") != "linear" else {}),
             **({"n_nonargmax": int(tr.n_nonargmax)} if args.vtarget == "fresh_am" else {}),
             **({"policy_target": {"kind": "argmax", "train_excluded": tr.n_policy_excluded,
@@ -1124,6 +1188,8 @@ def main():
     ap.add_argument("--phead", type=int, default=128)
     ap.add_argument("--wv", type=float, default=1.0); ap.add_argument("--wp", type=float, default=1.0)
     ap.add_argument("--lam", type=float, default=0.0)
+    ap.add_argument("--aux", action="store_true",
+                    help="腕 C（D-163 §4.1）: 補助の頭（次の自分の手番のライフ差・決着までの手番数）を同時に学ぶ。書き出しでは捨てる")
     ap.add_argument("--policy-target", choices=["chosen", "argmax"], default="chosen",
                     help="π の答え。chosen = 選んだ手（既定）。argmax = 探索の点数が最大の手（腕 A・D-163 §2.1・"
                          "探索の点数が無い決定は除く）")
