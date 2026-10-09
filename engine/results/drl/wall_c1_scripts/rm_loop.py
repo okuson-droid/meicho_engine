@@ -33,7 +33,15 @@ def run(job, name, pair, n, seed0, path):
     nb = 1 if job["target"] else 16
     while not complete(path, name, n, nb):
         if os.path.exists("/home/user/meicho_engine/AGENT_STOP"): sys.exit(0)
-        cmd = [sys.executable, "experiments/eval_s3_h2h.py", "run", "--pair", f"{name}={pair}", "--n", str(n),
+        # 1 ブロックだけ（対象デッキのミラー）のときは 1 回の呼び出しが 1 ブロックを打ち切るまで止まらないので、
+        # 200 局ずつ足し継ぐ（eval_s3_h2h は --n を増やすと足りない局だけを後ろに足す）
+        have = 0
+        if os.path.exists(f"{E}/{path}"):
+            d = json.load(open(f"{E}/{path}"))
+            got = [len(v) for k, v in d["results"].items() if k.startswith(name + "|")]
+            have = min(got) if len(got) == nb else 0
+        step = min(n, have + 200) if job["target"] else n
+        cmd = [sys.executable, "experiments/eval_s3_h2h.py", "run", "--pair", f"{name}={pair}", "--n", str(step),
                "--seed0", str(seed0), "--out", path, "--workers", "4", "--budget-sec", "480"]
         if job["target"]: cmd += ["--target", job["target"]]
         sh(cmd, stdout=LOG, stderr=subprocess.STDOUT)
