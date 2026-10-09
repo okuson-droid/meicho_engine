@@ -41,7 +41,8 @@ D-169・D-170（マスター裁定）の便。機械 `cc-cloud-4`。打ち方・
 
 ## 検査
 
-- 道具（`eval_s3_h2h.py` の merge_runs・direct_score・verdict_direct・report_direct）の検査 WE-4・WE-5 は通過。全体の `--run-slow` は回している途中で、結果をここに書き足す（それまで TASKS は未完了）
+- 道具（`eval_s3_h2h.py` の merge_runs・direct_score・verdict_direct・report_direct）の検査 WE-4・WE-5 は通過
+- 全体の `--run-slow`（`cd engine && python3 -m pytest tests/<ファイル> -q -rfs --run-slow` をファイルごとに 63 ファイル・HEAD 12f33a9）: **1,447 通過・8 失敗・7 skip**。失敗 8 件はすべて `cards/`（git の外）の資材が無いため（`test_bp01.py` 4 件・`test_card_images.py` 4 件）で、1 件ずつ理由を読んだ。どれも CI の一覧に載っている。生の結果は `results/drl/wall_c1_scripts/slow_12f33a9/junit.tar.gz`
 - 注意: R1 は 1 ブロック 175 局（null 25 局）と奇数で、区間は局の組を使うため最後の 1 局を捨てるが、点推定は 175 局すべての平均である（ずれは 0.001 未満で判定は変わらない）。以後の足し継ぎでは 1 ブロックの局数を偶数にする
 
 ## 4. 次（推しを先に・裁定待ち）
