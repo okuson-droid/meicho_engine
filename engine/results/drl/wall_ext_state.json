@@ -28,5 +28,6 @@
    "stop": null
   }
  },
- "rule": "D-169"
+ "rule": "D-169",
+ "next": "B"
 }

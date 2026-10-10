@@ -51,7 +51,11 @@ while True:
     if os.path.exists("/home/user/meicho_engine/AGENT_STOP"): print("AGENT_STOP"); break
     open_arms = [a for a in ARMS if a not in st["stopped"] and st["rounds"][a] < CAP]
     if not open_arms: print("ALLDONE"); break
+    nxt = st.get("next")
+    if nxt in open_arms:   # 回し直しても C → B → A の順番を保つ
+        i = open_arms.index(nxt); open_arms = open_arms[i:] + open_arms[:i]
     for arm in open_arms:
+        st["next"] = arm
         r = st["rounds"][arm] + 1
         path = f"{R}/wall_ext_{arm}_r{r:02d}.json"
         seed0 = ARMS[arm]["base"] + 150 * (r - 1)
@@ -63,6 +67,10 @@ while True:
             push(f"腕 {arm} 回 {r} の途中")
         st["rounds"][arm] = r
         stop = judge(arm, st)
+        json.dump(st, open(f"{E}/{STATE}", "w"), ensure_ascii=False, indent=1)
+        order = [a for a in ARMS if a not in st["stopped"] and st["rounds"][a] < CAP]
+        if order:
+            st["next"] = order[(order.index(arm) + 1) % len(order)] if arm in order else order[0]
         json.dump(st, open(f"{E}/{STATE}", "w"), ensure_ascii=False, indent=1)
         L = st["last"][arm]
         print(f"腕 {arm} 回 {r}: n/ブロック {L['n_per_block']} d {L['diff']:+.4f} [{L['lo']:+.4f}, {L['hi']:+.4f}] {stop or '続ける'} {time.strftime('%H:%M:%S')}", flush=True)
