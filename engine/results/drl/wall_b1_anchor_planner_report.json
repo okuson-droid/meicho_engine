@@ -1,0 +1,69 @@
+{
+ "version": "s2eval-1",
+ "n_per_block": 100,
+ "decks": [
+  "env/ENV_SANGE_RF_TSUBAKI",
+  "env/ENV_SANGE_RM_TSUBAKI",
+  "env/ENV_YANG_RF_TSUBAKI",
+  "env/ENV_YANG_RM_TSUBAKI"
+ ],
+ "scores": {
+  "vB": {
+   "score": 0.705625,
+   "lo": 0.683125,
+   "hi": 0.728125,
+   "by_deck": {
+    "env/ENV_SANGE_RF_TSUBAKI": 0.7,
+    "env/ENV_SANGE_RM_TSUBAKI": 0.66,
+    "env/ENV_YANG_RF_TSUBAKI": 0.7275,
+    "env/ENV_YANG_RM_TSUBAKI": 0.735
+   }
+  },
+  "v0": {
+   "score": 0.7024999999999999,
+   "lo": 0.68,
+   "hi": 0.725,
+   "by_deck": {
+    "env/ENV_SANGE_RF_TSUBAKI": 0.6775,
+    "env/ENV_SANGE_RM_TSUBAKI": 0.6675,
+    "env/ENV_YANG_RF_TSUBAKI": 0.7675,
+    "env/ENV_YANG_RM_TSUBAKI": 0.6975
+   }
+  }
+ },
+ "compare": {
+  "vB-v0": {
+   "diff": 0.0031249999999999993,
+   "lo": -0.026875,
+   "hi": 0.033125,
+   "n_games": 1600,
+   "by_deck": {
+    "env/ENV_SANGE_RF_TSUBAKI": {
+     "n": 400,
+     "diff": 0.0225,
+     "new_only": 85,
+     "old_only": 76
+    },
+    "env/ENV_SANGE_RM_TSUBAKI": {
+     "n": 400,
+     "diff": -0.0075,
+     "new_only": 78,
+     "old_only": 81
+    },
+    "env/ENV_YANG_RF_TSUBAKI": {
+     "n": 400,
+     "diff": -0.04,
+     "new_only": 60,
+     "old_only": 76
+    },
+    "env/ENV_YANG_RM_TSUBAKI": {
+     "n": 400,
+     "diff": 0.0375,
+     "new_only": 82,
+     "old_only": 67
+    }
+   }
+  }
+ },
+ "incomplete": {}
+}

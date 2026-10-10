@@ -218,6 +218,7 @@ def test_target_valid_has_17041_decisions():
     stem = _val_stem()
     if stem is None:
         pytest.skip(f"便の検証の記録が無い（{VAL_STEM_ENV} で接頭辞を渡せる）")
+    pytest.importorskip("torch")                    # files_of は drl_train（torch）を読み込む
     import diag_s4_move as D
     from meicho.drl_data import read_records
     assert read_records(D.files_of(stem)).n == 17041

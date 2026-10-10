@@ -1,0 +1,129 @@
+{
+ "version": "s2eval-1",
+ "task": "s4",
+ "target": "env/ENV_SANGE_RM_TSUBAKI",
+ "opponents": [
+  "planner"
+ ],
+ "seed0": 894000,
+ "level": 0.95,
+ "scores": {
+  "G3000": {
+   "diff": 0.680625,
+   "lo": 0.6575,
+   "hi": 0.70375,
+   "n_per_block": 1600,
+   "by_block": {
+    "planner": 0.680625
+   }
+  },
+  "S3000": {
+   "diff": 0.700625,
+   "lo": 0.678125,
+   "hi": 0.7225,
+   "n_per_block": 1600,
+   "by_block": {
+    "planner": 0.700625
+   }
+  },
+  "GT3000": {
+   "diff": 0.681875,
+   "lo": 0.66,
+   "hi": 0.704375,
+   "n_per_block": 1600,
+   "by_block": {
+    "planner": 0.681875
+   }
+  },
+  "G0": {
+   "diff": 0.67,
+   "lo": 0.625,
+   "hi": 0.715,
+   "n_per_block": 400,
+   "by_block": {
+    "planner": 0.67
+   }
+  }
+ },
+ "wdl": {
+  "G3000": {
+   "planner": {
+    "n": 1600,
+    "W": 1089,
+    "D": 0,
+    "L": 511
+   }
+  },
+  "S3000": {
+   "planner": {
+    "n": 1600,
+    "W": 1121,
+    "D": 0,
+    "L": 479
+   }
+  },
+  "GT3000": {
+   "planner": {
+    "n": 1600,
+    "W": 1091,
+    "D": 0,
+    "L": 509
+   }
+  },
+  "G0": {
+   "planner": {
+    "n": 400,
+    "W": 268,
+    "D": 0,
+    "L": 132
+   }
+  }
+ },
+ "compare": {
+  "GT3000-G3000": {
+   "diff": 0.00125,
+   "lo": -0.029375,
+   "hi": 0.03125,
+   "n_per_block": 1600,
+   "by_block": {
+    "planner": 0.00125
+   }
+  },
+  "GT3000-S3000": {
+   "diff": -0.01875,
+   "lo": -0.05,
+   "hi": 0.0125,
+   "n_per_block": 1600,
+   "by_block": {
+    "planner": -0.01875
+   }
+  },
+  "S3000-G3000": {
+   "diff": 0.02,
+   "lo": -0.010625,
+   "hi": 0.050625,
+   "n_per_block": 1600,
+   "by_block": {
+    "planner": 0.02
+   }
+  },
+  "G3000-G0": {
+   "diff": 0.005,
+   "lo": -0.0575,
+   "hi": 0.065,
+   "n_per_block": 400,
+   "by_block": {
+    "planner": 0.005
+   }
+  },
+  "GT3000-G0": {
+   "diff": 0.01,
+   "lo": -0.0475,
+   "hi": 0.0675,
+   "n_per_block": 400,
+   "by_block": {
+    "planner": 0.01
+   }
+  }
+ }
+}

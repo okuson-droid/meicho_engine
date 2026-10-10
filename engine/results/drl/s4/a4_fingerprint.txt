@@ -1,0 +1,5 @@
+wheel の札       ['agents_follow_decks', 'bp01_k5', 'bundle_p', 'd065_bin1', 'd065_reeval_isolated_rng', 'draw_buckets', 'encoding_v6', 'endgame_enum', 'known_hand', 'leaf_dump', 'lethal_uniform', 'opp_from_seat', 'record_seats', 'te13_switched_scope', 'world_weight']
+champion         planner_vc4cps_kheb_b75
+期待             f4b80b25c35cfa77
+実測             f4b80b25c35cfa77
+→ 一致

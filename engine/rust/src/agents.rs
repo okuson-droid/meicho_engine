@@ -686,6 +686,13 @@ pub struct Greedy {
     /// 1 = proxy（代打ちだけ）／2 = fallback（担当外の実際の手だけ）／
     /// 3 = proxy_lite（代打ちのうち**相手のアクションフェイズと自分の対抗の提出だけ**・§9-4 (a) の速度の手当て）。既定 0。
     pub policy_scope: u8,
+    /// 壁を越える案 腕 A（D-163・`GENERALIST_WALL_DESIGN_20261006.md` §2.1）: `policy_net` が読む観測に
+    /// **打つ席 q から見た相手のデッキ表**を渡す（v6 の信念の要約・D-124）。q = 自分なら `opp_decklist`、
+    /// q ≠ 自分（先読みの中の相手）なら `own_decklist`（相手から見た相手＝自分のデッキ表）。
+    /// 既定 false（従来どおりデッキ表なしで符号化・挙動不変）。`opp_policy_net` には効かせない。
+    pub policy_belief: bool,
+    /// 腕 A: 自分のデッキ表（`policy_belief` のときだけ使う）。`series` 系では席の行動デッキが入る。
+    pub own_decklist: Option<Vec<u16>>,
     /// D-065 A-1: 選択フェイズ（Choice）と手札上限の捨て札（TurnEndDiscard）も担当にする。既定 false。
     pub choice_phases: bool,
     /// D-065 A-1: `solo` の決定化の本数（1 = 従来どおり）。
@@ -792,6 +799,8 @@ impl Greedy {
             opp_policy_root_only: false,
             tau: 0.0,
             policy_scope: 0,
+            policy_belief: false,
+            own_decklist: None,
             choice_phases: false,
             solo_samples: 1,
             align_leaves: false,
@@ -838,14 +847,30 @@ impl Greedy {
         }
     }
 
+    /// 腕 A（D-163 §2.1）: 席 q の手を π に選ばせるときに渡す「q から見た相手のデッキ表」。
+    /// `policy_belief` が偽なら None（従来の符号化）。q = 探索する側 me なら `opp_decklist`、
+    /// q ≠ me（先読みの中の相手）なら `own_decklist`（相手から見た相手＝自分のデッキ表）。
+    /// 借用を `fallback` と分けるため、欄を個別に受ける関数にしてある。
+    pub fn belief_deck<'a>(policy_belief: bool, opp_decklist: &'a Option<Vec<u16>>,
+                           own_decklist: &'a Option<Vec<u16>>, q: u8, me: u8) -> Option<&'a [u16]> {
+        if !policy_belief {
+            None
+        } else if q == me {
+            opp_decklist.as_deref()
+        } else {
+            own_decklist.as_deref()
+        }
+    }
+
     /// ネットの方策で手を選ぶ（合法手の中で softmax）。tau=0 なら最大スコアの手（同点は最初）。
     /// 抽選の乱数は `rng` で受け取る（代打ちでは fallback の乱数＝共通乱数の対象）。
+    /// `opp_deck` は q から見た相手のデッキ表の想定（`policy_belief` のときだけ Some・None なら従来の符号化）。
     pub fn policy_pick(db: &CardDb, net: &Net, s: &GameState, q: u8, acts: &[Action], tau: f64,
-                       rng: &mut PyRandom) -> usize {
+                       opp_deck: Option<&[u16]>, rng: &mut PyRandom) -> usize {
         if acts.len() == 1 {
             return 0;
         }
-        let x: Vec<f32> = encode::encode_state(db, s, q).iter().map(|&v| v as f32).collect();
+        let x: Vec<f32> = encode::encode_state_with(db, s, q, opp_deck).iter().map(|&v| v as f32).collect();
         let h = net.trunk(&x);
         let feats: Vec<Vec<f32>> = acts.iter().map(|a| encode::expand_action(db, &encode::action_code(db, s, q, a))).collect();
         let scores = net.policy_scores(&h, &feats);
@@ -1217,7 +1242,8 @@ impl Greedy {
         if self.policy_scope != 2 && (self.policy_scope != 3 || Self::lite_target(s, q, me)) {
             if let Some(net) = self.policy_net.clone() {
                 let acts = engine::legal_actions(db, s, q);
-                let i = Self::policy_pick(db, &net, s, q, &acts, 0.0, &mut self.fallback.rng);
+                let deck = Self::belief_deck(self.policy_belief, &self.opp_decklist, &self.own_decklist, q, me);
+                let i = Self::policy_pick(db, &net, s, q, &acts, 0.0, deck, &mut self.fallback.rng);
                 return acts[i].clone();
             }
         }
@@ -1237,7 +1263,7 @@ impl Greedy {
         if allow_net && s.phase == Phase::ClashSubmit {
             if let Some(net) = self.opp_policy_net.clone() {
                 let acts = engine::legal_actions(db, s, q);
-                let i = Self::policy_pick(db, &net, s, q, &acts, 0.0, &mut self.fallback.rng);
+                let i = Self::policy_pick(db, &net, s, q, &acts, 0.0, None, &mut self.fallback.rng);
                 return acts[i].clone();
             }
         }
@@ -1250,7 +1276,8 @@ impl Greedy {
         if self.policy_scope != 1 && self.policy_scope != 3 {
             if let Some(net) = self.policy_net.clone() {
                 let acts = engine::legal_actions(db, s, pi);
-                let i = Self::policy_pick(db, &net, s, pi, &acts, self.tau, &mut self.rng);
+                let deck = Self::belief_deck(self.policy_belief, &self.opp_decklist, &self.own_decklist, pi, pi);
+                let i = Self::policy_pick(db, &net, s, pi, &acts, self.tau, deck, &mut self.rng);
                 return acts[i].clone();
             }
         }

@@ -1,0 +1,305 @@
+{
+ "name": "s4wl_add12000a",
+ "generator": {
+  "tool": "experiments/make_s2_schedule.py",
+  "version": "s2sched-1",
+  "decision": "D-154",
+  "anchor_opponents": [
+   "heuristic",
+   "greedy",
+   "planner"
+  ],
+  "target": "ENV_SANGE_RM_TSUBAKI",
+  "per_block": {
+   "mirror": 2400,
+   "cross": 144,
+   "anchor": 432
+  },
+  "band": [
+   921000,
+   926999
+  ],
+  "env": {
+   "path": "results/decksim/env_v1.json",
+   "version": "decksim-3"
+  }
+ },
+ "n_total_actual": 6000,
+ "teacher": {
+  "name": "netfree",
+  "tau": 0.0
+ },
+ "decks": {
+  "env/ENV_SANGE_RF_ANKO": {
+   "lineage": "ENV_SANGE_RF_ANKO",
+   "group": 0,
+   "split": "train"
+  },
+  "env/ENV_SANGE_RF_CHIXIA": {
+   "lineage": "ENV_SANGE_RF_CHIXIA",
+   "group": 1,
+   "split": "train"
+  },
+  "env/ENV_SANGE_RF_JINSHI": {
+   "lineage": "ENV_SANGE_RF_JINSHI",
+   "group": 2,
+   "split": "train"
+  },
+  "env/ENV_SANGE_RM_ANKO": {
+   "lineage": "ENV_SANGE_RF_ANKO",
+   "group": 0,
+   "split": "train"
+  },
+  "env/ENV_SANGE_RM_CHIXIA": {
+   "lineage": "ENV_SANGE_RF_CHIXIA",
+   "group": 1,
+   "split": "train"
+  },
+  "env/ENV_SANGE_RM_JINSHI": {
+   "lineage": "ENV_SANGE_RF_JINSHI",
+   "group": 2,
+   "split": "train"
+  },
+  "env/ENV_SANGE_RM_TSUBAKI": {
+   "lineage": "ENV_SANGE_RF_TSUBAKI",
+   "group": 3,
+   "split": "tune"
+  },
+  "env/ENV_SANGE_SK_ANKO": {
+   "lineage": "ENV_SANGE_SK_ANKO",
+   "group": 4,
+   "split": "train"
+  },
+  "env/ENV_SANGE_SK_TSUBAKI": {
+   "lineage": "ENV_SANGE_SK_TSUBAKI",
+   "group": 7,
+   "split": "train"
+  },
+  "env/ENV_YANG_RF_ANKO": {
+   "lineage": "ENV_SANGE_RF_ANKO",
+   "group": 0,
+   "split": "train"
+  },
+  "env/ENV_YANG_RF_CHIXIA": {
+   "lineage": "ENV_SANGE_RF_CHIXIA",
+   "group": 1,
+   "split": "train"
+  },
+  "env/ENV_YANG_RF_JINSHI": {
+   "lineage": "ENV_SANGE_RF_JINSHI",
+   "group": 2,
+   "split": "train"
+  },
+  "env/ENV_YANG_RM_ANKO": {
+   "lineage": "ENV_SANGE_RF_ANKO",
+   "group": 0,
+   "split": "train"
+  },
+  "env/ENV_YANG_RM_CHIXIA": {
+   "lineage": "ENV_SANGE_RF_CHIXIA",
+   "group": 1,
+   "split": "train"
+  },
+  "env/ENV_YANG_RM_JINSHI": {
+   "lineage": "ENV_SANGE_RF_JINSHI",
+   "group": 2,
+   "split": "train"
+  },
+  "env/ENV_YANG_SK_ANKO": {
+   "lineage": "ENV_SANGE_SK_ANKO",
+   "group": 4,
+   "split": "train"
+  },
+  "env/ENV_YANG_SK_TSUBAKI": {
+   "lineage": "ENV_SANGE_SK_TSUBAKI",
+   "group": 7,
+   "split": "train"
+  }
+ },
+ "blocks": [
+  {
+   "kind": "mirror",
+   "deck_a": "env/ENV_SANGE_RM_TSUBAKI",
+   "deck_b": "env/ENV_SANGE_RM_TSUBAKI",
+   "seed0": 921000,
+   "n": 2400,
+   "record": "both",
+   "p_planned": 0.4
+  },
+  {
+   "kind": "cross",
+   "deck_a": "env/ENV_SANGE_RM_TSUBAKI",
+   "deck_b": "env/ENV_SANGE_RF_ANKO",
+   "seed0": 923400,
+   "n": 144,
+   "record": "deck_a",
+   "p_planned": 0.024
+  },
+  {
+   "kind": "cross",
+   "deck_a": "env/ENV_SANGE_RM_TSUBAKI",
+   "deck_b": "env/ENV_SANGE_RF_CHIXIA",
+   "seed0": 923544,
+   "n": 144,
+   "record": "deck_a",
+   "p_planned": 0.024
+  },
+  {
+   "kind": "cross",
+   "deck_a": "env/ENV_SANGE_RM_TSUBAKI",
+   "deck_b": "env/ENV_SANGE_RF_JINSHI",
+   "seed0": 923688,
+   "n": 144,
+   "record": "deck_a",
+   "p_planned": 0.024
+  },
+  {
+   "kind": "cross",
+   "deck_a": "env/ENV_SANGE_RM_TSUBAKI",
+   "deck_b": "env/ENV_SANGE_RM_ANKO",
+   "seed0": 923832,
+   "n": 144,
+   "record": "deck_a",
+   "p_planned": 0.024
+  },
+  {
+   "kind": "cross",
+   "deck_a": "env/ENV_SANGE_RM_TSUBAKI",
+   "deck_b": "env/ENV_SANGE_RM_CHIXIA",
+   "seed0": 923976,
+   "n": 144,
+   "record": "deck_a",
+   "p_planned": 0.024
+  },
+  {
+   "kind": "cross",
+   "deck_a": "env/ENV_SANGE_RM_TSUBAKI",
+   "deck_b": "env/ENV_SANGE_RM_JINSHI",
+   "seed0": 924120,
+   "n": 144,
+   "record": "deck_a",
+   "p_planned": 0.024
+  },
+  {
+   "kind": "cross",
+   "deck_a": "env/ENV_SANGE_RM_TSUBAKI",
+   "deck_b": "env/ENV_SANGE_SK_ANKO",
+   "seed0": 924264,
+   "n": 144,
+   "record": "deck_a",
+   "p_planned": 0.024
+  },
+  {
+   "kind": "cross",
+   "deck_a": "env/ENV_SANGE_RM_TSUBAKI",
+   "deck_b": "env/ENV_SANGE_SK_TSUBAKI",
+   "seed0": 924408,
+   "n": 144,
+   "record": "deck_a",
+   "p_planned": 0.024
+  },
+  {
+   "kind": "cross",
+   "deck_a": "env/ENV_SANGE_RM_TSUBAKI",
+   "deck_b": "env/ENV_YANG_RF_ANKO",
+   "seed0": 924552,
+   "n": 144,
+   "record": "deck_a",
+   "p_planned": 0.024
+  },
+  {
+   "kind": "cross",
+   "deck_a": "env/ENV_SANGE_RM_TSUBAKI",
+   "deck_b": "env/ENV_YANG_RF_CHIXIA",
+   "seed0": 924696,
+   "n": 144,
+   "record": "deck_a",
+   "p_planned": 0.024
+  },
+  {
+   "kind": "cross",
+   "deck_a": "env/ENV_SANGE_RM_TSUBAKI",
+   "deck_b": "env/ENV_YANG_RF_JINSHI",
+   "seed0": 924840,
+   "n": 144,
+   "record": "deck_a",
+   "p_planned": 0.024
+  },
+  {
+   "kind": "cross",
+   "deck_a": "env/ENV_SANGE_RM_TSUBAKI",
+   "deck_b": "env/ENV_YANG_RM_ANKO",
+   "seed0": 924984,
+   "n": 144,
+   "record": "deck_a",
+   "p_planned": 0.024
+  },
+  {
+   "kind": "cross",
+   "deck_a": "env/ENV_SANGE_RM_TSUBAKI",
+   "deck_b": "env/ENV_YANG_RM_CHIXIA",
+   "seed0": 925128,
+   "n": 144,
+   "record": "deck_a",
+   "p_planned": 0.024
+  },
+  {
+   "kind": "cross",
+   "deck_a": "env/ENV_SANGE_RM_TSUBAKI",
+   "deck_b": "env/ENV_YANG_RM_JINSHI",
+   "seed0": 925272,
+   "n": 144,
+   "record": "deck_a",
+   "p_planned": 0.024
+  },
+  {
+   "kind": "cross",
+   "deck_a": "env/ENV_SANGE_RM_TSUBAKI",
+   "deck_b": "env/ENV_YANG_SK_ANKO",
+   "seed0": 925416,
+   "n": 144,
+   "record": "deck_a",
+   "p_planned": 0.024
+  },
+  {
+   "kind": "cross",
+   "deck_a": "env/ENV_SANGE_RM_TSUBAKI",
+   "deck_b": "env/ENV_YANG_SK_TSUBAKI",
+   "seed0": 925560,
+   "n": 144,
+   "record": "deck_a",
+   "p_planned": 0.024
+  },
+  {
+   "kind": "anchor",
+   "deck_a": "env/ENV_SANGE_RM_TSUBAKI",
+   "deck_b": "env/ENV_SANGE_RM_TSUBAKI",
+   "seed0": 925704,
+   "n": 432,
+   "record": "a",
+   "opponent": "heuristic",
+   "p_planned": 0.072
+  },
+  {
+   "kind": "anchor",
+   "deck_a": "env/ENV_SANGE_RM_TSUBAKI",
+   "deck_b": "env/ENV_SANGE_RM_TSUBAKI",
+   "seed0": 926136,
+   "n": 432,
+   "record": "a",
+   "opponent": "greedy",
+   "p_planned": 0.072
+  },
+  {
+   "kind": "anchor",
+   "deck_a": "env/ENV_SANGE_RM_TSUBAKI",
+   "deck_b": "env/ENV_SANGE_RM_TSUBAKI",
+   "seed0": 926568,
+   "n": 432,
+   "record": "a",
+   "opponent": "planner",
+   "p_planned": 0.072
+  }
+ ],
+ "purpose": "stage4_wait_ladder"
+}
