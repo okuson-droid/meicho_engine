@@ -1047,7 +1047,39 @@
    "purpose": "物差しの作り直し（D-170・直接の得点）の測り直し R3 G@12,000 対 G@6,000（同じ対象デッキのミラー）: 挑戦 2,800 局（958400..961199）と null 400 局（961400..961799）。足し継ぐときは同じ大きさの帯を新しく取る。**学習に使用禁止**",
    "owner": "experiments/eval_s3_h2h.py",
    "date": "2026-10-08"
+  },
+  {
+   "start": 961800,
+   "end": 965199,
+   "kind": "validate",
+   "purpose": "G-lr の確かめ R4（D-172・直接の得点）: G-lr 対 S@3,000（対象デッキ ENV_SANGE_RM_TSUBAKI のミラー 1 ブロック）。挑戦 2,800 局（961800..964599）と null 400 局（964800..965199）。足し継ぐときは同じ大きさの帯を新しく取る。**学習に使用禁止**",
+   "owner": "experiments/eval_s3_h2h.py",
+   "date": "2026-10-11"
+  },
+  {
+   "start": 965200,
+   "end": 968199,
+   "kind": "train",
+   "purpose": "G-lr の確かめ R5（D-172）: 調整デッキ ENV_YANG_RF_TSUBAKI の追加学習の教材 3,000 局（教師 netfree・make_s2_schedule.py --target ENV_YANG_RF_TSUBAKI --per-block mirror:1200,cross:72,anchor:216・purpose stage4_finetune）。**評価に使用禁止**。汎用 V の系統には使わない",
+   "owner": "experiments/make_s2_schedule.py / record_mix.py",
+   "date": "2026-10-11"
+  },
+  {
+   "start": 968200,
+   "end": 968499,
+   "kind": "train",
+   "purpose": "G-lr の確かめ R5（D-172）: ENV_YANG_RF_TSUBAKI の検証の記録 204 局（mirror:80,cross:4,anchor:20・968200..968403・--select best_v にだけ使う）。**学習にも強さの評価にも使用禁止**",
+   "owner": "experiments/make_s2_schedule.py / record_mix.py",
+   "date": "2026-10-11"
+  },
+  {
+   "start": 968500,
+   "end": 971899,
+   "kind": "validate",
+   "purpose": "G-lr の確かめ R5（D-172・直接の得点）: G-lr(YANG_RF) 対 G@0（対象デッキ ENV_YANG_RF_TSUBAKI のミラー 1 ブロック）。挑戦 2,800 局（968500..971299）と null 400 局（971500..971899）。足し継ぐときは同じ大きさの帯を新しく取る。**学習に使用禁止**",
+   "owner": "experiments/eval_s3_h2h.py",
+   "date": "2026-10-11"
   }
  ],
- "next_free": 961800
+ "next_free": 971900
 }
