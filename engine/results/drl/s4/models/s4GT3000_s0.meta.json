@@ -1,0 +1,307 @@
+{
+ "train": "/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/s4/rec/a4_teacher_train.c000,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/s4/rec/a4_teacher_train.c001,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/s4/rec/a4_teacher_train.c002,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/s4/rec/a4_teacher_train.c003,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/s4/rec/a4_teacher_train.c004,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/s4/rec/a4_teacher_train.c005,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/s4/rec/a4_teacher_train.c006,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/s4/rec/a4_teacher_train.c007,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/s4/rec/a4_teacher_train.c008,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/s4/rec/a4_teacher_train.c009,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/s4/rec/a4_teacher_train.c010,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/s4/rec/a4_teacher_train.c011,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/s4/rec/a4_teacher_train.c012,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/s4/rec/a4_teacher_train.c013,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/s4/rec/a4_teacher_train.c014,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/s4/rec/a4_teacher_train.c015,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/s4/rec/a4_teacher_train.c016,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/s4/rec/a4_teacher_train.c017,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/s4/rec/a4_teacher_train.c018,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/s4/rec/a4_teacher_train.c019,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/s4/rec/a4_teacher_train.c020,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/s4/rec/a4_teacher_train.c021,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/s4/rec/a4_teacher_train.c022,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/s4/rec/a4_teacher_train.c023,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/s4/rec/a4_teacher_train.c024,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/s4/rec/a4_teacher_train.c025,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/s4/rec/a4_teacher_train.c026,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/s4/rec/a4_teacher_train.c027,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/s4/rec/a4_teacher_train.c028,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/s4/rec/a4_teacher_train.c029,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/s4/rec/a4_teacher_train.c030,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/s4/rec/a4_teacher_train.c031,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/s4/rec/a4_teacher_train.c032,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/s4/rec/a4_teacher_train.c033,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/s4/rec/a4_teacher_train.c034,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/s4/rec/a4_teacher_train.c035,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/s4/rec/a4_teacher_train.c036,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/s4/rec/a4_teacher_train.c037,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/s4/rec/a4_teacher_train.c038,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/s4/rec/a4_teacher_train.c039,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/s4/rec/a4_teacher_train.c040,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/s4/rec/a4_teacher_train.c041,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/s4/rec/a4_teacher_train.c042,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/s4/rec/a4_teacher_train.c043,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/s4/rec/a4_teacher_train.c044,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/s4/rec/a4_teacher_train.c045,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/s4/rec/a4_teacher_train.c046,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/s4/rec/a4_teacher_train.c047,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/s4/rec/a4_teacher_train.c048,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/s4/rec/a4_teacher_train.c049,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/s4/rec/a4_teacher_train.c050,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/s4/rec/a4_teacher_train.c051,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/s4/rec/a4_teacher_train.c052,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/s4/rec/a4_teacher_train.c053,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/s4/rec/a4_teacher_train.c054,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/s4/rec/a4_teacher_train.c055,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/s4/rec/a4_teacher_train.c056,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/s4/rec/a4_teacher_train.c057,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/s4/rec/a4_teacher_train.c058,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/s4/rec/a4_teacher_train.c059,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/s4/rec/a4_teacher_train.c060,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/s4/rec/a4_teacher_train.c061,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/s4/rec/a4_teacher_train.c062,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/s4/rec/a4_teacher_train.c063,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/s4/rec/a4_teacher_train.c064,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/s4/rec/a4_teacher_train.c065,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/s4/rec/a4_teacher_train.c066,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/s4/rec/a4_teacher_train.c067,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/s4/rec/a4_teacher_train.c068,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/s4/rec/a4_teacher_train.c069,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/s4/rec/a4_teacher_train.c070,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/s4/rec/a4_teacher_train.c071,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/s4/rec/a4_teacher_train.c072,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/s4/rec/a4_teacher_train.c073,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/s4/rec/a4_teacher_train.c074,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/s4/rec/a4_teacher_train.c075,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/s4/rec/a4_teacher_train.c076,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/s4/rec/a4_teacher_train.c077,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/s4/rec/a4_teacher_train.c078,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/s4/rec/a4_teacher_train.c079,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/s4/rec/a4_teacher_train.c080,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/s4/rec/a4_teacher_train.c081,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/s4/rec/a4_teacher_train.c082,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/s4/rec/a4_teacher_train.c083,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/s4/rec/a4_teacher_train.c084,/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/s4/rec/a4_teacher_train.c085",
+ "valid": "/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/s4/rec/target_val.c000",
+ "epochs": 6,
+ "hidden": 256,
+ "depth": 2,
+ "phead": 128,
+ "lr": 0.001,
+ "bs": 1024,
+ "seed": 0,
+ "lam": 0.7,
+ "init": "results/models/s2v_id_s0.json",
+ "n_train": 245089,
+ "n_valid": 17041,
+ "chance_acc_valid": 0.2627020717184794,
+ "log": [
+  {
+   "epoch": 1,
+   "train_loss": 1.5394848381452202,
+   "valid": {
+    "n": 17041,
+    "v_logloss": 0.6094713342573839,
+    "v_acc": 0.6457367525379966,
+    "t_logloss": 0.5663992657529084,
+    "p_logloss": 1.163901787101925,
+    "p_acc": 0.5692741036324159,
+    "p_acc_by_phase": {
+     "setup": [
+      1.0,
+      284
+     ],
+     "mulligan": [
+      1.0,
+      284
+     ],
+     "action": [
+      0.48725212464589235,
+      5295
+     ],
+     "clash": [
+      0.6350864553314121,
+      2776
+     ],
+     "choice": [
+      0.588094882888259,
+      6703
+     ],
+     "rush": [
+      0.508495145631068,
+      1648
+     ],
+     "discard": [
+      0.19607843137254902,
+      51
+     ]
+    }
+   },
+   "sec": 73.42173886299133
+  },
+  {
+   "epoch": 2,
+   "train_loss": 1.4608234823387507,
+   "valid": {
+    "n": 17041,
+    "v_logloss": 0.6073902542690011,
+    "v_acc": 0.6464996185669855,
+    "t_logloss": 0.5679513284224215,
+    "p_logloss": 1.1797534778541918,
+    "p_acc": 0.5735578897951998,
+    "p_acc_by_phase": {
+     "setup": [
+      1.0,
+      284
+     ],
+     "mulligan": [
+      1.0,
+      284
+     ],
+     "action": [
+      0.4902738432483475,
+      5295
+     ],
+     "clash": [
+      0.6314841498559077,
+      2776
+     ],
+     "choice": [
+      0.5904818737878562,
+      6703
+     ],
+     "rush": [
+      0.5388349514563107,
+      1648
+     ],
+     "discard": [
+      0.21568627450980393,
+      51
+     ]
+    }
+   },
+   "sec": 68.17169213294983
+  },
+  {
+   "epoch": 3,
+   "train_loss": 1.4210291456048072,
+   "valid": {
+    "n": 17041,
+    "v_logloss": 0.6103536506107972,
+    "v_acc": 0.6438589284666393,
+    "t_logloss": 0.5747262200211759,
+    "p_logloss": 1.2033927509618347,
+    "p_acc": 0.5690393756234963,
+    "p_acc_by_phase": {
+     "setup": [
+      1.0,
+      284
+     ],
+     "mulligan": [
+      1.0,
+      284
+     ],
+     "action": [
+      0.4804532577903683,
+      5295
+     ],
+     "clash": [
+      0.6278818443804035,
+      2776
+     ],
+     "choice": [
+      0.5930180516186782,
+      6703
+     ],
+     "rush": [
+      0.5188106796116505,
+      1648
+     ],
+     "discard": [
+      0.23529411764705882,
+      51
+     ]
+    }
+   },
+   "sec": 64.76517629623413
+  },
+  {
+   "epoch": 4,
+   "train_loss": 1.3881431807628821,
+   "valid": {
+    "n": 17041,
+    "v_logloss": 0.6134029406559914,
+    "v_acc": 0.6439762924710991,
+    "t_logloss": 0.5703498424411163,
+    "p_logloss": 1.2196044384625224,
+    "p_acc": 0.5710345636993134,
+    "p_acc_by_phase": {
+     "setup": [
+      1.0,
+      284
+     ],
+     "mulligan": [
+      1.0,
+      284
+     ],
+     "action": [
+      0.4842304060434372,
+      5295
+     ],
+     "clash": [
+      0.6271613832853026,
+      2776
+     ],
+     "choice": [
+      0.5919737431001044,
+      6703
+     ],
+     "rush": [
+      0.533373786407767,
+      1648
+     ],
+     "discard": [
+      0.21568627450980393,
+      51
+     ]
+    }
+   },
+   "sec": 69.83153891563416
+  },
+  {
+   "epoch": 5,
+   "train_loss": 1.3620527331948695,
+   "valid": {
+    "n": 17041,
+    "v_logloss": 0.6155808706615433,
+    "v_acc": 0.6396338243060853,
+    "t_logloss": 0.5715482640270616,
+    "p_logloss": 1.2446062987794144,
+    "p_acc": 0.5682178275922775,
+    "p_acc_by_phase": {
+     "setup": [
+      1.0,
+      284
+     ],
+     "mulligan": [
+      1.0,
+      284
+     ],
+     "action": [
+      0.48819641170915956,
+      5295
+     ],
+     "clash": [
+      0.6181556195965417,
+      2776
+     ],
+     "choice": [
+      0.5921229300313292,
+      6703
+     ],
+     "rush": [
+      0.5072815533980582,
+      1648
+     ],
+     "discard": [
+      0.17647058823529413,
+      51
+     ]
+    }
+   },
+   "sec": 66.11891961097717
+  },
+  {
+   "epoch": 6,
+   "train_loss": 1.3453528425936698,
+   "valid": {
+    "n": 17041,
+    "v_logloss": 0.6157982974368343,
+    "v_acc": 0.6395751423038554,
+    "t_logloss": 0.5720426860420044,
+    "p_logloss": 1.2336862171334941,
+    "p_acc": 0.5718561117305322,
+    "p_acc_by_phase": {
+     "setup": [
+      1.0,
+      284
+     ],
+     "mulligan": [
+      1.0,
+      284
+     ],
+     "action": [
+      0.49008498583569404,
+      5295
+     ],
+     "clash": [
+      0.6332853025936599,
+      2776
+     ],
+     "choice": [
+      0.5928688646874534,
+      6703
+     ],
+     "rush": [
+      0.5097087378640777,
+      1648
+     ],
+     "discard": [
+      0.19607843137254902,
+      51
+     ]
+    }
+   },
+   "sec": 66.35528421401978
+  }
+ ],
+ "select": "best_v",
+ "selected_epoch": 2,
+ "calibration": {
+  "a": 4.895738124847412,
+  "b": -3.0246338844299316,
+  "c": 0.9546809673309328,
+  "n": 236689,
+  "scale": "bulk",
+  "sentinel_frac": 0.0,
+  "spread": 0.21754729747772217,
+  "logloss": 0.5835574269294739,
+  "base": 0.6483594302051474,
+  "useful": true
+ },
+ "league_mode": "keep",
+ "league_seeds": null,
+ "n_league_train": 0,
+ "n_v_train": 245089,
+ "vtarget": "max",
+ "calib_scale": "bulk",
+ "calib_by": "none",
+ "distil_from": null,
+ "n_fresh_used": 0,
+ "wd": 0.0,
+ "wv": 1.0,
+ "wp": 1.0,
+ "card_profile": null,
+ "n_params_trained": 632194,
+ "keep_pairs": null,
+ "n_train_read": 245089,
+ "n_params_exported": 632194
+}

@@ -469,13 +469,13 @@ def compare_retake(orig, retake) -> dict:
     return out
 
 
-def split_calib(v, z, seed, ok) -> np.ndarray:
+def split_calib(v, z, seed, ok, form: str = "linear") -> np.ndarray:
     """局のシードの対 (2m, 2m+1) を m の偶奇で 2 つに分け、片方で合わせてもう片方に当てる（2 通り）。"""
     half = (seed // 2) % 2
     p = np.full(len(v), np.nan)
     for h in (0, 1):
         fit, use = ok & (half == h), ok & (half != h)
-        c = fit_form(v[fit], z[fit], "linear")
+        c = fit_form(v[fit], z[fit], form)
         p[use] = apply_form(v[use], c)
     return p
 
@@ -519,6 +519,74 @@ def tb(orig_files, retake_files, val_mans) -> dict:
     else:
         verdict = "(b) は回さない"
     out["rules"] = {"verdict": verdict, "thresholds": RULE_TB}
+    return out
+
+
+# ------------------------------------------------------------------ 壁を越える案 腕 A の教師の門（A-2・D-163 §5.3）
+RULE_A2 = {"u": 0.002, "n_boot": 10000}
+
+
+def _ll_each(p, z) -> np.ndarray:
+    p = np.clip(np.asarray(p, np.float64), 1e-6, 1 - 1e-6)
+    return -(z * np.log(p) + (1 - z) * np.log(1 - p))
+
+
+def uplift_ci(p_v0, p_t, z, game, n_boot: int = RULE_A2["n_boot"], seed: int = 0) -> dict:
+    """u = L(V_0) − L(教師) と、局（`game`）を単位に再標本化した 95% 区間（較正は合わせ直さない）。"""
+    d = _ll_each(p_v0, z) - _ll_each(p_t, z)
+    g, inv = np.unique(game, return_inverse=True)
+    S, N = np.bincount(inv, weights=d), np.bincount(inv).astype(np.float64)
+    rng = np.random.RandomState(seed)
+    idx = rng.randint(0, len(g), size=(n_boot, len(g)))
+    boots = S[idx].sum(1) / N[idx].sum(1)
+    lo, hi = np.percentile(boots, [2.5, 97.5])
+    return {"u": float(d.mean()), "lo": float(lo), "hi": float(hi), "n": int(len(d)), "n_games": int(len(g))}
+
+
+def verdict_a2(u: float, lo: float) -> str:
+    if u < RULE_A2["u"]:
+        return "門を越えない（u_A < 0.002）"
+    return "門を越える（弱い通過・区間の下端 ≤ 0）" if lo <= 0 else "門を越える"
+
+
+def gate_a2(new_files, new_mans, ref_files=None, ref_mans=None) -> dict:
+    """A-2 の門（設計書 §5.3）。AI_A を教師にした記録の決定で、探索値の最大を線形（bulk）の較正で勝率にし、
+    u_A = L(V_0) − L(AI_A の探索値) を出す。較正は局のシードの対で 2 分割して合わせ、もう片方に当てる
+    （`split_calib`・T-b と同じ。記録の外に AI_A の学習用の記録は無いので、同じ記録の中で合わせる）。
+    logit・isotonic の u と AUC は添える。`ref_files` を渡すと、同じ手順で従来の教師（反復 1 の検証）の u も出す。"""
+    def one(files, mans):
+        bm, tg, seed = batch_tagged(files, mans, "max")
+        parts = load_parts("s2v_id")
+        p_v0 = sigmoid(np.mean([net_logit(n, bm.obs) for n in parts], 0))
+        z = bm.z.astype(np.float64)
+        ok = np.isfinite(bm.vsearch)
+        v = bm.vsearch.astype(np.float64)
+        res = {"n_decisions": int(bm.n), "n_searched": int(ok.sum()), "forms": {}}
+        for form in ("linear", "logit", "iso"):
+            try:
+                p = split_calib(v, z, seed, ok, form)
+            except SystemExit as e:                  # logit は探索値が [−1, 1] の外にあると当てはめられない（添えるだけ）
+                if form == "linear":
+                    raise
+                res["forms"][form] = {"skipped": str(e)}
+                continue
+            r = uplift_ci(p_v0[ok], p[ok], z[ok], seed[ok])
+            r["auc"] = {"V0": auc(p_v0[ok], z[ok]), "teacher": auc(p[ok], z[ok])}
+            if form == "linear":
+                r["by_kind"] = {k: uplift_ci(p_v0[ok][tg["kind"][ok] == k], p[ok][tg["kind"][ok] == k],
+                                             z[ok][tg["kind"][ok] == k], seed[ok][tg["kind"][ok] == k], n_boot=2000)
+                                for k in sorted(set(tg["kind"][ok].tolist()))}
+            res["forms"][form] = r
+        res["L_V0"] = logloss(p_v0[ok], z[ok])
+        return res
+    out = {"version": TOOL_VERSION, "decision": "D-163 §5.3", "thresholds": RULE_A2, "A": one(new_files, new_mans)}
+    lin = out["A"]["forms"]["linear"]
+    out["u_A"], out["lo"], out["hi"] = lin["u"], lin["lo"], lin["hi"]
+    out["verdict"] = verdict_a2(lin["u"], lin["lo"])
+    if ref_files:
+        out["ref"] = one(ref_files, ref_mans)
+        out["u_ref"] = out["ref"]["forms"]["linear"]["u"]
+        out["u_A_minus_ref"] = out["u_A"] - out["u_ref"]
     return out
 
 
@@ -849,7 +917,26 @@ def main(argv=None):
     ap.add_argument("--leaf-retest", action="store_true", help="境界の追試の回（追試も境界なら点推定で決める）")
     ap.add_argument("--anchor-split", action="store_true",
                     help="4-b（錨の層を相手別に・判定なし）と u_A の再計算（D-151 §3.3・§4.4）")
+    ap.add_argument("--a2", default=None,
+                    help="腕 A の教師の門（A-2・D-163 §5.3）。AI_A を教師にした記録の接頭辞（カンマ区切り）")
+    ap.add_argument("--a2-man", default=None, help="--a2 の記録の manifest の glob")
     args = ap.parse_args(argv)
+    if args.a2:
+        from drl_train import files_of
+        mans = []
+        for p in sorted(glob.glob(args.a2_man or "")):
+            with open(p, encoding="utf-8") as f:
+                mans.append(json.load(f))
+        if not mans:
+            raise SystemExit("--a2-man の manifest が無い")
+        ref = (extract("val", args.work), manifests("val")) if args.work else (None, None)
+        out = gate_a2(files_of(args.a2), mans, *ref)
+        print(json.dumps({k: out.get(k) for k in ("u_A", "lo", "hi", "verdict", "u_ref", "u_A_minus_ref")},
+                         ensure_ascii=False, indent=1))
+        if args.out:
+            with open(args.out, "w", encoding="utf-8", newline="\n") as f:
+                json.dump(out, f, ensure_ascii=False, indent=1)
+        return out
     if args.leaf or args.anchor_split:
         if not args.work:
             raise SystemExit("--work が要る")

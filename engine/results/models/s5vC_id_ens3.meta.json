@@ -1,0 +1,21 @@
+{
+ "version": "ensnet-1",
+ "decision": "D-133",
+ "combine": "mean_logit",
+ "members": [
+  {
+   "path": "s5vC_id_s0.json",
+   "sha": "a7546a61a440b107"
+  },
+  {
+   "path": "s5vC_id_s1.json",
+   "sha": "09aeb23e7a9858dd"
+  },
+  {
+   "path": "s5vC_id_s2.json",
+   "sha": "fec0d74a0fdeeeea"
+  }
+ ],
+ "hidden": 768,
+ "sha": "32ff607ee9148d51"
+}

@@ -1,0 +1,19 @@
+{
+ "version": "s3h2h-1",
+ "gate": "Tv0",
+ "pair": {
+  "a": {
+   "path": "results/models/s2v_id_ens3.json",
+   "sha": "2d4504e2125bc244"
+  },
+  "b": {
+   "path": "netfree",
+   "sha": null
+  }
+ },
+ "n_games": 400,
+ "score": 0.6625,
+ "lo": 0.615,
+ "hi": 0.71,
+ "verdict": "門を越える"
+}

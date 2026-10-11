@@ -735,7 +735,319 @@
    "purpose": "段階4 便 4-A3（D-158・`GENERALIST_STAGE4_GLEARN_DESIGN_20261003.md` §5） 配線の確かめ・検査（`tests/test_stage4_a3_tools.py` の記録 889900..889903 など・勝敗は読まない）",
    "owner": "tests/test_stage4_a3_tools.py",
    "date": "2026-10-03"
+  },
+  {
+   "start": 890000,
+   "end": 893999,
+   "kind": "train",
+   "purpose": "段階4 便 4-A4（D-161・`GENERALIST_STAGE4_TEACHER_DESIGN_20261005.md` §5） 対象デッキ `ENV_SANGE_RM_TSUBAKI` の強い教師（netfree_v・葉 S@3,000）の教材 3,000 局（890000..892999・purpose `stage4_finetune_teacher`）。予備 893000..893999。汎用 V の系統には使わない。**評価に使用禁止**",
+   "owner": "experiments/make_s2_schedule.py / record_mix.py",
+   "date": "2026-10-05"
+  },
+  {
+   "start": 894000,
+   "end": 895999,
+   "kind": "validate",
+   "purpose": "段階4 便 4-A4（D-161・`GENERALIST_STAGE4_TEACHER_DESIGN_20261005.md` §5） 評価（課題 s4・対象デッキのミラー）。素 planner 894000..895599（1,600 局・G_T@3,000・G@3,000・S@3,000 で同じシード）／G@0 894000..894399（400 局）／G_T@3,000 の H・貪欲 894000..894199（各 200 局）。**学習に使用禁止**",
+   "owner": "experiments/eval_s2_repr.py",
+   "date": "2026-10-05"
+  },
+  {
+   "start": 896000,
+   "end": 896999,
+   "kind": "validate",
+   "purpose": "段階4 便 4-A4（D-161・`GENERALIST_STAGE4_TEACHER_DESIGN_20261005.md` §5） 門 T（教師 対 netfree・対象デッキのミラー）。T-s 896000..896399／T-v0 896400..896799／T-b 896800..896999（200 局）。**学習に使用禁止**",
+   "owner": "experiments/eval_s3_h2h.py",
+   "date": "2026-10-05"
+  },
+  {
+   "start": 897000,
+   "end": 897999,
+   "kind": "diag",
+   "purpose": "段階4 便 4-A4（D-161・`GENERALIST_STAGE4_TEACHER_DESIGN_20261005.md` §5） 配線の確かめ・検査（`tests/test_stage4_a4_tools.py` の局 897900.. など・勝敗は読まない）",
+   "owner": "tests/test_stage4_a4_tools.py",
+   "date": "2026-10-05"
+  },
+  {
+   "start": 898000,
+   "end": 900999,
+   "kind": "train",
+   "purpose": "段階4 待ち時間の測定 W-1（D-161 追記 1・添える扱い）: 調整デッキ `ENV_YANG_RM_TSUBAKI` の netfree の教材 3,000 局（4-A・4-A2 と同じ配分 mirror:1200,cross:72,anchor:216）。**評価に使用禁止**",
+   "owner": "experiments/make_s2_schedule.py / record_mix.py",
+   "date": "2026-10-05"
+  },
+  {
+   "start": 901000,
+   "end": 901999,
+   "kind": "train",
+   "purpose": "段階4 待ち時間の測定 W-1（D-161 追記 1・添える扱い）: `ENV_YANG_RM_TSUBAKI` の検証の記録（204 局・mirror:80,cross:4,anchor:20・`--select best_v` と机上にだけ使う）。**評価に使用禁止**",
+   "owner": "experiments/make_s2_schedule.py / record_mix.py",
+   "date": "2026-10-05"
+  },
+  {
+   "start": 902000,
+   "end": 903999,
+   "kind": "validate",
+   "purpose": "段階4 待ち時間の測定 W-1（D-161 追記 1・添える扱い）: 評価（課題 s4・対象 `ENV_YANG_RM_TSUBAKI` のミラー・素 planner 902000..903599 の 1,600 局・G@3,000 と S@3,000 で同じシード）。**学習に使用禁止**",
+   "owner": "experiments/eval_s2_repr.py",
+   "date": "2026-10-05"
+  },
+  {
+   "start": 904000,
+   "end": 905999,
+   "kind": "validate",
+   "purpose": "段階4 待ち時間の測定 W-2（D-161 追記 1・添える扱い）: 評価（課題 s4・対象 `ENV_SANGE_RM_TSUBAKI` のミラー・素 planner 904000..905599 の 1,600 局・R@3,000 と G@3,000 で同じシード）。**学習に使用禁止**",
+   "owner": "experiments/eval_s2_repr.py",
+   "date": "2026-10-05"
+  },
+  {
+   "start": 906000,
+   "end": 908999,
+   "kind": "train",
+   "purpose": "段階4 待ち時間の測定 W-3（D-161 追記 1・添える扱い）: 対象デッキ `ENV_SANGE_RM_TSUBAKI` の netfree の教材を 3,000 局足す（906000..908999・mirror:1200,cross:72,anchor:216）。4-A・4-A2 の 3,000 局と合わせて 6,000 局。**評価に使用禁止**",
+   "owner": "experiments/make_s2_schedule.py / record_mix.py",
+   "date": "2026-10-05"
+  },
+  {
+   "start": 909000,
+   "end": 910999,
+   "kind": "validate",
+   "purpose": "段階4 待ち時間の測定 W-3（D-161 追記 1・添える扱い）: 評価（課題 s4・素 planner 909000..910599 の 1,600 局・G@6,000 と G@3,000 で同じシード）。**学習に使用禁止**",
+   "owner": "experiments/eval_s2_repr.py",
+   "date": "2026-10-05"
+  },
+  {
+   "start": 911000,
+   "end": 912999,
+   "kind": "validate",
+   "purpose": "待ち時間の測定 W4（D-162 追記 1・添える扱い）: 評価（課題 s4・素 planner 911000..912599 の 1,600 局・候補は同じシード）。**学習に使用禁止**",
+   "owner": "experiments/eval_s2_repr.py",
+   "date": "2026-10-05"
+  },
+  {
+   "start": 913000,
+   "end": 918999,
+   "kind": "train",
+   "purpose": "待ち時間の測定 W5（D-162 追記 1・添える扱い）: 対象デッキ `ENV_SANGE_RM_TSUBAKI` の netfree の教材 6000 局（wl_add6000・4-A と同じ配分）。**評価に使用禁止**",
+   "owner": "experiments/make_s2_schedule.py / record_mix.py",
+   "date": "2026-10-05"
+  },
+  {
+   "start": 919000,
+   "end": 920999,
+   "kind": "validate",
+   "purpose": "待ち時間の測定 W5（D-162 追記 1・添える扱い）: 評価（課題 s4・素 planner 919000..920599 の 1,600 局・候補は同じシード）。**学習に使用禁止**",
+   "owner": "experiments/eval_s2_repr.py",
+   "date": "2026-10-05"
+  },
+  {
+   "start": 921000,
+   "end": 926999,
+   "kind": "train",
+   "purpose": "待ち時間の測定 W6（D-162 追記 1・添える扱い）: 対象デッキ `ENV_SANGE_RM_TSUBAKI` の netfree の教材 6000 局（wl_add12000a・4-A と同じ配分）。**評価に使用禁止**",
+   "owner": "experiments/make_s2_schedule.py / record_mix.py",
+   "date": "2026-10-05"
+  },
+  {
+   "start": 927000,
+   "end": 932999,
+   "kind": "train",
+   "purpose": "待ち時間の測定 W6（D-162 追記 1・添える扱い）: 対象デッキ `ENV_SANGE_RM_TSUBAKI` の netfree の教材 6000 局（wl_add12000b・4-A と同じ配分）。**評価に使用禁止**",
+   "owner": "experiments/make_s2_schedule.py / record_mix.py",
+   "date": "2026-10-05"
+  },
+  {
+   "start": 933000,
+   "end": 934999,
+   "kind": "validate",
+   "purpose": "待ち時間の測定 W6（D-162 追記 1・添える扱い）: 評価（課題 s4・素 planner 933000..934599 の 1,600 局・候補は同じシード）。**学習に使用禁止**",
+   "owner": "experiments/eval_s2_repr.py",
+   "date": "2026-10-05"
+  },
+  {
+   "start": 935000,
+   "end": 935999,
+   "kind": "diag",
+   "purpose": "汎用 AI の壁を越える案（D-163・`GENERALIST_WALL_DESIGN_20261006.md`）の道具の検査（`tests/test_wall_tools.py` の記録など・勝敗は読まない）",
+   "owner": "tests/test_wall_tools.py",
+   "date": "2026-10-06"
+  },
+  {
+   "start": 936000,
+   "end": 936099,
+   "kind": "validate",
+   "purpose": "壁を越える案 腕 B（D-163 §5.1・B-1）の主比較: V_B 対 V_0 と null（V_0 対 V_0）・調整デッキ 16 ブロック × 75 局（936000..936074）・同じシード。**学習に使用禁止**",
+   "owner": "experiments/eval_s3_h2h.py",
+   "date": "2026-10-06"
+  },
+  {
+   "start": 936100,
+   "end": 936199,
+   "kind": "validate",
+   "purpose": "壁を越える案 腕 B（D-163 §5.2）の錨: 対 素 planner・16 ブロック × 100 局（候補と基準は同じシード）。**学習に使用禁止**",
+   "owner": "experiments/eval_s2_repr.py",
+   "date": "2026-10-06"
+  },
+  {
+   "start": 936200,
+   "end": 936299,
+   "kind": "validate",
+   "purpose": "壁を越える案 腕 B（D-163 §5.2）の錨: 対 H・16 ブロック × 25 局（936200..936224・候補と基準は同じシード）。**学習に使用禁止**",
+   "owner": "experiments/eval_s2_repr.py",
+   "date": "2026-10-06"
+  },
+  {
+   "start": 936300,
+   "end": 936399,
+   "kind": "validate",
+   "purpose": "壁を越える案 腕 B（D-163 §5.2）の錨: 対 貪欲・16 ブロック × 25 局（936300..936324・候補と基準は同じシード）。**学習に使用禁止**",
+   "owner": "experiments/eval_s2_repr.py",
+   "date": "2026-10-06"
+  },
+  {
+   "start": 936400,
+   "end": 936499,
+   "kind": "validate",
+   "purpose": "壁を越える案 腕 A（D-163 §2.2 A-0）の速さ: AI_A（葉 V_0＋代打ち π）対 AI_0 と AI_0 対 AI_0 を同じシードで 50 局ずつ（対象デッキ ENV_SANGE_RM_TSUBAKI のミラー・936400..936449）。勝敗は判定に使わない。**学習に使用禁止**",
+   "owner": "experiments/eval_s3_h2h.py",
+   "date": "2026-10-07"
+  },
+  {
+   "start": 936500,
+   "end": 936599,
+   "kind": "validate",
+   "purpose": "壁を越える案 腕 A（D-166・A-1）の主比較: AI_A 対 AI_0 と null（AI_0 対 AI_0）・調整デッキ 16 ブロック × 75 局（936500..936574）・同じシード。**学習に使用禁止**",
+   "owner": "experiments/eval_s3_h2h.py",
+   "date": "2026-10-07"
+  },
+  {
+   "start": 936600,
+   "end": 936699,
+   "kind": "validate",
+   "purpose": "腕 A（A-1）の錨: 対 素 planner・16 ブロック × 100 局（候補と基準は同じシード）。**学習に使用禁止**",
+   "owner": "experiments/eval_s2_repr.py",
+   "date": "2026-10-07"
+  },
+  {
+   "start": 936700,
+   "end": 936799,
+   "kind": "validate",
+   "purpose": "腕 A（A-1）の錨: 対 H・16 ブロック × 25 局（936700..936724）。**学習に使用禁止**",
+   "owner": "experiments/eval_s2_repr.py",
+   "date": "2026-10-07"
+  },
+  {
+   "start": 936800,
+   "end": 936899,
+   "kind": "validate",
+   "purpose": "腕 A（A-1）の錨: 対 貪欲・16 ブロック × 25 局（936800..936824）。**学習に使用禁止**",
+   "owner": "experiments/eval_s2_repr.py",
+   "date": "2026-10-07"
+  },
+  {
+   "start": 936900,
+   "end": 938899,
+   "kind": "train",
+   "purpose": "壁を越える案 腕 A（D-163 §2.2 A-2・D-166）の教師の門の記録: AI_A（netfree_vp・葉 V_0＋代打ち π s5piA_s0・τ = 0.006）を教師に、反復 1 の検証と同じ生成器 `--n-total 500` で 528 局（936900..937427）を 16 塊で。予備 937428..938899。**学習にも強さの評価にも使用禁止**（u_A の机上の集計だけ）",
+   "owner": "experiments/make_s2_schedule.py / record_mix.py",
+   "date": "2026-10-07"
+  },
+  {
+   "start": 938900,
+   "end": 939099,
+   "kind": "validate",
+   "purpose": "壁を越える案 腕 A（A-1・D-166）の境界の追試（設計書 §5.1）: AI_A 対 AI_0 と null・調整デッキ 16 ブロック × 150 局（938900..939049）・同じシード。追試だけで判定する。**学習に使用禁止**",
+   "owner": "experiments/eval_s3_h2h.py",
+   "date": "2026-10-07"
+  },
+  {
+   "start": 939100,
+   "end": 939199,
+   "kind": "validate",
+   "purpose": "壁を越える案 腕 C（D-163 §4.2・C-1）の主比較: V_C 対 V_0 と null（V_0 対 V_0）・調整デッキ 16 ブロック × 75 局（939100..939174）・同じシード。**学習に使用禁止**",
+   "owner": "experiments/eval_s3_h2h.py",
+   "date": "2026-10-08"
+  },
+  {
+   "start": 939200,
+   "end": 939299,
+   "kind": "validate",
+   "purpose": "腕 C（C-1）の錨: 対 素 planner・16 ブロック × 100 局（候補と基準は同じシード）。**学習に使用禁止**",
+   "owner": "experiments/eval_s2_repr.py",
+   "date": "2026-10-08"
+  },
+  {
+   "start": 939300,
+   "end": 939399,
+   "kind": "validate",
+   "purpose": "腕 C（C-1）の錨: 対 H・16 ブロック × 25 局（939300..939324）。**学習に使用禁止**",
+   "owner": "experiments/eval_s2_repr.py",
+   "date": "2026-10-08"
+  },
+  {
+   "start": 939400,
+   "end": 939499,
+   "kind": "validate",
+   "purpose": "腕 C（C-1）の錨: 対 貪欲・16 ブロック × 25 局（939400..939424）。**学習に使用禁止**",
+   "owner": "experiments/eval_s2_repr.py",
+   "date": "2026-10-08"
+  },
+  {
+   "start": 939500,
+   "end": 939699,
+   "kind": "validate",
+   "purpose": "壁を越える案 腕 C（C-1・D-163 §5.1）の境界の追試: V_C 対 V_0 と null・調整デッキ 16 ブロック × 150 局（939500..939649）・同じシード。追試だけで判定する（98.3%）。**学習に使用禁止**",
+   "owner": "experiments/eval_s3_h2h.py",
+   "date": "2026-10-08"
+  },
+  {
+   "start": 939700,
+   "end": 944699,
+   "kind": "validate",
+   "purpose": "壁を越える案 腕 C の追試の足し継ぎ（D-169・マスター裁定「上端が +0.02 を上回っているうちは追試を回し続ける」）: V_C 対 V_0 と null・調整デッキ 16 ブロック × 150 局を 1 回ずつ、seed0 = 939700 + 150 × (回 − 1)。**学習に使用禁止**",
+   "owner": "experiments/eval_s3_h2h.py",
+   "date": "2026-10-08"
+  },
+  {
+   "start": 944700,
+   "end": 949699,
+   "kind": "validate",
+   "purpose": "壁を越える案 腕 B の追試の足し継ぎ（D-169・マスター裁定「上端が +0.02 を上回っているうちは追試を回し続ける」）: V_B 対 V_0 と null・調整デッキ 16 ブロック × 150 局を 1 回ずつ、seed0 = 944700 + 150 × (回 − 1)。**学習に使用禁止**",
+   "owner": "experiments/eval_s3_h2h.py",
+   "date": "2026-10-08"
+  },
+  {
+   "start": 949700,
+   "end": 954699,
+   "kind": "validate",
+   "purpose": "壁を越える案 腕 A の追試の足し継ぎ（D-169・マスター裁定「上端が +0.02 を上回っているうちは追試を回し続ける」）: AI_A 対 AI_0 と null・調整デッキ 16 ブロック × 150 局を 1 回ずつ、seed0 = 949700 + 150 × (回 − 1)。**学習に使用禁止**",
+   "owner": "experiments/eval_s3_h2h.py",
+   "date": "2026-10-08"
+  },
+  {
+   "start": 954700,
+   "end": 954999,
+   "kind": "validate",
+   "purpose": "物差しの作り直し（D-170・直接の得点）の測り直し R1 V_1 対 V_0（調整デッキ 16 ブロック）: 挑戦 16 × 175（954700..954874）と配線の確かめの null 16 × 25（954900..954924）。足し継ぐときは同じ大きさの帯を新しく取る。**学習に使用禁止**",
+   "owner": "experiments/eval_s3_h2h.py",
+   "date": "2026-10-08"
+  },
+  {
+   "start": 955000,
+   "end": 958399,
+   "kind": "validate",
+   "purpose": "物差しの作り直し（D-170・直接の得点）の測り直し R2 G-lr 対 G@0（対象デッキ ENV_SANGE_RM_TSUBAKI のミラー 1 ブロック）: 挑戦 2,800 局（955000..957799）と null 400 局（958000..958399）。足し継ぐときは同じ大きさの帯を新しく取る。**学習に使用禁止**",
+   "owner": "experiments/eval_s3_h2h.py",
+   "date": "2026-10-08"
+  },
+  {
+   "start": 958400,
+   "end": 961799,
+   "kind": "validate",
+   "purpose": "物差しの作り直し（D-170・直接の得点）の測り直し R3 G@12,000 対 G@6,000（同じ対象デッキのミラー）: 挑戦 2,800 局（958400..961199）と null 400 局（961400..961799）。足し継ぐときは同じ大きさの帯を新しく取る。**学習に使用禁止**",
+   "owner": "experiments/eval_s3_h2h.py",
+   "date": "2026-10-08"
   }
  ],
- "next_free": 890000
+ "next_free": 961800
 }

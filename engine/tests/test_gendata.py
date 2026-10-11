@@ -128,8 +128,13 @@ def test_ladder_band_is_refused_for_data_generation():
 
 def test_unregistered_band_is_refused():
     """D-028: 台帳に無い帯は拒否されること（先に seed_bands.json に追記する）。"""
+    # 固定のシード（以前は 900000）は帯の登録が進むと登録済みになる（2026-10 に 898000..900999 が入った）。
+    # 台帳の next_free より先の、まだ誰も取っていない値で確かめる
+    with open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "experiments", "seed_bands.json"),
+              encoding="utf-8") as f:
+        free = json.load(f)["next_free"]
     with pytest.raises(ValueError, match="未登録"):
-        gendata.check_band(900000)
+        gendata.check_band(free + 1_000_000)
 
 
 def test_declared_bands_are_registered():

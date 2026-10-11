@@ -1,0 +1,19 @@
+{
+ "version": "s3h2h-1",
+ "gate": "Ts",
+ "pair": {
+  "a": {
+   "path": "results/models/s4S3000_ens3.json",
+   "sha": "52d46243cbd490e7"
+  },
+  "b": {
+   "path": "netfree",
+   "sha": null
+  }
+ },
+ "n_games": 400,
+ "score": 0.75,
+ "lo": 0.7075,
+ "hi": 0.79,
+ "verdict": "門を越える"
+}

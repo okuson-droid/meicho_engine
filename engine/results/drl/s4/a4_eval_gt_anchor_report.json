@@ -1,0 +1,40 @@
+{
+ "version": "s2eval-1",
+ "task": "s4",
+ "target": "env/ENV_SANGE_RM_TSUBAKI",
+ "opponents": [
+  "heuristic",
+  "greedy"
+ ],
+ "seed0": 894000,
+ "level": 0.95,
+ "scores": {
+  "GT3000": {
+   "diff": 0.9450000000000001,
+   "lo": 0.9225,
+   "hi": 0.965,
+   "n_per_block": 200,
+   "by_block": {
+    "heuristic": 0.955,
+    "greedy": 0.935
+   }
+  }
+ },
+ "wdl": {
+  "GT3000": {
+   "heuristic": {
+    "n": 200,
+    "W": 191,
+    "D": 0,
+    "L": 9
+   },
+   "greedy": {
+    "n": 200,
+    "W": 187,
+    "D": 0,
+    "L": 13
+   }
+  }
+ },
+ "compare": {}
+}
