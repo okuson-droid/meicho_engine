@@ -1,0 +1,37 @@
+{
+ "version": "s3h2h-1",
+ "rule": "direct",
+ "decision": "D-170",
+ "challenge": "ch",
+ "level": 0.975,
+ "n_per_block": 2800,
+ "n_games": 2800,
+ "pair": {
+  "a": {
+   "path": "/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/s4/models/s4YGlr3000_ens3.json",
+   "sha": "80e3181187b5b3ed"
+  },
+  "b": {
+   "path": "results/models/s2v_id_ens3.json",
+   "sha": "2d4504e2125bc244"
+  }
+ },
+ "main": {
+  "diff": 0.037142857142857144,
+  "lo": 0.01642857142857146,
+  "hi": 0.057499999999999996,
+  "level": 0.975,
+  "verdict": "伸びた"
+ },
+ "by_block": {
+  "env/ENV_YANG_RF_TSUBAKI|env/ENV_YANG_RF_TSUBAKI": 0.037142857142857144
+ },
+ "null": {
+  "diff": -0.017500000000000016,
+  "lo": -0.06256249999999997,
+  "hi": 0.02749999999999997,
+  "level": 0.95,
+  "n_games": 400,
+  "contains_half": true
+ }
+}
