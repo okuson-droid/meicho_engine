@@ -62,7 +62,9 @@ def run(job, name, pair, n, seed0, path):
         cmd = [sys.executable, "experiments/eval_s3_h2h.py", "run", "--pair", f"{name}={pair}", "--n", str(step),
                "--seed0", str(seed0), "--out", path, "--workers", "4", "--budget-sec", "480"]
         if job["target"]: cmd += ["--target", job["target"]]
-        sh(cmd)
+        r = sh(cmd)
+        if counts(path, name) == got:      # 進まなかった（道具が断った）なら空回りせずに止める
+            print(f"進まない: {path} {name} rc={r.returncode}", flush=True); sys.exit(1)
         push(f"{path.split('/')[-1]} の途中", [path])
 
 STATE = f"{R}/g3_state.json"
