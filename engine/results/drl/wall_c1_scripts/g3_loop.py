@@ -56,8 +56,9 @@ def run(job, name, pair, n, seed0, path):
         got = counts(path, name)
         if len(got) == nb and min(got) >= n: return
         stopcheck()
-        # 1 ブロック（対象デッキのミラー）は 200 局ずつ足し継ぐ。16 ブロックは 1 回の呼び出しが 1 ブロックずつ進む
-        step = min(n, (min(got) if len(got) == nb else 0) + 200) if job["target"] else n
+        # 1 回の呼び出しは 1 ブロックを打ち切るまで止まらないので、どのブロックも 200 局ずつ足し継ぐ
+        # （シードは seed0 + 済んだ局数から続くので、一度に打つのと同じ局になる）
+        step = min(n, (min(got) if len(got) == nb else 0) + 200)
         cmd = [sys.executable, "experiments/eval_s3_h2h.py", "run", "--pair", f"{name}={pair}", "--n", str(step),
                "--seed0", str(seed0), "--out", path, "--workers", "4", "--budget-sec", "480"]
         if job["target"]: cmd += ["--target", job["target"]]
