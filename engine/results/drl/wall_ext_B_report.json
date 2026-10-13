@@ -2,54 +2,70 @@
  "version": "s3h2h-1",
  "challenge": "ch",
  "null": "null",
- "n_per_block": 150,
- "n_games": 2400,
+ "n_per_block": 300,
+ "n_games": 4800,
  "main": {
-  "diff": 0.011250000000000001,
-  "lo": -0.02125,
-  "hi": 0.04333333333333333,
+  "diff": 0.012083333333333335,
+  "lo": -0.011666666666666669,
+  "hi": 0.034999999999999996,
   "verdict": "伸びていない"
  },
  "raw": {
   "ch": {
-   "score": 0.5116666666666667,
-   "lo": 0.49208333333333326,
-   "hi": 0.5316666666666666
+   "score": 0.5204166666666666,
+   "lo": 0.50625,
+   "hi": 0.5345885416666667
   },
   "null": {
-   "score": 0.5004166666666666,
-   "lo": 0.4808333333333333,
-   "hi": 0.52,
+   "score": 0.5083333333333333,
+   "lo": 0.49416666666666675,
+   "hi": 0.5227083333333333,
    "contains_half": true
   }
  },
  "by_deck": {
   "env/ENV_SANGE_RF_TSUBAKI": {
-   "n": 600,
-   "diff": -0.01,
-   "challenge_only": 137,
-   "null_only": 143
+   "n": 1200,
+   "diff": 0.009166666666666667,
+   "challenge_only": 287,
+   "null_only": 276
   },
   "env/ENV_SANGE_RM_TSUBAKI": {
-   "n": 600,
-   "diff": 0.006666666666666667,
-   "challenge_only": 132,
-   "null_only": 128
+   "n": 1200,
+   "diff": 0.010833333333333334,
+   "challenge_only": 291,
+   "null_only": 278
   },
   "env/ENV_YANG_RF_TSUBAKI": {
-   "n": 600,
-   "diff": 0.05,
-   "challenge_only": 145,
-   "null_only": 115
+   "n": 1200,
+   "diff": 0.0325,
+   "challenge_only": 297,
+   "null_only": 258
   },
   "env/ENV_YANG_RM_TSUBAKI": {
-   "n": 600,
-   "diff": -0.0016666666666666668,
-   "challenge_only": 150,
-   "null_only": 151
+   "n": 1200,
+   "diff": -0.004166666666666667,
+   "challenge_only": 280,
+   "null_only": 285
   }
  },
  "rule": "wall",
  "level": 0.983,
- "retest": true
+ "retest": true,
+ "merged_from": [
+  {
+   "seed0": 944700,
+   "n": 150
+  },
+  {
+   "seed0": 944850,
+   "n": 150
+  }
+ ],
+ "direct": {
+  "diff": 0.02041666666666664,
+  "lo": 0.0033333333333332993,
+  "hi": 0.037293437500000026,
+  "level": 0.983
+ }
 }
