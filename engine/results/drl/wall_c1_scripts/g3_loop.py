@@ -70,21 +70,38 @@ def run(job, name, pair, n, seed0, path):
 STATE = f"{R}/g3_state.json"
 st = json.load(open(f"{E}/{STATE}")) if os.path.exists(f"{E}/{STATE}") else {"done": {}, "last": {}, "rule": "D-174", "level": LEVEL}
 
+EXTRA = {"R7": [975900]}   # 足し継ぎの回 2 以降の seed0（帯を登録してから足す・D-174 §2）
+
+def rounds_of(key):
+    return st.setdefault("rounds", {}).get(key, 1)
+
 def judge(key):
     out = f"{R}/g3_{key}_report.json"
-    sh([sys.executable, "experiments/eval_s3_h2h.py", "report", "--in", f"{R}/g3_{key}_r01.json", "--direct", "ch",
+    ins = sum([["--in", f"{R}/g3_{key}_r{k:02d}.json"] for k in range(1, rounds_of(key) + 1)], [])
+    sh([sys.executable, "experiments/eval_s3_h2h.py", "report"] + ins + ["--direct", "ch",
         "--null-in", f"{R}/g3_{key}_null.json", "--level", str(LEVEL), "--out", out], stdout=subprocess.DEVNULL, check=True)
     rep = json.load(open(f"{E}/{out}")); m = rep["main"]
     st["last"][key] = {"diff": m["diff"], "lo": m["lo"], "hi": m["hi"], "verdict": m["verdict"], "null": rep.get("null")}
-    st["done"][key] = m["verdict"]
+    st["last"][key]["rounds"] = rounds_of(key)
+    if "足し継ぐ" in m["verdict"]:
+        st["done"].pop(key, None)
+        if rounds_of(key) - 1 < len(EXTRA.get(key, [])):
+            st["rounds"][key] = rounds_of(key) + 1
+        else:
+            st["need_band"] = key            # 次の帯が未登録なので止める
+    else:
+        st["done"][key] = m["verdict"]
     json.dump(st, open(f"{E}/{STATE}", "w"), ensure_ascii=False, indent=1)
     print(f"{key}: {m['diff']:+.4f} [{m['lo']:+.4f}, {m['hi']:+.4f}] {m['verdict']} null {rep.get('null', {}).get('diff')} {time.strftime('%H:%M:%S')}", flush=True)
     push(f"{key} の集計", [out, STATE])
 
 train()
 for key, job in JOBS.items():
-    if key in st["done"]: continue
-    run(job, "null", job["null"], job["nn"], job["null_seed0"], f"{R}/g3_{key}_null.json")
-    run(job, "ch", job["ch"], job["n"], job["seed0"], f"{R}/g3_{key}_r01.json")
-    judge(key)
+    while key not in st["done"]:
+        if st.get("need_band") == key: print(f"{key}: 足し継ぎの帯が未登録", flush=True); sys.exit(0)
+        run(job, "null", job["null"], job["nn"], job["null_seed0"], f"{R}/g3_{key}_null.json")
+        for k in range(1, rounds_of(key) + 1):
+            s0 = job["seed0"] if k == 1 else EXTRA[key][k - 2]
+            run(job, "ch", job["ch"], job["n"], s0, f"{R}/g3_{key}_r{k:02d}.json")
+        judge(key)
 print("ALLDONE", flush=True)
