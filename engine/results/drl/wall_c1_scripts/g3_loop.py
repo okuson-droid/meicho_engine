@@ -70,7 +70,7 @@ def run(job, name, pair, n, seed0, path):
 STATE = f"{R}/g3_state.json"
 st = json.load(open(f"{E}/{STATE}")) if os.path.exists(f"{E}/{STATE}") else {"done": {}, "last": {}, "rule": "D-174", "level": LEVEL}
 
-EXTRA = {"R7": [975900]}   # 足し継ぎの回 2 以降の seed0（帯を登録してから足す・D-174 §2）
+EXTRA = {"R7": [975900, 978700]}   # 足し継ぎの回 2 以降の seed0（帯を登録してから足す・D-174 §2）
 
 def rounds_of(key):
     return st.setdefault("rounds", {}).get(key, 1)
