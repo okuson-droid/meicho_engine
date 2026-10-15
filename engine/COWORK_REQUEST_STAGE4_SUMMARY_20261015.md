@@ -7,7 +7,7 @@
 - 出力: `engine/GENERALIST_STAGE4_SUMMARY_DESIGN_20261016.md`（日付は書いた日でよい）
 - 読む順: `CLAUDE.md` → `STEER.md` → `engine/decisions.md` の D-154〜D-175 → 下の報告書
 
-## 材料（正本は `main`。数字はすべて報告書と results/drl の JSON にある）
+## 材料（D-172 以後の報告と台帳はまだ `main` に無く、ブランチ `claude/charming-mendel-yzlmua` にある。数字はすべて報告書と results/drl の JSON にある）
 
 設計書と規約:
 - `engine/GENERALIST_STAGE4_DESIGN_20261001.md`（段階4・D-154）
