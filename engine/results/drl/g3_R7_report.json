@@ -4,8 +4,8 @@
  "decision": "D-170",
  "challenge": "ch",
  "level": 0.95,
- "n_per_block": 2800,
- "n_games": 2800,
+ "n_per_block": 5600,
+ "n_games": 5600,
  "pair": {
   "a": {
    "path": "/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f31/scratchpad/s4/models/s4Glr1000_ens3.json",
@@ -17,15 +17,25 @@
   }
  },
  "main": {
-  "diff": 0.0050000000000000044,
-  "lo": -0.012857142857142845,
-  "hi": 0.02392857142857141,
+  "diff": 0.007499999999999951,
+  "lo": -0.005357142857142838,
+  "hi": 0.02035714285714285,
   "level": 0.95,
-  "verdict": "区別できない（上端 +0.024 は否定できない・足し継ぐ）"
+  "verdict": "区別できない（上端 +0.020 は否定できない・足し継ぐ）"
  },
  "by_block": {
-  "env/ENV_SANGE_RM_TSUBAKI|env/ENV_SANGE_RM_TSUBAKI": 0.0050000000000000044
+  "env/ENV_SANGE_RM_TSUBAKI|env/ENV_SANGE_RM_TSUBAKI": 0.007499999999999951
  },
+ "merged_from": [
+  {
+   "seed0": 972500,
+   "n": 2800
+  },
+  {
+   "seed0": 975900,
+   "n": 2800
+  }
+ ],
  "null": {
   "diff": -0.0050000000000000044,
   "lo": -0.05249999999999999,
