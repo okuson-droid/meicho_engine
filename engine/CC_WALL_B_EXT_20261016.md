@@ -79,4 +79,4 @@ D-169（マスター裁定「上端が +0.02 を上回っているうちは追�
 ## 検査
 
 - 道具の変更なし
-- 全体の `--run-slow`: 結果を下に書き足す
+- 全体の `--run-slow`（`results/drl/wall_c1_scripts/slow_run.sh <出力先>`・ファイルごとに 63 ファイル・HEAD dfa3bf5）: **1,447 通過・8 失敗・7 skip**。失敗 8 件はすべて `cards/`（git の外）の資材が無いため（`test_bp01.py` 4 件・`test_card_images.py` 4 件）で、1 件ずつ理由を読んだ。前回（a570b11）と同じ顔ぶれで、どれも CI の一覧に載っている。生の結果は `results/drl/wall_c1_scripts/slow_dfa3bf5/junit.tar.gz`
