@@ -1111,7 +1111,15 @@
    "purpose": "少ない教材での比較 R7 の足し継ぎ 回 3（D-174 §2・回 1〜2 を合わせて上端 +0.0204 で否定できない）: G-lr@1,000 対 S@1,000（対象デッキ ENV_SANGE_RM_TSUBAKI のミラー）挑戦 2,800 局（978700..981499）。**学習に使用禁止**",
    "owner": "experiments/eval_s3_h2h.py",
    "date": "2026-10-15"
+  },
+  {
+   "start": 981500,
+   "end": 984299,
+   "kind": "validate",
+   "purpose": "P-0 null の席の偏りの確かめ（D-177・設計書 GENERALIST_STAGE4_SUMMARY_DESIGN_20261020 §5.3）: V_0 どうし・対象デッキ ENV_SANGE_RM_TSUBAKI のミラー 1 ブロック 2,800 局・95%・1 回だけ。**学習に使用禁止**",
+   "owner": "experiments/eval_s3_h2h.py",
+   "date": "2026-10-21"
   }
  ],
- "next_free": 981500
+ "next_free": 984300
 }
