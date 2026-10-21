@@ -17,16 +17,22 @@ def have(path, opp):
     d = json.load(open(f"{E}/{path}"))
     return min([len(d["results"].get(f"{a}|{opp}", [])) for a in ("glr", "g0")])
 
+def total(path, opp):
+    """両方の腕を足した局数（1 回の呼び出しが片方の腕だけ進めることがあるので、進んだかはこれで見る）"""
+    if not os.path.exists(f"{E}/{path}"): return 0
+    d = json.load(open(f"{E}/{path}"))
+    return sum(len(d["results"].get(f"{a}|{opp}", [])) for a in ("glr", "g0"))
+
 summary = {}
 for opp, n, s0 in JOBS:
     path = f"{R}/p1_anchor_{opp}.json"
     while have(path, opp) < n:
         if os.path.exists("/home/user/meicho_engine/AGENT_STOP"): sys.exit(0)
-        h = have(path, opp); step = min(n, h + 200)
+        h = have(path, opp); t0 = total(path, opp); step = min(n, h + 200)
         subprocess.run([sys.executable, "experiments/eval_s2_repr.py", "run", "--task", "s4", "--target", "ENV_SANGE_RM_TSUBAKI",
                         "--opponents", opp, "--arm", f"glr={GLR}", "--arm", f"g0={G0}", "--n", str(step), "--seed0", str(s0),
                         "--out", path, "--workers", "4", "--budget-sec", "480"], cwd=E, env=env, stdout=LOG, stderr=subprocess.STDOUT)
-        if have(path, opp) == h: print("進まない", path, flush=True); sys.exit(1)
+        if total(path, opp) == t0: print("進まない", path, flush=True); sys.exit(1)
         push(f"錨 {opp} {have(path, opp)} 局", [path])
     rep = f"{R}/p1_anchor_{opp}_report.json"
     subprocess.run([sys.executable, "experiments/eval_s2_repr.py", "report", "--in", path, "--new", "glr", "--old", "g0",
