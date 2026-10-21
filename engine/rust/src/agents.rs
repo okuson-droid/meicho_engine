@@ -693,6 +693,11 @@ pub struct Greedy {
     pub policy_belief: bool,
     /// 腕 A: 自分のデッキ表（`policy_belief` のときだけ使う）。`series` 系では席の行動デッキが入る。
     pub own_decklist: Option<Vec<u16>>,
+    /// E-1（D-177・`GENERALIST_WALL_READING_20261020.md` §7）: 葉の採点の視点の数。
+    /// 1 = 従来（自分の視点だけ・既定・挙動不変）／2 = 両視点の平均 (V(自分) + 1 − V(相手)) / 2。
+    /// 相手の視点の信念の要約は `own_decklist`（None ならミラーとみなして `opp_decklist`）。
+    /// `value_net` があるときだけ効く。Python の `PlannerAgent._eval` と同じ規約。
+    pub value_views: u8,
     /// D-065 A-1: 選択フェイズ（Choice）と手札上限の捨て札（TurnEndDiscard）も担当にする。既定 false。
     pub choice_phases: bool,
     /// D-065 A-1: `solo` の決定化の本数（1 = 従来どおり）。
@@ -801,6 +806,7 @@ impl Greedy {
             policy_scope: 0,
             policy_belief: false,
             own_decklist: None,
+            value_views: 1,
             choice_phases: false,
             solo_samples: 1,
             align_leaves: false,
@@ -1225,7 +1231,15 @@ impl Greedy {
 
     pub fn eval(&self, db: &CardDb, s: &GameState, pi: usize) -> f64 {
         match &self.value_net {
-            Some(n) => Self::net_value(db, n, s, pi, self.opp_decklist.as_deref()),
+            Some(n) => {
+                let v_me = Self::net_value(db, n, s, pi, self.opp_decklist.as_deref());
+                if self.value_views != 2 || s.outcome.is_some() {
+                    return v_me;
+                }
+                let own = self.own_decklist.as_deref().or(self.opp_decklist.as_deref());
+                let v_op = Self::net_value(db, n, s, 1 - pi, own);
+                0.5 * (v_me + 1.0 - v_op)
+            }
             None => evaluate(db, s, pi, &self.w),
         }
     }

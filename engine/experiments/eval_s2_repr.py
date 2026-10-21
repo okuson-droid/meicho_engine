@@ -133,27 +133,42 @@ def score_ci(games: list, s: list, n_boot: int = 10000, seed: int = 0, level: fl
 
 
 PI_SEP = "+pi="                         # 腕 A（D-163 §2.1）: `--arm 名前=葉の V のパス+pi=代打ちの π のパス`
+VIEWS_SUFFIX = "+views=2"               # E-1（D-177）: 末尾に付けると葉を両視点の平均で採点する（`value_views=2`）
+
+
+def split_views(path: str) -> tuple:
+    """候補・席の指定の末尾の `+views=2` を外して (残り, 視点の数) を返す。付いていなければ視点は 1（従来）。"""
+    if path.endswith(VIEWS_SUFFIX):
+        return path[:-len(VIEWS_SUFFIX)], 2
+    return path, 1
 
 
 def _arm_spec(arm: str, path: str | None, pool: list) -> dict:
     from arena_rs import PLANNER
     from record_mix import NETFREE, NETFREE_VP
-    v, sep, pi = (path or "").partition(PI_SEP)
+    path, views = split_views(path or "")
+    v, sep, pi = path.partition(PI_SEP)
     if sep and not (v and pi):
         raise SystemExit(f"代打ちの π は葉の V のある候補にだけ付ける: {arm}={path}")
+    if views == 2 and not v:
+        raise SystemExit(f"{VIEWS_SUFFIX} は葉の V のある候補にだけ付ける: {arm}={path}{VIEWS_SUFFIX}")
     extra = {"value_net": os.path.abspath(v)} if v else {}
     if pi:
         extra.update(NETFREE_VP(os.path.abspath(pi)))
+    if views == 2:
+        extra["value_views"] = 2
     return PLANNER(pool, **NETFREE, **extra)
 
 
 def arm_sha(path: str | None):
-    """候補の指紋。π つきは `V の指紋+pi=π の指紋`（腕 A）。"""
+    """候補の指紋。π つきは `V の指紋+pi=π の指紋`（腕 A）。両視点は末尾に `+views=2`（E-1）。"""
     if not path:
         return None
+    path, views = split_views(path)
     v, sep, pi = path.partition(PI_SEP)
     h = lambda p: hashlib.sha256(open(p, "rb").read()).hexdigest()[:16]
-    return h(v) if not sep else f"{h(v)}+pi={h(pi)}"
+    fp = h(v) if not sep else f"{h(v)}+pi={h(pi)}"
+    return fp if views == 1 else fp + VIEWS_SUFFIX
 
 
 S4_OPPONENTS = ("planner", "heuristic", "greedy")
