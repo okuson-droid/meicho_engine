@@ -1140,7 +1140,7 @@
    "start": 986400,
    "end": 986699,
    "kind": "validate",
-   "purpose": "E-1 葉の採点を両視点の平均にする（D-177・読みの報告 GENERALIST_WALL_READING_20261020 §7）: netfree_v(value_views=2) 対 netfree_v、V はどちらも V_0（s2v_id_ens3）・調整デッキ 16 ブロック。挑戦 16 × 175（986400..986574）と null 16 × 25（986600..986624）。直接の得点・95%・二段構え（M-3）。足し継ぐときは同じ大きさの帯を新しく取る。**学習に使用禁止**",
+   "purpose": "E-1 葉の採点を両視点の平均にする（D-177・読みの報告 GENERALIST_WALL_READING_20261020 §7）: netfree_v(value_views=2) 対 netfree_v、V はどちらも V_0（s2v_id_ens3）・調整デッキ 16 ブロック。挑戦 16 × 176（986400..986575）と null 16 × 26（986600..986625）。1 ブロックの局数は偶数（M-8）。直接の得点・95%・二段構え（M-3）。足し継ぐときは同じ大きさの帯を新しく取る。**学習に使用禁止**",
    "owner": "experiments/eval_s3_h2h.py",
    "date": "2026-10-21"
   },
@@ -1148,7 +1148,7 @@
    "start": 986700,
    "end": 986899,
    "kind": "validate",
-   "purpose": "E-1 の錨（D-177）: netfree_v(value_views=2) と netfree_v（V_0）を同じシードで、調整デッキ 16 ブロック・相手 素 planner 16 × 100（986700..986799）・H と貪欲 各 16 × 25（986800..986824）。95%。**学習に使用禁止**",
+   "purpose": "E-1 の錨（D-177）: netfree_v(value_views=2) と netfree_v（V_0）を同じシードで、調整デッキ 16 ブロック・相手 素 planner 16 × 100（986700..986799）・H と貪欲 各 16 × 26（986800..986825）。95%。**学習に使用禁止**",
    "owner": "experiments/eval_s2_repr.py",
    "date": "2026-10-21"
   }
