@@ -1119,7 +1119,15 @@
    "purpose": "P-0 null の席の偏りの確かめ（D-177・設計書 GENERALIST_STAGE4_SUMMARY_DESIGN_20261020 §5.3）: V_0 どうし・対象デッキ ENV_SANGE_RM_TSUBAKI のミラー 1 ブロック 2,800 局・95%・1 回だけ。**学習に使用禁止**",
    "owner": "experiments/eval_s3_h2h.py",
    "date": "2026-10-21"
+  },
+  {
+   "start": 984300,
+   "end": 986299,
+   "kind": "validate",
+   "purpose": "P-1 G-lr の錨（D-177・設計書 GENERALIST_STAGE4_SUMMARY_DESIGN_20261020 §2.4）: G-lr（s4Glr3000_ens3）と G@0（s2v_id_ens3）を同じシードで、対象デッキ ENV_SANGE_RM_TSUBAKI のミラー・相手 素 planner 1,600 局（984300..985899）・H と貪欲 各 400 局（985900..986299）。95%。**学習に使用禁止**",
+   "owner": "experiments/eval_s2_repr.py",
+   "date": "2026-10-21"
   }
  ],
- "next_free": 984300
+ "next_free": 986300
 }
