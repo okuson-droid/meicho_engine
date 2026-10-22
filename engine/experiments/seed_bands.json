@@ -1151,7 +1151,23 @@
    "purpose": "E-1 の錨（D-177）: netfree_v(value_views=2) と netfree_v（V_0）を同じシードで、調整デッキ 16 ブロック・相手 素 planner 16 × 100（986700..986799）・H と貪欲 各 16 × 26（986800..986825）。95%。**学習に使用禁止**",
    "owner": "experiments/eval_s2_repr.py",
    "date": "2026-10-21"
+  },
+  {
+   "start": 986900,
+   "end": 987099,
+   "kind": "validate",
+   "purpose": "E-1 の足し継ぎ 回 2（D-177・CC_E1_20261021.md §0.2・M-3／M-4）: netfree_v(value_views=2) 対 netfree_v（V_0）・調整デッキ 16 ブロック × 176（986900..987075）。回 1 は +0.0163 [−0.0018, +0.0348]（95%・2,816 局）で上端を否定できない。上限は回 3 まで。**学習に使用禁止**",
+   "owner": "experiments/eval_s3_h2h.py",
+   "date": "2026-10-22"
+  },
+  {
+   "start": 987100,
+   "end": 987299,
+   "kind": "validate",
+   "purpose": "E-1 の足し継ぎ 回 3（D-177・CC_E1_20261021.md §0.2・M-3／M-4）: netfree_v(value_views=2) 対 netfree_v（V_0）・調整デッキ 16 ブロック × 176（987100..987275）。回 1 は +0.0163 [−0.0018, +0.0348]（95%・2,816 局）で上端を否定できない。上限は回 3 まで。**学習に使用禁止**",
+   "owner": "experiments/eval_s3_h2h.py",
+   "date": "2026-10-22"
   }
  ],
- "next_free": 986900
+ "next_free": 987300
 }
