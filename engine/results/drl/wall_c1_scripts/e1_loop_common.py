@@ -7,8 +7,10 @@ os.makedirs(f"{SP}/e1", exist_ok=True)
 LOG = open(f"{SP}/e1/e1.log", "a")
 STOP = "/home/user/meicho_engine/AGENT_STOP"
 START = time.time()
-# 外側の timeout（7,100 秒）で 1 ブロックの途中を捨てないよう、残りが 1 ブロックぶん（約 70 分）を切ったら新しい呼び出しを始めずに抜ける
-STOP_AFTER = 7100 - 4200
+# 外側の timeout（7,100 秒）で 1 ブロックの途中を捨てないよう、残りが「その組でこれまで一番長かった 1 回の呼び出し × 1.3」
+# （その組の最初の呼び出しの前は約 70 分）を切ったら新しい呼び出しを始めずに抜ける
+LIMIT = 7100
+FIRST = 4200 / 1.3
 
 
 def sh(cmd, **kw):
@@ -28,15 +30,17 @@ def counts(path, name):
 
 
 def play(name, pair, n, seed0, path, tag=""):
+    longest = None
     while True:
         got = counts(path, name)
         if len(got) == 16 and min(got) >= n: return
         if os.path.exists(STOP): print("AGENT_STOP", flush=True); sys.exit(0)
-        if time.time() - START > STOP_AFTER: print("時間切れの前に抜ける（同じコマンドで続きから）", flush=True); sys.exit(3)
+        if time.time() - START + 1.3 * (longest or FIRST) > LIMIT: print("時間切れの前に抜ける（同じコマンドで続きから）", flush=True); sys.exit(3)
         t0 = time.time()
         r = sh([sys.executable, "experiments/eval_s3_h2h.py", "run", "--pair", f"{name}={pair}", "--n", str(n),
                 "--seed0", str(seed0), "--out", path, "--workers", "4", "--budget-sec", "480"])
         now = counts(path, name)
+        longest = max(longest or 0.0, time.time() - t0)
         if now == got: print(f"進まない: {path} rc={r.returncode}", flush=True); sys.exit(1)
         print(f"{name}: {sum(now)} 局 {time.time() - t0:.0f}s {time.strftime('%H:%M:%S')}", flush=True)
         push(f"{path.split('/')[-1]} {sum(now)} 局", [path], tag)
