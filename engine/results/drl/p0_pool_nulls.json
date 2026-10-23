@@ -185,12 +185,26 @@
     "n": 400,
     "base": "results/models/s2v_id_ens3.json",
     "a_seat": 0.4925
+   },
+   {
+    "file": "e1_confirm_null.json",
+    "seed0": 987750,
+    "n": 416,
+    "base": "results/models/s2v_id_ens3.json",
+    "a_seat": 0.5
+   },
+   {
+    "file": "e1_null.json",
+    "seed0": 986600,
+    "n": 416,
+    "base": "results/models/s2v_id_ens3.json",
+    "a_seat": 0.53125
    }
   ],
-  "n_games": 36800,
-  "a_seat": 0.5027989130434785,
-  "lo": 0.49771739130434794,
-  "hi": 0.507907608695652,
+  "n_games": 37632,
+  "a_seat": 0.5030824829931975,
+  "lo": 0.4980329241071426,
+  "hi": 0.5081313775510209,
   "level": 0.95,
   "contains_half": true
  }

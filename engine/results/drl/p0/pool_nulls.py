@@ -1,12 +1,12 @@
 """P-0 (1)（D-177・設計書 GENERALIST_STAGE4_SUMMARY_DESIGN_20261020 §5.3 の 1）: 既存の null（基準どうし・A と B が同じネット）を
 種類ごと（調整デッキ 16 ブロック／対象デッキ 1 ブロック）にまとめ、A 席の得点の 95% 区間を出す。新しい対局なし。
 区間: 各ファイルの各ブロックを層とし、層の中で局の組 (2k, 2k+1) を 10,000 回再標本化、局数で重みづけして合わせる。
-対象: results/drl の結果ファイルのうち、組 "null" を持ち A と B の指紋が同じもの（報告・状態のファイルは除く）。"""
+対象: results/drl（と E-1 の results/drl/e1）の結果ファイルのうち、組 "null" を持ち A と B の指紋が同じもの（報告・状態のファイルは除く）。"""
 import glob, json, os, sys
 import numpy as np
 D = os.path.dirname(os.path.abspath(__file__)) + "/.."
 rows = {}
-for p in sorted(glob.glob(f"{D}/*.json")):
+for p in sorted(glob.glob(f"{D}/*.json")) + sorted(glob.glob(f"{D}/e1/*.json")):   # e1/ は E-1（D-177）の null・M-6 で足す
     if p.endswith(("_report.json", "_state.json")): continue
     try: d = json.load(open(p))
     except Exception: continue
