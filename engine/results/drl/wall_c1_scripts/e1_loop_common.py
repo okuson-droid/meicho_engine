@@ -6,6 +6,9 @@ SP = "/tmp/claude-0/-home-user-meicho-engine/5a1cecc8-5654-5b64-aefb-2e111d273f3
 os.makedirs(f"{SP}/e1", exist_ok=True)
 LOG = open(f"{SP}/e1/e1.log", "a")
 STOP = "/home/user/meicho_engine/AGENT_STOP"
+START = time.time()
+# 外側の timeout（7,100 秒）で 1 ブロックの途中を捨てないよう、残りが 1 ブロックぶん（約 70 分）を切ったら新しい呼び出しを始めずに抜ける
+STOP_AFTER = 7100 - 4200
 
 
 def sh(cmd, **kw):
@@ -28,6 +31,7 @@ def play(name, pair, n, seed0, path, tag=""):
         got = counts(path, name)
         if len(got) == 16 and min(got) >= n: return
         if os.path.exists(STOP): print("AGENT_STOP", flush=True); sys.exit(0)
+        if time.time() - START > STOP_AFTER: print("時間切れの前に抜ける（同じコマンドで続きから）", flush=True); sys.exit(3)
         t0 = time.time()
         r = sh([sys.executable, "experiments/eval_s3_h2h.py", "run", "--pair", f"{name}={pair}", "--n", str(n),
                 "--seed0", str(seed0), "--out", path, "--workers", "4", "--budget-sec", "480"])
