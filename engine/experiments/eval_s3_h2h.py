@@ -40,6 +40,10 @@
 
 - 腕 A（D-163 §2.1）: 席を `葉の V のパス+pi=代打ちの π のパス` と書くと、その席は `record_mix.NETFREE_VP`
   （代打ちだけ π・`policy_belief` オン・π₀ は H）を足した探索器になる。指紋は `V の指紋+pi=π の指紋`
+- E-1（D-177）: 葉の V のある席の末尾に `+views=2` を付けると、葉を両視点の平均 (V(自分) + 1 − V(相手)) / 2 で
+  採点する（Rust の `value_views=2`）。指紋の末尾にも `+views=2` が付く。付けない席は従来とバイトで同じ
+- E-2（D-179）: 同じく末尾に `+bundle_p=0.75` を付けると束ねた対抗ゲーム（`bundle_p`・D-082）。指紋の末尾にも付く。
+  `+views=2` と並べてよい（順は問わない・指紋では bundle_p → views の順）
 
 ## 局数の足し継ぎ
 
@@ -63,7 +67,7 @@ _HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.join(_HERE, ".."))
 sys.path.insert(0, _HERE)
 
-from eval_s2_repr import DEFAULT_ENV, blocks, cand_deck, check_eval_band, ci_percentiles, load_env, tune_decks   # noqa: E402
+from eval_s2_repr import knob_suffix, split_knobs, DEFAULT_ENV, blocks, cand_deck, check_eval_band, ci_percentiles, load_env, tune_decks   # noqa: E402
 
 TOOL_VERSION = "s3h2h-1"
 RULE = {"up": 0.01, "down": -0.01}
@@ -83,10 +87,14 @@ PI_SEP = "+pi="                         # 腕 A（D-163 §2.1）: 「葉の V �
 
 
 def split_side(text: str) -> tuple:
-    """席の指定を (葉の V, 代打ちの π または None) に分ける。π は `record_mix.NETFREE_VP`（proxy・policy_belief）。"""
+    """席の指定を (葉の V, 代打ちの π または None) に分ける。π は `record_mix.NETFREE_VP`（proxy・policy_belief）。
+    末尾のつまみ（`+views=2`・`+bundle_p=…`）は外して見る（つまみは `split_knobs` が読む）。"""
+    text, knobs = split_knobs(text)
     v, sep, pi = text.partition(PI_SEP)
     if sep and (not pi or v in (NETFREE_SIDE, NETFREE_B_SIDE)):
         raise SystemExit(f"代打ちの π は葉の V のある席にだけ付ける（V のパス{PI_SEP}π のパス）: {text!r}")
+    if knobs and v in (NETFREE_SIDE, NETFREE_B_SIDE):
+        raise SystemExit(f"つまみ {knob_suffix(knobs)} は葉の V のある席にだけ付ける: {text + knob_suffix(knobs)!r}")
     return v, (pi or None)
 
 
@@ -94,7 +102,8 @@ def side_sha(path: str):
     v, pi = split_side(path)
     if v in (NETFREE_SIDE, NETFREE_B_SIDE):
         return None
-    return sha16(v) if pi is None else f"{sha16(v)}+pi={sha16(pi)}"
+    fp = sha16(v) if pi is None else f"{sha16(v)}+pi={sha16(pi)}"
+    return fp + knob_suffix(split_knobs(path)[1])
 
 
 def parse_pair(text: str) -> tuple:
@@ -115,6 +124,7 @@ def _spec(path: str, pool: list) -> dict:
     from record_mix import NETFREE_VP
     v, pi = split_side(path)
     extra = NETFREE_VP(os.path.abspath(pi)) if pi else {}
+    extra.update(split_knobs(path)[1])                 # E-1 `value_views`（D-177）・E-2 `bundle_p`（D-179）
     return PLANNER(pool, **NETFREE, value_net=os.path.abspath(v), **extra)
 
 
