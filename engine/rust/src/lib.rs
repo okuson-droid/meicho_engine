@@ -621,7 +621,7 @@ impl PyPlanner {
                         known_hand=false, endgame_enum=0, endgame_eval=16, endgame_conf=0.6,
                         world_weight=0.0, weight_temp=2.0,
                         weight_floor=0.2, weight_lookback=3, draw_buckets=0,
-                        bundle_p=0.0))]
+                        bundle_p=0.0, value_views=1, own_decklist=None))]
     #[allow(clippy::too_many_arguments)]
     fn new(seed: i64, weights: Option<&Bound<'_, PyDict>>, opp_decklist: Option<Vec<String>>, samples: usize,
            rollout_depth: usize, charge_candidates: usize, leaf_budget: i64, turn_rollout: usize,
@@ -636,7 +636,8 @@ impl PyPlanner {
            endgame_enum: usize, endgame_eval: usize, endgame_conf: f64,
            world_weight: f64,
            weight_temp: f64, weight_floor: f64, weight_lookback: usize,
-           draw_buckets: usize, bundle_p: f64) -> PyResult<Self> {
+           draw_buckets: usize, bundle_p: f64, value_views: u8,
+           own_decklist: Option<Vec<String>>) -> PyResult<Self> {
         let d = db()?;
         // Python 版と同じ既定: weights 未指定かつ tuned なら TUNED_WEIGHTS、params 未指定かつ tuned なら TUNED_PARAMS
         let w = match weights {
@@ -708,6 +709,10 @@ impl PyPlanner {
         // 便 C 段 C-4（D-077 追記 4）: 既定 0＝挙動不変。
         inner.g.draw_buckets = draw_buckets;
         inner.g.bundle_p = bundle_p;
+        // E-1（D-177）: 葉の採点の視点の数（既定 1＝挙動不変）。Python の `PlannerAgent` と同じ文言で弾く。
+        check_value_views(value_views, inner.g.value_net.is_some())?;
+        inner.g.value_views = value_views;
+        inner.g.own_decklist = decklist_from_py(&d, own_decklist)?;
         Ok(PyPlanner { inner })
     }
     fn act(&mut self, py: Python<'_>, s: &PyGameState, pi: u8) -> PyResult<PyObject> {
@@ -825,7 +830,7 @@ enum AgentSpec {
               opp_mix: f64, nash_delta: f64, lethal_uniform: f64, known_hand: bool,
               endgame_enum: usize, endgame_eval: usize, endgame_conf: f64,
               world_weight: f64, weight_temp: f64, weight_floor: f64, weight_lookback: usize,
-              draw_buckets: usize, bundle_p: f64 },
+              draw_buckets: usize, bundle_p: f64, value_views: u8 },
     /// DRL 段階 1: 探索なし・方策ネットだけで打つ
     Policy { net: std::sync::Arc<net::Net>, tau: f64 },
 }
@@ -1003,6 +1008,8 @@ fn spec_from_py(d: &CardDb, spec: &Bound<'_, PyDict>) -> PyResult<AgentSpec> {
             weight_lookback: num!("weight_lookback", 3usize),
             draw_buckets: num!("draw_buckets", 0usize),
             bundle_p: num!("bundle_p", 0.0f64),
+            // E-1（D-177）: 葉の採点の視点の数（1 = 従来・2 = 両視点の平均・既定 1）
+            value_views: num!("value_views", 1u8),
             deltas: match get("delta")? {
                 Some(v) if !v.is_none() => {
                     if let Ok(one) = v.downcast::<PyDict>() {
@@ -1025,6 +1032,9 @@ fn spec_from_py(d: &CardDb, spec: &Bound<'_, PyDict>) -> PyResult<AgentSpec> {
             return Err(PyValueError::new_err(
                 "policy_belief は policy_net と opp_decklist と組でしか使えない（π に渡すデッキ表が要るため・D-163）"));
         }
+    }
+    if let AgentSpec::Planner { value_views, value_net, .. } = &spec {
+        check_value_views(*value_views, value_net.is_some())?;
     }
     if let AgentSpec::Planner { lethal_uniform, value_net, .. } = &spec {
         if *lethal_uniform > 0.0 && value_net.is_none() {
@@ -1052,7 +1062,7 @@ fn build_agent(spec: &AgentSpec, seed: i64) -> AnyAgent {
                              align_stop, reeval_samples, opp_mix, nash_delta, lethal_uniform, known_hand,
                              endgame_enum, endgame_eval, endgame_conf,
                              world_weight, weight_temp, weight_floor, weight_lookback,
-                             draw_buckets, bundle_p } => {
+                             draw_buckets, bundle_p, value_views } => {
             let mut p = agents::Planner::new(seed, w.clone(), params.clone(), pool.clone(), *samples, *rollout_depth,
                                              *charge_candidates, *leaf_budget, *turn_rollout, *plan_samples,
                                              *use_history, *prior_strength, *race_after, *extra_turns);
@@ -1082,6 +1092,7 @@ fn build_agent(spec: &AgentSpec, seed: i64) -> AnyAgent {
             p.g.weight_lookback = *weight_lookback;
             p.g.draw_buckets = *draw_buckets;
             p.g.bundle_p = *bundle_p;
+            p.g.value_views = *value_views;
             if deltas.is_empty() {
                 AnyAgent::Planner(p)
             } else {
@@ -1134,9 +1145,21 @@ fn with_opp_pool(spec: &AgentSpec, opp_deck: &[u16]) -> AgentSpec {
     sp
 }
 
+/// E-1（D-177）: `value_views` は 1 か 2。2 は `value_net` と組でしか使えない（葉の採点の視点の数なので）。
+fn check_value_views(value_views: u8, has_value_net: bool) -> PyResult<()> {
+    if value_views != 1 && value_views != 2 {
+        return Err(PyValueError::new_err("value_views は 1 か 2"));
+    }
+    if value_views == 2 && !has_value_net {
+        return Err(PyValueError::new_err("value_views=2 は value_net と組でしか使えない"));
+    }
+    Ok(())
+}
+
 /// 1 局ぶんのエージェント 2 体を席順に作る（`series` 系の共通部分）。
 /// `flip` なら A が席 1。`opp_from_seat` なら各自の `pool` を相手の席の行動デッキにする。
 /// 腕 A（D-163）: `policy_belief` のとき、自分のデッキ表（その席の行動デッキ）を持たせる。
+/// E-1（D-177）: `value_views == 2` のときも同じ（相手の視点の葉の採点に使う）。
 fn set_own_deck(ag: &mut AnyAgent, deck: &[u16]) {
     let g = match ag {
         AnyAgent::Greedy(g) => g,
@@ -1144,7 +1167,7 @@ fn set_own_deck(ag: &mut AnyAgent, deck: &[u16]) {
         AnyAgent::Challenger(c) => &mut c.planner.g,
         _ => return,
     };
-    if g.policy_belief {
+    if g.policy_belief || g.value_views == 2 {
         g.own_decklist = Some(deck.to_vec());
     }
 }
@@ -1183,6 +1206,36 @@ fn policy_belief_deck(action_decks: Vec<Vec<String>>, spec_a: &Bound<'_, PyDict>
     };
     Ok(agents::Greedy::belief_deck(g.policy_belief, &g.opp_decklist, &g.own_decklist, q, seat as u8)
         .map(|v| v.iter().map(|&c| d.action[c as usize].card_id.clone()).collect()))
+}
+
+/// E-1 の検査用（D-177）: `series` 系と同じ道（`seat_agents`）で A/B を席に着け、席 `seat` のエージェントが
+/// 葉を両視点で採点するときのデッキ表の組（自分の視点に渡す相手のデッキ表・相手の視点に渡す自分のデッキ表）を返す。
+/// `value_views` が 2 でなければ None。`Greedy::eval` と同じく、自分のデッキ表が無ければ相手のデッキ表で代える。
+#[pyfunction]
+#[pyo3(signature = (action_decks, spec_a, spec_b, seed, seat, opp_from_seat=true))]
+fn value_views_decks(action_decks: Vec<Vec<String>>, spec_a: &Bound<'_, PyDict>, spec_b: &Bound<'_, PyDict>,
+                     seed: i64, seat: usize, opp_from_seat: bool)
+                     -> PyResult<Option<(Option<Vec<String>>, Option<Vec<String>>)>> {
+    let d = db()?;
+    if action_decks.len() != 2 || seat > 1 {
+        return Err(PyValueError::new_err("action_decks は 2 つ・seat は 0 か 1"));
+    }
+    let ids = |v: &Vec<String>| -> PyResult<Vec<u16>> { Ok(decklist_from_py(&d, Some(v.clone()))?.unwrap_or_default()) };
+    let ad: [Vec<u16>; 2] = [ids(&action_decks[0])?, ids(&action_decks[1])?];
+    let (sa, sb) = (spec_from_py(&d, spec_a)?, spec_from_py(&d, spec_b)?);
+    let ags = seat_agents(&ad, &sa, &sb, seed, seed % 2 == 1, opp_from_seat);
+    let g = match &ags[seat] {
+        AnyAgent::Greedy(g) => g,
+        AnyAgent::Planner(p) => &p.g,
+        AnyAgent::Challenger(c) => &c.planner.g,
+        _ => return Ok(None),
+    };
+    if g.value_views != 2 {
+        return Ok(None);
+    }
+    let names = |v: Option<&[u16]>| v.map(|v| v.iter().map(|&c| d.action[c as usize].card_id.clone()).collect());
+    let own = g.own_decklist.as_deref().or(g.opp_decklist.as_deref());
+    Ok(Some((names(g.opp_decklist.as_deref()), names(own))))
 }
 
 /// `series` / `series_digest` の中身。各シードの (a_won, turns, steps, fired_a, digest)。
@@ -1555,6 +1608,7 @@ fn features() -> Vec<String> {
         "record_seats".to_string(),               // 段階4（D-154）: series_record の record_seats（記録する側を席で選ぶ）
         "agents_follow_decks".to_string(),        // 段階4 便 4-A4（D-161）: series_record の agents_follow_decks（A が常に deck_a を打つ・既定オフ）
         "policy_belief".to_string(),              // 壁を越える案 腕 A（D-163）: 代打ちの π に席から見た相手のデッキ表（既定オフ）
+        "value_views".to_string(),                // E-1（D-177）: 葉の採点を両視点の平均にする（既定 1＝オフ）
     ]
 }
 
@@ -1569,6 +1623,7 @@ fn meicho_rs(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(features, m)?)?;
     m.add_function(wrap_pyfunction!(series_record, m)?)?;
     m.add_function(wrap_pyfunction!(policy_belief_deck, m)?)?;
+    m.add_function(wrap_pyfunction!(value_views_decks, m)?)?;
     m.add_class::<PyGameState>()?;
     m.add_function(wrap_pyfunction!(load_cards, m)?)?;
     m.add_function(wrap_pyfunction!(initial_state, m)?)?;

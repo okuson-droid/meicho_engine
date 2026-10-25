@@ -1047,7 +1047,159 @@
    "purpose": "物差しの作り直し（D-170・直接の得点）の測り直し R3 G@12,000 対 G@6,000（同じ対象デッキのミラー）: 挑戦 2,800 局（958400..961199）と null 400 局（961400..961799）。足し継ぐときは同じ大きさの帯を新しく取る。**学習に使用禁止**",
    "owner": "experiments/eval_s3_h2h.py",
    "date": "2026-10-08"
+  },
+  {
+   "start": 961800,
+   "end": 965199,
+   "kind": "validate",
+   "purpose": "G-lr の確かめ R4（D-172・直接の得点）: G-lr 対 S@3,000（対象デッキ ENV_SANGE_RM_TSUBAKI のミラー 1 ブロック）。挑戦 2,800 局（961800..964599）と null 400 局（964800..965199）。足し継ぐときは同じ大きさの帯を新しく取る。**学習に使用禁止**",
+   "owner": "experiments/eval_s3_h2h.py",
+   "date": "2026-10-11"
+  },
+  {
+   "start": 965200,
+   "end": 968199,
+   "kind": "train",
+   "purpose": "G-lr の確かめ R5（D-172）: 調整デッキ ENV_YANG_RF_TSUBAKI の追加学習の教材 3,000 局（教師 netfree・make_s2_schedule.py --target ENV_YANG_RF_TSUBAKI --per-block mirror:1200,cross:72,anchor:216・purpose stage4_finetune）。**評価に使用禁止**。汎用 V の系統には使わない",
+   "owner": "experiments/make_s2_schedule.py / record_mix.py",
+   "date": "2026-10-11"
+  },
+  {
+   "start": 968200,
+   "end": 968499,
+   "kind": "train",
+   "purpose": "G-lr の確かめ R5（D-172）: ENV_YANG_RF_TSUBAKI の検証の記録 204 局（mirror:80,cross:4,anchor:20・968200..968403・--select best_v にだけ使う）。**学習にも強さの評価にも使用禁止**",
+   "owner": "experiments/make_s2_schedule.py / record_mix.py",
+   "date": "2026-10-11"
+  },
+  {
+   "start": 968500,
+   "end": 971899,
+   "kind": "validate",
+   "purpose": "G-lr の確かめ R5（D-172・直接の得点）: G-lr(YANG_RF) 対 G@0（対象デッキ ENV_YANG_RF_TSUBAKI のミラー 1 ブロック）。挑戦 2,800 局（968500..971299）と null 400 局（971500..971899）。足し継ぐときは同じ大きさの帯を新しく取る。**学習に使用禁止**",
+   "owner": "experiments/eval_s3_h2h.py",
+   "date": "2026-10-11"
+  },
+  {
+   "start": 971900,
+   "end": 972499,
+   "kind": "validate",
+   "purpose": "腕 C の確かめ R6（D-174・直接の得点・95%・足し継がない）: V_C（s5vC_id_ens3）対 V_0（調整デッキ 16 ブロック）。挑戦 16 × 400（971900..972299）と null 16 × 25（972400..972424）。**学習に使用禁止**",
+   "owner": "experiments/eval_s3_h2h.py",
+   "date": "2026-10-12"
+  },
+  {
+   "start": 972500,
+   "end": 975899,
+   "kind": "validate",
+   "purpose": "少ない教材での比較 R7（D-174・直接の得点・95%）: G-lr@1,000 対 S@1,000（対象デッキ ENV_SANGE_RM_TSUBAKI のミラー 1 ブロック）。挑戦 2,800 局（972500..975299）と null 400 局（975500..975899）。**学習に使用禁止**",
+   "owner": "experiments/eval_s3_h2h.py",
+   "date": "2026-10-12"
+  },
+  {
+   "start": 975900,
+   "end": 978699,
+   "kind": "validate",
+   "purpose": "少ない教材での比較 R7 の足し継ぎ 回 2（D-174 §2・D-170 §2「上端は否定できない」→ 同じ大きさの帯を新しく取って足し継ぐ）: G-lr@1,000 対 S@1,000（対象デッキ ENV_SANGE_RM_TSUBAKI のミラー）挑戦 2,800 局（975900..978699）。**学習に使用禁止**",
+   "owner": "experiments/eval_s3_h2h.py",
+   "date": "2026-10-14"
+  },
+  {
+   "start": 978700,
+   "end": 981499,
+   "kind": "validate",
+   "purpose": "少ない教材での比較 R7 の足し継ぎ 回 3（D-174 §2・回 1〜2 を合わせて上端 +0.0204 で否定できない）: G-lr@1,000 対 S@1,000（対象デッキ ENV_SANGE_RM_TSUBAKI のミラー）挑戦 2,800 局（978700..981499）。**学習に使用禁止**",
+   "owner": "experiments/eval_s3_h2h.py",
+   "date": "2026-10-15"
+  },
+  {
+   "start": 981500,
+   "end": 984299,
+   "kind": "validate",
+   "purpose": "P-0 null の席の偏りの確かめ（D-177・設計書 GENERALIST_STAGE4_SUMMARY_DESIGN_20261020 §5.3）: V_0 どうし・対象デッキ ENV_SANGE_RM_TSUBAKI のミラー 1 ブロック 2,800 局・95%・1 回だけ。**学習に使用禁止**",
+   "owner": "experiments/eval_s3_h2h.py",
+   "date": "2026-10-21"
+  },
+  {
+   "start": 984300,
+   "end": 986299,
+   "kind": "validate",
+   "purpose": "P-1 G-lr の錨（D-177・設計書 GENERALIST_STAGE4_SUMMARY_DESIGN_20261020 §2.4）: G-lr（s4Glr3000_ens3）と G@0（s2v_id_ens3）を同じシードで、対象デッキ ENV_SANGE_RM_TSUBAKI のミラー・相手 素 planner 1,600 局（984300..985899）・H と貪欲 各 400 局（985900..986299）。95%。**学習に使用禁止**",
+   "owner": "experiments/eval_s2_repr.py",
+   "date": "2026-10-21"
+  },
+  {
+   "start": 986300,
+   "end": 986399,
+   "kind": "diag",
+   "purpose": "E-1 の道具 value_views の検査（D-177・tests/test_value_views.py）: Python=Rust の毎手一致・既定オフの不変・オンで打ち方が変わること。強さは読まない",
+   "owner": "tests/test_value_views.py",
+   "date": "2026-10-21"
+  },
+  {
+   "start": 986400,
+   "end": 986699,
+   "kind": "validate",
+   "purpose": "E-1 葉の採点を両視点の平均にする（D-177・読みの報告 GENERALIST_WALL_READING_20261020 §7）: netfree_v(value_views=2) 対 netfree_v、V はどちらも V_0（s2v_id_ens3）・調整デッキ 16 ブロック。挑戦 16 × 176（986400..986575）と null 16 × 26（986600..986625）。1 ブロックの局数は偶数（M-8）。直接の得点・95%・二段構え（M-3）。足し継ぐときは同じ大きさの帯を新しく取る。**学習に使用禁止**",
+   "owner": "experiments/eval_s3_h2h.py",
+   "date": "2026-10-21"
+  },
+  {
+   "start": 986700,
+   "end": 986899,
+   "kind": "validate",
+   "purpose": "E-1 の錨（D-177）: netfree_v(value_views=2) と netfree_v（V_0）を同じシードで、調整デッキ 16 ブロック・相手 素 planner 16 × 100（986700..986799）・H と貪欲 各 16 × 26（986800..986825）。95%。**学習に使用禁止**",
+   "owner": "experiments/eval_s2_repr.py",
+   "date": "2026-10-21"
+  },
+  {
+   "start": 986900,
+   "end": 987099,
+   "kind": "validate",
+   "purpose": "E-1 の足し継ぎ 回 2（D-177・CC_E1_20261021.md §0.2・M-3／M-4）: netfree_v(value_views=2) 対 netfree_v（V_0）・調整デッキ 16 ブロック × 176（986900..987075）。回 1 は +0.0163 [−0.0018, +0.0348]（95%・2,816 局）で上端を否定できない。上限は回 3 まで。**学習に使用禁止**",
+   "owner": "experiments/eval_s3_h2h.py",
+   "date": "2026-10-22"
+  },
+  {
+   "start": 987100,
+   "end": 987299,
+   "kind": "validate",
+   "purpose": "E-1 の足し継ぎ 回 3（D-177・CC_E1_20261021.md §0.2・M-3／M-4）: netfree_v(value_views=2) 対 netfree_v（V_0）・調整デッキ 16 ブロック × 176（987100..987275）。回 1 は +0.0163 [−0.0018, +0.0348]（95%・2,816 局）で上端を否定できない。上限は回 3 まで。**学習に使用禁止**",
+   "owner": "experiments/eval_s3_h2h.py",
+   "date": "2026-10-22"
+  },
+  {
+   "start": 987300,
+   "end": 987799,
+   "kind": "validate",
+   "purpose": "E-1 の確かめ（D-177・CC_E1_20261021.md §0.2・M-3 の確認・1 回だけ・足し継がない）: netfree_v(value_views=2) 対 netfree_v（V_0）・調整デッキ 16 ブロック × 424（987300..987723）＝6,784 局と null 16 × 26（987750..987775）。局数は探索（回 1〜2・+0.0167 [+0.0034, +0.0293]・5,632 局）の点推定を検出力 80%・95%・1 局の標準偏差 0.49 で見つける大きさ 6,765 局から、1 ブロックを偶数に切り上げた。**学習に使用禁止**",
+   "owner": "experiments/eval_s3_h2h.py",
+   "date": "2026-10-22"
+  },
+  {
+   "start": 987800,
+   "end": 988099,
+   "kind": "validate",
+   "purpose": "E-2 束ねた対抗ゲームを汎用 AI に（D-179・CC_E2_20261023.md §0）: netfree_vb（NETFREE＋V_0＋bundle_p=0.75）対 netfree_v（NETFREE＋V_0）・調整デッキ 16 ブロック。挑戦 16 × 176（987800..987975）と null 16 × 26（988000..988025）。直接の得点・95%・二段構え（M-3）。足し継ぐときは同じ大きさの帯を新しく取る。**学習に使用禁止**",
+   "owner": "experiments/eval_s3_h2h.py",
+   "date": "2026-10-23"
+  },
+  {
+   "start": 988100,
+   "end": 988299,
+   "kind": "validate",
+   "purpose": "E-2 の錨（D-179）: netfree_vb と netfree_v（V_0）を同じシードで、調整デッキ 16 ブロック・相手 素 planner 16 × 100（988100..988199）・H と貪欲 各 16 × 26（988200..988225）。95%。主比較が候補以上になったときに回す。**学習に使用禁止**",
+   "owner": "experiments/eval_s2_repr.py",
+   "date": "2026-10-23"
+  },
+  {
+   "start": 988300,
+   "end": 988599,
+   "kind": "validate",
+   "purpose": "E-2 の確かめ（D-179・CC_E2_20261023.md §0.2・M-3 の確認・1 回だけ・足し継がない）: netfree_vb（V_0＋bundle_p=0.75）対 netfree_v（V_0）・調整デッキ 16 ブロック × 176（988300..988475）＝2,816 局と null 16 × 26（988500..988525）。局数は探索（回 1・+0.0352 [+0.0167, +0.0533]・2,816 局）の点推定を検出力 80%・95%・1 局の標準偏差 0.49 で見つける大きさ 1,521 局が最低 2,800 を下回るので、最低の 2,800 を 1 ブロック偶数に切り上げた。**学習に使用禁止**",
+   "owner": "experiments/eval_s3_h2h.py",
+   "date": "2026-10-24"
   }
  ],
- "next_free": 961800
+ "next_free": 988600
 }

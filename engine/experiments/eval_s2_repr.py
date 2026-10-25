@@ -133,27 +133,68 @@ def score_ci(games: list, s: list, n_boot: int = 10000, seed: int = 0, level: fl
 
 
 PI_SEP = "+pi="                         # 腕 A（D-163 §2.1）: `--arm 名前=葉の V のパス+pi=代打ちの π のパス`
+VIEWS_SUFFIX = "+views=2"               # E-1（D-177）: 末尾に付けると葉を両視点の平均で採点する（`value_views=2`）
+BUNDLE_KEY = "+bundle_p="               # E-2（D-179）: 末尾に `+bundle_p=0.75` と付けると束ねた対抗ゲーム（`bundle_p`）
+
+
+def split_knobs(path: str) -> tuple:
+    """候補・席の指定の末尾のつまみ（`+views=2`・`+bundle_p=<0..1>`・順は問わない）を外して (残り, spec に足す dict) を返す。
+    付いていなければ dict は空（従来）。"""
+    knobs = {}
+    while True:
+        if path.endswith(VIEWS_SUFFIX) and "value_views" not in knobs:
+            path, knobs["value_views"] = path[:-len(VIEWS_SUFFIX)], 2
+            continue
+        head, sep, val = path.rpartition(BUNDLE_KEY)
+        if sep and "bundle_p" not in knobs and "+" not in val:
+            try:
+                q = float(val)
+            except ValueError:
+                raise SystemExit(f"{BUNDLE_KEY} の値は 0 より大きく 1 以下の数: {val!r}")
+            if not 0.0 < q <= 1.0:
+                raise SystemExit(f"{BUNDLE_KEY} の値は 0 より大きく 1 以下の数: {val!r}")
+            path, knobs["bundle_p"] = head, q
+            continue
+        return path, knobs
+
+
+def knob_suffix(knobs: dict) -> str:
+    """指紋の末尾に付けるつまみの印（順は固定: bundle_p → views）。つまみが無ければ空（従来の指紋のまま）。"""
+    out = f"{BUNDLE_KEY}{knobs['bundle_p']:g}" if "bundle_p" in knobs else ""
+    return out + (VIEWS_SUFFIX if knobs.get("value_views") == 2 else "")
+
+
+def split_views(path: str) -> tuple:
+    """候補・席の指定の末尾のつまみを外して (残り, 視点の数) を返す。付いていなければ視点は 1（従来）。"""
+    rest, knobs = split_knobs(path)
+    return rest, knobs.get("value_views", 1)
 
 
 def _arm_spec(arm: str, path: str | None, pool: list) -> dict:
     from arena_rs import PLANNER
     from record_mix import NETFREE, NETFREE_VP
-    v, sep, pi = (path or "").partition(PI_SEP)
+    path, knobs = split_knobs(path or "")
+    v, sep, pi = path.partition(PI_SEP)
     if sep and not (v and pi):
         raise SystemExit(f"代打ちの π は葉の V のある候補にだけ付ける: {arm}={path}")
+    if knobs and not v:
+        raise SystemExit(f"つまみ {knob_suffix(knobs)} は葉の V のある候補にだけ付ける: {arm}={path}{knob_suffix(knobs)}")
     extra = {"value_net": os.path.abspath(v)} if v else {}
     if pi:
         extra.update(NETFREE_VP(os.path.abspath(pi)))
+    extra.update(knobs)
     return PLANNER(pool, **NETFREE, **extra)
 
 
 def arm_sha(path: str | None):
-    """候補の指紋。π つきは `V の指紋+pi=π の指紋`（腕 A）。"""
+    """候補の指紋。π つきは `V の指紋+pi=π の指紋`（腕 A）。つまみは末尾に `+bundle_p=…`（E-2）・`+views=2`（E-1）。"""
     if not path:
         return None
+    path, knobs = split_knobs(path)
     v, sep, pi = path.partition(PI_SEP)
     h = lambda p: hashlib.sha256(open(p, "rb").read()).hexdigest()[:16]
-    return h(v) if not sep else f"{h(v)}+pi={h(pi)}"
+    fp = h(v) if not sep else f"{h(v)}+pi={h(pi)}"
+    return fp + knob_suffix(knobs)
 
 
 S4_OPPONENTS = ("planner", "heuristic", "greedy")

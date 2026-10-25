@@ -16,7 +16,7 @@ def sh(cmd, **kw):
     return subprocess.run(cmd, cwd=E, env=env, **kw)
 
 def push(msg):
-    subprocess.run(f"cd /home/user/meicho_engine && git add engine/{R}/wall_ext_* && git commit -q -m '[skip ci] 追試の足し継ぎ（D-169）: {msg}\n\nCo-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>\nClaude-Session: https://claude.ai/code/session_01NjB1DJb2rDTbqAuJT5UA3y' ; for i in 1 2 3 4; do git push -q origin claude/charming-mendel-yzlmua && break || sleep $((2**i)); done", shell=True)
+    subprocess.run(f"cd /home/user/meicho_engine && git add engine/{R}/wall_ext_* && git commit -q -m '[skip ci] 追試の足し継ぎ（D-169）: {msg}\n\nCo-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>\nClaude-Session: https://claude.ai/code/session_01NjB1DJb2rDTbqAuJT5UA3y' ; for i in 1 2 3 4; do git push -q origin claude/charming-mendel-yzlmua && break || sleep $((2**i)); done", shell=True, executable="/bin/bash")
 
 def complete(path, n):
     if not os.path.exists(f"{E}/{path}"): return False

@@ -131,7 +131,8 @@ class PlannerAgent(GreedyAgent):
                  endgame_conf: float = 0.6,
                  world_weight: float = 0.0, weight_temp: float = 2.0,
                  weight_floor: float = 0.2, weight_lookback: int = 3,
-                 draw_buckets: int = 0, bundle_p: float = 0.0):
+                 draw_buckets: int = 0, bundle_p: float = 0.0,
+                 value_views: int = 1, own_decklist: list = None):
         # tuned=True で CEM 最適化済みの既定値を使う（A-3）。
         # 明示的に weights/params を渡した場合はそちらを優先する。
         if weights is None and tuned:
@@ -176,6 +177,16 @@ class PlannerAgent(GreedyAgent):
         # D-064: 地平の延長（0 = 従来どおり）と葉の採点の差し替え（None = 手作り evaluate）。
         self.extra_turns = extra_turns
         self.value_net = value_net
+        # E-1（D-177・`GENERALIST_WALL_READING_20261020.md` §7）: 葉の採点の視点の数。
+        # 1 = 従来（自分の視点だけ）／2 = 両視点の平均 (V(自分) + 1 − V(相手)) / 2。
+        # 相手の視点の信念の要約は `own_decklist`（相手から見た相手＝自分のデッキ表）で作る。
+        # None ならミラーとみなして `opp_decklist` を使う。Rust の `Greedy::eval` と同じ規約。
+        if value_views not in (1, 2):
+            raise ValueError("value_views は 1 か 2")
+        if value_views == 2 and value_net is None:
+            raise ValueError("value_views=2 は value_net と組でしか使えない")
+        self.value_views = value_views
+        self.own_decklist = own_decklist
         if params is not None:
             self.fallback = HeuristicAgent(seed, params)
         elif tuned:
@@ -422,7 +433,13 @@ class PlannerAgent(GreedyAgent):
         from .encode import encode
         net = load_net(self.value_net)
         # v6（D-124）: 信念の要約は自分の想定デッキ表（`opp_decklist`）で作る（Rust の `net_value` と同じ）
-        return float(net.value_of(np.asarray(encode(observe(s, pi), pi, self.opp_decklist), np.float32)))
+        v_me = float(net.value_of(np.asarray(encode(observe(s, pi), pi, self.opp_decklist), np.float32)))
+        if self.value_views == 1:
+            return v_me
+        op = 1 - pi
+        own = self.own_decklist if self.own_decklist is not None else self.opp_decklist
+        v_op = float(net.value_of(np.asarray(encode(observe(s, op), op, own), np.float32)))
+        return 0.5 * (v_me + 1.0 - v_op)
 
     @staticmethod
     def _sig(u):
