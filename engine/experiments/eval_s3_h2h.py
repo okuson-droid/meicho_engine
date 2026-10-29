@@ -44,6 +44,8 @@
   採点する（Rust の `value_views=2`）。指紋の末尾にも `+views=2` が付く。付けない席は従来とバイトで同じ
 - E-2（D-179）: 同じく末尾に `+bundle_p=0.75` を付けると束ねた対抗ゲーム（`bundle_p`・D-082）。指紋の末尾にも付く。
   `+views=2` と並べてよい（順は問わない・指紋では bundle_p → views の順）
+- E-3a（D-181）: 同じく末尾に `+hist=8` を付けると、相手モデルを履歴モデル（`use_history=True`・`prior_strength=8`）にする。
+  指紋の印の順は bundle_p → hist → views。同じつまみを 2 回書いたら止める
 
 ## 局数の足し継ぎ
 
