@@ -1207,7 +1207,23 @@
    "purpose": "E-3 の道具の検査（D-181・tests/test_e3_tools.py）: `+hist=<k>` の席の解釈・`+bundle_p=0.75+hist=8` で Python と Rust の毎手一致・打ち方が変わること。強さは読まない",
    "owner": "tests/test_e3_tools.py",
    "date": "2026-10-29"
+  },
+  {
+   "start": 988700,
+   "end": 988999,
+   "kind": "validate",
+   "purpose": "E-3a 履歴モデル（D-181・CC_E3A_20261029.md §0）: netfree_vb＋履歴（V_0＋bundle_p=0.75＋use_history・k=8）対 netfree_vb（V_0＋bundle_p=0.75）・調整デッキ 16 ブロック。挑戦 16 × 176（988700..988875）と null（netfree_vb どうし）16 × 26（988900..988925）。直接の得点・95%・二段構え（M-3）。足し継ぐときは同じ大きさの帯を新しく取る。**学習に使用禁止**",
+   "owner": "experiments/eval_s3_h2h.py",
+   "date": "2026-10-29"
+  },
+  {
+   "start": 989000,
+   "end": 989199,
+   "kind": "validate",
+   "purpose": "E-3a の錨（D-181）: netfree_vb＋履歴と netfree_vb を同じシードで、調整デッキ 16 ブロック・相手 素 planner 16 × 100（989000..989099）・H と貪欲 各 16 × 26（989100..989125）。95%。主比較が候補になったら確かめの前に回す。**学習に使用禁止**",
+   "owner": "experiments/eval_s2_repr.py",
+   "date": "2026-10-29"
   }
  ],
- "next_free": 988700
+ "next_free": 989200
 }
