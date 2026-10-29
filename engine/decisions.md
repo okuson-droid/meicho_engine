@@ -10881,3 +10881,19 @@ D-177 の判定は変えない。帯の `next_free` は 988600。
 4. PR okuson-droid/meicho_engine#17（E-1 の `value_views`・E-2 の席の書き方・P-0〜E-2 の報告と台帳）を main に入れた（9335f26）
 
 次に使える D-番号は **D-181**。
+
+## D-181 E-3（相手モデル）の設計書を採る（2026-10-29・マスター「推しを採用」）
+
+**出どころ**: D-180 追記 1。Cowork（クロエ）が `engine/GENERALIST_E3_DESIGN_20261027.md`（判断 7 件・§8）を書いた（6892100）。クラウドの Claude Code が読み、推しをまとめて挙げた。**マスター裁定: 推しを採用**。
+
+決まったこと:
+1. **E-3 は 2 腕を 1 腕ずつ順に**: E-3a 履歴モデル（`use_history=True`・`prior_strength` k=8・席 `<V_0>+bundle_p=0.75+hist=8`）→ E-3b `bundle_p=0.5`（席 `<V_0>+bundle_p=0.5`）。基準はどちらも netfree_vb（`<V_0>+bundle_p=0.75`）。打ち方のコードは変えない。k・`bundle_p` はそれぞれ 1 点だけ
+2. **リーダー選択は探索に入れない**（D-177 §9 のまま）
+3. **物差しは M-1〜M-8 のまま**: 腕ごとに主比較 1 本（調整デッキ 16 × 176）・95%・家族にしない・二段構え・錨は確かめの前（候補になったら・95% 上端 < 0 が 1 つでもあれば確かめに進まず止めて相談）。null は netfree_vb どうしで取り直し、M-6 のまとめに足す
+4. **道具は測定の側だけ**: `eval_s2_repr.split_knobs` に `+hist=<k>`（`use_history=True`・`prior_strength=k`・指紋の印の順は bundle_p → hist → views）。検査 `tests/test_e3_tools.py` に「`+bundle_p=0.75+hist=8` の席で Python と Rust が毎手一致」を含める。打ち方・Rust・`record_mix.NETFREE` は変えない。指紋 `f4b80b25c35cfa77` 不変
+5. **netfree_vb を教師にした教材は E-3 の後**、次に V を学ぶときに作る（`record_mix` に既定オフの名前を足す・D-180 追記 1 の 1）
+6. **結果 → 次の一手は設計書 §6 の表**。E-3b の事前登録は E-3a の判定のあとに commit する（E-3a が伸びたら E-3b の席は `+hist=8` 付き）。**E-3a・E-3b がどちらも +2% 以上を示さなければ止めて相談**（E-5 は計画の変更なので Claude Code は自分で進まない）
+7. **E-3b の値は `bundle_p=0.5` の 1 点**
+8. champion・SD001・符号化・rules の版は変えない。最終評価の 4 デッキは開けない。帯は回す前に登録する
+
+次に使える D-番号は **D-182**。
