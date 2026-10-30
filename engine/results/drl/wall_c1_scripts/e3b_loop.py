@@ -9,7 +9,7 @@ V0 = "results/models/s2v_id_ens3.json"
 VB = f"{V0}+bundle_p=0.75"
 NULL = ("null", f"{VB}:{VB}", 26, 989400, f"{R}/e3/e3b_null.json")
 CH = ("e3b", f"{V0}+bundle_p=0.5:{VB}", 176)
-ROUNDS = {1: 989200}
+ROUNDS = {1: 989200, 2: 989700, 3: 989900}   # 回 2・3 は 2026-10-31 に回す前に登録（上限は回 3・M-4）
 STATE = f"{R}/e3/e3b_state.json"
 os.makedirs(f"{E}/{R}/e3", exist_ok=True)
 st = json.load(open(f"{E}/{STATE}")) if os.path.exists(f"{E}/{STATE}") else {"rounds": 1}
