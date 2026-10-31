@@ -1,0 +1,52 @@
+{
+ "version": "s3h2h-1",
+ "rule": "direct",
+ "decision": "D-170",
+ "challenge": "e3a",
+ "level": 0.95,
+ "n_per_block": 176,
+ "n_games": 2816,
+ "pair": {
+  "a": {
+   "path": "results/models/s2v_id_ens3.json+bundle_p=0.75+hist=8",
+   "sha": "2d4504e2125bc244+bundle_p=0.75+hist=8"
+  },
+  "b": {
+   "path": "results/models/s2v_id_ens3.json+bundle_p=0.75",
+   "sha": "2d4504e2125bc244+bundle_p=0.75"
+  }
+ },
+ "main": {
+  "diff": -0.002485795454545414,
+  "lo": -0.020241477272727293,
+  "hi": 0.015625,
+  "level": 0.95,
+  "verdict": "区別できない（+2% 以上の改善は否定）"
+ },
+ "by_block": {
+  "env/ENV_SANGE_RF_TSUBAKI|env/ENV_SANGE_RF_TSUBAKI": -0.005681818181818177,
+  "env/ENV_SANGE_RF_TSUBAKI|env/ENV_SANGE_RM_TSUBAKI": -0.011363636363636354,
+  "env/ENV_SANGE_RF_TSUBAKI|env/ENV_YANG_RF_TSUBAKI": -0.005681818181818177,
+  "env/ENV_SANGE_RF_TSUBAKI|env/ENV_YANG_RM_TSUBAKI": -0.028409090909090884,
+  "env/ENV_SANGE_RM_TSUBAKI|env/ENV_SANGE_RF_TSUBAKI": 0.03977272727272729,
+  "env/ENV_SANGE_RM_TSUBAKI|env/ENV_SANGE_RM_TSUBAKI": 0.03977272727272729,
+  "env/ENV_SANGE_RM_TSUBAKI|env/ENV_YANG_RF_TSUBAKI": -0.034090909090909116,
+  "env/ENV_SANGE_RM_TSUBAKI|env/ENV_YANG_RM_TSUBAKI": -0.005681818181818177,
+  "env/ENV_YANG_RF_TSUBAKI|env/ENV_SANGE_RF_TSUBAKI": -0.04545454545454547,
+  "env/ENV_YANG_RF_TSUBAKI|env/ENV_SANGE_RM_TSUBAKI": -0.022727272727272707,
+  "env/ENV_YANG_RF_TSUBAKI|env/ENV_YANG_RF_TSUBAKI": 0.0,
+  "env/ENV_YANG_RF_TSUBAKI|env/ENV_YANG_RM_TSUBAKI": 0.017045454545454586,
+  "env/ENV_YANG_RM_TSUBAKI|env/ENV_SANGE_RF_TSUBAKI": -0.01704545454545453,
+  "env/ENV_YANG_RM_TSUBAKI|env/ENV_SANGE_RM_TSUBAKI": 0.022727272727272707,
+  "env/ENV_YANG_RM_TSUBAKI|env/ENV_YANG_RF_TSUBAKI": 0.045454545454545414,
+  "env/ENV_YANG_RM_TSUBAKI|env/ENV_YANG_RM_TSUBAKI": -0.028409090909090884
+ },
+ "null": {
+  "diff": -0.04567307692307687,
+  "lo": -0.08894230769230771,
+  "hi": -5.551115123125783e-17,
+  "level": 0.95,
+  "n_games": 416,
+  "contains_half": false
+ }
+}
