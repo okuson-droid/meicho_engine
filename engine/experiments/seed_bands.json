@@ -1255,7 +1255,15 @@
    "purpose": "E-3b の足し継ぎ 回 3（D-182・CC_E3B_20261030.md §0.2・M-3／M-4）: netfree_vb(0.5) 対 netfree_vb(0.75)（V_0）・調整デッキ 16 ブロック × 176（989900..990075）。回 1 は +0.0085 [−0.0099, +0.0270]（95%・2,816 局）で上端を否定できない。上限は回 3 まで。**学習に使用禁止**",
    "owner": "experiments/eval_s3_h2h.py",
    "date": "2026-10-31"
+  },
+  {
+   "start": 990100,
+   "end": 990199,
+   "kind": "diag",
+   "purpose": "E-5 の準備の道具の検査（D-183 追記 1・tests/test_e5_tools.py）: 教師 netfree_vb の spec が打ち方に繋がっていること。強さは読まない",
+   "owner": "tests/test_e5_tools.py",
+   "date": "2026-11-08"
   }
  ],
- "next_free": 990100
+ "next_free": 990200
 }
