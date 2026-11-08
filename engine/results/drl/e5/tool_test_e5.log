@@ -1,0 +1,3 @@
+$ cd engine && python3 -m pytest tests/test_e5_tools.py -q -rfs --run-slow
+....                                                                     [100%]
+4 passed in 0.94s
