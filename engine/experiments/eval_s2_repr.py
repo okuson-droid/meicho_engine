@@ -135,32 +135,53 @@ def score_ci(games: list, s: list, n_boot: int = 10000, seed: int = 0, level: fl
 PI_SEP = "+pi="                         # 腕 A（D-163 §2.1）: `--arm 名前=葉の V のパス+pi=代打ちの π のパス`
 VIEWS_SUFFIX = "+views=2"               # E-1（D-177）: 末尾に付けると葉を両視点の平均で採点する（`value_views=2`）
 BUNDLE_KEY = "+bundle_p="               # E-2（D-179）: 末尾に `+bundle_p=0.75` と付けると束ねた対抗ゲーム（`bundle_p`）
+HIST_KEY = "+hist="                     # E-3a（D-181）: 末尾に `+hist=8` と付けると相手モデルを履歴モデルに（`use_history`・k）
+
+
+def _knob_value(key: str, val: str, ok, what: str) -> float:
+    try:
+        x = float(val)
+    except ValueError:
+        raise SystemExit(f"{key} の値は{what}: {val!r}")
+    if not ok(x):
+        raise SystemExit(f"{key} の値は{what}: {val!r}")
+    return x
 
 
 def split_knobs(path: str) -> tuple:
-    """候補・席の指定の末尾のつまみ（`+views=2`・`+bundle_p=<0..1>`・順は問わない）を外して (残り, spec に足す dict) を返す。
-    付いていなければ dict は空（従来）。"""
+    """候補・席の指定の末尾のつまみ（`+views=2`・`+bundle_p=<0..1>`・`+hist=<k>`・順は問わない）を外して
+    (残り, spec に足す dict) を返す。付いていなければ dict は空（従来）。同じつまみを 2 回書いたら止める。"""
     knobs = {}
+
+    def once(name):
+        if name in knobs:
+            raise SystemExit(f"同じつまみを 2 回書いている: {name}（{path!r}）")
+
     while True:
-        if path.endswith(VIEWS_SUFFIX) and "value_views" not in knobs:
+        if path.endswith(VIEWS_SUFFIX):
+            once("value_views")
             path, knobs["value_views"] = path[:-len(VIEWS_SUFFIX)], 2
             continue
         head, sep, val = path.rpartition(BUNDLE_KEY)
-        if sep and "bundle_p" not in knobs and "+" not in val:
-            try:
-                q = float(val)
-            except ValueError:
-                raise SystemExit(f"{BUNDLE_KEY} の値は 0 より大きく 1 以下の数: {val!r}")
-            if not 0.0 < q <= 1.0:
-                raise SystemExit(f"{BUNDLE_KEY} の値は 0 より大きく 1 以下の数: {val!r}")
-            path, knobs["bundle_p"] = head, q
+        if sep and "+" not in val:
+            once("bundle_p")
+            path, knobs["bundle_p"] = head, _knob_value(BUNDLE_KEY, val, lambda x: 0.0 < x <= 1.0,
+                                                         " 0 より大きく 1 以下の数")
+            continue
+        head, sep, val = path.rpartition(HIST_KEY)
+        if sep and "+" not in val:
+            once("use_history")
+            k = _knob_value(HIST_KEY, val, lambda x: x > 0.0, " 0 より大きい数")
+            path = head
+            knobs["use_history"], knobs["prior_strength"] = True, k
             continue
         return path, knobs
 
 
 def knob_suffix(knobs: dict) -> str:
-    """指紋の末尾に付けるつまみの印（順は固定: bundle_p → views）。つまみが無ければ空（従来の指紋のまま）。"""
+    """指紋の末尾に付けるつまみの印（順は固定: bundle_p → hist → views）。つまみが無ければ空（従来の指紋のまま）。"""
     out = f"{BUNDLE_KEY}{knobs['bundle_p']:g}" if "bundle_p" in knobs else ""
+    out += f"{HIST_KEY}{knobs['prior_strength']:g}" if knobs.get("use_history") else ""
     return out + (VIEWS_SUFFIX if knobs.get("value_views") == 2 else "")
 
 

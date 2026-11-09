@@ -43,7 +43,9 @@
   相対パスか絶対パス。`value_net_sha16`（sha256 の先頭 16 桁）を書けば、回す前にファイルと照合する）／
   `"netfree_vp"`（壁を越える案 腕 A・D-163 §2.1: `netfree_v` の代打ちを `policy_net` の π にしたもの。
   `policy_scope: proxy`・`policy_belief` オン（π に席から見た相手のデッキ表）・相手モデル π₀ は H のまま。
-  `policy_net_sha16` で照合できる）
+  `policy_net_sha16` で照合できる）／
+  `"netfree_vb"`（E-5・D-183 追記 1: `netfree_v` に束ねた対抗ゲーム `bundle_p=0.75` を足したもの＝汎用 AI の既定
+  netfree_vb・D-180 追記 1。`value_net` と `value_net_sha16` は `netfree_v` と同じ。`tau` とは同時に使えない）
 - `teacher.tau`: 記録の温度（既定 0）。manifest には「argmax 以外を選んだ決定の割合」（`nonargmax`・
   D-064 §6.2 の τ の下見の尺度）をブロックごとと全体で書く
 - シード帯は各ブロックごとに `seed_bands.json` で検査する（評価帯・未登録の帯は落とす）。
@@ -89,6 +91,10 @@ from meicho.version import RULES_VERSION                        # noqa: E402
 NETFREE = {"extra_turns": 1, "choice_phases": True, "solo_samples": 4, "known_hand": True,
            "endgame_enum": 64, "draw_buckets": 1}
 
+
+
+# 汎用 AI の既定 netfree_vb の束ねた対抗ゲームの値（D-180 追記 1）。`NETFREE` には入れない（既存の教材・検査・指紋を変えないため）
+NETFREE_VB_BUNDLE = 0.75
 
 
 def NETFREE_VP(policy_net: str) -> dict:
@@ -150,6 +156,10 @@ def teacher_spec(teacher: dict, pool: list, deck_a: str, deck_b: str) -> dict:
     if name == "netfree_vp":
         return PLANNER(pool, **NETFREE, value_net=resolve_value_net(teacher),
                        **NETFREE_VP(resolve_value_net(teacher, "policy_net")), **extra)
+    if name == "netfree_vb":
+        if tau:
+            raise SystemExit("教師 netfree_vb は tau と同時に使えない（bundle_p と tau は対抗の集約規則が二重になる）")
+        return PLANNER(pool, **NETFREE, value_net=resolve_value_net(teacher), bundle_p=NETFREE_VB_BUNDLE, **extra)
     if name == "planner":
         return PLANNER(pool, **extra)
     if name == "champion":
@@ -246,7 +256,7 @@ def check_schedule(sch: dict) -> None:
         raise SystemExit("blocks が空")
     for t in [sch.get("teacher") or {}] + [b.get("teacher") or {} for b in blocks]:
         tt = dict(sch.get("teacher") or {}, **t)
-        if tt.get("name") in ("netfree_v", "netfree_vp"):
+        if tt.get("name") in ("netfree_v", "netfree_vp", "netfree_vb"):
             resolve_value_net(tt)
         if tt.get("name") == "netfree_vp":
             resolve_value_net(tt, "policy_net")

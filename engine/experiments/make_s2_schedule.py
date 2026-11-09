@@ -56,7 +56,7 @@ SHARES = {"mirror": 0.4, "cross": 0.4, "anchor": 0.2}
 ANCHOR_OPPONENTS = ("heuristic", "greedy", "planner")
 CROSS_OPPONENTS = ("teacher", "netfree")         # --target の異種のブロックの相手の席（D-161）
 TOOL_VERSION = "s2sched-1"
-TEACHERS = ("netfree", "netfree_v", "netfree_vp")
+TEACHERS = ("netfree", "netfree_v", "netfree_vp", "netfree_vb")
 
 
 def _even(x: float) -> int:
@@ -77,13 +77,16 @@ def teacher_def(teacher: str = "netfree", value_net: str | None = None, tau: flo
                 reeval_samples: int = 0, policy_net: str | None = None) -> dict:
     """組み合わせ表の教師の定義（D-138）。既定は D-131 と同じ `{"name": "netfree", "tau": 0.0}`。
 
-    `netfree_vp`（壁を越える案 腕 A・D-163 §2.1）は `netfree_v` の代打ちを `policy_net` の π にしたもの。"""
+    `netfree_vp`（壁を越える案 腕 A・D-163 §2.1）は `netfree_v` の代打ちを `policy_net` の π にしたもの。
+    `netfree_vb`（E-5・D-183 追記 1）は `netfree_v` に束ねた対抗ゲーム `bundle_p=0.75` を足したもの（tau とは使えない）。"""
     if teacher not in TEACHERS:
         raise SystemExit(f"--teacher は {TEACHERS} のどれか")
-    if teacher in ("netfree_v", "netfree_vp") and not value_net:
+    if teacher in ("netfree_v", "netfree_vp", "netfree_vb") and not value_net:
         raise SystemExit(f"--teacher {teacher} には --value-net（葉の V のパス）が要る")
-    if teacher not in ("netfree_v", "netfree_vp") and value_net:
-        raise SystemExit("--value-net は --teacher netfree_v / netfree_vp のときだけ使う")
+    if teacher not in ("netfree_v", "netfree_vp", "netfree_vb") and value_net:
+        raise SystemExit("--value-net は --teacher netfree_v / netfree_vp / netfree_vb のときだけ使う")
+    if teacher == "netfree_vb" and tau:
+        raise SystemExit("--teacher netfree_vb は --tau と同時に使えない（bundle_p と tau は同時に使えない）")
     if (teacher == "netfree_vp") != bool(policy_net):
         raise SystemExit("--policy-net は --teacher netfree_vp のときだけ使い、そのときは必ず要る")
     out = {"name": teacher, "tau": float(tau)}
@@ -337,7 +340,7 @@ def main(argv=None):
     ap.add_argument("--pilot-n", type=int, default=None)
     ap.add_argument("--name", default="s2")
     ap.add_argument("--teacher", default="netfree",
-                    help="netfree（既定）／netfree_v（葉を V に・D-138）／netfree_vp（＋代打ち π・D-163）")
+                    help="netfree（既定）／netfree_v（葉を V に・D-138）／netfree_vp（＋代打ち π・D-163）／netfree_vb（＋bundle_p=0.75・D-183 追記 1）")
     ap.add_argument("--value-net", default=None, help="--teacher netfree_v の葉の V（engine/ からの相対パス）")
     ap.add_argument("--policy-net", default=None, help="--teacher netfree_vp の代打ちの π（腕 A・D-163）")
     ap.add_argument("--tau", type=float, default=0.0, help="記録の温度（D-064 §6.2 の下見で決める）")

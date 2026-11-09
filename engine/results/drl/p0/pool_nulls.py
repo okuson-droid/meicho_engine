@@ -6,7 +6,7 @@ import glob, json, os, sys
 import numpy as np
 D = os.path.dirname(os.path.abspath(__file__)) + "/.."
 rows = {}
-for p in sorted(glob.glob(f"{D}/*.json")) + sorted(glob.glob(f"{D}/e1/*.json")) + sorted(glob.glob(f"{D}/e2/*.json")):   # e1/・e2/ は E-1・E-2 の null・M-6 で足す
+for p in sorted(glob.glob(f"{D}/*.json")) + sorted(glob.glob(f"{D}/e1/*.json")) + sorted(glob.glob(f"{D}/e2/*.json")) + sorted(glob.glob(f"{D}/e3/*.json")):   # e1/・e2/・e3/ は E-1・E-2・E-3 の null・M-6 で足す
     if p.endswith(("_report.json", "_state.json")): continue
     try: d = json.load(open(p))
     except Exception: continue
